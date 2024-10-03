@@ -1,0 +1,520 @@
+#! /Applications/Nuke10.0v6/Nuke10.0v6.app/Contents/MacOS//libnuke-10.0.6.dylib -nx
+version 10.0 v6
+Gizmo {
+ inputs 2
+ tile_color 0x9900ff
+ addUserKnob {20 spill_Replace l "Spill Replace"}
+ addUserKnob {26 spillDe l "<font color = orange>De Spill"}
+ addUserKnob {4 spillExp l "spill expression" M {none average min max pick "" "" "" "" ""}}
+ spillExp average
+ addUserKnob {4 screenColor l "        screen color" -STARTLINE M {red green blue "" ""}}
+ screenColor green
+ addUserKnob {18 spillColor l "spill color"}
+ spillColor {0 1 0}
+ addUserKnob {6 spillColor_panelDropped l "panel dropped state" +HIDDEN +STARTLINE}
+ addUserKnob {6 pickExp_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {26 space01 l "" +STARTLINE T " "}
+ addUserKnob {26 replaceSpill l "<font color = orange>Replace Spill"}
+ addUserKnob {4 spillReplace l "spill replace" M {none image color "" "" "" ""}}
+ spillReplace color
+ addUserKnob {4 spillOut l "                   output" t "if you wish to have the outPut of the node to be the replaced spill and still access the spill matte there is a channel call _deSpillMatte that you can shuffle out " -STARTLINE M {"spill replaced" "spill matte" "" "" "" "" "" ""}}
+ addUserKnob {18 spillReplaceColor l "spill replace color"}
+ spillReplaceColor {0.5 0.5 0.5}
+ addUserKnob {6 spillReplaceColor_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {26 space02 l "" +STARTLINE T " "}
+ addUserKnob {26 matteSpill l "<font color = orange>Spill Matte"}
+ addUserKnob {7 intesity l "matte intesity" R 0 4}
+ intesity 1
+ addUserKnob {6 matteInvert l "invert spill matte" -STARTLINE}
+ matteInvert true
+}
+ Input {
+  inputs 0
+  name FG
+  xpos -398
+  ypos -1166
+  number 1
+ }
+ Dot {
+  name Dot1
+  label footage
+  note_font_size 30
+  xpos -364
+  ypos -1099
+ }
+ Dot {
+  name Dot2
+  xpos -364
+  ypos -690
+ }
+set N30ff08f0 [stack 0]
+ Dot {
+  name Dot3
+  xpos -615
+  ypos -690
+ }
+set N30feb5c0 [stack 0]
+ OFXuk.co.thefoundry.keylight.keylight_v201 {
+  show "Final Result"
+  unPreMultiply false
+  screenColour {{spillColor x2185 0} {spillColor x2185 1} {spillColor x2185 0}}
+  screenGain 1
+  screenBalance 0.5
+  alphaBias {0.5 0.5 0.5}
+  despillBias {0.5 0.5 0.5}
+  gangBiases true
+  preBlur 0
+  "Screen Matte" 0
+  screenClipMin 0
+  screenClipMax 1
+  screenClipRollback 0
+  screenGrowShrink 0
+  screenSoftness 0
+  screenDespotBlack 0
+  screenDespotWhite 0
+  screenReplaceMethod "Soft Colour"
+  screenReplaceColour {0.5 0.5 0.5}
+  Tuning 0
+  midPoint 0.5
+  lowGain 1
+  midGain 1
+  highGain 1
+  "Inside Mask" 0
+  sourceAlphaHandling Ignore
+  insideReplaceMethod "Soft Colour"
+  insideReplaceColour {0.5 0.5 0.5}
+  Crops 0
+  SourceXMethod Colour
+  SourceYMethod Colour
+  SourceEdgeColour 0
+  SourceCropL 0
+  SourceCropR 1
+  SourceCropB 0
+  SourceCropT 1
+  balanceSet false
+  insideComponent None
+  outsideComponent None
+  cacheBreaker true
+  name Keylight1
+  selected true
+  xpos -649
+  ypos -499
+ }
+set N30fe9870 [stack 0]
+ Viewer {
+  frame_range 0-3436
+  name Viewer1
+  xpos -649
+  ypos 473
+ }
+ Colorspace {
+  inputs 0
+  colorspace_out Cineon
+  name Colorspace2
+  label "\[value colorspace_in] -> \[value colorspace_out]"
+  xpos -319
+  ypos -933
+  disable {{1-logprocess}}
+ }
+push $N30ff08f0
+push $N30fe9870
+ Dot {
+  name Dot5
+  label "screen color green"
+  note_font_size 20
+  note_font_color 0xff11ff
+  xpos -615
+  ypos -475
+ }
+ Dot {
+  name Dot33
+  xpos -615
+  ypos -95
+ }
+push $N30feb5c0
+ Dot {
+  name Dot15
+  xpos -1040
+  ypos -690
+ }
+ Dot {
+  name Dot17
+  xpos -1040
+  ypos -525
+ }
+set N31173b00 [stack 0]
+ Dot {
+  name Dot22
+  xpos -827
+  ypos -525
+ }
+ Dot {
+  name Dot26
+  xpos -827
+  ypos -479
+ }
+set N3117c0c0 [stack 0]
+ Dot {
+  name Dot28
+  xpos -758
+  ypos -479
+ }
+ Expression {
+  expr2 b>min(rg)?min(r,g):b
+  name Expression16
+  tile_color 0xffff
+  label "blue min"
+  xpos -792
+  ypos -408
+ }
+push $N3117c0c0
+ Expression {
+  expr1 g>min(r,b)?min(r,b):g
+  name Expression17
+  tile_color 0xff00ff
+  label "green min"
+  xpos -861
+  ypos -437
+ }
+push $N3117c0c0
+ Dot {
+  name Dot27
+  xpos -880
+  ypos -479
+ }
+ Expression {
+  expr0 r>min(g,b)?min(g,b):r
+  name Expression18
+  tile_color 0xff0000ff
+  label "red min"
+  xpos -914
+  ypos -407
+ }
+ Switch {
+  inputs 3
+  which {{screenColor}}
+  name Switch10
+  xpos -861
+  ypos -347
+ }
+ Dot {
+  name Dot31
+  xpos -827
+  ypos -285
+ }
+push $N31173b00
+ Dot {
+  name Dot19
+  xpos -1041
+  ypos -480
+ }
+set N311b9780 [stack 0]
+ Dot {
+  name Dot21
+  xpos -971
+  ypos -480
+ }
+ Expression {
+  expr2 b>max(rg)?max(r,g):b
+  name Expression2
+  tile_color 0xffff
+  label "blue max"
+  xpos -1005
+  ypos -403
+ }
+push $N311b9780
+ Expression {
+  expr1 g>max(r,b)?max(r,b):g
+  name Expression8
+  tile_color 0xff00ff
+  label "green max"
+  xpos -1074
+  ypos -434
+ }
+push $N311b9780
+ Dot {
+  name Dot20
+  xpos -1105
+  ypos -480
+ }
+ Expression {
+  expr0 r>max(g,b)?max(g,b):r
+  name Expression9
+  tile_color 0xff0000ff
+  label "red max"
+  xpos -1139
+  ypos -397
+ }
+ Switch {
+  inputs 3
+  which {{screenColor}}
+  name Switch5
+  xpos -1074
+  ypos -340
+ }
+push $N31173b00
+ Dot {
+  name Dot18
+  xpos -1286
+  ypos -526
+ }
+set N311f2a20 [stack 0]
+ Dot {
+  name Dot23
+  xpos -1286
+  ypos -478
+ }
+set N311f6de0 [stack 0]
+ Dot {
+  name Dot24
+  xpos -1221
+  ypos -478
+ }
+ Expression {
+  expr2 b>(r+g)/2?(r+g)/2:b
+  name Expression3
+  tile_color 0xffff
+  label "blue avg"
+  xpos -1255
+  ypos -398
+ }
+push $N311f6de0
+ Expression {
+  expr1 g>(r+b)/2?(r+b)/2:g
+  name Expression1
+  tile_color 0xff00ff
+  label "green avg"
+  xpos -1320
+  ypos -427
+ }
+push $N311f6de0
+ Dot {
+  name Dot25
+  xpos -1353
+  ypos -478
+ }
+ Expression {
+  expr0 r>(g+b)/2?(g+b)/2:r
+  name Expression4
+  tile_color 0xff0000ff
+  label "red avg"
+  xpos -1387
+  ypos -396
+ }
+ Switch {
+  inputs 3
+  which {{screenColor}}
+  name Switch2
+  tile_color 0xcbcbcbff
+  xpos -1320
+  ypos -339
+ }
+ Dot {
+  name Dot30
+  xpos -1286
+  ypos -286
+ }
+push $N311f2a20
+ Dot {
+  name Dot16
+  xpos -1465
+  ypos -526
+ }
+ Dot {
+  name Dot29
+  xpos -1465
+  ypos -219
+ }
+ Switch {
+  inputs 5
+  which {{spillExp}}
+  name Switch4
+  xpos -1074
+  ypos 66
+ }
+ Dot {
+  name Dot32
+  xpos -1040
+  ypos 415
+ }
+ Dot {
+  name Dot4
+  xpos -508
+  ypos 415
+ }
+set N30ea5510 [stack 0]
+ Merge2 {
+  inputs 2
+  operation minus
+  name Merge1
+  xpos -398
+  ypos 412
+ }
+ Saturation {
+  saturation 0
+  name Saturation1
+  xpos -398
+  ypos 466
+ }
+ Multiply {
+  channels rgb
+  value {{intesity}}
+  name Multiply1
+  xpos -398
+  ypos 505
+ }
+ Dot {
+  name Dot10
+  xpos -364
+  ypos 543
+ }
+set N30e7bf20 [stack 0]
+ Dot {
+  name Dot11
+  label "deSpill matte"
+  note_font_size 30
+  xpos -216
+  ypos 543
+ }
+add_layer {_deSpillMatte _deSpillMatte.matte}
+ Shuffle {
+  in rgb
+  out _deSpillMatte
+  name Shuffle1
+  xpos -250
+  ypos 561
+ }
+ Remove {
+  channels rgb
+  name Remove1
+  xpos -250
+  ypos 585
+ }
+ Multiply {
+  channels _deSpillMatte
+  name Multiply2
+  xpos -250
+  ypos 606
+ }
+ Invert {
+  channels _deSpillMatte
+  name Invert1
+  xpos -250
+  ypos 642
+  disable {{1-matteInvert}}
+ }
+ Dot {
+  name Dot12
+  xpos -216
+  ypos 876
+ }
+set N30e49b80 [stack 0]
+ Shuffle {
+  in _deSpillMatte
+  name Shuffle2
+  xpos -250
+  ypos 909
+ }
+ Dot {
+  name Dot36
+  xpos -216
+  ypos 998
+ }
+push $N30e49b80
+push $N30ea5510
+ Dot {
+  name Dot14
+  xpos -508
+  ypos 733
+ }
+ Constant {
+  inputs 0
+  channels rgb
+  color {{spillReplaceColor} {spillReplaceColor} {spillReplaceColor} {curve}}
+  name Constant1
+  xpos 63
+  ypos 229
+ }
+ Dot {
+  name Dot9
+  label color
+  note_font_size 30
+  xpos 97
+  ypos 352
+ }
+ Input {
+  inputs 0
+  name BG
+  xpos 198
+  ypos 234
+ }
+ Dot {
+  name Dot8
+  label BG
+  note_font_size 30
+  xpos 232
+  ypos 359
+ }
+ Dot {
+  inputs 0
+  name Dot13
+  label "clean plate"
+  note_font_size 30
+  xpos -37
+  ypos 348
+ }
+ Switch {
+  inputs 3
+  which {{spillReplace}}
+  name Switch1
+  xpos 63
+  ypos 427
+ }
+ Dot {
+  name Dot7
+  label "spill replacment"
+  note_font_size 30
+  xpos 97
+  ypos 488
+ }
+ Dot {
+  name Dot6
+  xpos 97
+  ypos 686
+ }
+push $N30e7bf20
+ Merge2 {
+  inputs 2
+  operation multiply
+  name Merge2
+  xpos -398
+  ypos 683
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge3
+  xpos -398
+  ypos 730
+ }
+ Copy {
+  inputs 2
+  from0 _deSpillMatte.matte
+  to0 _deSpillMatte.matte
+  name Copy1
+  xpos -398
+  ypos 869
+ }
+ Switch {
+  inputs 2
+  which {{spillOut}}
+  name Switch3
+  xpos -398
+  ypos 995
+ }
+ Output {
+  name Output1
+  xpos -398
+  ypos 1080
+ }
+end_group

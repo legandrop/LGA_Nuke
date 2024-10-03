@@ -1,0 +1,2284 @@
+{
+    "project": {
+		"project_name": "EHQALPV",
+		"shots": [
+			{
+				"shot_name": "HAPV_R0_00_chroma_helicoptero_A",
+				"sequence": "R0",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_su",
+						"versions": [
+							{
+								"version_number": "HAPV_R0_00_chroma_helicoptero_comp_v05",
+								"version_description": "wip",
+								"version_status": "vwd",
+								"version_date": "2023-06-27T12:02:27-03:00"
+							},
+							{
+								"version_number": "HAPV_R0_00_chroma_helicoptero_comp_v06",
+								"version_description": "FR 1001-1501. Mejora del trackeo, agregado de suciedad en vidrio delantero y Bg en reversa",
+								"version_status": "vwd",
+								"version_date": "2023-06-28T15:11:40-03:00"
+							},
+							{
+								"version_number": "HAPV_R0_00_chroma_helicoptero_comp_v07",
+								"version_description": "mm al 50%, correcci\u00f3n del la l\u00ednea del fondo",
+								"version_status": "vwd",
+								"version_date": "2023-06-29T15:20:40-03:00"
+							},
+							{
+								"version_number": "HAPV_R0_00_chroma_helicoptero_comp_v08",
+								"version_description": "bg 85%",
+								"version_status": "vwd",
+								"version_date": "2023-06-29T17:31:08-03:00"
+							},
+							{
+								"version_number": "HAPV_R0_00_chroma_helicoptero_comp_v10",
+								"version_description": "Reemplazo cielo, retoque chroma",
+								"version_status": "vwd",
+								"version_date": "2023-06-30T16:44:23-03:00"
+							},
+							{
+								"version_number": "HAPV_R0_00_chroma_helicoptero_comp_v13",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2023-07-07T12:56:13-03:00"
+							},
+							{
+								"version_number": "HAPV_R0_00_chroma_helicoptero_comp_v16",
+								"version_description": "camera shake, retoque bg",
+								"version_status": "vwd",
+								"version_date": "2023-07-10T19:36:07-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "HAPV_R0_00_chroma_helicoptero_B",
+				"sequence": "R0",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "ready",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_001_020_SombraOvni_Gral",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_su",
+						"versions": [
+							{
+								"version_number": "EHQALPV_001_020_SombraOvni_Gral_Comp_v02",
+								"version_description": "clean",
+								"version_status": "vwd",
+								"version_date": "2024-03-20T21:44:44-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_020_SombraOvni_Gral_Comp_v03",
+								"version_description": "Va el shot completo",
+								"version_status": "vwd",
+								"version_date": "2024-03-22T16:41:24-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_020_SombraOvni_Gral_Comp_v06",
+								"version_description": "Cambie el fondo del pje, le puse la sombra del ovni. Por ahi el pje aun queda medio clarito....",
+								"version_status": "vwd",
+								"version_date": "2024-04-10T16:21:18-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_020_SombraOvni_Gral_Comp_v10",
+								"version_description": "Va con matte y con el pje sin que este fluor",
+								"version_status": "vwd",
+								"version_date": "2024-05-01T01:18:53-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_020_SombraOvni_Gral_Comp_v13",
+								"version_description": "Va con matte nuevo y sombra menos violeta.",
+								"version_status": "rev",
+								"version_date": "2024-05-07T16:52:15-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_009_010_Arbustos_Hotel",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "corr",
+						"versions": [
+							{
+								"version_number": "EHQALPV_009_010_LuzCielo_Hotel_comp_v06",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-11T17:57:32-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_010_LuzCielo_Hotel_comp_v07",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-12T16:06:53-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_010_Arbustos_Hotel_comp_v02",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-17T15:10:19-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_010_Arbustos_Hotel_comp_v04",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-18T12:42:57-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_010_Arbustos_Hotel_comp_v10",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-22T18:52:46-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_010_Arbustos_Hotel_comp_v14",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-25T10:37:09-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_010_Arbustos_Hotel_comp_v15",
+								"version_description": "Se coloco el reflejo en el lente. Puse humo en el matte. Extendi el matte en la zona q se cortaba.",
+								"version_status": "vwd",
+								"version_date": "2024-04-26T18:59:01-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_010_Arbustos_Hotel_comp_v17",
+								"version_description": "Suavizado de humos que pasan delante del tronco (frame 1752 aprox). Ajuste del croma (puntas de hojas que desaparecen). Correccion de los azules que se colaban. Roto del brazo. AJuste track arbustito. Oscurecimiento y desaturado del azul en el borde del arbol.",
+								"version_status": "vwd",
+								"version_date": "2024-04-29T18:06:37-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_010_Arbustos_Hotel_comp_v18",
+								"version_description": "ajuste de track",
+								"version_status": "vwd",
+								"version_date": "2024-04-30T14:22:32-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_010_Arbustos_Hotel_comp_v19",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-30T19:48:34-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_017_010_Fachada_Hotel",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "corr",
+						"versions": [
+							{
+								"version_number": "EHQALPV_017_010_Fachada_Hotel_comp_v10",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-18T12:05:37-03:00"
+							},
+							{
+								"version_number": "EHQALPV_017_010_Fachada_Hotel_comp_v11",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-19T09:54:34-03:00"
+							},
+							{
+								"version_number": "EHQALPV_017_010_Fachada_Hotel_comp_v19",
+								"version_description": "Falta la mascara delGAUCHO, y unas maderitas del porton.",
+								"version_status": "vwd",
+								"version_date": "2024-05-03T12:58:35-03:00"
+							},
+							{
+								"version_number": "EHQALPV_017_010_Fachada_Hotel_comp_v21",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-05-06T18:06:51-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_089_010_Nubes_Paneo",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_di",
+						"versions": [
+							{
+								"version_number": "EHQALPV_089_010_Nubes_Paneo_Comp_v05",
+								"version_description": "v con ajustes pedidos (repetici\u00f3n forma monta\u00f1as y otros) y propuesta de cielo con nubes via compo",
+								"version_status": "vwd",
+								"version_date": "2024-04-25T16:33:55-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_010_Nubes_Paneo_Comp_v06",
+								"version_description": "ajuste recorte Monta\u00f1as (silueta), ajuste velocidad movimiento nubes.",
+								"version_status": "vwd",
+								"version_date": "2024-04-26T16:02:39-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_010_Nubes_Paneo_Comp_v08",
+								"version_description": "Ajuste velocidad desarrollo nubes (m\u00e1s lento) + ajustes varios nubes generales + Flare Ambulancia",
+								"version_status": "vwd",
+								"version_date": "2024-04-29T16:44:39-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_010_Nubes_Paneo_Comp_v08",
+								"version_description": "rerender Rec 709",
+								"version_status": "vwd",
+								"version_date": "2024-04-30T15:00:19-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_010_Nubes_Paneo_Comp_v09",
+								"version_description": "ajuste velocidad Nubes (variedad), borrado base nave (linea negra ), retimming luz flare ambulancia",
+								"version_status": "vwd",
+								"version_date": "2024-05-02T11:59:24-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_089_020_OVNI_Aparece",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_089_040_OVNI_Abduce",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_089_050_OVNI_Corto",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_089_060_OVNI_Desaparece",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "ready",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_089_000_OVNI_PostViz",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_089_055_Reni_Apaga",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_089_030_Luz_Reni",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_di",
+						"versions": [
+							{
+								"version_number": "EHQALPV_089_030_Luz_Reni_comp_v04",
+								"version_description": "acort\u00e9 parpadeo de 1037 a 1042, mat\u00e9 parpadeo de 1053 a 1062 y de 1070 a 1078",
+								"version_status": "vwd",
+								"version_date": "2024-04-11T18:06:18-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_030_Luz_Reni_comp_v05",
+								"version_description": "luz en bg",
+								"version_status": "vwd",
+								"version_date": "2024-04-12T12:26:11-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_030_Luz_Reni_comp_v06",
+								"version_description": "fix vi\u00f1eta",
+								"version_status": "vwd",
+								"version_date": "2024-04-12T16:35:00-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_030_Luz_Reni_comp_v07",
+								"version_description": "ajuste luz de fondo",
+								"version_status": "vwd",
+								"version_date": "2024-04-16T13:44:23-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_030_Luz_Reni_comp_v09",
+								"version_description": "fix luz",
+								"version_status": "vwd",
+								"version_date": "2024-04-19T12:56:41-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_089_031_Luz_Reni",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_di",
+						"versions": [
+							{
+								"version_number": "EHQALPV_089_031_Luz_Reni_comp_v04",
+								"version_description": "fix parpadeo",
+								"version_status": "vwd",
+								"version_date": "2024-04-10T15:59:51-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_031_Luz_Reni_comp_v05",
+								"version_description": "luz bg",
+								"version_status": "vwd",
+								"version_date": "2024-04-26T13:39:34-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_031_Luz_Reni_comp_v06",
+								"version_description": "ajuste key monta\u00f1a",
+								"version_status": "vwd",
+								"version_date": "2024-04-29T11:06:45-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_089_032_Luz_Reni",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_di",
+						"versions": [
+							{
+								"version_number": "EHQALPV_089_032_Luz_Reni_comp_v03",
+								"version_description": "Mat\u00e9 parpadeo de 1027 a 1035, 1081-1087, 1123-1131 y 1155-1163. Invasi\u00f3n de luz en bg",
+								"version_status": "vwd",
+								"version_date": "2024-04-12T16:15:52-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_032_Luz_Reni_comp_v04",
+								"version_description": "sin vi\u00f1eta",
+								"version_status": "vwd",
+								"version_date": "2024-04-12T17:00:46-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_032_Luz_Reni_comp_v05",
+								"version_description": "ajuste luz de bg",
+								"version_status": "vwd",
+								"version_date": "2024-04-17T11:47:23-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_032_Luz_Reni_comp_v06",
+								"version_description": "fix luz",
+								"version_status": "vwd",
+								"version_date": "2024-04-19T12:35:01-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_030_Luz_Reni_comp_v09",
+								"version_description": "fix luz",
+								"version_status": "vwd",
+								"version_date": "2024-04-19T12:55:39-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_032_Luz_Reni_comp_v07",
+								"version_description": "correcci\u00f3n flare",
+								"version_status": "vwd",
+								"version_date": "2024-04-26T14:48:58-03:00"
+							},
+							{
+								"version_number": "EHQALPV_089_032_Luz_Reni_comp_v08",
+								"version_description": "ajuste key monta\u00f1a",
+								"version_status": "vwd",
+								"version_date": "2024-04-29T11:09:22-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_001_010_SombraOvni_Aparece",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "progre",
+						"versions": [
+							{
+								"version_number": "EHQALPV_001_010_SombraOvni_Aparece_comp_v05",
+								"version_description": "va desde el frame 1280. Sombra + recorte",
+								"version_status": "vwd",
+								"version_date": "2024-04-16T12:28:10-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_001_030_SombraOvni_Sale",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "corr",
+						"versions": [
+							{
+								"version_number": "EHQALPV_001_030_SombraOvni_Sale_comp_v03",
+								"version_description": "Falta grano, falta acomodar bordes....",
+								"version_status": "vwd",
+								"version_date": "2024-04-19T00:29:08-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_030_SombraOvni_Sale_comp_v04",
+								"version_description": "Subo WIP",
+								"version_status": "vwd",
+								"version_date": "2024-04-23T19:19:18-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_030_SombraOvni_Sale_comp_v06",
+								"version_description": "espero correcciones",
+								"version_status": "vwd",
+								"version_date": "2024-04-25T11:23:20-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_030_SombraOvni_Sale_comp_v08",
+								"version_description": "acomode velocidad y cadencia de sombra",
+								"version_status": "vwd",
+								"version_date": "2024-04-25T22:47:14-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_030_SombraOvni_Sale_comp_v13",
+								"version_description": "Me quedo por corregir una mascara a la izq y otra en la parte del sombrero del medio (marron) a la derecha....creo q lo dem\u00e1s mejoro....aqu\u00ed espero correcciones!",
+								"version_status": "vwd",
+								"version_date": "2024-05-07T00:47:51-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_030_SombraOvni_Sale_comp_v14",
+								"version_description": "espero correcciones!",
+								"version_status": "vwd",
+								"version_date": "2024-05-07T12:58:38-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_030_SombraOvni_Sale_comp_v16",
+								"version_description": "correg\u00ed bordes y formato",
+								"version_status": "rev",
+								"version_date": "2024-05-07T21:05:53-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_001_040_DMP_Desierto",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_di",
+						"versions": [
+							{
+								"version_number": "EHQALPV_001_040_DMP_Desierto_Comp_v01",
+								"version_description": "falta completiva del Matte painting",
+								"version_status": "vwd",
+								"version_date": "2024-04-10T16:54:24-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_040_DMP_Desierto_Comp_v03",
+								"version_description": "Subo version 03 (habia en wassabi una version 02 q no era mia) Le puse el matte q hizo lega, y un offset para que la accion coincida con la ref.",
+								"version_status": "vwd",
+								"version_date": "2024-04-25T23:55:54-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_040_DMP_Desierto_Comp_v04",
+								"version_description": "va con matte correcto!",
+								"version_status": "vwd",
+								"version_date": "2024-04-26T11:54:28-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_040_DMP_Desierto_Comp_v12",
+								"version_description": "Cambiamos el fondo",
+								"version_status": "vwd",
+								"version_date": "2024-04-30T15:59:48-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_040_DMP_Desierto_Comp_v13",
+								"version_description": "version de lega",
+								"version_status": "vwd",
+								"version_date": "2024-04-30T17:27:35-03:00"
+							},
+							{
+								"version_number": "EHQALPV_001_040_DMP_Desierto_Comp_v14",
+								"version_description": "Le reemplac\u00e9 el cielo porque no me hab\u00eda quedado muy bien",
+								"version_status": "vwd",
+								"version_date": "2024-05-02T10:35:32-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_020_010_Clean_Antenas",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_020_Chroma_Auto-B1",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_su",
+						"versions": [
+							{
+								"version_number": "EHQALPV_055_020_Chroma_Auto-B1_comp_v03",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-22T16:53:05-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_020_Chroma_Auto-B1_comp_v05",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-23T11:49:18-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_020_Chroma_Auto-B1_comp_v06",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-29T14:19:30-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_020_Chroma_Auto-B1_comp_v09",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-05-02T07:40:11-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_020_Chroma_Auto-B1_comp_v12",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-05-06T08:42:48-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_020_Chroma_Auto-B1_comp_v13",
+								"version_description": "le coregi los bordes el aplpha de la ventana, elpelo y el detalle del espejo retrovisor",
+								"version_status": "vwd",
+								"version_date": "2024-05-06T17:01:16-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_020_Chroma_Auto-B1_comp_v14",
+								"version_description": "despill de la oreja",
+								"version_status": "vwd",
+								"version_date": "2024-05-06T17:20:04-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_020_Chroma_Auto-B1_comp_v16",
+								"version_description": "corregi el detalle del pelo. Pero cuando pasa por zonas de luces altas, se genera un bordecito, que si lo corrigo, se pierde el detalle en el resto",
+								"version_status": "rev",
+								"version_date": "2024-05-07T12:03:42-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_030_Chroma_Auto-G1",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_di",
+						"versions": [
+							{
+								"version_number": "EHQALPV_055_030_Chroma_Auto-G1_comp_v04",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-23T19:14:39-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_030_Chroma_Auto-G1_comp_v06",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-24T13:46:59-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_030_Chroma_Auto-G1_comp_v08",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-25T18:00:57-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_030_Chroma_Auto-G1_comp_AZUL_v08",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-29T09:48:37-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_030_Chroma_Auto-G1_comp_v10",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-29T12:29:01-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_030_Chroma_Auto-G1_comp_v11",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-05-02T07:20:09-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_030_Chroma_Auto-G1_comp_v13",
+								"version_description": "le corregi el despill de la cara",
+								"version_status": "vwd",
+								"version_date": "2024-05-06T10:56:06-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_025_Chroma_Auto-F3_comp_v14",
+								"version_description": "Le ajust\u00e9 un poquito el grading de las bajas a la cara",
+								"version_status": "vwd",
+								"version_date": "2024-05-06T23:52:31-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_130_Chroma_Auto-A4",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_su",
+						"versions": [
+							{
+								"version_number": "EHQALPV_055_130_Chroma_Auto-A4_comp_v03",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-24T13:20:43-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_130_Chroma_Auto-A4_comp_v04",
+								"version_description": null,
+								"version_status": "rev",
+								"version_date": "2024-04-25T14:59:34-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_140_Chroma_Auto-E2",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "corr",
+						"versions": [
+							{
+								"version_number": "EHQALPV_055_140_Chroma_Auto-E2_comp_v03",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-30T19:32:16-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_150_Chroma_Auto-A5",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "ready",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_160_Chroma_Auto-D4",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_su",
+						"versions": [
+							{
+								"version_number": "EHQALPV_055_160_Chroma_Auto-D4_comp_v03",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-24T16:34:17-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_160_Chroma_Auto-D4_comp_v04",
+								"version_description": null,
+								"version_status": "rev",
+								"version_date": "2024-04-25T12:55:28-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_170_Chroma_Auto-B3",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_180_Chroma_Auto-C3",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "corr",
+						"versions": [
+							{
+								"version_number": "EHQALPV_055_210_Chroma_Auto-A6_bgPlate_comp_v05",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-19T09:07:54-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_210_Chroma_Auto-A6_bgPlate_comp_v06",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-19T20:38:52-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_180_Chroma_Auto-C3_comp_v08",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-25T10:20:01-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_200_Chroma_Auto-F2",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_210_Chroma_Auto-A6",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_220_Chroma_Auto-E3",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_su",
+						"versions": [
+							{
+								"version_number": "EHQALPV_055_220_Chroma_Auto-E3_comp_v03",
+								"version_description": null,
+								"version_status": "rev",
+								"version_date": "2024-04-30T13:54:48-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_240_Chroma_Auto-A7",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_250_Chroma_Auto-E4",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_290_Clean_Ciudad",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_005_Chroma_Auto-C4",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_di",
+						"versions": [
+							{
+								"version_number": "EHQALPV_055_005_Chroma_Auto-C4_comp_v04",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-29T17:51:34-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_005_Chroma_Auto-C4_comp_v05",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-05-02T06:55:51-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_005_Chroma_Auto-C4_comp_v06",
+								"version_description": "le hice el despill de la cara que se me habia pasado",
+								"version_status": "vwd",
+								"version_date": "2024-05-02T10:28:55-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_005_Chroma_Auto-C4_comp_v08",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-05-03T17:04:27-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_005_Chroma_Auto-C4_comp_v09",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-05-06T09:54:23-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_009_060_DMP_LagoHotel",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "ready",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_009_070_Cielo_Hotel",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "ready",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_013_010_Clean_Sombra",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "corr",
+						"versions": [
+							{
+								"version_number": "EHQALPV_013_010_Clean_Sombra_comp_v09",
+								"version_description": "Borrado sombra de boom: sobre personajes 1187-1229, 1815-1943, pared 1930-1972. Ca\u00f1a de boom 2401-2405",
+								"version_status": "vwd",
+								"version_date": "2024-04-25T13:52:12-03:00"
+							},
+							{
+								"version_number": "EHQALPV_013_010_Clean_Sombra_comp_v16",
+								"version_description": "correcci\u00f3n de vi\u00f1eta en \u00e1ngulo superior de 1930-1962 (correcci\u00f3n de parche entero de pared en ese rango),  aparici\u00f3n de sombra por corte en 1935, sombra de boom en sombra de persona 1930-1934 aprox, extensi\u00f3n de fundido de camisa en parches de 1853 a 1903 y de 1928 a 1938, borrado sombra sobre actriz de 1187 a 1229 y de 1833 a 1856 y borrado sombra de boom remanente sobre \u00e1ngulo de pared 1947-1956 aprox",
+								"version_status": "vwd",
+								"version_date": "2024-05-02T14:11:41-03:00"
+							},
+							{
+								"version_number": "EHQALPV_013_010_Clean_Sombra_comp_v19",
+								"version_description": "sombra en la frente de personaje (1927), fix sombra que saltaba 1931 a 1932, retoque en parche de la pared de 1930 a 1962 respetando vi\u00f1eta",
+								"version_status": "vwd",
+								"version_date": "2024-05-03T19:46:07-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_025_010_TV_Isla-A",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_di",
+						"versions": [
+							{
+								"version_number": "EHQALPV_025_010_TV_Isla-A_comp_v01",
+								"version_description": "v avanzad.Queda pendiente reemplazar  plate para pantallas",
+								"version_status": "vwd",
+								"version_date": "2024-04-30T12:53:29-03:00"
+							},
+							{
+								"version_number": "EHQALPV_025_010_TV_Isla-A_comp_v02",
+								"version_description": "ajustes CC bordes y reformat. Queda pendiente check plate de video",
+								"version_status": "vwd",
+								"version_date": "2024-05-02T10:23:34-03:00"
+							},
+							{
+								"version_number": "EHQALPV_025_010_TV_Isla-A_comp_v04",
+								"version_description": "ajuste reflex borde pantalla",
+								"version_status": "vwd",
+								"version_date": "2024-05-03T19:24:17-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_025_020_TV_Isla-B",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_su",
+						"versions": [
+							{
+								"version_number": "EHQALPV_025_020_TV_Isla-B_Comp_v03",
+								"version_description": "v avanzada. A la espera de material B para monitor .",
+								"version_status": "vwd",
+								"version_date": "2024-04-30T13:42:41-03:00"
+							},
+							{
+								"version_number": "EHQALPV_025_020_TV_Isla-B_Comp_v05",
+								"version_description": "ajuste integracion Monitor, ajuste despill, ajuste fx freeze.Pendiente reemplazo TV plate 2",
+								"version_status": "vwd",
+								"version_date": "2024-05-02T17:10:18-03:00"
+							},
+							{
+								"version_number": "EHQALPV_025_020_TV_Isla-B_Comp_v09",
+								"version_description": "ajustes Reflejos bordes, Fxs freeze y cambio Tvplate 2",
+								"version_status": "vwd",
+								"version_date": "2024-05-03T20:37:10-03:00"
+							},
+							{
+								"version_number": "EHQALPV_025_020_TV_Isla-B_Comp_v10",
+								"version_description": "reducci\u00f3n grano TV, noise bordes , ajuste intensidad pantallas",
+								"version_status": "vwd",
+								"version_date": "2024-05-06T18:38:45-03:00"
+							},
+							{
+								"version_number": "EHQALPV_025_020_TV_Isla-B_Comp_v12",
+								"version_description": "ajuste CC borde TV (abajo) y otras mugres que daban vuelta (detalles en bordes de rostro)",
+								"version_status": "rev",
+								"version_date": "2024-05-07T11:55:17-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_029_010_TV_Saporitti-A1",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "ready",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_029_020_TV_Saporitti-A2",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_032_100_TV_Checho-D1",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "corr",
+						"versions": [
+							{
+								"version_number": "EHQALPV_032_100_TV_Checho-D1_comp_v05",
+								"version_description": "versi\u00f3n avanzada para feedback",
+								"version_status": "vwd",
+								"version_date": "2024-05-07T13:12:35-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_034_005_TV_Noticiero-D1",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "progre",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_034_010_TV_Noticiero-A1",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "corr",
+						"versions": [
+							{
+								"version_number": "EHQALPV_034_010_TV_Noticiero-A1_comp_v04",
+								"version_description": "insert de pantallas",
+								"version_status": "vwd",
+								"version_date": "2024-04-24T23:51:00-03:00"
+							},
+							{
+								"version_number": "EHQALPV_034_010_TV_Noticiero-A1_comp_v07",
+								"version_description": "espero correcciones.",
+								"version_status": "vwd",
+								"version_date": "2024-04-26T18:58:07-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_034_020_TV_Noticiero-B1",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_034_030_TV_Noticiero-A2",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "ready",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_034_040_TV_Noticiero-A3",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_075_010_Chroma_Helicoptero-A01",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "ready",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_075_020_Chroma_Helicoptero-B02",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "ready",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_075_030_Chroma_Helicoptero-A02",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_076_030_Chroma_Helicoptero-A03",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_076_060_Chroma_Helicoptero-A04",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_076_065_Chroma_Helicoptero-A12",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_076_080_Chroma_Helicoptero-A05",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_076_110_Chroma_Helicoptero-B04",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_076_120_Chroma_Helicoptero-B05",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "ready",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_076_130_Chroma_Helicoptero-A08",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_076_150_Chroma_Helicoptero-C01",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_076_160_Chroma_Helicoptero-A10",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "ready",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_076_170_Chroma_Helicoptero-C02",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "ready",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_009_030_ExpoLuz_Hotel",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_di",
+						"versions": [
+							{
+								"version_number": "EHQALPV_009_030_ExpoLuz_Hotel_comp_v01",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-16T18:17:46-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_030_ExpoLuz_Hotel_comp_v03",
+								"version_description": "luz en bg y en personaje",
+								"version_status": "vwd",
+								"version_date": "2024-04-18T11:00:41-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_030_ExpoLuz_Hotel_comp_v06",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-24T15:25:45-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_009_050_LuzCielo_Hotel",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "corr",
+						"versions": [
+							{
+								"version_number": "EHQALPV_009_050_LuzCielo_Hotel_comp_v06",
+								"version_description": "Track",
+								"version_status": "vwd",
+								"version_date": "2024-05-02T17:20:29-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_050_LuzCielo_Hotel_comp_v08",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-05-03T12:42:27-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_050_LuzCielo_Hotel_comp_v10",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-05-07T12:38:53-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_050_LuzCielo_Hotel_comp_v11",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-05-07T15:38:53-03:00"
+							},
+							{
+								"version_number": "EHQALPV_009_050_LuzCielo_Hotel_comp_v12",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-05-07T15:58:03-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_055_025_Chroma_Auto-F3",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_di",
+						"versions": [
+							{
+								"version_number": "EHQALPV_055_025_Chroma_Auto-F3_comp_v06",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-21T20:09:25-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_025_Chroma_Auto-F3_comp_v07",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-22T10:29:34-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_025_Chroma_Auto-F3_comp_v08",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-22T11:13:54-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_025_Chroma_Auto-F3_comp_v09",
+								"version_description": null,
+								"version_status": "vwd",
+								"version_date": "2024-04-23T09:37:52-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_025_Chroma_Auto-F3_comp_v12",
+								"version_description": "le corregi el despill de la cara y del int del auto",
+								"version_status": "vwd",
+								"version_date": "2024-05-06T10:54:27-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_025_Chroma_Auto-F3_comp_v13",
+								"version_description": "Ahi le corregi el color de la oreja, que estaba dasaturado",
+								"version_status": "vwd",
+								"version_date": "2024-05-06T14:14:26-03:00"
+							},
+							{
+								"version_number": "EHQALPV_055_025_Chroma_Auto-F3_comp_v14",
+								"version_description": "Le correg\u00ed apenitas el gain a las bajas",
+								"version_status": "vwd",
+								"version_date": "2024-05-06T15:57:32-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_076_100_Chroma_Helicoptero-A06",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_089_065_OVNI_Estrella",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_048_010_TV_Novela",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_048_020_TV_Novela",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_076_180_Chroma_Helicoptero-A11",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "ready",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_002_010_TV_Alfonsin-A1",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_002_020_TV_Alfonsin-B1",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_002_030_TV_Alfonsin-A2",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_012_010_CleanApagar_TVLuz",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_020_015_Clean_Antenas",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_021_010_Clean_Antenas",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_024_010_Clean_Ciudad",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_024_020_Clean_VidrieraLuz",
+				"sequence": "001-025",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_026_010_TV_Pasillo",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_026_020_TV_Pasillo",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_026_030_TV_Pasillo",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_031_010_Clean_Boom",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_031_020_TV_Pasillo",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_032_010_TV_Checho-A1",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_032_020_TV_Checho-B1",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_032_030_TV_Checho-C1",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_032_040_TV_Checho-C2",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_032_050_TV_Checho-B2",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_032_060_TV_Checho-B3",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_032_070_TV_Checho-C3",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_032_080_TV_Checho-A2",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_032_090_TV_Checho-B4",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_045_010_Clean_Pueblo",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_045_020_Clean_Pueblo",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_045_030_Clean_Pueblo",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_050_010__",
+				"sequence": "026-050",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_056_010_Clean_BoomAndamio",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_056_015_Clean_Reflejo",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_059_010_Beauty_Pintura",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_061_010_Clean_Reflejo",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_062_010_Clean_SombraBoom",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_063_015_Clean_Antena",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_063_010_Clean_Antenas",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_051_010__",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_051_052_Clean_Boom",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_051_054_Clean_Boom",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_051_056_Clean_Boom",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_051_058_Clean_Boom",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_051_060_Clean_Boom",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_051_070_Clean_Boom",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_051_080_Clean_Boom",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_051_090_Clean_Boom",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_051_100_Clean_Boom",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_051_110_Clean_Boom",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_015_010_TBC_",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_065_010_ScrRep_Pueblo",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_065C_020_Clean_Antenas",
+				"sequence": "051-074",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_075_005_Clean_Ruta",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_075_040_Clean_Ruta",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_075_050_Clean_Ruta",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_079_010__",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_079_020__",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_079_030__",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_082_010__",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_087_010__",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_087_020_TV\n_Pasillo",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_087_030__",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_087_040__",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_087_050__",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_089_65_OVNI_Estrella",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			}
+		]
+	}
+}

@@ -1,0 +1,13 @@
+{
+  "minimum_nuke_version_required": 13.1,
+  "version": 1,
+  "category": "Segmentation",
+  "description": "Trimap-Free Portrait Matting via Objective Decomposition",
+  "cats": [
+      {
+          "filepath": "MODNet.gizmo",
+          "name": "MODNet",
+          "icon": "MODNet.png"
+      }
+  ]
+}

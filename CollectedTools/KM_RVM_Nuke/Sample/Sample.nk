@@ -1,0 +1,116 @@
+#! C:/Program Files/Nuke12.2v4/nuke-12.2.4.dll -nx
+version 12.2 v4
+define_window_layout_xml {<?xml version="1.0" encoding="UTF-8"?>
+<layout version="1.0">
+    <window x="-1" y="-8" w="1920" h="1009" maximized="1" screen="0">
+        <splitter orientation="1">
+            <split size="40"/>
+            <dock id="" hideTitles="1" activePageId="Toolbar.1">
+                <page id="Toolbar.1"/>
+            </dock>
+            <split size="1238" stretch="1"/>
+            <splitter orientation="2">
+                <split size="971"/>
+                <dock id="" activePageId="Viewer.1">
+                    <page id="uk.co.thefoundry.scripteditor.1"/>
+                    <page id="com.adrianpueyo.KnobScripterPane"/>
+                    <page id="Viewer.1"/>
+                </dock>
+            </splitter>
+            <split size="634"/>
+            <splitter orientation="2">
+                <split size="484"/>
+                <dock id="" activePageId="Properties.1">
+                    <page id="Properties.1"/>
+                    <page id="uk.co.thefoundry.backgroundrenderview.1"/>
+                </dock>
+                <split size="483"/>
+                <dock id="" activePageId="DAG.1" focus="true">
+                    <page id="DAG.1"/>
+                </dock>
+            </splitter>
+        </splitter>
+    </window>
+</layout>
+}
+Root {
+ inputs 0
+ name Z:/Documents/GitHub/Km_RobustVideoMatting/KM_RVM_Nuke/Sample/Sample.nk
+ project_directory "\[python \{nuke.script_directory()\}]"
+ frame 65
+ lock_range true
+ format "2048 1556 0 0 2048 1556 1 2K_Super_35(full-ap)"
+ proxy_type scale
+ proxy_format "1024 778 0 0 1024 778 1 1K_Super_35(full-ap)"
+ colorManagement Nuke
+ workingSpaceLUT linear
+ monitorLut sRGB
+ int8Lut sRGB
+ int16Lut sRGB
+ logLut Cineon
+ floatLut linear
+}
+Dot {
+ inputs 0
+ name Dot2
+ label Matte
+ note_font_size 30
+ xpos -797
+ ypos -223
+}
+set Nfcb13c00 [stack 0]
+Dot {
+ inputs 0
+ name Dot1
+ tile_color 0x1fff00ff
+ gl_color 0x7fff00ff
+ label Input
+ note_font Verdana
+ note_font_size 30
+ note_font_color 0x1fff00ff
+ xpos -1118
+ ypos -487
+}
+Dot {
+ name Dot3
+ xpos -1118
+ ypos -331
+}
+set Nfcb13400 [stack 0]
+Dot {
+ name Dot4
+ xpos -945
+ ypos -331
+}
+Grade {
+ inputs 1+1
+ white {2.51 0 0 1}
+ white_panelDropped true
+ name Grade2
+ xpos -979
+ ypos -179
+}
+push $Nfcb13c00
+push $Nfcb13400
+Constant {
+ inputs 0
+ channels rgb
+ color {0.006999993231 0.349999994 0 1}
+ format "1920 1080 0 0 1920 1080 1 HD_1080"
+ name Constant1
+ xpos -1336
+ ypos -256
+}
+Keymix {
+ inputs 3
+ name Keymix1
+ xpos -1152
+ ypos -232
+}
+Viewer {
+ frame 65
+ frame_range 12-40
+ name Viewer1
+ xpos -930
+ ypos 37
+}

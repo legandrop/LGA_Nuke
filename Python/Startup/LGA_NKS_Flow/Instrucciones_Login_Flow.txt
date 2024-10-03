@@ -1,0 +1,45 @@
+Para el login en Windows hay que guardar la información del sitio variables de entorno:
+
+1- Abrir el cmd como administrador.
+
+2- Usar los siguientes comandos para establecer las variables de entorno (ponerlos uno por uno):
+
+setx SHOTGRID_URL "https://pagina.shotgrid.autodesk.com"
+setx SHOTGRID_LOGIN "tu_usuario"
+setx SHOTGRID_PASSWORD "tu_contraseña"
+
+(el usuario es el mail que se usa para login)
+
+
+
+setx SHOTGRID_SCRIPT_NAME "nombre"
+setx SHOTGRID_API_KEY "key"
+
+
+
+
+
+++++++++++++++++++++
+
+En macOS
+Abrir el Terminal: Puedes hacerlo desde la carpeta Aplicaciones > Utilidades o buscando "Terminal" en Spotlight.
+
+Editar el archivo de perfil: Dependiendo de tu shell, edita el archivo .bash_profile, .zshrc, .bashrc, o .profile. En la mayoría de las distribuciones modernas, el shell por defecto es zsh, así que lo más probable es que debas editar .zshrc.
+
+sh
+Copy code
+nano ~/.zshrc
+Agregar las variables de entorno: Añade las siguientes líneas al final del archivo. Reemplaza los valores de las variables con las credenciales correctas.
+
+sh
+Copy code
+export SHOTGRID_URL="https://wanka.shotgrid.autodesk.com"
+export SHOTGRID_SCRIPT_NAME="Support"
+export SHOTGRID_API_KEY="_csauvoliqbmpkvvKa0sgyhoy"
+Guardar y cerrar el archivo: Presiona Ctrl+O para guardar el archivo y luego Ctrl+X para salir de nano.
+
+Cargar las variables de entorno: Ejecuta el siguiente comando para recargar el archivo de configuración y aplicar los cambios:
+
+sh
+Copy code
+source ~/.zshrcle dependiendo del shell que uses

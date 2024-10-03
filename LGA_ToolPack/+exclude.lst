@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*OLD/
+Building_Blocks/
++exclude.lst
++CrearZip.bat

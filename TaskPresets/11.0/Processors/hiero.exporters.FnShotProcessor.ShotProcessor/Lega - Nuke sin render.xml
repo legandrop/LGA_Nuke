@@ -1,0 +1,47 @@
+<root presetname="Lega - Nuke sin render" tasktype="hiero.exporters.FnShotProcessor.ShotProcessor">
+    <startFrameIndex valuetype="int">1001</startFrameIndex>
+    <exportRoot valuetype="str">D:/+Iniciales SG/Nuke2/</exportRoot>
+    <versionIndex valuetype="int">1</versionIndex>
+    <cutUseHandles valuetype="bool">False</cutUseHandles>
+    <versionPadding valuetype="int">2</versionPadding>
+    <exportTemplate valuetype="list">
+        <SequenceItem valuetype="tuple">
+            <SequenceItem valuetype="str">{shot}_{filebase}/{shot}_{filebase}_{version}.{ext}</SequenceItem>
+            <SequenceItem valuetype="hiero.exporters.FnNukeShotExporter.NukeShotPreset">
+                <root presetname="" tasktype="hiero.exporters.FnNukeShotExporter.NukeShotExporter">
+                    <postProcessScript valuetype="bool">True</postProcessScript>
+                    <annotationsPreCompPaths valuetype="list" />
+                    <readPaths valuetype="list" />
+                    <connectTracks valuetype="bool">False</connectTracks>
+                    <collateSequence valuetype="bool">False</collateSequence>
+                    <additionalNodesData valuetype="list" />
+                    <collateShotNames valuetype="bool">False</collateShotNames>
+                    <includeEffects valuetype="bool">True</includeEffects>
+                    <writePaths valuetype="list">
+                        <SequenceItem valuetype="str">{shot}_{version}.####.{ext}</SequenceItem>
+                    </writePaths>
+                    <reformat valuetype="dict">
+                        <filter valuetype="str">Cubic</filter>
+                        <to_type valuetype="str">Plate Resolution</to_type>
+                        <center valuetype="bool">True</center>
+                        <resize valuetype="str">width</resize>
+                    </reformat>
+                    <method valuetype="str">Blend</method>
+                    <includeAnnotations valuetype="bool">False</includeAnnotations>
+                    <enable valuetype="bool">True</enable>
+                    <showAnnotations valuetype="bool">True</showAnnotations>
+                    <collateCustomStart valuetype="bool">True</collateCustomStart>
+                    <additionalNodesEnabled valuetype="bool">False</additionalNodesEnabled>
+                    <timelineWriteNode valuetype="str">{shot}_{version}.####.{ext}</timelineWriteNode>
+                    <collateTracks valuetype="bool">False</collateTracks>
+                </root>
+            </SequenceItem>
+        </SequenceItem>
+    </exportTemplate>
+    <excludeTags valuetype="list" />
+    <includeTags valuetype="list" />
+    <includeRetimes valuetype="bool">False</includeRetimes>
+    <startFrameSource valuetype="str">Source</startFrameSource>
+    <cutLength valuetype="bool">True</cutLength>
+    <cutHandles valuetype="int">12</cutHandles>
+</root>

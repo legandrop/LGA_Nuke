@@ -1,0 +1,46 @@
+*.bak
+*.tmp
+*.log
+*.out
+*.err
+*.pid
+*.lock
+*.lock.old
+*.lock.new
+*.zip
+*.rar
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Directorios de dependencias
+/node_modules
+/vendor
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Directorios de compilación
+/build
+/dist
+
+# Archivos de IDE y editores
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos de caché
+*.cache
+
+# Archivos de respaldo
+*~
+
+# Archivos cache de python
+__pycache__
+
+# Cattery porque es muy pesado
+# /Cattery/
+*.cat

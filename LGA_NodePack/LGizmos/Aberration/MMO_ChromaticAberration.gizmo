@@ -1,0 +1,81 @@
+#! C:/Program Files/Nuke8.0v5/nuke-8.0.v5.dll -nx
+version 8.0 v5
+Gizmo {
+ addUserKnob {20 User}
+ addUserKnob {41 offset_red l "offset red" T Transform_red.translate}
+ addUserKnob {41 offset_green l "offset green" T Transform_green.translate}
+ addUserKnob {41 offset_blue l "offset blue" T Transform_blue.translate}
+}
+ Input {
+  inputs 0
+  name Source
+  selected true
+  xpos -525
+  ypos 454
+ }
+ Dot {
+  name Dot5
+  xpos -491
+  ypos 494
+ }
+set N105832d0 [stack 0]
+ Shuffle {
+  red black
+  green black
+  alpha black
+  name Shuffle_blue
+  label blue
+  xpos -415
+  ypos 527
+ }
+ Transform {
+  center {1024 540}
+  name Transform_blue
+  xpos -415
+  ypos 563
+ }
+push 0
+push $N105832d0
+ Shuffle {
+  red black
+  blue black
+  alpha black
+  name Shuffle_green
+  label "green\n"
+  xpos -525
+  ypos 527
+ }
+ Transform {
+  center {1024 540}
+  name Transform_green
+  xpos -525
+  ypos 563
+ }
+push $N105832d0
+ Shuffle {
+  green black
+  blue black
+  name Shuffle_red
+  label "red + alpha"
+  xpos -635
+  ypos 527
+ }
+ Transform {
+  center {1024 540}
+  name Transform_red
+  xpos -635
+  ypos 563
+ }
+ Merge2 {
+  inputs 3+1
+  operation plus
+  name Merge6
+  xpos -525
+  ypos 652
+ }
+ Output {
+  name Output1
+  xpos -525
+  ypos 740
+ }
+end_group

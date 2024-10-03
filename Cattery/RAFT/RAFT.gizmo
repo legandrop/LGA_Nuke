@@ -1,0 +1,204 @@
+version 13.1 v1
+Gizmo {
+ onCreate "import sys\nthis = nuke.thisNode()\ninference = nuke.toNode(f\"\{this.name()\}.Inference1\")\nthis[\"gpuName\"].setValue(inference[\"gpuName\"].value())\nthis[\"channelsIn\"].setValue(\"rgba.red, rgba.green, rgba.blue\")\ninference.forceValidate()\nis_enabled = inference\[\"modelFile\"\].enabled()\nif (sys.platform.lower() == \"darwin\") and (not inference\[\"useGPUIfAvailable\"\].enabled()): this\[\"useGPUIfAvailable\"\].setValue(False), this\[\"useGPUIfAvailable\"\].setEnabled(False)\nif not is_enabled:\n    for k in this.knobs(): this[k].setEnabled(False)\nthis[\"halfPrecision\"].setVisible(this[\"useGPUIfAvailable\"].enabled())"
+ knobChanged "this = nuke.thisNode()\nthis[\"halfPrecision\"].setVisible(this[\"useGPUIfAvailable\"].value())"
+ onDestroy "nuke.thisNode()\[\"knobChanged\"].setValue(\"\")"
+ addUserKnob {20 RAFT}
+ addUserKnob {26 localGPU l "Local GPU:" T ""}
+ addUserKnob {26 gpuName l "" -STARTLINE T "NVIDIA RTX A5000"}
+ addUserKnob {6 useGPUIfAvailable l "Use GPU if available" t "Select this to render on the <b>Local GPU</b>, if available.\n\nYou can select this even if no GPU is currently available on your machine. The GPU will then be used whenever the script is opened on a machine which does have a GPU available. You should also select this if you wish to render from the command line with the <b>--gpu</b> option.\n\nIf this node requires full frames from its inputs, and is therefore unable to reduce its memory overhead, it will fall back to the CPU if an attempt to render a frame on the GPU fails due to lack of memory. When this occurs, a warning message will be printed to the console." +STARTLINE}
+ useGPUIfAvailable true
+ addUserKnob {26 ""}
+ addUserKnob {26 channelsIn l "Channels In:" t "The channels the model expects as input." T "rgba.red, rgba.green, rgba.blue"}
+ addUserKnob {41 in_colorspace l "Input Colorspace" t "Define the colorspace that the input image is in." T OCIOColorSpace1.in_colorspace}
+ addUserKnob {6 halfPrecision l "Optimize for Speed and Memory" t "Whether to process at half float precision. This speeds up execution and enables the processing of larger images, however there is the risk of artifacts with some trained models." +STARTLINE}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos 829
+  ypos -13
+ }
+set Nf175c0 [stack 0]
+ Dot {
+  name Dot10
+  xpos 1346
+  ypos -10
+ }
+ Assert {
+  expression 0
+  message "The input stream is missing rgb"
+  name Assert1
+  xpos 1312
+  ypos 396
+ }
+push $Nf175c0
+ OCIOColorSpace {
+  in_colorspace scene_linear
+  out_colorspace color_picking
+  name OCIOColorSpace1
+  xpos 829
+  ypos 41
+ }
+ Dot {
+  name Dot9
+  xpos 863
+  ypos 92
+ }
+set Nc2ebe1b0 [stack 0]
+ Dot {
+  name Dot4
+  xpos 1103
+  ypos 92
+ }
+ Dot {
+  name Dot6
+  xpos 1103
+  ypos 157
+ }
+set Nc2f25f70 [stack 0]
+push $Nc2f25f70
+ Dot {
+  name Dot7
+  xpos 1191
+  ypos 157
+ }
+ TimeOffset {
+  time_offset -1
+  time ""
+  name TimeOffset2
+  xpos 1157
+  ypos 198
+ }
+ Dot {
+  name Dot8
+  xpos 1191
+  ypos 241
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  fromInput2 {{0} B A}
+  in2 rgb
+  out2 motion
+  mappings "8 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 black -1 -1 rgba.alpha 0 3 black -1 -1 backward.v 1 3 rgba.red 1 0 forward.u 1 0 rgba.green 1 1 forward.v 1 1 rgba.blue 1 2 backward.u 1 2"
+  name Shuffle12
+  xpos 1069
+  ypos 237
+ }
+ Inference {
+  useGPUIfAvailable {{parent.useGPUIfAvailable}}
+  modelFile "\[lsearch -inline \[plugins -all RAFT.cat] *.cat]"
+  halfPrecision {{parent.halfPrecision}}
+  serialiseKnob {iters:12;}
+  name Inference2
+  xpos 1069
+  ypos 287
+ }
+ Dot {
+  name Dot5
+  xpos 1103
+  ypos 336
+ }
+push $Nc2ebe1b0
+ Dot {
+  name Dot1
+  xpos 863
+  ypos 144
+ }
+set Nc2e42e60 [stack 0]
+push $Nc2e42e60
+ Dot {
+  name Dot2
+  xpos 951
+  ypos 144
+ }
+ TimeOffset {
+  time_offset 1
+  time ""
+  name TimeOffset1
+  xpos 917
+  ypos 185
+ }
+ Dot {
+  name Dot3
+  xpos 951
+  ypos 228
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  fromInput2 {{0} B A}
+  in2 rgb
+  out2 motion
+  mappings "8 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 black -1 -1 rgba.alpha 0 3 black -1 -1 backward.v 1 3 rgba.red 1 0 forward.u 1 0 rgba.green 1 1 forward.v 1 1 rgba.blue 1 2 backward.u 1 2"
+  name Shuffle1
+  xpos 829
+  ypos 224
+ }
+ Inference {
+  modelFile "\[lsearch -inline \[plugins -all RAFT.cat] *.cat]"
+  serialiseKnob {iters:12;}
+  name Inference1
+  xpos 829
+  ypos 284
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{0} B A}
+  out1 motion
+  fromInput2 {{1} B A}
+  in2 rgba
+  mappings "4 rgba.red 0 0 forward.u 0 0 rgba.green 0 1 forward.v 0 1 rgba.red 1 0 backward.u 0 2 rgba.green 1 1 backward.v 0 3"
+  name Shuffle3
+  xpos 829
+  ypos 332
+ }
+ Grade {
+  channels {forward.u -forward.v}
+  white -1
+  black_clamp false
+  name Grade8
+  xpos 829
+  ypos 389
+ }
+ Grade {
+  channels {backward.u -backward.v}
+  white -1
+  black_clamp false
+  name Grade9
+  xpos 829
+  ypos 427
+ }
+add_layer {smartvector_f01_v01 smartvector_f01_v01.n_u smartvector_f01_v01.n_v smartvector_f01_v01.p_u smartvector_f01_v01.p_v}
+ Shuffle2 {
+  fromInput1 {{0} B}
+  in1 motion
+  out1 smartvector_f01_v01
+  fromInput2 {{0} B}
+  mappings "4 forward.u 0 0 smartvector_f01_v01.n_u 0 0 forward.v 0 1 smartvector_f01_v01.n_v 0 1 backward.u 0 2 smartvector_f01_v01.p_u 0 2 backward.v 0 3 smartvector_f01_v01.p_v 0 3"
+  name Shuffle2
+  label "\[value in] ---> \[value out]"
+  xpos 829
+  ypos 465
+ }
+ Remove {
+  operation keep
+  channels smartvector_f01_v01
+  name Remove1
+  xpos 829
+  ypos 503
+ }
+ Switch {
+  inputs 2
+  which {{"\[python \{len(nuke.toNode('Input1').channels())\}] == 0? 1:0"}}
+  name Switch1
+  xpos 1312
+  ypos 509
+ }
+ Output {
+  name Output1
+  xpos 1312
+  ypos 590
+ }
+end_group

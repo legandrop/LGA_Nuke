@@ -1,0 +1,56 @@
+{
+    "project": {
+		"project_name": "EHQALPV",
+		"shots": [
+			{
+				"shot_name": "HAPV_R0_00_chroma_helicoptero_A",
+				"sequence": "R0",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "rev_su",
+						"versions": [
+							{
+								"version_number": "HAPV_R0_00_chroma_helicoptero_comp_v05",
+								"version_description": "wip",
+								"version_status": "vwd",
+								"version_date": "2023-06-27T12:02:27-03:00"
+							},
+							{
+								"version_number": "HAPV_R0_00_chroma_helicoptero_comp_v16",
+								"version_description": "camera shake, retoque bg",
+								"version_status": "vwd",
+								"version_date": "2023-07-10T19:36:07-03:00"
+							}
+						]
+					}
+				]
+			},
+			{
+				"shot_name": "HAPV_R0_00_chroma_helicoptero_B",
+				"sequence": "R0",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "ready",
+						"versions": []
+					}
+				]
+			},
+			{
+				"shot_name": "EHQALPV_089_65_OVNI_Estrella",
+				"sequence": "076-100",
+				"tasks": [
+					{
+						"task_type": "Comp",
+						"task_description": "Sin descripci\u00f3n",
+						"task_status": "noread",
+						"versions": []
+					}
+				]
+			}
+		]
+	}
+}

@@ -1,0 +1,886 @@
+set cut_paste_input [stack 0]
+version 12.0 v3
+push $cut_paste_input
+Group {
+ name KF_EdgeFill
+ tile_color 0x4e73ffff
+ note_font "DejaVu Sans"
+ selected true
+ xpos 70
+ ypos -634
+ addUserKnob {20 User}
+ addUserKnob {26 k_nn l "" +STARTLINE T "<font color=\"cornflower blue\" size=10>KF Edge Fill<font color=\"gray\" size=2>v1.33</font>"}
+ addUserKnob {26 k_kf l "" +STARTLINE T "<font color=\"gray\">by Kevin Fisch</font>"}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {41 channels t "Which channels will get distorted. Alpha does not get distorted." T STMap1.channels}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {20 text l "how to use/intended function" n 1}
+ text 0
+ addUserKnob {26 grd l "" +STARTLINE T "This node assumes that the alpha\nalready has the correct motion blur/defocus.\nUse these controls to choke in the alpha to \nget the core colors, that will then be used to \nfill in the blurred areas of the mask."}
+ addUserKnob {20 endGroup n -1}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {26 acontrols l "Alpha Controls"}
+ addUserKnob {41 blackpoint t "Used to remove motion blur/feather to get to the core." T Grade4.blackpoint}
+ addUserKnob {41 whitepoint t "Probably doesn't need to be adjusted, but there just in case." T Grade4.whitepoint}
+ addUserKnob {41 size l "Erode size" t "How much to further erode the alpha to get to the core." T FilterErode2.size}
+ addUserKnob {6 prev l "Preview Core" t "Preview the image with the tweaked alpha applied to check for any holes or background colors peeking through." +STARTLINE}
+ addUserKnob {6 roto l "Use Alpha Input" t "Use alpha input instead of the alpha of the source." +STARTLINE}
+ addUserKnob {26 disttext l "Distortion Controls"}
+ addUserKnob {41 size_1 l Size T KF_EdgeExtend.size}
+ addUserKnob {41 size_2 l distortion t "How much the image will get distorted outwards before stretching pixels." T EdgeBlur3.size}
+ addUserKnob {6 un l Unpremulted t "Outputs the image with the pixels extended, but doesn't apply the mask." +STARTLINE}
+ addUserKnob {6 mask l "Use Mask" -STARTLINE}
+}
+ Input {
+  inputs 0
+  name Plate
+  xpos -133
+  ypos -152
+ }
+ Dot {
+  name Dot12
+  label plate
+  note_font_size 30
+  xpos -99
+  ypos -97
+ }
+set N7984490 [stack 0]
+ Input {
+  inputs 0
+  name Alpha
+  xpos 217
+  ypos -156
+  number 1
+ }
+ Dot {
+  name Dot16
+  label roto
+  note_font_size 30
+  xpos 251
+  ypos -99
+ }
+ ShuffleCopy {
+  inputs 2
+  name ShuffleCopy2
+  xpos 217
+  ypos -2
+  disable {{parent.roto}}
+ }
+ Clamp {
+  name Clamp1
+  xpos 217
+  ypos 48
+ }
+ Dot {
+  name Dot11
+  xpos 251
+  ypos 100
+ }
+set Nab28ea0 [stack 0]
+ Dot {
+  name Dot6
+  xpos 149
+  ypos 101
+ }
+ Grade {
+  channels rgba
+  blackpoint 0.9
+  white_clamp true
+  name Grade4
+  xpos 115
+  ypos 124
+ }
+ FilterErode {
+  channels rgba
+  size 2
+  name FilterErode2
+  xpos 115
+  ypos 150
+ }
+ Dot {
+  name Dot4
+  xpos 149
+  ypos 199
+ }
+set Nab4fff0 [stack 0]
+push $N7984490
+ Shuffle {
+  alpha white
+  name Shuffle2
+  xpos -133
+  ypos 5
+ }
+ Dot {
+  name Dot7
+  xpos -99
+  ypos 101
+ }
+set Nab656f0 [stack 0]
+ Dot {
+  name Dot8
+  xpos -360
+  ypos 101
+ }
+set Nab6a560 [stack 0]
+ Dot {
+  name Dot22
+  xpos -506
+  ypos 101
+ }
+set Nab6f3b0 [stack 0]
+ Dot {
+  name Dot3
+  xpos -602
+  ypos 101
+ }
+ Merge2 {
+  inputs 2
+  operation mask
+  name Merge3
+  xpos -636
+  ypos 195
+ }
+ Dot {
+  name Dot5
+  xpos -602
+  ypos 858
+ }
+push $Nab4fff0
+ Dot {
+  name Dot1
+  xpos 149
+  ypos 291
+ }
+set Nab8e650 [stack 0]
+ Dot {
+  name Dot24
+  xpos 149
+  ypos 327
+ }
+set Nab93540 [stack 0]
+ Dot {
+  name Dot2
+  xpos 149
+  ypos 800
+ }
+push $Nab28ea0
+ Dot {
+  name Dot9
+  xpos 251
+  ypos 573
+ }
+set Nab9d1e0 [stack 0]
+ Dot {
+  name Dot21
+  xpos 251
+  ypos 740
+ }
+ Input {
+  inputs 0
+  name Mask
+  xpos 375
+  ypos -157
+  number 2
+ }
+ Dot {
+  name Dot13
+  label mask
+  note_font_size 30
+  xpos 409
+  ypos -110
+ }
+ Shuffle {
+  alpha white
+  name Shuffle1
+  xpos 375
+  ypos 239
+  disable {{parent.mask}}
+ }
+ Dot {
+  name Dot20
+  xpos 409
+  ypos 662
+ }
+push $Nab9d1e0
+push $Nab656f0
+ Group {
+  name STRamp
+  knobChanged "this = nuke.thisNode()\nknob = nuke.thisKnob()\n\nif knob.name() == \"set\":\n  if knob.value():\n    this.knob( \"format\" ).clearFlag( 0x00000080 )\n  else:\n    this.knob( \"format\" ).setFlag( 0x00000080 )"
+  xpos -133
+  ypos 147
+  addUserKnob {20 User}
+  addUserKnob {26 text l "" +STARTLINE T "Set Format"}
+  addUserKnob {6 set l "" -STARTLINE}
+  addUserKnob {17 format l "" -STARTLINE +DISABLED}
+ }
+  Input {
+   inputs 0
+   name Input1
+   xpos 838
+   ypos 377
+  }
+  Reformat {
+   format {{{parent.format}}}
+   name Reformat1
+   selected true
+   xpos 838
+   ypos 432
+   disable {{"1 - parent.set"}}
+  }
+  Shuffle {
+   red black
+   green black
+   blue black
+   alpha black
+   name Shuffle1
+   xpos 838
+   ypos 471
+  }
+  Expression {
+   channel0 {rgba.red -rgba.green -rgba.blue none}
+   expr0 (x+0.4)/width
+   channel1 {-rgba.red rgba.green -rgba.blue none}
+   expr1 (y+0.4)/height
+   channel2 {-rgba.red -rgba.green -rgba.blue none}
+   expr2 0
+   expr3 1
+   name Expression1
+   xpos 838
+   ypos 497
+  }
+  Output {
+   name Output1
+   xpos 838
+   ypos 556
+  }
+ end_group
+ Dot {
+  name Dot14
+  xpos -99
+  ypos 252
+ }
+set Nac085c0 [stack 0]
+ Dot {
+  name Dot15
+  xpos -240
+  ypos 252
+ }
+push $Nab8e650
+push $Nac085c0
+ Merge2 {
+  inputs 2
+  operation mask
+  name Merge7
+  xpos -133
+  ypos 287
+ }
+ Dot {
+  name Dot17
+  xpos -99
+  ypos 347
+ }
+set Nac229e0 [stack 0]
+ Dot {
+  name Dot18
+  xpos 8
+  ypos 347
+ }
+ Group {
+  name KF_EdgeExtend
+  knobChanged "this = nuke.thisNode()\nknob = nuke.thisKnob()\ninode = \"Input1\"\nonode = \"Output1\"\nn = int( this\[\"n\"].getValue() )\ndotoffset = 34\nyscaler = 200\n\n\nif knob.name() == \"n\":\n    #deletes existing nodes except input/output\n    for node in nuke.allNodes( group = this ):\n      name = node.name()\n      if name == inode or name == onode:\n        continue\n      else:\n        print \"Removing \" + name\n        nuke.delete( node )\n    \n    nuke.toNode( inode ).setXYpos( 0, -100 )\n    \n    topnode = inode\n    \n    #makes new nodes\n    for i in range( n ):\n      #dot1\n      dot1 = nuke.nodes.Dot()\n      dot1.setInput( 0 , nuke.toNode( topnode ) )\n      dot1.setXYpos( dotoffset, yscaler * i )\n    \n      #edge blur\n      edge = nuke.nodes.EdgeBlur()\n      edge\[\"size\"].setExpression( \"parent.size/parent.n * 0.64\" )\n      edge.setInput( 0 , dot1 )\n      edge.setXYpos( 0, yscaler * i + 50 )\n    \n      #dot2\n      dot2 = nuke.nodes.Dot()\n      dot2.setInput( 0 , dot1 )\n      dot2.setXYpos( 100 + dotoffset, yscaler * i )\n    \n      #blur\n      blur = nuke.nodes.Blur()\n      blur\[\"channels\"].setValue( \"rgba\" )\n      blur\[\"size\"].setExpression( \"parent.size/parent.n * 0.64\" )\n      blur.setInput( 0 , dot2 )\n      blur.setXYpos( 100, yscaler * i + 50 )\n    \n      #shuffle alpha into mask channel\n      shuf = nuke.nodes.Shuffle()\n      shuf\[\"out\"].setValue(\"mask\")\n      shuf\[\"red\"].setValue(\"alpha\")\n      shuf.setInput( 0, blur )\n      shuf.setXYpos( 100, yscaler * i + 100 )\n    \n      #unpremult\n      unpre = nuke.nodes.Unpremult()\n      unpre\[\"channels\"].setValue( \"rgba\" )\n      unpre\[\"alpha\"].setValue( \"mask.a\" )\n      unpre.setInput( 0 , shuf )\n      unpre.setXYpos( 100, yscaler * i + 150 )\n    \n      #merge\n      merge = nuke.nodes.Merge2()\n      merge\[\"operation\"].setValue( \"under\" )\n      merge.setInput( 0 , edge )\n      merge.setInput( 1 , unpre )\n      merge.setXYpos( 0, yscaler * i + 150 )\n      topnode = merge.name()\n    \n    \n    nuke.thisGroup().output().setInput( 0 , merge )\n    nuke.toNode( onode ).setXYpos( 0 , yscaler * i + 250 )\n\n"
+  tile_color 0x4e73ffff
+  selected true
+  xpos -26
+  ypos 409
+  addUserKnob {20 User}
+  addUserKnob {26 version l INVISIBLE +INVISIBLE T 0.8}
+  addUserKnob {3 n l Iterations}
+  n 10
+  addUserKnob {7 size l Size R 0 100}
+  size 30
+ }
+  Input {
+   inputs 0
+   name Input1
+   xpos 0
+   ypos -100
+  }
+  Dot {
+   name Dot1
+   xpos 34
+  }
+set Nac3b6d0 [stack 0]
+  Dot {
+   name Dot2
+   xpos 134
+  }
+  Blur {
+   channels rgba
+   size {{"parent.size/parent.n * 0.64"}}
+   name Blur1
+   xpos 100
+   ypos 50
+  }
+  Shuffle {
+   red alpha
+   out mask
+   name Shuffle1
+   xpos 100
+   ypos 100
+  }
+  Unpremult {
+   channels rgba
+   alpha mask.a
+   name Unpremult1
+   xpos 100
+   ypos 150
+  }
+push $Nac3b6d0
+  EdgeBlur {
+   size {{"parent.size/parent.n * 0.64"}}
+   name EdgeBlur1
+   xpos 0
+   ypos 50
+  }
+  Merge2 {
+   inputs 2
+   operation under
+   name Merge1
+   xpos 0
+   ypos 150
+  }
+  Dot {
+   name Dot3
+   xpos 34
+   ypos 200
+  }
+set Nac8de70 [stack 0]
+  Dot {
+   name Dot4
+   xpos 134
+   ypos 200
+  }
+  Blur {
+   channels rgba
+   size {{"parent.size/parent.n * 0.64"}}
+   name Blur2
+   xpos 100
+   ypos 250
+  }
+  Shuffle {
+   red alpha
+   out mask
+   name Shuffle2
+   xpos 100
+   ypos 300
+  }
+  Unpremult {
+   channels rgba
+   alpha mask.a
+   name Unpremult2
+   xpos 100
+   ypos 350
+  }
+push $Nac8de70
+  EdgeBlur {
+   size {{"parent.size/parent.n * 0.64"}}
+   name EdgeBlur2
+   xpos 0
+   ypos 250
+  }
+  Merge2 {
+   inputs 2
+   operation under
+   name Merge2
+   xpos 0
+   ypos 350
+  }
+  Dot {
+   name Dot5
+   xpos 34
+   ypos 400
+  }
+set Nacde660 [stack 0]
+  Dot {
+   name Dot6
+   xpos 134
+   ypos 400
+  }
+  Blur {
+   channels rgba
+   size {{"parent.size/parent.n * 0.64"}}
+   name Blur3
+   xpos 100
+   ypos 450
+  }
+  Shuffle {
+   red alpha
+   out mask
+   name Shuffle3
+   xpos 100
+   ypos 500
+  }
+  Unpremult {
+   channels rgba
+   alpha mask.a
+   name Unpremult3
+   xpos 100
+   ypos 550
+  }
+push $Nacde660
+  EdgeBlur {
+   size {{"parent.size/parent.n * 0.64"}}
+   name EdgeBlur3
+   xpos 0
+   ypos 450
+  }
+  Merge2 {
+   inputs 2
+   operation under
+   name Merge3
+   xpos 0
+   ypos 550
+  }
+  Dot {
+   name Dot7
+   xpos 34
+   ypos 600
+  }
+set Nad2ee70 [stack 0]
+  Dot {
+   name Dot8
+   xpos 134
+   ypos 600
+  }
+  Blur {
+   channels rgba
+   size {{"parent.size/parent.n * 0.64"}}
+   name Blur4
+   xpos 100
+   ypos 650
+  }
+  Shuffle {
+   red alpha
+   out mask
+   name Shuffle4
+   xpos 100
+   ypos 700
+  }
+  Unpremult {
+   channels rgba
+   alpha mask.a
+   name Unpremult4
+   xpos 100
+   ypos 750
+  }
+push $Nad2ee70
+  EdgeBlur {
+   size {{"parent.size/parent.n * 0.64"}}
+   name EdgeBlur4
+   xpos 0
+   ypos 650
+  }
+  Merge2 {
+   inputs 2
+   operation under
+   name Merge4
+   xpos 0
+   ypos 750
+  }
+  Dot {
+   name Dot9
+   xpos 34
+   ypos 800
+  }
+set Nad7f5f0 [stack 0]
+  Dot {
+   name Dot10
+   xpos 134
+   ypos 800
+  }
+  Blur {
+   channels rgba
+   size {{"parent.size/parent.n * 0.64"}}
+   name Blur5
+   xpos 100
+   ypos 850
+  }
+  Shuffle {
+   red alpha
+   out mask
+   name Shuffle5
+   xpos 100
+   ypos 900
+  }
+  Unpremult {
+   channels rgba
+   alpha mask.a
+   name Unpremult5
+   xpos 100
+   ypos 950
+  }
+push $Nad7f5f0
+  EdgeBlur {
+   size {{"parent.size/parent.n * 0.64"}}
+   name EdgeBlur5
+   xpos 0
+   ypos 850
+  }
+  Merge2 {
+   inputs 2
+   operation under
+   name Merge5
+   xpos 0
+   ypos 950
+  }
+  Dot {
+   name Dot11
+   xpos 34
+   ypos 1000
+  }
+set Nadcfe70 [stack 0]
+  Dot {
+   name Dot12
+   xpos 134
+   ypos 1000
+  }
+  Blur {
+   channels rgba
+   size {{"parent.size/parent.n * 0.64"}}
+   name Blur6
+   xpos 100
+   ypos 1050
+  }
+  Shuffle {
+   red alpha
+   out mask
+   name Shuffle6
+   xpos 100
+   ypos 1100
+  }
+  Unpremult {
+   channels rgba
+   alpha mask.a
+   name Unpremult6
+   xpos 100
+   ypos 1150
+  }
+push $Nadcfe70
+  EdgeBlur {
+   size {{"parent.size/parent.n * 0.64"}}
+   name EdgeBlur6
+   xpos 0
+   ypos 1050
+  }
+  Merge2 {
+   inputs 2
+   operation under
+   name Merge6
+   xpos 0
+   ypos 1150
+  }
+  Dot {
+   name Dot13
+   xpos 34
+   ypos 1200
+  }
+set Nae20610 [stack 0]
+  Dot {
+   name Dot14
+   xpos 134
+   ypos 1200
+  }
+  Blur {
+   channels rgba
+   size {{"parent.size/parent.n * 0.64"}}
+   name Blur7
+   xpos 100
+   ypos 1250
+  }
+  Shuffle {
+   red alpha
+   out mask
+   name Shuffle7
+   xpos 100
+   ypos 1300
+  }
+  Unpremult {
+   channels rgba
+   alpha mask.a
+   name Unpremult7
+   xpos 100
+   ypos 1350
+  }
+push $Nae20610
+  EdgeBlur {
+   size {{"parent.size/parent.n * 0.64"}}
+   name EdgeBlur7
+   xpos 0
+   ypos 1250
+  }
+  Merge2 {
+   inputs 2
+   operation under
+   name Merge7
+   xpos 0
+   ypos 1350
+  }
+  Dot {
+   name Dot15
+   xpos 34
+   ypos 1400
+  }
+set Nae70da0 [stack 0]
+  Dot {
+   name Dot16
+   xpos 134
+   ypos 1400
+  }
+  Blur {
+   channels rgba
+   size {{"parent.size/parent.n * 0.64"}}
+   name Blur8
+   xpos 100
+   ypos 1450
+  }
+  Shuffle {
+   red alpha
+   out mask
+   name Shuffle8
+   xpos 100
+   ypos 1500
+  }
+  Unpremult {
+   channels rgba
+   alpha mask.a
+   name Unpremult8
+   xpos 100
+   ypos 1550
+  }
+push $Nae70da0
+  EdgeBlur {
+   size {{"parent.size/parent.n * 0.64"}}
+   name EdgeBlur8
+   xpos 0
+   ypos 1450
+  }
+  Merge2 {
+   inputs 2
+   operation under
+   name Merge8
+   xpos 0
+   ypos 1550
+  }
+  Dot {
+   name Dot17
+   xpos 34
+   ypos 1600
+  }
+set Naec1930 [stack 0]
+  Dot {
+   name Dot18
+   xpos 134
+   ypos 1600
+  }
+  Blur {
+   channels rgba
+   size {{"parent.size/parent.n * 0.64"}}
+   name Blur9
+   xpos 100
+   ypos 1650
+  }
+  Shuffle {
+   red alpha
+   out mask
+   name Shuffle9
+   xpos 100
+   ypos 1700
+  }
+  Unpremult {
+   channels rgba
+   alpha mask.a
+   name Unpremult9
+   xpos 100
+   ypos 1750
+  }
+push $Naec1930
+  EdgeBlur {
+   size {{"parent.size/parent.n * 0.64"}}
+   name EdgeBlur9
+   xpos 0
+   ypos 1650
+  }
+  Merge2 {
+   inputs 2
+   operation under
+   name Merge9
+   xpos 0
+   ypos 1750
+  }
+  Dot {
+   name Dot19
+   xpos 34
+   ypos 1800
+  }
+set Naf121f0 [stack 0]
+  Dot {
+   name Dot20
+   xpos 134
+   ypos 1800
+  }
+  Blur {
+   channels rgba
+   size {{"parent.size/parent.n * 0.64"}}
+   name Blur10
+   xpos 100
+   ypos 1850
+  }
+  Shuffle {
+   red alpha
+   out mask
+   name Shuffle10
+   xpos 100
+   ypos 1900
+  }
+  Unpremult {
+   channels rgba
+   alpha mask.a
+   name Unpremult10
+   xpos 100
+   ypos 1950
+  }
+push $Naf121f0
+  EdgeBlur {
+   size {{"parent.size/parent.n * 0.64"}}
+   name EdgeBlur10
+   xpos 0
+   ypos 1850
+  }
+  Merge2 {
+   inputs 2
+   operation under
+   name Merge10
+   xpos 0
+   ypos 1950
+  }
+  Output {
+   name Output1
+   xpos 0
+   ypos 2050
+  }
+ end_group
+ Dot {
+  name Dot19
+  xpos 8
+  ypos 479
+ }
+push $Nac229e0
+ EdgeBlur {
+  size 5
+  name EdgeBlur3
+  xpos -133
+  ypos 401
+ }
+ Merge2 {
+  inputs 2
+  operation under
+  name Merge5
+  xpos -133
+  ypos 475
+ }
+ Merge2 {
+  inputs 2
+  operation under
+  name Merge2
+  xpos -274
+  ypos 475
+ }
+push $Nab93540
+push $Nab6a560
+ Merge2 {
+  inputs 2
+  operation mask
+  name Merge1
+  xpos -394
+  ypos 323
+  disable true
+ }
+ STMap {
+  inputs 2
+  channels rgb
+  uv rgb
+  name STMap1
+  xpos -394
+  ypos 475
+ }
+ Merge2 {
+  inputs 2
+  operation mask
+  name Merge9
+  xpos -394
+  ypos 569
+  disable {{parent.un}}
+ }
+set Nafb9350 [stack 0]
+push $Nab6f3b0
+ Dot {
+  name Dot23
+  xpos -504
+  ypos 662
+ }
+ Keymix {
+  inputs 3
+  name Keymix1
+  xpos -394
+  ypos 652
+ }
+ ShuffleCopy {
+  inputs 2
+  name ShuffleCopy3
+  xpos -394
+  ypos 736
+ }
+add_layer {alpha_tweaked alpha_tweaked.alpha}
+ ShuffleCopy {
+  inputs 2
+  red alpha
+  green alpha
+  blue alpha
+  out alpha_tweaked
+  name ShuffleCopy1
+  xpos -394
+  ypos 796
+ }
+ Switch {
+  inputs 2
+  which {{parent.prev}}
+  name Switch_Preview_Core
+  xpos -394
+  ypos 854
+ }
+ Dot {
+  name Dot10
+  label out
+  note_font_size 20
+  xpos -360
+  ypos 959
+ }
+ Output {
+  name Output1
+  xpos -394
+  ypos 987
+ }
+push $Nafb9350
+push $Nafb9350
+push $N7984490
+ Viewer {
+  inputs 3
+  frame_range 1000-1216
+  fps 23.97602463
+  input_number 2
+  name Viewer1
+  xpos 510
+  ypos -10
+  hide_input true
+ }
+end_group

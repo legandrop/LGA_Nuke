@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout version="1.0">
+    <window x="0" y="0" w="3437" h="1360" screen="0">
+        <splitter orientation="2">
+            <split size="999"/>
+            <splitter orientation="1">
+                <split size="702"/>
+                <splitter orientation="2">
+                    <split size="827"/>
+                    <dock id="" activePageId="uk.co.thefoundry.project.2">
+                        <page id="uk.co.thefoundry.project.2" layout="splitter(240,436)"/>
+                    </dock>
+                    <split size="67"/>
+                    <dock id="" activePageId="com.lega.colorChangePanel">
+                        <page id="com.lega.colorChangePanel"/>
+                    </dock>
+                    <split size="97"/>
+                    <dock id="" activePageId="com.lega.toolPanel">
+                        <page id="com.lega.toolPanel"/>
+                    </dock>
+                </splitter>
+                <split size="1953"/>
+                <dock id="" activePageId="uk.co.thefoundry.sequenceviewer.9">
+                    <page id="uk.co.thefoundry.exportqueue.1"/>
+                    <page id="Viewer.1"/>
+                    <page id="uk.co.thefoundry.sequenceviewer.2"/>
+                    <page id="uk.co.thefoundry.sequenceviewer.4"/>
+                    <page id="uk.co.thefoundry.sequenceviewer.6"/>
+                    <page id="uk.co.thefoundry.sequenceviewer.8"/>
+                    <page id="uk.co.thefoundry.sequenceviewer.9"/>
+                </dock>
+                <split size="774"/>
+                <splitter orientation="2">
+                    <split size="612"/>
+                    <dock id="" activePageId="Properties.1" focus="true">
+                        <page id="Properties.1"/>
+                        <page id="uk.co.thefoundry.metadata.1"/>
+                        <page id="uk.co.thefoundry.backgroundrenderview.1"/>
+                        <page id="com.adrianpueyo.KnobScripterPane"/>
+                    </dock>
+                    <split size="315"/>
+                    <dock id="" activePageId="uk.co.thefoundry.spreadsheetview.4">
+                        <page id="uk.co.thefoundry.spreadsheetview.1"/>
+                        <page id="uk.co.thefoundry.spreadsheetview.2"/>
+                        <page id="uk.co.thefoundry.spreadsheetview.3"/>
+                        <page id="uk.co.thefoundry.spreadsheetview.4"/>
+                    </dock>
+                    <split size="64"/>
+                    <dock id="" activePageId="com.lega.ViewerPanel">
+                        <page id="com.lega.ViewerPanel"/>
+                    </dock>
+                </splitter>
+            </splitter>
+            <split size="316"/>
+            <splitter orientation="1">
+                <split size="165"/>
+                <splitter orientation="1">
+                    <split size="165"/>
+                    <dock id="" activePageId="com.lega.RevtoolPanel">
+                        <page id="com.lega.RevtoolPanel"/>
+                    </dock>
+                </splitter>
+                <split size="151"/>
+                <dock id="" activePageId="com.lega.FPTPanel">
+                    <page id="com.lega.FPTPanel"/>
+                </dock>
+                <split size="3113"/>
+                <dock id="" activePageId="uk.co.thefoundry.timeline.11">
+                    <page id="DAG.1"/>
+                    <page id="uk.co.thefoundry.timeline.2" layout="splitter(403,2706)"/>
+                    <page id="uk.co.thefoundry.timeline.11" layout="splitter(406,2703)"/>
+                    <page id="uk.co.thefoundry.timeline.10" layout="splitter(425,2684)"/>
+                    <page id="uk.co.thefoundry.timeline.8" layout="splitter(914,2195)"/>
+                </dock>
+            </splitter>
+        </splitter>
+    </window>
+</layout>

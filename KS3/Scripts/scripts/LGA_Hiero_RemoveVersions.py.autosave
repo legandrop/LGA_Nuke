@@ -1,0 +1,80 @@
+import nuke
+import os
+
+def export_cc_and_create_node():
+    # Obtener el nodo seleccionado
+    selected_node = nuke.selectedNode()
+    
+    # Verificar si hay un nodo seleccionado y si es un OCIOCDLTransform o un Read
+    if selected_node and selected_node.Class() in ["OCIOCDLTransform", "Read"]:
+        # Obtener el valor del knob 'file'
+        if selected_node.Class() == "OCIOCDLTransform":
+            file_path = selected_node['file'].value()
+        else:  # Read node
+            file_path = selected_node['file'].value()
+        
+        # Crear el nuevo nombre de archivo con extensión .cc
+        new_file_path = os.path.splitext(file_path)[0] + '.cc'
+        
+        # Crear el contenido del archivo .cc
+        if selected_node.Class() == "OCIOCDLTransform":
+            slope = selected_node['slope'].value()
+            offset = selected_node['offset'].value()
+            power = selected_node['power'].value()
+            saturation = selected_node['saturation'].value()
+        else:  # Read node
+            # Valores por defecto si es un nodo Read
+            slope = [1.0, 1.0, 1.0]
+            offset = [0.0, 0.0, 0.0]
+            power = [1.0, 1.0, 1.0]
+            saturation = 1.0
+        
+        cc_content = f"""<ColorCorrection id="{os.path.basename(new_file_path)}">
+    <SOPNode>
+        <Slope>{slope[0]} {slope[1]} {slope[2]}</Slope>
+        <Offset>{offset[0]} {offset[1]} {offset[2]}</Offset>
+        <Power>{power[0]} {power[1]} {power[2]}</Power>
+    </SOPNode>
+    <SatNode>
+        <Saturation>{saturation}</Saturation>
+    </SatNode>
+</ColorCorrection>
+"""
+        
+        # Escribir el archivo .cc
+        try:
+            with open(new_file_path, 'w') as f:
+                f.write(cc_content)
+            print(f"Archivo CC exportado exitosamente: {new_file_path}")
+            
+            # Deseleccionar todos los nodos
+            for n in nuke.allNodes():
+                n['selected'].setValue(False)
+            
+            # Crear el nodo OCIOFileTransform desconectado
+            ocio_file_transform = nuke.nodes.OCIOFileTransform()
+            
+            # Configurar el nodo OCIOFileTransform
+            ocio_file_transform['file'].setValue(new_file_path)
+            ocio_file_transform['working_space'].setValue("ACES - ACEScct")
+            ocio_file_transform['label'].setValue("Input Process")
+            
+            # Posicionar el nuevo nodo (desconectado)
+            ocio_file_transform.setXYpos(selected_node.xpos() + 200, selected_node.ypos())
+            
+            # Seleccionar solo el nuevo OCIOFileTransform
+            ocio_file_transform['selected'].setValue(True)
+            
+            # Usar el nodo como input process
+            nuke.root()['input_process'].setValue(True)
+            nuke.root()['input_process_node'].setValue(ocio_file_transform.name())
+            
+            print("Nodo OCIOFileTransform creado, configurado y establecido como input process.")
+            
+        except Exception as e:
+            print(f"Error: {str(e)}")
+    else:
+        print("No se ha seleccionado un nodo OCIOCDLTransform o Read válido.")
+
+# Ejecutar la función
+export_cc_and_create_node()

@@ -1,0 +1,63 @@
+set cut_paste_input [stack 0]
+version 12.0 v3
+push $cut_paste_input
+Group {
+ name KF_Npoint_Gradient
+ knobChanged "node = nuke.thisNode()\nknob = nuke.thisKnob()\nname = knob.name()\n\n\nif \"_\" in name:\n    num = name.split( \"_\" )\[1]\n\nif name.startswith( \"point\" ):\n    if node.knob( \"k_auto\" ).getValue():\n        source = node.node( \"Input\" )\n        sample = node.knob( \"k_sample\" ).getValue()\n\n        point = node.knob( \"point_%s\" % num ).getValue()\n        tempcolor = \[ source.sample( \"r\", point\[0], point\[1], sample, sample ),\n                      source.sample( \"g\", point\[0], point\[1], sample, sample ),\n                      source.sample( \"b\", point\[0], point\[1], sample, sample ) ]\n        node.knob( \"color_%s\" % num ).setValue( tempcolor )\n\nif name.startswith( \"enable\" ):\n    if knob.getValue():\n        node.knob( \"point_%s\" % num ).clearFlag( nuke.DISABLED )\n        node.knob( \"color_%s\" % num ).clearFlag( nuke.DISABLED )\n        node.knob( \"get_%s\" % num ).clearFlag( nuke.DISABLED )\n    else:\n        node.knob( \"point_%s\" % num ).setFlag( nuke.DISABLED )\n        node.knob( \"color_%s\" % num ).setFlag( nuke.DISABLED )\n        node.knob( \"get_%s\" % num ).setFlag( nuke.DISABLED )\n"
+ tile_color 0x4e73ffff
+ selected true
+ xpos -370
+ ypos -633
+ addUserKnob {20 k_points l Gradient}
+ addUserKnob {26 k_nn l "" +STARTLINE T "<font color=\"cornflower blue\" size=10>KF N-point Gradient<font color=\"gray\" size=2>v2.02</font>"}
+ addUserKnob {26 k_kf l "" +STARTLINE T "<font color=\"gray\">by Kevin Fisch</font>"}
+ addUserKnob {26 k_div2 l "" +STARTLINE}
+ addUserKnob {3 k_n l INVISIBLE +INVISIBLE}
+ addUserKnob {22 k_add l "Add Point" t "Adds a sample point for the gradient." T "node = nuke.thisNode()\nn = int( node\[ \"k_n\" ].getValue() ) + 1\nnode\[ \"k_n\" ].setValue( n )\n\n\nnode_in = nuke.toNode( \"Input\" )\nnode_top = nuke.toNode( \"Remover\" )\nnode_out = nuke.toNode( \"Depth\" )\n\n\n# get sampled position\n# bbox is from the center of the image, -1 to 1, based on width\nviewer = nuke.activeViewer()\nbbox = viewer.node()\[ \"colour_sample_bbox\" ].value()\nratio = float( node_in.width() ) / float( node_in.height() )\naspect = node_in.pixelAspect()\ncx = ( bbox\[0] + bbox\[2] ) / 2\ncy = ( bbox\[1] + bbox\[3] ) / 2\nposition = \[ ( ( cx * 0.5 ) + 0.5 ) * node_in.width(),\n             ( ( cy * ratio * aspect * 0.5 ) + 0.5 ) * node_in.height() ]\n\n\nnode.addKnob( nuke.Text_Knob( \"div_%s\" % n, \"\" ) )\n\n\nknob_enab = nuke.Boolean_Knob( \"enable_%s\" % n, \"\" )\nknob_enab.setValue( True )\nnode.addKnob( knob_enab )\n\n\nknob_pt = nuke.XY_Knob( \"point_%s\" % n, \"Point %s\" % n )\nknob_pt.clearFlag( nuke.STARTLINE )\nnode.addKnob( knob_pt )\n\n\nknob_col = nuke.Color_Knob( \"color_%s\" % n, \"Point %s Color\" % n )\nnode.addKnob( knob_col )\n\n\nknob_get = nuke.PyScript_Knob( \"get_%s\" % n, \"Get Color\" , \"\"\"\\\nnode = nuke.thisNode()\nknob = nuke.thisKnob()\nsource = node.node( \"Input\" )\nsample = node.knob( \"k_sample\" ).getValue()\nn = int( knob.name().split( \"_\" )\[1] )\n\npoint = node.knob( \"point_%s\" % n ).getValue()\ntempcolor = \[ source.sample( \"r\", point\[0], point\[1], sample, sample ),\n              source.sample( \"g\", point\[0], point\[1], sample, sample ),\n              source.sample( \"b\", point\[0], point\[1], sample, sample ) ]\nnode.knob( \"color_%s\" % n ).setValue( tempcolor )\n\"\"\" )\nnode.addKnob( knob_get )\n\n\nif node\[ \"k_autoplace\" ].value():\n    knob_pt.setValue( ( position\[0], position\[1] ) )\nelse:\n    if node.input( 0 ):\n        knob_pt.setValue( ( node_in.width()/2, node_in.height()/2 ) )\n    else:\n        knob_pt.setValue( ( nuke.Root().width()/2, nuke.Root().height()/2 ) )\n\nif node\[ \"k_auto\" ].value() and node.input( 0 ):\n    # nuke.Script_Knob.execute( knob_get )\n    sample = node.knob( \"k_sample\" ).getValue()\n    tempcolor = \[ node_in.sample( \"r\", position\[0], position\[1], sample, sample ),\n                  node_in.sample( \"g\", position\[0], position\[1], sample, sample ),\n                  node_in.sample( \"b\", position\[0], position\[1], sample, sample ) ]\n    knob_col.setValue( tempcolor )\n\n\n#deselects all nodes to prevent any errors while creating nodes\nnodes = nuke.allNodes( group = node )\nfor node in nodes:\n  name = node\[ \"selected\" ].setValue( False )\n\n\n#creates expression node\nexp = nuke.nodes.Expression()\nexp.setName( \"Exp_%s\" % n )\nexp.setXYpos( ( 100 * ( n - 1 ) ), 50 )\nexp.knob( \"expr0\" ).setValue( \"color_%s.r\" % n )\nexp.knob( \"expr1\" ).setValue( \"color_%s.g\" % n )\nexp.knob( \"expr2\" ).setValue( \"color_%s.b\" % n )\nexp.knob( \"expr3\" ).setValue( \"hypot( x-point_%s.x, y-point_%s.y )\" % ( n, n ) )\nexp.knob( \"disable\" ).setExpression( \"1-parent.enable_%s\" % n )\nexp.setInput( 0, node_top )\n\n\n#creates merge expression node\nif n > 1:\n    merge = nuke.nodes.MergeExpression()\n    merge.setName( \"MergeExp_%s\" % n )\n    merge.setXYpos( 0, ( 70 * ( n - 1 ) ) + 60 )\n    merge.knob( \"expr0\" ).setValue( \"Aa < Ba ? Ar : Br\" )\n    merge.knob( \"expr1\" ).setValue( \"Aa < Ba ? Ag : Bg\" )\n    merge.knob( \"expr2\" ).setValue( \"Aa < Ba ? Ab : Bb\" )\n    merge.knob( \"expr3\" ).setValue( \"min( Aa , Ba )\" )\n    merge.knob( \"disable\" ).setExpression( \"1-parent.enable_%s\" % n )\n\n    if n == 2:\n        input1 = nuke.toNode( \"Exp_1\" )\n    else:\n        input1 = nuke.toNode( \"MergeExp_%s\" % ( n - 1 ) )\n\n    merge.setInput( 0, input1 )\n    merge.setInput( 1, exp )\n    node_out.setInput( 0, merge )\n\n\nif n == 1:\n    node_out.setInput( 0 , exp )\n" +STARTLINE}
+ addUserKnob {26 k_spacer l "" -STARTLINE T "\t\t\t"}
+ addUserKnob {22 k_reset l "<font color=\"red\">Reset</font>" t "Deletes all points and starts anew. What'd you think it did?" -STARTLINE T "node = nuke.thisNode()\n\n\n# remove knobs\nknob_list = dict( node.knobs() )\nfor knob_name in knob_list:\n    # keep all knobs that start with \"k_\"\n    if knob_name.startswith( \"k_\" ):\n        pass\n    else:\n        # if it doesn't start with \"k_\" it's either a default knob, or an added knob\n        # if it can be removed, we added it, if not, it's a default knob\n        try:\n            node.removeKnob( knob_list\[ knob_name ] )\n        except:\n            pass\n\n# reset the point counter back to 0\nnode.knob( \"k_n\" ).setValue( 0 )\n\n# remove nodes\nkeepers = \[ \"Input\", \"Output\" ]\nfor node in nuke.allNodes( group = node ):\n    # keep input/output so things don't get disconnected during reset\n    if node.Class() in keepers:\n        pass\n    else:\n        nuke.delete( node )\n\ninput = nuke.toNode( \"Input\" )\ninput.setXYpos( -300, 0 )\n\n# recreate nodes\nremove = nuke.nodes.Remove()\nremove.setName( \"Remover\" )\nremove.setXYpos( 0, 0 )\nremove.setInput( 0, input )\n\ndepth = nuke.nodes.Shuffle()\ndepth.setName( \"Depth\" )\ndepth\[ \"in\" ].setValue( \"alpha\" )\ndepth\[ \"out\" ].setValue( \"depth\" )\ndepth.setXYpos( -300, 600 )\ndepth.setInput( 0, remove )\n\nblur = nuke.nodes.Blur()\nblur.setName( \"Blender\" )\nblur\[ \"size\" ].setSingleValue( False )\nblur\[ \"size\" ].setExpression( \"(width/50)*parent.k_mult.w\", 0 )\nblur\[ \"size\" ].setExpression( \"(width/50)*parent.k_mult.h\", 1 )\nblur.setXYpos( -300, 630 )\nblur.setInput( 0, depth )\n\nalpha = nuke.nodes.Shuffle( alpha = 6 )\nalpha.setName( \"Alpha\" )\nalpha.setXYpos( -300, 680 )\nalpha.setInput( 0, blur )\n\noutput = nuke.toNode( \"Output\" )\noutput.setXYpos( -300, 710 )\noutput.setInput( 0, alpha )\n"}
+ addUserKnob {26 k_div l "" +STARTLINE}
+ addUserKnob {6 k_auto l "Auto Sample Color" t "When enabled, new points and points that are moved will automatically sample the color." +STARTLINE}
+ k_auto true
+ addUserKnob {6 k_autoplace l "Autoplace New Points" t "When enabled, it will add new points in the center of sampled area in the viewer. (ctrl click)" -STARTLINE}
+ k_autoplace true
+ addUserKnob {7 k_sample l "Sample Size" R 0 10}
+ k_sample 5
+ addUserKnob {14 k_mult l "Blur Multiplier" R 0 100}
+ k_mult 5
+ addUserKnob {22 k_getall l "Get All Point Colors" t "\"This button will sample the colors in the source image at the chosen points, and put that value into the point's color. Since this process is computationally expensive it's done on demand only. With this button, you can choose important frames and keyframe the color values after sampling.\"\n\n -MM" T "node = nuke.thisNode()\nsource = node.node( \"Input\" )\nsample = node.knob( \"k_sample\" ).getValue()\npoints = int(  node.knob( \"k_n\" ).getValue() )\n\nfor i in range( 1, points + 1 ):\n    if node.knob( \"enable_%s\" % i ).getValue():\n        point = node.knob( \"point_%s\" % i ).getValue()\n        tempcolor = \[ source.sample( \"r\", point\[0], point\[1], sample, sample ),\n                      source.sample( \"g\", point\[0], point\[1], sample, sample ),\n                      source.sample( \"b\", point\[0], point\[1], sample, sample ) ]\n\n        node.knob( \"color_%s\" % i ).setValue( tempcolor )\n" +STARTLINE}
+}
+ Input {
+  inputs 0
+  name Input
+  xpos -300
+ }
+ Remove {
+  name Remover
+  xpos 0
+ }
+ Shuffle {
+  in alpha
+  out depth
+  name Depth
+  xpos -300
+  ypos 600
+ }
+ Blur {
+  size {{(width/50)*parent.k_mult.w} {(width/50)*parent.k_mult.h}}
+  name Blender
+  xpos -300
+  ypos 630
+ }
+ Shuffle {
+  alpha white
+  name Alpha
+  xpos -300
+  ypos 680
+ }
+ Output {
+  name Output
+  xpos -300
+  ypos 710
+ }
+end_group

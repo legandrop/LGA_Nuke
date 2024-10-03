@@ -1,0 +1,152 @@
+version 13.1 v1
+Gizmo {
+ inputs 2
+ onCreate "import sys\nthis = nuke.thisNode()\ninference = nuke.toNode(f\"\{this.name()\}.Inference1\")\nthis[\"gpuName\"].setValue(inference[\"gpuName\"].value())\nthis[\"channelsIn\"].setValue(\"rgba.red, rgba.green, rgba.blue\")\ninference.forceValidate()\nis_enabled = inference\[\"modelFile\"\].enabled()\nif (sys.platform.lower() == \"darwin\") and (not inference\[\"useGPUIfAvailable\"\].enabled()): this\[\"useGPUIfAvailable\"\].setValue(False), this\[\"useGPUIfAvailable\"\].setEnabled(False)\nif not is_enabled:\n    for k in this.knobs(): this[k].setEnabled(False)\nthis[\"halfPrecision\"].setVisible(this[\"useGPUIfAvailable\"].enabled())"
+ knobChanged "this = nuke.thisNode()\nthis[\"halfPrecision\"].setVisible(this[\"useGPUIfAvailable\"].value())"
+ onDestroy "nuke.thisNode()\[\"knobChanged\"].setValue(\"\")"
+ addUserKnob {20 BackgroundMatting}
+ addUserKnob {26 localGPU l "Local GPU:" T ""}
+ addUserKnob {26 gpuName l "" -STARTLINE T "NVIDIA TITAN RTX"}
+ addUserKnob {6 useGPUIfAvailable l "Use GPU if available" t "Select this to render on the <b>Local GPU</b>, if available.\n\nYou can select this even if no GPU is currently available on your machine. The GPU will then be used whenever the script is opened on a machine which does have a GPU available. You should also select this if you wish to render from the command line with the <b>--gpu</b> option.\n\nIf this node requires full frames from its inputs, and is therefore unable to reduce its memory overhead, it will fall back to the CPU if an attempt to render a frame on the GPU fails due to lack of memory. When this occurs, a warning message will be printed to the console." +STARTLINE}
+ useGPUIfAvailable true
+ addUserKnob {26 ""}
+ addUserKnob {26 channelsIn l "Channels In:" t "The channels the model expects as input." T "rgba.red, rgba.green, rgba.blue"}
+ addUserKnob {41 in_colorspace l "Input Colorspace" t "Define the colorspace that the input image is in." T OCIOColorSpace1.in_colorspace}
+ addUserKnob {6 halfPrecision l "Optimize for Speed and Memory" t "Whether to process at half float precision. This speeds up execution and enables the processing of larger images, however there is the risk of artifacts with some trained models." +STARTLINE}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos 829
+  ypos 120
+ }
+set Nf9993620 [stack 0]
+ Dot {
+  name Dot10
+  xpos 1036
+  ypos 123
+ }
+set N3f9e20a0 [stack 0]
+ Assert {
+  expression 0
+  message "The CleanPlate is missing rgb"
+  name Assert2
+  xpos 1255
+  ypos 220
+ }
+push $N3f9e20a0
+ Assert {
+  expression 0
+  message "The input stream is missing rgb"
+  name Assert1
+  xpos 1115
+  ypos 222
+ }
+push $N3f9e20a0
+ Assert {
+  expression 0
+  message "The Input and CleanPlate are missing rgb"
+  name Assert3
+  xpos 1002
+  ypos 221
+ }
+ Switch {
+  inputs 3
+  which {{"\[python \{len(nuke.toNode('Input1').channels())\}] == 0 && \[python \{len(nuke.toNode('CleanPlate').channels())\}] == 0? 0 : \[python \{len(nuke.toNode('Input1').channels())\}] != 0 && \[python \{len(nuke.toNode('CleanPlate').channels())\}] == 0 ? 2 :  \[python \{len(nuke.toNode('Input1').channels())\}] == 0 && \[python \{len(nuke.toNode('CleanPlate').channels())\}] != 0 ? 1 : 0"}}
+  name Switch1
+  xpos 1002
+  ypos 302
+ }
+push $Nf9993620
+ OCIOColorSpace {
+  in_colorspace scene_linear
+  out_colorspace color_picking
+  name OCIOColorSpace1
+  knobChanged "nuke.toNode(\"OCIOColorSpace2\")\[\"out_colorspace\"].setValue(nuke.thisNode()\[\"in_colorspace\"].value())"
+  xpos 829
+  ypos 173
+ }
+ set C3f3deac0 [stack 0]
+set Nf99adbb0 [stack 0]
+ Dot {
+  name Dot1
+  xpos 948
+  ypos 177
+ }
+ Dot {
+  name Dot2
+  xpos 948
+  ypos 327
+ }
+ Input {
+  inputs 0
+  name CleanPlate
+  xpos 685
+  ypos 119
+  number 1
+ }
+clone $C3f3deac0 {
+  xpos 685
+  ypos 173
+  selected false
+ }
+ Dot {
+  name Dot3
+  xpos 719
+  ypos 227
+ }
+push $Nf99adbb0
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{0} B A}
+  fromInput2 {{1} B A}
+  in2 rgba
+  out2 motion
+  mappings "8 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 black -1 -1 rgba.alpha 0 3 black -1 -1 backward.v 1 3 rgba.red 1 0 forward.u 1 0 rgba.green 1 1 forward.v 1 1 rgba.blue 1 2 backward.u 1 2"
+  name Shuffle3
+  xpos 829
+  ypos 224
+ }
+ Inference {
+  useGPUIfAvailable {{parent.useGPUIfAvailable}}
+  modelFile "\[lsearch -inline \[plugins -all background_matting.cat] *.cat]"
+  halfPrecision {{parent.halfPrecision}}
+  serialiseKnob {}
+  name Inference1
+  xpos 829
+  ypos 284
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  in1 rgb
+  out1 rgb
+  fromInput2 {{0} B A}
+  in2 alpha
+  out2 alpha
+  mappings "4 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 rgba.alpha 1 0 rgba.alpha 1 0"
+  name Shuffle1
+  selected true
+  xpos 829
+  ypos 323
+ }
+ OCIOColorSpace {
+  in_colorspace color_picking
+  out_colorspace scene_linear
+  name OCIOColorSpace2
+  xpos 829
+  ypos 368
+ }
+ Switch {
+  inputs 2
+  which {{"\[python \{len(nuke.toNode('Input1').channels())\}] == 0 || \[python \{len(nuke.toNode('CleanPlate').channels())\}] == 0? 1:0"}}
+  name Switch2
+  xpos 1002
+  ypos 368
+ }
+ Output {
+  name Output1
+  xpos 1002
+  ypos 429
+ }
+end_group

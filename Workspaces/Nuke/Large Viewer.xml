@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout version="1.0">
+    <window x="-1" y="-8" w="3440" h="1377" maximized="1" screen="0">
+        <splitter orientation="1">
+            <split size="0"/>
+            <splitter orientation="1">
+                <split size="0"/>
+                <dock id=""/>
+            </splitter>
+            <split size="3436"/>
+            <splitter orientation="2">
+                <split size="1339"/>
+                <dock id="" activePageId="Viewer.1" focus="true">
+                    <page id="DAG.1"/>
+                    <page id="Viewer.1"/>
+                </dock>
+            </splitter>
+        </splitter>
+    </window>
+</layout>

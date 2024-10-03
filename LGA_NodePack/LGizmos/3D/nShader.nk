@@ -1,0 +1,125 @@
+set cut_paste_input [stack 0]
+version 13.1 v2
+push $cut_paste_input
+add_layer {normalWorld normalWorld.NX normalWorld.NY normalWorld.NZ}
+Group {
+ name nShader
+ selected true
+ xpos -121
+ ypos -61
+ addUserKnob {20 User}
+ addUserKnob {41 normal_vectors l "Normal Vectors" t "define Normal Pass" T Shuffle1.in}
+ addUserKnob {41 equator_angle l "Equator Angle" t "controls the left to right angle of the light" T Constant2.equator_angle}
+ addUserKnob {41 polar_height l "Polar Height" t "controls the top to bottom angle of the light" T Constant2.polar_height}
+ addUserKnob {41 light_color l "Light Color" t "Color of light" T Grade1.multiply}
+ addUserKnob {41 only_light l "Only Light" t "Enable gives you only light impact and disable gives you compose output." T Merge1.disable}
+}
+ Constant {
+  inputs 0
+  channels rgb
+  color {{cos(radians(polar_height))*cos(radians(equator_angle))} {sin(radians(polar_height))} {-sin(radians(equator_angle))*cos(radians(polar_height))} {curve}}
+  name Constant2
+  xpos 66
+  ypos -235
+  addUserKnob {20 User}
+  addUserKnob {7 equator_angle l "Equator Angle" R 0 360}
+  equator_angle 180
+  addUserKnob {7 polar_height l "Polar Height" R -90 90}
+  polar_height 45
+  addUserKnob {26 ""}
+  addUserKnob {41 color_1 l color T Constant2.color}
+ }
+ Crop {
+  box {0 0 {Input1.width} {Input1.height}}
+  reformat true
+  crop false
+  name Crop1
+  xpos 66
+  ypos -143
+ }
+ Input {
+  inputs 0
+  name Input1
+  xpos -78
+  ypos -228
+ }
+ Dot {
+  name Dot1
+  xpos -44
+  ypos -190
+ }
+set N7b873800 [stack 0]
+ Shuffle {
+  in normalWorld
+  alpha white
+  name Shuffle1
+  xpos -78
+  ypos -39
+ }
+ Difference {
+  inputs 2
+  name Difference1
+  xpos 66
+  ypos -45
+ }
+set N7b873000 [stack 0]
+push $N7b873800
+push $N7b873800
+push $N7b873000
+ Shuffle {
+  red alpha
+  green alpha
+  blue alpha
+  alpha black
+  name Shuffle2
+  xpos 66
+  ypos -7
+ }
+ Invert {
+  name Invert1
+  xpos 66
+  ypos 35
+ }
+ Grade {
+  whitepoint 2
+  white_clamp true
+  name Grade1
+  xpos 66
+  ypos 85
+ }
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 rgba.alpha
+  name Copy1
+  xpos 66
+  ypos 140
+ }
+ Premult {
+  name Premult1
+  xpos 66
+  ypos 178
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge1
+  xpos 66
+  ypos 231
+  disable true
+ }
+set N7b871800 [stack 0]
+ Viewer {
+  inputs 2
+  frame_range 1-100
+  name Viewer1
+  xpos 264
+  ypos -39
+ }
+push $N7b871800
+ Output {
+  name Output1
+  xpos 66
+  ypos 269
+ }
+end_group

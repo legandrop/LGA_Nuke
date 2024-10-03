@@ -1,0 +1,110 @@
+set cut_paste_input [stack 0]
+version 12.0 v3
+push $cut_paste_input
+Group {
+ name KF_CamToCP
+ tile_color 0x4e73ffff
+ note_font "DejaVu Sans"
+ selected true
+ xpos 290
+ ypos -634
+ addUserKnob {20 User}
+ addUserKnob {26 k_nn l "" +STARTLINE T "<font color=\"cornflower blue\" size=10>KF Camera to CornerPin<font color=\"gray\" size=2>v0.71</font>"}
+ addUserKnob {26 k_kf l "" +STARTLINE T "<font color=\"gray\">by Kevin Fisch</font>"}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {22 gen l Generate t "Bakes out the animated Camera to a CornerPin." T "import nukescripts.snap3d\n\nthis = nuke.thisNode()\nthisgroup = nuke.thisGroup()\ncp = nuke.toNode( \"CornerPin\" )\ncurrentFrame = nuke.frame()\n\n#Gets the frame range from the user\ndef getFrameRange():\n  print \"Getting frame range\"\n  Fframe = nuke.Root()\[\"first_frame\"].getValue()\n  Lframe = nuke.Root()\[\"last_frame\"].getValue()\n  frames = nuke.getFramesAndViews(\"Frame Range\", str( int( Fframe ) ) + \"-\" + str( int( Lframe ) ) )\n  if frames:\n    return frames\n\n#clears any animation on the cornerpin\ndef resetCP( cp ):\n  print \"Resetting CornerPin\"\n  for i in range( 1 , 5 ):\n    cp\[ \"to\" + str( int( i ) ) ].clearAnimated()\n    cp\[ \"to\" + str( int( i ) ) ].setAnimated()\n\n#deselects every node\ndef deselectAll():\n  print \"Deselecting Nodes\"\n  for node in nuke.allNodes():\n    node\[ \"selected\" ].setValue( False )\n\n#iterates up the node tree if the camera isn't a camera (i.e. if the \"camera\" input is connected to a dot)\ndef getCamera():\n  camera = this.input(1)\n  print \"Checking Camera\"\n  if camera:\n    #if camera.Class() != \"Camera\" :\n    if \"Camera\" not in camera.Class():\n      print \"searching for camera\"\n      #while camera.Class() != \"Camera\":\n      while \"Camera\" not in camera.Class():\n        tempnode = camera.input(0)\n        camera = tempnode\n        if camera == None :\n          nuke.message( \"No camera found.\" )\n          return\n  else:\n    nuke.message( \"No camera connected to camera input.\" )\n    return\n  return camera\n\n#copies the camera from outside the group, and pastes it inside; needed for the projectPoint to sample correctly\ndef copyCamera( camera ):\n  thisgroup.end()\n  camera\[ \"selected\" ].setValue( True )\n  nuke.nodeCopy( \"%clipboard%\" )\n  camera\[ \"selected\" ].setValue( False )\n  thisgroup.begin()\n  newcam = nuke.nodePaste( \"%clipboard%\" )\n  return newcam\n\n#iterates through the 4 axis and projects them to get their 2D values and writes them to the cornerpin\ndef projectPoints( cp , camera ):\n  for i in range( 1 , 5 ):\n    axis = nuke.toNode( \"Axis\" + str( int( i ) ) )\n    point3D = axis\[ \"translate\" ].getValue()\n    point2D = nukescripts.snap3d.projectPoint( camera , point3D )\n    cp\[ \"to\" + str( int( i ) ) ].setValueAt( point2D\[0] , frame , 0 )\n    cp\[ \"to\" + str( int( i ) ) ].setValueAt( point2D\[1] , frame , 1 )\n\n\n\nret = getFrameRange()\nif ret:\n  first = int(ret\[0].split(\"-\")\[0])\n  last = int(ret\[0].split(\"-\")\[1])\n  resetCP( cp )\n\n  camera = getCamera()\n  if camera:\n    #deselects everything outside the group so the camera will copy properly\n    thisgroup.end()\n    deselectAll()\n    thisgroup.begin()\n\n    for frame in range( first , last + 1 ):\n      nuke.frame( frame )\n      newcam = copyCamera( camera )\n      projectPoints( cp , newcam )\n      nuke.delete( newcam )\n\n    nuke.frame( currentFrame )\n    thisgroup.output().setInput( 0 , cp )\n  else:\n    print \"Cancelling: No camera found.\"\n\nelse:\n  print \"Cancelling: User cancelled.\"" +STARTLINE}
+ addUserKnob {22 export l "Export CornerPin" -STARTLINE T "this = nuke.thisNode()\ngroup = nuke.thisGroup()\nname = this\[\"name\"].getValue()\ncp = nuke.toNode( \"CornerPin\" )\nlinked = this\[\"linked\"].getValue()\n\n\nif linked:\n  group.end()\n  newcp = nuke.nodes.CornerPin2D()\n  newcp.setName( name + \"_Export\" )\n  newcp.setXYpos( int( this\[\"xpos\"].getValue() + 120 ) , int( this\[\"ypos\"].getValue() + 40 ) )\n\n  ref = nuke.Int_Knob( \"ref\" , \"Reference Frame\" )\n  newcp.addKnob( ref )\n  ref.setExpression( name + \".ref\" )\n  newcp\[\"shutteroffset\"].setValue( \"centered\" )\n  newcp\[\"invert\"].setExpression( name + \".invert\" )\n  newcp\[\"motionblur\"].setExpression( name + \".motionblur\" )\n  newcp\[\"shutter\"].setExpression( name + \".shutter\" )\n  for i in range( 1, 5):\n    n = str( int( i ) )\n    newcp.knob(\"to\" + n ).setExpression( name + \".to\" + n )\n    newcp.knob(\"from\" + n ).setExpression( \"to\" + n + \"(ref)\")\n\nelse:\n  for node in nuke.allNodes():\n    node\[\"selected\"].setValue( False )\n  cp\[\"selected\"].setValue( True )\n  nuke.nodeCopy(\"%clipboard%\")\n  group.end()\n  newcp = nuke.nodePaste(\"%clipboard%\")\n  newcp.setName( name + \"_Export\" )\n  newcp.setXYpos( int( this\[\"xpos\"].getValue() + 120 ) , int( this\[\"ypos\"].getValue() + 40 ) )"}
+ addUserKnob {6 linked l "Link Output" t "The exported CornerPin will either be expression linked or baked out." -STARTLINE}
+ linked true
+ addUserKnob {26 snaps l "" +STARTLINE}
+ addUserKnob {26 snap l "" +STARTLINE T "Snaps the axis to the center of the selected points in the viewer."}
+ addUserKnob {22 axis4 l "   Top Left Axis   " t "Snaps the axis to the center of the selected points in the viewer." T "import nukescripts.snap3d\n\naxis = nuke.toNode(\"Axis4\")\nselected = axis\[\"selected\"]\n\nif nukescripts.anySelectedPoint():\n  nukescripts.translateToPoints( axis )\nelse:\n  if selected.getValue():\n    selected.setValue(False)\n  else:\n    selected.setValue(True)" +STARTLINE}
+ addUserKnob {22 axis3 l "   Top Right Axis   " t "Snaps the axis to the center of the selected points in the viewer." -STARTLINE T "import nukescripts.snap3d\n\naxis = nuke.toNode(\"Axis3\")\nselected = axis\[\"selected\"]\n\nif nukescripts.anySelectedPoint():\n  nukescripts.translateToPoints( axis )\nelse:\n  if selected.getValue():\n    selected.setValue(False)\n  else:\n    selected.setValue(True)"}
+ addUserKnob {22 axis1 l "Bottom Left Axis" t "Snaps the axis to the center of the selected points in the viewer." T "import nukescripts.snap3d\n\naxis = nuke.toNode(\"Axis1\")\nselected = axis\[\"selected\"]\n\nif nukescripts.anySelectedPoint():\n  nukescripts.translateToPoints( axis )\nelse:\n  if selected.getValue():\n    selected.setValue(False)\n  else:\n    selected.setValue(True)" +STARTLINE}
+ addUserKnob {22 axis2 l "Bottom Right Axis" t "Snaps the axis to the center of the selected points in the viewer." -STARTLINE T "import nukescripts.snap3d\n\naxis = nuke.toNode(\"Axis2\")\nselected = axis\[\"selected\"]\n\nif nukescripts.anySelectedPoint():\n  nukescripts.translateToPoints( axis )\nelse:\n  if selected.getValue():\n    selected.setValue(False)\n  else:\n    selected.setValue(True)"}
+ addUserKnob {22 deselect l "Deselect All" t "Deselects all the axes. Useful for troubleshooting." T "for node in nuke.allNodes():\n  node\[\"selected\"].setValue(False)" +STARTLINE}
+ addUserKnob {20 locs l "Axis Locations" n 1}
+ locs 0
+ addUserKnob {41 a1t l "Axis 1" T Axis1.translate}
+ addUserKnob {41 a2t l "Axis 2" T Axis2.translate}
+ addUserKnob {41 a3t l "Axis 3" T Axis3.translate}
+ addUserKnob {41 a4t l "Axis 4" T Axis4.translate}
+ addUserKnob {20 endGroup n -1}
+ addUserKnob {26 cp l "Corner Pin"}
+ addUserKnob {41 to1 T CornerPin.to1}
+ addUserKnob {41 to2 T CornerPin.to2}
+ addUserKnob {41 to3 T CornerPin.to3}
+ addUserKnob {41 to4 T CornerPin.to4}
+ addUserKnob {41 ref l "Reference Frame" T CornerPin.ref}
+ addUserKnob {22 current l "Set to Current Frame" -STARTLINE T "nuke.thisNode()\[ 'ref' ].setValue( nuke.frame() )"}
+ addUserKnob {41 invert -STARTLINE T CornerPin.invert}
+ addUserKnob {41 motionblur T CornerPin.motionblur}
+ addUserKnob {41 shutter T CornerPin.shutter}
+}
+ Input {
+  inputs 0
+  name Camera
+  xpos -1
+  ypos -82
+  number 1
+ }
+ Axis2 {
+  inputs 0
+  translate {-0.5 -0.5 0}
+  name Axis1
+  xpos -32
+  ypos 152
+ }
+ Axis2 {
+  inputs 0
+  translate {0.5 0.5 0}
+  name Axis3
+  xpos 51
+  ypos 59
+ }
+ Axis2 {
+  inputs 0
+  translate {0.5 -0.5 0}
+  name Axis2
+  xpos 49
+  ypos 152
+ }
+ Axis2 {
+  inputs 0
+  translate {-0.5 0.5 0}
+  name Axis4
+  xpos -39
+  ypos 64
+ }
+ Input {
+  inputs 0
+  name Input1
+  xpos -209
+  ypos -74
+ }
+ CornerPin2D {
+  to1 {0 0}
+  to2 {1920 0}
+  to3 {1920 1080}
+  to4 {0 1080}
+  invert false
+  from1 {{to1(ref)} {to1(ref)}}
+  from2 {{to2(ref)} {to2(ref)}}
+  from3 {{to3(ref)} {to3(ref)}}
+  from4 {{to4(ref)} {to4(ref)}}
+  name CornerPin
+  selected true
+  xpos -209
+  ypos 99
+  addUserKnob {20 mol l Molecule}
+  addUserKnob {3 ref l "Reference Frame"}
+  ref 1
+  addUserKnob {22 current l "Set to Current Frame" t "Sets the reference frame to the current frame." -STARTLINE T "nuke.thisNode()\[ 'ref' ].setValue( nuke.frame() )"}
+  addUserKnob {22 useRef l "Use Reference" t "Sets the value of From to the value of To at the reference frame." T "\nnuke.thisNode().knob( \"from1\" ).setExpression( \"to1(ref)\" )\nnuke.thisNode().knob( \"from2\" ).setExpression( \"to2(ref)\" )\nnuke.thisNode().knob( \"from3\" ).setExpression( \"to3(ref)\" )\nnuke.thisNode().knob( \"from4\" ).setExpression( \"to4(ref)\" )\n" +STARTLINE}
+ }
+ Output {
+  name Output1
+  xpos -209
+  ypos 262
+ }
+end_group

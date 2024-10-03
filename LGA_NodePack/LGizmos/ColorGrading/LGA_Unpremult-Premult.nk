@@ -1,0 +1,15 @@
+set cut_paste_input [stack 0]
+version 13.1 v2
+push $cut_paste_input
+Unpremult {
+ name Unpremult1
+ selected true
+ xpos -1612
+ ypos 1536
+}
+Premult {
+ name Premult1
+ selected true
+ xpos -1612
+ ypos 1679
+}

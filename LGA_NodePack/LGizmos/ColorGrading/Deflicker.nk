@@ -1,0 +1,73 @@
+set cut_paste_input [stack 0]
+version 13.0 v5
+BackdropNode {
+inputs 0
+tile_color 0x7171c600
+label Deflicker
+note_font_size 42
+selected true
+xpos 22601
+ypos -1234
+bdwidth 367
+bdheight 396
+}
+push $cut_paste_input
+Crop {
+box {2240 578 2694 940}
+name Crop4
+selected true
+xpos 22746
+ypos -1136
+}
+set N55dd6400 [stack 0]
+Blur {
+size 100
+name Blur16
+selected true
+xpos 22746
+ypos -1077
+}
+set N55dd6000 [stack 0]
+Dot {
+name Dot120
+selected true
+xpos 22901
+ypos -1068
+}
+FrameHold {
+firstFrame 1007
+name FrameHold15
+selected true
+xpos 22867
+ypos -988
+}
+push $N55dd6000
+Merge2 {
+inputs 2
+operation divide
+name Merge52
+selected true
+xpos 22746
+ypos -982
+}
+push $N55dd6400
+Dot {
+name Dot121
+selected true
+xpos 22628
+ypos -1133
+}
+Dot {
+name Dot122
+selected true
+xpos 22628
+ypos -923
+}
+Merge2 {
+inputs 2
+operation multiply
+name Merge53
+selected true
+xpos 22746
+ypos -926
+}

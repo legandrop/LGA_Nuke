@@ -1,0 +1,13 @@
+{
+    "minimum_nuke_version_required": 13.1,
+    "version": 1,
+    "category": "Depth Estimation",
+    "description": "Towards Robust Monocular Depth Estimation: Mixing Datasets for Zero-shot Cross-dataset Transfer",
+    "cats": [
+        {
+            "filepath": "MiDaS.gizmo",
+            "name": "MiDaS",
+            "icon": "MiDaS.png"
+        }
+    ]
+}

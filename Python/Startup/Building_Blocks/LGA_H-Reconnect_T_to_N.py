@@ -1,0 +1,35 @@
+import hiero.core
+import hiero.ui
+import os
+
+
+# Obtener la secuencia activa y el editor de linea de tiempo
+seq = hiero.ui.activeSequence()
+if seq:  # Asegurarse de que hay una secuencia activa
+    te = hiero.ui.getTimelineEditor(seq)
+    selected_clips = te.selection()
+
+    # Iterar sobre los clips seleccionados para reemplazarlos
+    for shot in selected_clips:
+        file_path = shot.source().mediaSource().fileinfos()[0].filename()
+        print("Original file path:", file_path)
+
+        # Normalizar el path convirtiendo todo a minusculas
+        normalized_file_path = file_path.lower()
+
+        # Reemplazar "t:" por "n:" en el path normalizado
+        new_file_path = normalized_file_path.replace("t:", "n:")
+        print("Modified file path:", new_file_path)
+
+        # Obtener solo la ruta del directorio sin el nombre del archivo
+        directory_path = os.path.dirname(new_file_path)
+        print("directory_path:", directory_path)
+
+        # Reemplazar el clip por el del nuevo path
+        try:
+            shot.reconnectMedia(directory_path)
+            print("Clip replaced successfully.")
+        except:
+            print("Error replacing clip.")
+else:
+    print("No active sequence found.")

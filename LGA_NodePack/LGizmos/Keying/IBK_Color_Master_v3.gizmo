@@ -1,0 +1,303 @@
+Group {
+ name IBK_Color_Master
+ knobChanged "n = nuke.thisNode()\nk = nuke.thisKnob()\n\nif k.name() == \"UseCrop\":\n    if n.knob('UseCrop').value() == 1:  \n        n.knob('OverscanValue').setVisible(True)\n    else:\n        n.knob('OverscanValue').setVisible(False)\nif k.name() == \"ScreenType\" or \"view_without_patch\":\n    if n.knob('view_without_patch').value() == True:\n        n\[\"tile_color\"].setValue(0xb50000ff)\n    else:\n        if n.knob('ScreenType').value() == \"Green\":  \n            n\[\"tile_color\"].setValue(0x6600ff)\n        else:\n            n\[\"tile_color\"].setValue(0x54b5ff)\n\n###Create IBK Gizmo Button   \ncreateIBKgiz = n.knob(\"createIBKgiz\")\nif k.name() == \"createIBKgiz\":\n    createIBKgiz.setEnabled(False) \ndependent = n.dependent()\nif not any(node.Class() == \"IBKGizmoV3\" for node in dependent):\n    createIBKgiz.setEnabled(True)"
+ tile_color 0x6600ff
+ addUserKnob {20 User l IBK-CM}
+ addUserKnob {4 ScreenType l "Screen type" t "select type of screen color" M {Green Blue "" ""}}
+ addUserKnob {41 size_1 l Size T Blur10.size}
+ addUserKnob {41 add l Darks T Grade11.add}
+ addUserKnob {41 multiply l Lights T Grade11.multiply}
+ addUserKnob {26 text l "" +STARTLINE}
+ addUserKnob {41 erodeslider l Erode T Dot_start.erodeslider}
+ addUserKnob {26 patchmenu l "" +STARTLINE}
+ addUserKnob {41 ibk_steps l "Patch steps" t "Select amount of patch steps required in your shot. Its recommended to use small value for better performance. then use the \"Patch Roughly\" option to fill in the remaining area." T Dot_start.ibk_steps}
+ addUserKnob {6 rough_ptch l "Patch roughly" t "Utilize this option to fill remaining areas after increasing patch step values; the provided patch quantity should be enough cover soft edge details. Utilizing this function will enhances Nuke script performance." +STARTLINE}
+ addUserKnob {6 view_without_patch l "View without patch" t "turn on this switch when youre adjusting size, darks, light, erode parameters.\n\n<B>REMEMBER TO TURN IT OFF WHEN YOURE DONE WITH ADJUSTING VALUES" -STARTLINE}
+ addUserKnob {26 Croptext l "" +STARTLINE}
+ addUserKnob {41 use_mask l "Enable mask input" T Dot_start.use_mask}
+ addUserKnob {6 UseCrop l Crop -STARTLINE}
+ UseCrop true
+ addUserKnob {3 OverscanValue l "|  Overscan(pixels)" -STARTLINE}
+ addUserKnob {26 _1 l "" +STARTLINE}
+ addUserKnob {22 createIBKgiz l "Create IBK Gizmo" T "thisNodeName = nuke.thisNode().fullName()\nxNode = nuke.toNode('.'.join(\['root'] + nuke.thisNode().fullName().split('.')\[:-1]))\nwith nuke.toNode('.'.join(\['root'] + nuke.thisNode().fullName().split('.')\[:-1])):\n    n = nuke.toNode(thisNodeName)\n    k = nuke.thisKnob()\n    \n    currentST = n.knob(\"ScreenType\").value()\n    nXpos = n.xpos()\n    nYpos = n.ypos()\n    \n    conImgNode = None\n    conImgNodeXpos = n.xpos()\n    conImgNodeYpos = n.ypos()-100\n    \n    if n.input(0) is not None:\n        conImgNode = n.input(0).name()\n        conImgNodeXpos = None\n        conImgNodeYpos = None\n    \n    ### IBK Gizmo create and setting values\n    ibkgiz = nuke.nodes.IBKGizmoV3()\n    ibkgiz.setXYpos(nXpos, nYpos+100)\n    \n    if currentST == \"Green\":\n        ibkgiz.knob(\"st\").setValue(\"C-green\")\n        ibkgiz\[\"tile_color\"].setValue(0x6600ff)\n    else:\n        ibkgiz.knob(\"st\").setValue(\"C-blue\")\n        ibkgiz\[\"tile_color\"].setValue(0x54b5ff)\n    \n    ### creating dot \n    fgDotabove = nuke.nodes.Dot()\n    if conImgNode == None:\n        fgDotabove.setXYpos(int(nXpos+n.screenWidth()/2-fgDotabove.screenWidth()/2), nYpos-100)\n        n.setInput(0, fgDotabove)\n    else:\n        fgDotabove.setXYpos(int(nXpos+n.screenWidth()/2-fgDotabove.screenWidth()/2), nYpos-100)\n        fgDotabove.setInput(0, nuke.toNode(conImgNode))\n        n.setInput(0, fgDotabove)\n        \n        \n    fgDotsideAbove = nuke.nodes.Dot()\n    fgDotsideAbove.setXYpos(nXpos+150, fgDotabove.ypos())\n    \n    fgDotsideBelow = nuke.nodes.Dot()\n    fgDotsideBelow.setXYpos(nXpos+150, int(ibkgiz.ypos()+ibkgiz.screenHeight()/2-fgDotsideBelow.screenHeight()/2))\n    \n        \n    ### connecting inputs\n    ibkgiz.setInput(1, n)\n    ibkgiz.setInput(0, fgDotsideBelow)\n    fgDotsideBelow.setInput(0, fgDotsideAbove)\n    fgDotsideAbove.setInput(0, fgDotabove)\n    \n    \n    if conImgNode is not None:\n        ibkgiz.setYpos(ibkgiz.ypos()+100)\n        n.setYpos(n.ypos()+100)\n        fgDotsideAbove.setYpos(fgDotsideAbove.ypos()+100)\n        fgDotsideBelow.setYpos(fgDotsideBelow.ypos()+100)\n        fgDotabove.setYpos(fgDotabove.ypos()+100) " +STARTLINE}
+ addUserKnob {26 ""}
+ addUserKnob {26 ver l "" +STARTLINE T "<font color=grey><B>IBK Color Master - v3.2 |"}
+ addUserKnob {26 credit l "" -STARTLINE T "<font color=grey>By <a href=\"www.shubham-soni.com\"><font color=grey>shubham-soni.com"}
+ addUserKnob {6 color_rgb_panelDropped l "panel dropped state" +HIDDEN +STARTLINE}
+ addUserKnob {20 Info}
+ addUserKnob {26 step1 l "<B>Step 1"}
+ addUserKnob {26 _1_1 l "" +STARTLINE T "Choose either the green or blue screen colour for the shot. Activate the \n\"View without patch\" switch. Adjust the darks, lights, and erode \nvalues to achieve the desired outcome. If necessary, utilize the \"Exclude mask\" \ninput feature to manually roto and remove any fine details that were not \ncaptured with the darks and lights adjustments. When finished, deactivate \nthe \"View without patch\" switch.\n\n "}
+ addUserKnob {26 step2 l "<B>Step 2"}
+ addUserKnob {26 _2 l "" +STARTLINE T "Set the \"Patch steps\" amount according to the shot requirements. \nIt is recommended to use a small value for better performance. If there \nare still areas that have not been patched with the \"Patch steps\" \noption, then use the \"Patch roughly\" option to fill in the remaining area. \n"}
+ addUserKnob {26 _3 l "" t "intro by shahid gire" +STARTLINE T "<font color=lightgrey><B>Introduction video by <a href=\"https://www.youtube.com/channel/UCpDZCTkveqFBIRts8qvwGBw\"><font color=lightgrey>Shahid Gire</a>:"}
+ addUserKnob {26 videoLink l "" t "IBK CM Introduction link" -STARTLINE T "<a href=\"https://shubham-soni.com/#ibkcm-intro\"><font color=lightgrey> click here"}
+}
+ Input {
+  inputs 0
+  name InputExclude_mask
+  xpos -588
+  ypos -248
+  number 1
+ }
+ Expression {
+  channel3 {-rgba.red -rgba.green -rgba.blue rgba.alpha}
+  expr3 a>0.0001
+  name Expression13
+  xpos -588
+  ypos 195
+ }
+ Input {
+  inputs 0
+  name InputImg
+  xpos -742
+  ypos -248
+ }
+ AddChannels {
+  channels rgba
+  name AddChannels1
+  xpos -742
+  ypos -204
+ }
+set N325c5800 [stack 0]
+ Grade {
+  multiply {1 1 1 1}
+  add {0 0 0 0}
+  name Grade11
+  tile_color 0x7aa9ff00
+  xpos -911
+  ypos -204
+ }
+ Clamp {
+  maximum_enable false
+  name Clamp2
+  xpos -911
+  ypos -165
+ }
+set N325ea000 [stack 0]
+push $N325ea000
+push $N325ea000
+ IBK {
+  inputs 3
+  blue_green_weight 1
+  rgbal true
+  name IBKB
+  xpos -911
+  ypos -105
+ }
+push $N325ea000
+push $N325ea000
+push $N325ea000
+ IBK {
+  inputs 3
+  screen_type green
+  blue_green_weight 1
+  rgbal true
+  name IBKG
+  xpos -1014
+  ypos -105
+ }
+ Switch {
+  inputs 2
+  which {{parent.ScreenType}}
+  name Switch1
+  xpos -911
+  ypos -63
+ }
+ Invert {
+  channels alpha
+  name Invert2
+  tile_color 0x7aa9ff00
+  xpos -911
+  ypos -29
+ }
+ Erode {
+  size {{parent.Dot_start.erodeslider}}
+  name Erode1
+  xpos -911
+  ypos 23
+ }
+push $N325c5800
+ Unpremult {
+  name Unpremult2
+  xpos -742
+  ypos -76
+ }
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 rgba.alpha
+  name Copy1
+  xpos -742
+  ypos 23
+ }
+ Premult {
+  name Premult1
+  xpos -742
+  ypos 69
+ }
+ Blur {
+  channels rgba
+  size 0.5
+  name Blur10
+  tile_color 0xcc804e00
+  xpos -742
+  ypos 103
+ }
+ Unpremult {
+  name Unpremult10
+  xpos -742
+  ypos 139
+ }
+ Expression {
+  channel3 {-rgba.red -rgba.green -rgba.blue rgba.alpha}
+  expr3 a>0
+  name Expression2
+  xpos -742
+  ypos 164
+ }
+ Merge2 {
+  inputs 2
+  operation stencil
+  name Stencil
+  label "Bbox: \[value bbox]"
+  xpos -742
+  ypos 189
+ }
+set N32623000 [stack 0]
+ Dot {
+  name Dot2
+  xpos -1170
+  ypos 199
+ }
+ Expression {
+  expr3 r>0
+  name Expression14
+  xpos -1204
+  ypos 1540
+ }
+ Input {
+  inputs 0
+  name Mask
+  xpos -1008
+  ypos 1328
+  number 2
+ }
+ Dot {
+  name maskInputDot
+  xpos -1008
+  ypos 1428
+ }
+ Invert {
+  name Invert1
+  xpos -883
+  ypos 1419
+ }
+push $N32623000
+ Dot {
+  name Dot_start
+  knobChanged "n = nuke.thisNode()\nk = nuke.thisKnob()\nsteps_knob = n.knob(\"ibk_steps\").value()\nmaskInputNode = nuke.toNode(\"maskInputDot\")\n\nif k.name() == \"ibk_steps\":\n    nuke.selectAll()\n    nuke.invertSelection()\n\nif k.name() == \"ibk_steps\":\n    sn = nuke.toNode(\"Dot_start\")\n    dot_end = nuke.toNode(\"Dot_end\")\n    itr_num= int(steps_knob)\n    blurSize = 2\n    EdgeExSize = 1\n\n\nif k.name() == \"use_mask\":\n    if n.knob(\"use_mask\").value() == 1:\n        maskInput = nuke.createNode(\"Input\",inpanel=False)\n        maskInput.knob(\"name\").setValue(\"Mask\")\n        maskInput.setXYpos(maskInputNode.xpos(),maskInputNode.ypos()-100)\n        maskInputNode.setInput(0,maskInput)\n    else:\n        deleteMaskNode = nuke.toNode(\"InputMask\")\n        for deleteMaskNode in nuke.allNodes():\n            node_name = deleteMaskNode.name()\n            if node_name.startswith(\"Mask\"):\n                nuke.delete(deleteMaskNode)\n    \n    \nif k.name() == \"ibk_steps\":\n    if n\[\"ibk_steps\"].value() > 10 or n\[\"ibk_steps\"].value() < 0:\n        nuke.message(\"Avoid selecting step values outside 0 and 10 as it may lead to performance issues or may crashes Nuke. Instead, utilize the 'Patch Roughly' option to fill the remaining areas.\")\n    else:\n        new_value = max(0, min(int(n\[\"ibk_steps\"].value()), 10))\n        \n        n\[\"ibk_steps\"].setValue(new_value)\n        \n        all_nodes = nuke.allNodes()\n        for nodex in all_nodes:\n            node_name = nodex.name()\n            if node_name.startswith(\"x_\"):\n                nuke.delete(nodex)\n    \n    \n    \n        sn.setSelected(True)\n        for i in range(itr_num): \n            \n            #create\n    \n            ex_a_clamp1 = nuke.createNode(\"Expression\",inpanel=False)\n            ex_a_clamp1.knob(\"name\").setValue(\"x_expr\"+str(0+i))\n            \n            blur_n = nuke.createNode(\"Blur\",inpanel=False)\n            blur_n.knob(\"name\").setValue(\"x_blur\"+str(0+i))\n            \n            unpremult_n = nuke.createNode(\"Unpremult\",inpanel=False)\n            unpremult_n.knob(\"name\").setValue(\"x_unpremult\"+str(0+i))\n            \n            ex_a_clamp2 = nuke.createNode(\"Expression\",inpanel=False)\n            ex_a_clamp2.knob(\"name\").setValue(\"x_expr2\"+str(0+i))\n            \n            EdgeEx = nuke.createNode(\"EdgeExtend\",inpanel=False)\n            EdgeEx.knob(\"name\").setValue(\"x_EdgeEx\"+str(0+i))\n            \n            merge_n = nuke.createNode(\"Merge2\",inpanel=False)\n            merge_n.knob(\"name\").setValue(\"x_merge\"+str(0+i))\n            \n            \n            \n            #connect nodes\n            if ex_a_clamp1.name() == \"x_expr0\":\n                ex_a_clamp1.setInput(0,sn)\n            else:\n                ex_a_clamp1.setInput(0,merge_n)\n            blur_n.setInput(0,ex_a_clamp1)\n            unpremult_n.setInput(0,blur_n)\n            ex_a_clamp2.setInput(0,unpremult_n)\n            EdgeEx.setInput(0,ex_a_clamp2)\n            EdgeEx.setInput(1,ex_a_clamp2)\n            merge_n.setInput(1,ex_a_clamp1)\n            merge_n.setInput(0,EdgeEx)\n            \n            #set value\n            ex_a_clamp1.knob(\"expr3\").setValue(\"clamp(r+g+b)>0\")\n            ex_a_clamp2.knob(\"expr3\").setValue(\"clamp(r+g+b)>0\")\n            blur_n.knob(\"channels\").setValue(\"rgba\")\n            blur_n.knob(\"crop\").setValue(False)\n            blur_n.knob(\"size\").setValue(blurSize)\n            blurSize *= 2\n            EdgeEx.knob(\"erode\").setValue(EdgeExSize)\n            EdgeEx.knob(\"sourceIsPremultiplied\").setValue(True)\n            EdgeEx.knob(\"detailAmount\").setValue(0)\n            EdgeExSize *= 2\n            \n            nuke.selectAll()\n            nuke.invertSelection()        \n            merge_n.setSelected(True)\n            "
+  xpos -708
+  ypos 284
+  addUserKnob {20 User}
+  addUserKnob {7 ibk_steps R 0 10}
+  addUserKnob {7 erodeslider l Erode R 0 10}
+  addUserKnob {6 use_mask l "Enable Mask Input" +STARTLINE}
+  use_mask true
+ }
+ Dot {
+  name Dot_end
+  xpos -708
+  ypos 1204
+ }
+ Dot {
+  name Dot1
+  xpos -708
+  ypos 1286
+ }
+set N32658c00 [stack 0]
+push $N32658c00
+ EdgeExtend {
+  inputs 2
+  matte "Matte Alpha"
+  sourceIsPremultiplied true
+  detailAmount 0
+  premultiply false
+  name EdgeExtend1
+  xpos -885
+  ypos 1283
+  disable {{parent.Merge1.disable}}
+ }
+ Expression {
+  expr3 1
+  name Expression1
+  xpos -885
+  ypos 1367
+  disable {{parent.Merge1.disable}}
+ }
+push $N32658c00
+ Merge2 {
+  inputs 2
+  operation under
+  bbox B
+  name Merge1
+  xpos -742
+  ypos 1367
+  disable {{!parent.rough_ptch x8 1}}
+ }
+ Merge2 {
+  inputs 2
+  operation stencil
+  name MergeMask
+  label "Bbox: \[value bbox]"
+  xpos -742
+  ypos 1419
+  disable {{!parent.Dot_start.use_mask}}
+ }
+ Group {
+  name CropOverscan
+  help "<center><b>k_CropOverscan</b>\n\nTrims off everythin outside a rectangle. So everything ouside the rectangle is black.</center>\n\n\n\n\n\n<left><i>&#169; Nicolas Gauthier  |  contact@niko-vfx.com</i></left>"
+  tile_color 0xa57aaa00
+  xpos -742
+  ypos 1479
+  disable {{!parent.UseCrop}}
+  addUserKnob {20 SettingsTab l Settings}
+  addUserKnob {68 cliptype l "clip to" M {format "union bbox + format"}}
+  cliptype "union bbox + format"
+  addUserKnob {14 overscan R 0 1000}
+  overscan {{OverscanAmt}}
+  addUserKnob {3 OverscanAmt l Overscan}
+  OverscanAmt {{parent.OverscanValue}}
+  addUserKnob {20 TabParamsEnd l "" +STARTLINE n -3}
+ }
+  Input {
+   inputs 0
+   name Input
+   xpos 0
+  }
+  Crop {
+   box {{"cliptype==0?-parent.overscan.w:clamp(input.bbox.x, -parent.overscan.w, input.width+parent.overscan.w)"} {"cliptype==0?-parent.overscan.h:clamp(input.bbox.y, -parent.overscan.h, input.height+parent.overscan.h)"} {"cliptype==0?input.width+parent.overscan.w:clamp(input.bbox.r, -parent.overscan.w, input.width+parent.overscan.w)"} {"cliptype==0?input.height+parent.overscan.h:clamp(input.bbox.t, -parent.overscan.h, input.height+parent.overscan.h)"}}
+   crop false
+   name Overscan
+   selected true
+   xpos 0
+   ypos 88
+  }
+  Output {
+   name Output
+   xpos 0
+   ypos 150
+  }
+ end_group
+ Switch {
+  inputs 2
+  which {{parent.view_without_patch}}
+  name view_without_patch
+  xpos -742
+  ypos 1540
+ }
+ Output {
+  name Output1
+  xpos -742
+  ypos 1624
+ }
+end_group

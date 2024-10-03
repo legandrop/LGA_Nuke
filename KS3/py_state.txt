@@ -1,0 +1,212 @@
+{
+    "cursor_pos": {
+        "Rotate_Shortcut/Funciona_Con_foco_en_viewer.py": [
+            1055,
+            1055
+        ],
+        "Rotate_Shortcut/Rotate_Shortcut.py": [
+            508,
+            508
+        ],
+        "Rotate_Shortcut/Untitled.py": [
+            331,
+            331
+        ],
+        "scripts/0_Reload_Script_copy.py": [
+            82,
+            82
+        ],
+        "scripts/Assets_in_folder.py": [
+            4275,
+            4275
+        ],
+        "scripts/LGA_Align.py": [
+            149,
+            149
+        ],
+        "scripts/LGA_Hiero_RemoveVersions.py": [
+            2953,
+            2953
+        ],
+        "scripts/LGA_Hiero_ReplaceClip.py": [
+            1217,
+            0
+        ],
+        "scripts/LGA_NKS_Colors.py": [
+            2029,
+            0
+        ],
+        "scripts/LGA_Node_Position.py": [
+            478,
+            478
+        ],
+        "scripts/LGA_Propiedades_Nodo.py": [
+            300,
+            300
+        ],
+        "scripts/LGA_ReconnectClip.py": [
+            5137,
+            5137
+        ],
+        "scripts/LGA_Relink.py": [
+            3334,
+            3334
+        ],
+        "scripts/LGA_ReplaceClip.py": [
+            721,
+            721
+        ],
+        "scripts/LGA_TodosLosKnobs_DeUnNodo.py": [
+            0,
+            0
+        ],
+        "scripts/LGA_assetManager.py": [
+            73838,
+            73838
+        ],
+        "scripts/LGA_assetsTrasher.py": [
+            7289,
+            7289
+        ],
+        "scripts/LGA_disableManager.py": [
+            3594,
+            3594
+        ],
+        "scripts/LGA_mediaManager.py": [
+            73415,
+            73415
+        ],
+        "scripts/LGA_nodePosition.py": [
+            49,
+            49
+        ],
+        "scripts/LGA_selectNodes.py": [
+            2172,
+            2172
+        ],
+        "scripts/Reconnect.py": [
+            84,
+            84
+        ],
+        "scripts/Relink_N_a_T.py": [
+            223,
+            223
+        ],
+        "scripts/Relink_T_a_N.py": [
+            375,
+            375
+        ],
+        "scripts/Reload_Script.py": [
+            0,
+            0
+        ],
+        "scripts/Reload_Script_oz_BD.py": [
+            154,
+            154
+        ],
+        "scripts/Reload_WK_Tools.py": [
+            0,
+            0
+        ],
+        "scripts/Reload_ozBackdrop.py": [
+            0,
+            0
+        ],
+        "scripts/RenamWri_v01.py": [
+            837,
+            837
+        ],
+        "scripts/Testea.py": [
+            540,
+            540
+        ],
+        "scripts/Untitled.py": [
+            638,
+            638
+        ],
+        "scripts/Write_Default.py": [
+            704,
+            704
+        ],
+        "scripts/Write_From_Selected_Read.py": [
+            589,
+            589
+        ],
+        "scripts/_Reload_Script.py": [
+            0,
+            0
+        ],
+        "scripts/borrame2trash.py": [
+            222,
+            222
+        ],
+        "scripts/cargar_reconnect.py": [
+            43,
+            43
+        ],
+        "scripts/chatgpt.py": [
+            434,
+            434
+        ],
+        "scripts/gpt2.py": [
+            389,
+            389
+        ],
+        "scripts/gpt3.py": [
+            0,
+            0
+        ],
+        "scripts/oz_backdrop_replacer.py": [
+            2071,
+            0
+        ]
+    },
+    "last_folder": "scripts",
+    "last_script": "Untitled.py",
+    "scroll_pos": {
+        "Rotate_Shortcut/Funciona_Con_foco_en_viewer.py": 0,
+        "Rotate_Shortcut/Rotate_Shortcut.py": 0,
+        "Rotate_Shortcut/Untitled.py": 0,
+        "scripts/0_Reload_Script_copy.py": 0,
+        "scripts/Assets_in_folder.py": 73,
+        "scripts/LGA_Align.py": 0,
+        "scripts/LGA_Hiero_RemoveVersions.py": 62,
+        "scripts/LGA_Hiero_ReplaceClip.py": 26,
+        "scripts/LGA_NKS_Colors.py": 28,
+        "scripts/LGA_Node_Position.py": 0,
+        "scripts/LGA_Propiedades_Nodo.py": 0,
+        "scripts/LGA_ReconnectClip.py": 136,
+        "scripts/LGA_Relink.py": 51,
+        "scripts/LGA_ReplaceClip.py": 5,
+        "scripts/LGA_TodosLosKnobs_DeUnNodo.py": 0,
+        "scripts/LGA_assetManager.py": 1477,
+        "scripts/LGA_assetsTrasher.py": 148,
+        "scripts/LGA_disableManager.py": 52,
+        "scripts/LGA_mediaManager.py": 1483,
+        "scripts/LGA_nodePosition.py": 0,
+        "scripts/LGA_selectNodes.py": 11,
+        "scripts/Reconnect.py": 0,
+        "scripts/Relink_N_a_T.py": 0,
+        "scripts/Relink_T_a_N.py": 0,
+        "scripts/Reload_Script.py": 0,
+        "scripts/Reload_Script_oz_BD.py": 0,
+        "scripts/Reload_WK_Tools.py": 0,
+        "scripts/Reload_ozBackdrop.py": 0,
+        "scripts/RenamWri_v01.py": 0,
+        "scripts/Testea.py": 0,
+        "scripts/Untitled.py": 10,
+        "scripts/Write_Default.py": 7,
+        "scripts/Write_From_Selected_Read.py": 0,
+        "scripts/_Reload_Script.py": 0,
+        "scripts/borrame2trash.py": 0,
+        "scripts/cargar_reconnect.py": 0,
+        "scripts/chatgpt.py": 0,
+        "scripts/gpt2.py": 0,
+        "scripts/gpt3.py": 0,
+        "scripts/oz_backdrop_replacer.py": 21
+    },
+    "splitter_sizes": [
+        284,
+        192
+    ]
+}

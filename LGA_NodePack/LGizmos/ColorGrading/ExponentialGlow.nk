@@ -1,0 +1,331 @@
+Group {
+ name Exponential_Glow
+ help "This gizmo is a port of Stuart Lashley's popular Exponential Glow macro from Shake. Will glow the highs on the input and create a nice falloff. Main dependency with Viewer has been removed so should be ok in stereo/mono views."
+ knobChanged "node = nuke.thisNode()\nkc = nuke.thisKnob()\n\nif kc.name() in \[\"iterations\"]:\n    p = nuke.toNode('Merge1')\n    g = nuke.toNode('Grade')\n    m = nuke.toNode('Multiply1')\n    b =  nuke.toNode('Blur')\n    s = nuke.toNode('Switch1')\n    k= nuke.toNode('Keymix1')\n    \n    for n in nuke.allNodes():\n      if \"static\" not in n\['label'].getValue():\n          nuke.delete(n)\n          s.setInput(0,p)\n        \n    slices = int(node\['iterations'].value())  \n    if slices > 1:  \n        p1 = nuke.nodes.Merge2()\n        p1\['operation'].setValue('plus')\n        p1.setInput(0,p)\n        for x in range(1,slices):  \n            b1 = nuke.nodes.Blur()\n            b1.setInput(0, g)\n            b1\['size'].setValue(1,1)\n            b1\['size'].setExpression('parent.%s.size.w*2'%b.name(), 0)\n            b1\['size'].setExpression('parent.%s.size.h*2'%b.name(), 1)\n            b1\['crop'].setExpression('cropformat')\n            b1\['quality'].setExpression('\[python nuke.thisGroup().name()].quality') \n            b1\['channels'].setValue('rgba')\n          \n            m1 = nuke.nodes.Multiply()\n            m1.setInput(0,b1)\n            m1\['value'].setExpression('parent.%s.value/ExpoGlow.falloff'%m.name())  \n            \n            p1.setInput(x+2,m1)\n            k.setInput(1,p1)\n            s.setInput(0,p1)\n            \n            for n in \[b1,m1,p1]:\n                nuke.autoplace(n)\n            \n            m = m1\n            b = b1\n   \nif kc.name() in \[\"inputChange\"]:         \n    if nuke.thisNode().input(1):\n        if nuke.thisNode()\['maskChannel'].value() == 'none':\n            nuke.thisNode()\['maskChannel'].setValue(\"rgba.alpha\")\n        else:\n            pass\n    else:\n        nuke.thisNode()\['maskChannel'].setValue(\"none\")            \n           "
+ tile_color 0xffdb00ff
+ selected true
+ xpos 9031
+ ypos -7951
+ addUserKnob {20 User l "Exponential Glow"}
+ addUserKnob {26 title l "" +STARTLINE T "<b><font size=3>Exponential glow</font></b><font size=1> v1.0</font><br>\n<font size=1>Iterations control</font>"}
+ addUserKnob {26 ""}
+ addUserKnob {3 iterations}
+ iterations 10
+ addUserKnob {26 iterations_1 l "" -STARTLINE T "<i>Iterations is the number of blur node added.<br><b>10</b> is the standard node value.</i>"}
+ addUserKnob {26 ""}
+ addUserKnob {41 add_source l "Add Source" T ExpoGlow.add_source}
+ addUserKnob {6 cropformat l "Crop to format" -STARTLINE}
+ addUserKnob {26 ""}
+ addUserKnob {20 range n 1}
+ range 0
+ addUserKnob {41 range_1 l "" +STARTLINE T Keyer1.range}
+ addUserKnob {20 endGroup n -1}
+ addUserKnob {26 ""}
+ addUserKnob {41 falloff T ExpoGlow.falloff}
+ addUserKnob {7 intensity R 0 10}
+ intensity 1
+ addUserKnob {41 blur_amount l size T ExpoGlow.blur_amount}
+ addUserKnob {7 squeeze R 0 5}
+ squeeze 1
+ addUserKnob {26 ""}
+ addUserKnob {7 quality R 1 15}
+ quality 6
+ addUserKnob {26 qualityinfo l "" +STARTLINE T "<i><br><b>15</b> is the standard blur quality.</i>"}
+ addUserKnob {26 ""}
+ addUserKnob {41 overscan T Crop2.overscan +NO_HANDLES}
+ addUserKnob {26 pct l "" -STARTLINE T " %"}
+ addUserKnob {6 enableOverscan l enable -STARTLINE}
+ enableOverscan true
+ addUserKnob {26 ""}
+ addUserKnob {41 maskChannel l mask T Keymix1.maskChannel}
+ addUserKnob {41 invertMask l invert -STARTLINE T Keymix1.invertMask}
+ addUserKnob {26 ""}
+ addUserKnob {26 info l INVISIBLE +INVISIBLE T "Brad-f exponential glow based, iterations + quality modified by Olivier-B"}
+}
+ Input {
+  inputs 0
+  name mask
+  label static
+  xpos -1
+  ypos 571
+  number 1
+ }
+ Input {
+  inputs 0
+  name Input1
+  label static
+  xpos -371
+  ypos -733
+ }
+ NoOp {
+  name ExpoGlow
+  label static
+  xpos -371
+  ypos -609
+  addUserKnob {20 User}
+  addUserKnob {7 falloff l Falloff R 0 3}
+  falloff 1
+  addUserKnob {7 intensity l Intensity R 0 5}
+  intensity {{parent.intensity*10}}
+  addUserKnob {7 blur_amount l Size R 0 5}
+  blur_amount 1
+  addUserKnob {6 add_source l "Add Source" +STARTLINE}
+  addUserKnob {6 add_bbox l "Add original bbox" +STARTLINE}
+ }
+set N81915500 [stack 0]
+ Dot {
+  name Dot11
+  label static
+  xpos 55
+  ypos -599
+ }
+ Keyer {
+  operation "luminance key"
+  name Keyer1
+  label static
+  xpos 21
+  ypos -468
+ }
+ Premult {
+  name Premult1
+  label static
+  xpos 21
+  ypos -408
+ }
+ Remove {
+  operation keep
+  channels rgba
+  name Remove1
+  label static
+  xpos 21
+  ypos -370
+ }
+ Grade {
+  white {{ExpoGlow.intensity/100}}
+  name Grade
+  label static
+  xpos 21
+  ypos -335
+ }
+set N33448900 [stack 0]
+ Blur {
+  channels rgba
+  size {{parent.Blur8.size.w*2} {parent.Blur8.size.h*2}}
+  quality {{"\[python nuke.thisGroup().name()].quality"}}
+  crop {{cropformat}}
+  name Blur9
+  xpos 1011
+  ypos -297
+ }
+ Multiply {
+  value {{parent.Multiply9.value/ExpoGlow.falloff}}
+  name Multiply10
+  xpos 1011
+  ypos -271
+ }
+push $N33448900
+ Blur {
+  channels rgba
+  size {{parent.Blur7.size.w*2} {parent.Blur7.size.h*2}}
+  quality {{"\[python nuke.thisGroup().name()].quality"}}
+  crop {{cropformat}}
+  name Blur8
+  xpos 901
+  ypos -297
+ }
+ Multiply {
+  value {{parent.Multiply8.value/ExpoGlow.falloff}}
+  name Multiply9
+  xpos 901
+  ypos -207
+ }
+push $N33448900
+ Blur {
+  channels rgba
+  size {{parent.Blur6.size.w*2} {parent.Blur6.size.h*2}}
+  quality {{"\[python nuke.thisGroup().name()].quality"}}
+  crop {{cropformat}}
+  name Blur7
+  xpos 791
+  ypos -297
+ }
+ Multiply {
+  value {{parent.Multiply7.value/ExpoGlow.falloff}}
+  name Multiply8
+  xpos 791
+  ypos -207
+ }
+push $N33448900
+ Blur {
+  channels rgba
+  size {{parent.Blur5.size.w*2} {parent.Blur5.size.h*2}}
+  quality {{"\[python nuke.thisGroup().name()].quality"}}
+  crop {{cropformat}}
+  name Blur6
+  xpos 681
+  ypos -297
+ }
+ Multiply {
+  value {{parent.Multiply6.value/ExpoGlow.falloff}}
+  name Multiply7
+  xpos 681
+  ypos -207
+ }
+push $N33448900
+ Blur {
+  channels rgba
+  size {{parent.Blur4.size.w*2} {parent.Blur4.size.h*2}}
+  quality {{"\[python nuke.thisGroup().name()].quality"}}
+  crop {{cropformat}}
+  name Blur5
+  xpos 571
+  ypos -297
+ }
+ Multiply {
+  value {{parent.Multiply5.value/ExpoGlow.falloff}}
+  name Multiply6
+  xpos 571
+  ypos -207
+ }
+push $N33448900
+ Blur {
+  channels rgba
+  size {{parent.Blur3.size.w*2} {parent.Blur3.size.h*2}}
+  quality {{"\[python nuke.thisGroup().name()].quality"}}
+  crop {{cropformat}}
+  name Blur4
+  xpos 461
+  ypos -297
+ }
+ Multiply {
+  value {{parent.Multiply4.value/ExpoGlow.falloff}}
+  name Multiply5
+  xpos 461
+  ypos -207
+ }
+push $N33448900
+ Blur {
+  channels rgba
+  size {{parent.Blur2.size.w*2} {parent.Blur2.size.h*2}}
+  quality {{"\[python nuke.thisGroup().name()].quality"}}
+  crop {{cropformat}}
+  name Blur3
+  xpos 351
+  ypos -297
+ }
+ Multiply {
+  value {{parent.Multiply3.value/ExpoGlow.falloff}}
+  name Multiply4
+  xpos 351
+  ypos -207
+ }
+push $N33448900
+ Blur {
+  channels rgba
+  size {{parent.Blur1.size.w*2} {parent.Blur1.size.h*2}}
+  quality {{"\[python nuke.thisGroup().name()].quality"}}
+  crop {{cropformat}}
+  name Blur2
+  xpos 241
+  ypos -297
+ }
+ Multiply {
+  value {{parent.Multiply2.value/ExpoGlow.falloff}}
+  name Multiply3
+  xpos 241
+  ypos -207
+ }
+push $N33448900
+ Blur {
+  channels rgba
+  size {{parent.Blur.size.w*2} {parent.Blur.size.h*2}}
+  quality {{"\[python nuke.thisGroup().name()].quality"}}
+  crop {{cropformat}}
+  name Blur1
+  xpos 131
+  ypos -297
+ }
+ Multiply {
+  value {{parent.Multiply1.value/ExpoGlow.falloff}}
+  name Multiply2
+  xpos 131
+  ypos -207
+ }
+push 0
+push 0
+push $N81915500
+push $N33448900
+ Blur {
+  channels rgba
+  size {{width/3*(ExpoGlow.blur_amount/100)*squeeze x1001 6.826666667e+10} {width/3*(ExpoGlow.blur_amount/100) x1001 6.826666667e+10}}
+  quality {{parent.quality}}
+  crop false
+  name Blur
+  label static
+  xpos 21
+  ypos -297
+  addUserKnob {20 User}
+  addUserKnob {7 xpercent l xPercent R 0 100}
+  xpercent {{ExpoGlow.blur_amount}}
+  addUserKnob {7 ypercent l yPercent R 0 100}
+  ypercent {{xpercent/format.pixel_aspect/height*width}}
+ }
+ Multiply {
+  name Multiply1
+  label static
+  xpos 21
+  ypos -259
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge1
+  label static
+  xpos 21
+  ypos -207
+  disable {{!ExpoGlow.add_source}}
+ }
+ Merge2 {
+  inputs 11+1
+  operation plus
+  name Merge2
+  xpos 1011
+  ypos -201
+ }
+set N17f40b90 [stack 0]
+push $N81915500
+ Keymix {
+  inputs 3
+  maskChannel none
+  name Keymix1
+  label static
+  xpos -226
+  ypos 565
+ }
+push $N17f40b90
+ Switch {
+  inputs 2
+  which {{Keymix1.maskChannel}}
+  name Switch1
+  label static
+  xpos -371
+  ypos 571
+ }
+ Crop {
+  box {{-width*overscan/200} {-height*overscan/200} {width+width*overscan/200} {height+height*overscan/200}}
+  name Crop2
+  label static
+  xpos -371
+  ypos 688
+  disable {{!(enableOverscan)}}
+  addUserKnob {20 User}
+  addUserKnob {7 overscan R 0 100}
+  overscan 10
+ }
+ Output {
+  name Output1
+  label static
+  xpos -371
+  ypos 853
+ }
+end_group

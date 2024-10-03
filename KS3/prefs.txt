@@ -1,0 +1,15 @@
+{
+    "code_style_python": "monokai",
+    "ks_blink_autosave_on_compile": false,
+    "ks_default_size": [
+        800,
+        500
+    ],
+    "ks_run_in_context": true,
+    "ks_save_knob_state": 1,
+    "ks_save_py_state": 2,
+    "ks_show_knob_labels": true,
+    "se_font_family": "MS Shell Dlg 2",
+    "se_font_size": 12,
+    "se_tab_spaces": 4
+}

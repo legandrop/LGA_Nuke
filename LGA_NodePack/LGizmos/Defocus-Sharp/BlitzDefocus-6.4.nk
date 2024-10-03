@@ -1,0 +1,2671 @@
+#! /Applications/Nuke12.2v3/Nuke12.2v3.app/Contents/MacOS/libnuke-12.2.3.dylib -nx
+version 12.2 v3
+define_window_layout_xml {<?xml version="1.0" encoding="UTF-8"?>
+<layout version="1.0">
+    <window x="0" y="23" w="1440" h="855" maximized="1" screen="0">
+        <splitter orientation="1">
+            <split size="40"/>
+            <dock id="" hideTitles="1" activePageId="Toolbar.1">
+                <page id="Toolbar.1"/>
+            </dock>
+            <split size="777" stretch="1"/>
+            <splitter orientation="2">
+                <split size="490"/>
+                <dock id="" activePageId="Viewer.1">
+                    <page id="Viewer.1"/>
+                </dock>
+                <split size="345"/>
+                <dock id="" activePageId="DAG.1" focus="true">
+                    <page id="DAG.1"/>
+                    <page id="Curve Editor.1"/>
+                    <page id="DopeSheet.1"/>
+                    <page id="DAG.2"/>
+                </dock>
+            </splitter>
+            <split size="615"/>
+            <dock id="" activePageId="Properties.1">
+                <page id="Properties.1"/>
+                <page id="uk.co.thefoundry.backgroundrenderview.1"/>
+            </dock>
+        </splitter>
+    </window>
+</layout>
+}
+Root {
+ inputs 0
+ name /Users/maximeservoise/Documents/WORK/DEV/BlitzDefocus-6.4.nk
+ colorManagement Nuke
+ workingSpaceLUT linear
+ monitorLut sRGB
+ int8Lut sRGB
+ int16Lut sRGB
+ logLut Cineon
+ floatLut linear
+}
+Group {
+ inputs 0
+ name BlitzDefocus
+ knobChanged "\nn = nuke.thisNode()\nk = nuke.thisKnob()\n\nif k.name() == 'OutputType':\n  n\['bokehVizPos'].setVisible(k.value() == \"Bokeh\")\n  n\['bokehVizSize'].setVisible(k.value() == \"Bokeh\")\n  n\['killSize'].setVisible(k.value() == \"Bokeh\")\n\nlens_list = \['relativeFilterSize', 'maskRadius', 'softness', 'noiseSize', 'noiseContrast']\ndiaphragm_list = \['radius', 'size_mult', 'anamorph', 'ring_color', 'ring_color_panelDropped', 'inner_color', 'inner_color_panelDropped', 'outer_falloff', 'outer_falloff_panelDropped', 'inner_falloff', 'inner_falloff_panelDropped', 'chroma_spread', 'chroma_shift', 'chroma_shift_angle', 'corners', 'flattening', 'sharpness', 'corners_angle']\n\nviz_list = \[\"vizLens\", \"vizDiaphragm\", \"vizRot\", \"vizSkew\", \"vizChroAbr\", \"vizLensOffset\", \"vizSize\"]\n\nif k.name() in viz_list:\n  disable_list = list(viz_list)\[:]\n  disable_list.remove(k.name())\n  for viz_knob in disable_list:\n    n\[viz_knob].setValue(False)\n\nif k.name() == 'inputChange':\n  for input_node in nuke.allNodes('Input', group=nuke.thisGroup()):\n    disable_list = list()\n    if input_node.name() == 'InputLens':\n      disable_list = lens_list\n    elif input_node.name() == 'InputFilter':\n      disable_list = diaphragm_list\n    for each in disable_list:\n      n\[each].setEnabled(input_node.channels()==\[])\n\n"
+ tile_color 0x4c70d6ff
+ xpos 94
+ ypos -74
+ addUserKnob {20 depthTab l Depth}
+ addUserKnob {26 name_1 l "" +STARTLINE T "<font face=\"helvetica\"\ncolor=#4b6fdb size=\"5\">blitz defocus</font>\n<font color=#4b6fdb size=\"2\">| v6.4</font>"}
+ addUserKnob {26 _2 l "" +STARTLINE T " "}
+ addUserKnob {41 format l "input format |" T inputFormat.format}
+ addUserKnob {3 filterAspect l "pixel aspect l" -STARTLINE}
+ filterAspect 1
+ addUserKnob {4 output l "output l" M {"Result\t" "Z Pass\t" Depth "" "" "" "" ""}}
+ addUserKnob {26 ""}
+ addUserKnob {26 deepPassText l "<font color=#ddd><b>Deep Pass" T " "}
+ addUserKnob {26 unitText l "                        unit" T " "}
+ addUserKnob {4 depth_unit l "" -STARTLINE M {mm cm dm m km "" "" "" "" "" ""}}
+ depth_unit m
+ addUserKnob {26 passText l "z pass" T " "}
+ addUserKnob {6 norm l normalize -STARTLINE}
+ addUserKnob {6 zInvert l invert -STARTLINE}
+ addUserKnob {26 zpass2 l normalization T " "}
+ addUserKnob {41 go_1 l analyze -STARTLINE T depthCurve.go}
+ addUserKnob {22 clearKeys l "clear keys" -STARTLINE T "nuke.toNode('depthCurve').knob('maxlumapixvalue').clearAnimated()\nnuke.toNode('depthCurve').knob('maxlumapixdata').clearAnimated()\nnuke.toNode('depthCurve').knob('minlumapixvalue').clearAnimated()\nnuke.toNode('depthCurve').knob('minlumapixdata').clearAnimated()\n\n"}
+ addUserKnob {22 resetValue l reset -STARTLINE T "nuke.toNode('depthCurve').knob('maxlumapixvalue').setValue(\[1,1,1])"}
+ addUserKnob {41 vizWhite l "" -STARTLINE T zNorm.vizWhite}
+ addUserKnob {26 ""}
+ addUserKnob {26 lensgeo l "<font color=#ddd><b>Lens Settings" T ""}
+ addUserKnob {7 focalLength l "focal length" R 8 300}
+ focalLength 14
+ addUserKnob {7 aperture}
+ aperture 24.576
+ addUserKnob {26 ""}
+ addUserKnob {26 depthControl l "<font color=#ddd><b>Depth of Field" T " "}
+ addUserKnob {6 constantDefocus l "constant defocus" +STARTLINE}
+ addUserKnob {6 inputAsDepth l "input as depth" -STARTLINE}
+ addUserKnob {18 sliceCenter l "focus distance" R 0 10}
+ sliceCenter 0.85
+ addUserKnob {6 sliceCenter_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {6 sliceCenter_panelDropped_1 l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {6 sliceCenter_panelDropped_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {6 sliceCenter_panelDropped_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {6 sliceCenter_panelDropped_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {6 sliceCenter_panelDropped_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {6 sliceCenter_panelDropped_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {7 fStop l f-stop R 1 32}
+ fStop 11
+ addUserKnob {7 radius l "<font\ncolor=#4b6fdb> max defocus l</font>" R 0 200}
+ radius 5
+ addUserKnob {7 fbDif l front/back t "Modify the defocus difference between front and back. Reduce lens fidelity." R 0 3}
+ addUserKnob {20 bokehTab l Bokeh}
+ addUserKnob {26 name_1_1 l "" +STARTLINE T "<font face=\"helvetica\"\ncolor=#4b6fdb size=\"5\">blitz defocus</font>\n<font color=#4b6fdb size=\"2\">| v6.4</font>"}
+ addUserKnob {26 _3 l "" +STARTLINE T " "}
+ addUserKnob {26 astigmatismTitle l "" +STARTLINE T "    astigmatism | "}
+ addUserKnob {22 tangentialButton l "<font color=#5b7feb >&nbsp;&nbsp;Tangential&nbsp;&nbsp;</font>" -STARTLINE T "nuke.toNode('rotCustomAdd').knob('mix').setValue(0)\nnuke.toNode('rotAdd').knob('mix').setValue(0)\n\nnuke.thisNode().knob('tangentialButton').setLabel('<font color=#5b7feb >&nbsp;&nbsp;Tangential&nbsp;&nbsp;</font>')\n\nnuke.thisNode().knob('sagittalButton').setLabel('<font color=#999999>&nbsp;&nbsp;Sagittal&nbsp;&nbsp;</font>')\nnuke.thisNode().knob('customButton').setLabel('<font color=#999999>&nbsp;&nbsp;Custom&nbsp;&nbsp;</font>')"}
+ addUserKnob {22 sagittalButton l "<font color=#999999>&nbsp;&nbsp;Sagittal&nbsp;&nbsp;</font>" -STARTLINE T "nuke.toNode('rotCustomAdd').knob('mix').setValue(0)\nnuke.toNode('rotAdd').knob('mix').setValue(1)\n\n\nnuke.thisNode().knob('sagittalButton').setLabel('<font color=#5b7feb >&nbsp;&nbsp;Sagittal&nbsp;&nbsp;</font>')\n\nnuke.thisNode().knob('tangentialButton').setLabel('<font color=#999999>&nbsp;&nbsp;Tangential&nbsp;&nbsp;</font>')\nnuke.thisNode().knob('customButton').setLabel('<font color=#999999>&nbsp;&nbsp;Custom&nbsp;&nbsp;</font>')"}
+ addUserKnob {22 customButton l "<font color=#999999>&nbsp;&nbsp;Custom&nbsp;&nbsp;</font>" -STARTLINE T "nuke.toNode('rotCustomAdd').knob('mix').setValue(1)\nnuke.toNode('rotAdd').knob('mix').setValue(0)\n\nnuke.thisNode().knob('customButton').setLabel('<font color=#5b7feb >&nbsp;&nbsp;Custom&nbsp;&nbsp;</font>')\n\nnuke.thisNode().knob('tangentialButton').setLabel('<font color=#999999>&nbsp;&nbsp;Tangential&nbsp;&nbsp;</font>')\n\nnuke.thisNode().knob('sagittalButton').setLabel('<font color=#999999>&nbsp;&nbsp;Sagittal&nbsp;&nbsp;</font>')"}
+ addUserKnob {6 visRotMap l "visualize map" -STARTLINE}
+ addUserKnob {7 rotAngle l "custom angle" R -90 270}
+ rotAngle 215
+ addUserKnob {7 rotAnamorph l "anamorph curve"}
+ rotAnamorph 0.5
+ addUserKnob {7 rotDistance l "distance curve"}
+ rotDistance 0.5
+ addUserKnob {26 ""}
+ addUserKnob {26 chromaTitle l "" +STARTLINE T "    chroma abb | "}
+ addUserKnob {22 spreadButton l "<font color=#999999>&nbsp;&nbsp;Spread&nbsp;&nbsp;</font>" -STARTLINE T "value = nuke.toNode('spread').knob('disable').getValue()\n\nif value==1 :\n  nuke.toNode('spread').knob('disable').setValue(0) \n  nuke.thisNode().knob('spreadButton').setLabel('<font color=#5b7feb >&nbsp;&nbsp;Spread&nbsp;&nbsp;</font>')\nelse : \n  nuke.toNode('spread').knob('disable').setValue(1)\n  nuke.thisNode().knob('spreadButton').setLabel('<font color=#999999>&nbsp;&nbsp;Spread&nbsp;&nbsp;</font>')"}
+ addUserKnob {3 spreadRed l "<font color=#a42840><b>|</font>" -STARTLINE}
+ spreadRed -22
+ addUserKnob {3 spreadGreen l "<font color=#45b898><b>|</font>" -STARTLINE}
+ spreadGreen -6
+ addUserKnob {3 spreadBlue l "<font color=#258dbf><b>|</font>" -STARTLINE}
+ spreadBlue 10
+ addUserKnob {22 lensButton l "<font color=#999999>&nbsp;&nbsp;&nbsp;&nbsp;Lens&nbsp;&nbsp;&nbsp;&nbsp;</font>" T "value = nuke.toNode('abb').knob('disable').getValue()\n\nif value==1 :\n  nuke.toNode('abb').knob('disable').setValue(0) \n  nuke.thisNode().knob('lensButton').setLabel('<font color=#5b7feb >&nbsp;&nbsp;&nbsp;&nbsp;Lens&nbsp;&nbsp;&nbsp;&nbsp;</font>')\nelse : \n  nuke.toNode('abb').knob('disable').setValue(1)\n  nuke.thisNode().knob('lensButton').setLabel('<font color=#999999>&nbsp;&nbsp;&nbsp;&nbsp;Lens&nbsp;&nbsp;&nbsp;&nbsp;</font>')" +STARTLINE}
+ addUserKnob {3 lensRed l "<font color=#a42840><b>|</font>" -STARTLINE}
+ lensRed 30
+ addUserKnob {3 lensGreen l "<font color=#45b898><b>|</font>" -STARTLINE}
+ addUserKnob {3 lensBlue l "<font color=#258dbf><b>|</font>" -STARTLINE}
+ lensBlue -30
+ addUserKnob {26 ""}
+ addUserKnob {7 occluOffset l "occlusion |" R 0 100}
+ addUserKnob {7 occluRing l ring}
+ addUserKnob {6 occluX l x -STARTLINE}
+ occluX true
+ addUserKnob {6 occluY l y -STARTLINE}
+ occluY true
+ addUserKnob {6 barnDoors l "barn doors" -STARTLINE}
+ addUserKnob {26 ""}
+ addUserKnob {26 lensBreathingText l "lens breathing |" T ""}
+ addUserKnob {6 breathInvert l invert -STARTLINE}
+ addUserKnob {7 lensBreathing l amount}
+ addUserKnob {7 breathOffset l offset R -0.2 0.2}
+ addUserKnob {26 ""}
+ addUserKnob {7 bokehPop l "bokeh pop |" t "Gamma downs - Gamma ups the plate to enhance the bokehs"}
+ addUserKnob {20 filterTab l Filter}
+ addUserKnob {26 name_2 l "" +STARTLINE T "<font face=\"helvetica\"\ncolor=#4b6fdb size=\"5\">blitz defocus</font>\n<font color=#4b6fdb size=\"2\">| v6.4</font>"}
+ addUserKnob {26 _4 l "" +STARTLINE T " "}
+ addUserKnob {3 filterRes l "resolution l"}
+ filterRes 128
+ addUserKnob {3 filterSize l "size |" -STARTLINE}
+ filterSize 57
+ addUserKnob {6 vizDiaphragm l visualize t "Visualize only the Diaphragm filter." -STARTLINE}
+ addUserKnob {7 anamorph}
+ anamorph 1
+ addUserKnob {26 ""}
+ addUserKnob {7 ringBrightness l "ring brightness"}
+ ringBrightness 1
+ addUserKnob {7 innerBrightness l "inner brightness"}
+ innerBrightness 0.2
+ addUserKnob {7 innerFalloff l "fallof strength" R 0 20}
+ innerFalloff 5
+ addUserKnob {7 falloffGamma l "falloff distance"}
+ falloffGamma 0.85
+ addUserKnob {26 ""}
+ addUserKnob {3 corners l "corners |"}
+ corners 1
+ addUserKnob {7 edgeFlattening l "edge flattening" R 0 100}
+ addUserKnob {7 cornerSharpness l "corner sharpness"}
+ addUserKnob {7 angle R 0 359}
+ addUserKnob {26 ""}
+ addUserKnob {20 noiseGroup l "noise " n 1}
+ noiseGroup 0
+ addUserKnob {7 simpleNoiseStrength l "turbulent l"}
+ simpleNoiseStrength 0.275
+ addUserKnob {7 simpleNoiseSize l size t "Size of the circular noise in the lens" R 0 5}
+ simpleNoiseSize 0.96
+ addUserKnob {7 simpleNoiseSeed l seed}
+ simpleNoiseSeed 0.56
+ addUserKnob {7 noiseGain l gain}
+ noiseGain 1
+ addUserKnob {7 noiseGamma l gamma}
+ noiseGamma 1
+ addUserKnob {26 noise_split l "" +STARTLINE}
+ addUserKnob {7 circularNoiseStrength l "circular l"}
+ circularNoiseStrength 0.135
+ addUserKnob {7 circularNoiseSize l iterations}
+ circularNoiseSize 0.11
+ addUserKnob {7 circularNoiseSeed1 l "seed A"}
+ circularNoiseSeed1 0.465
+ addUserKnob {7 circularNoiseSeed2 l "seed B"}
+ circularNoiseSeed2 0.38
+ addUserKnob {20 endGroup n -1}
+ addUserKnob {20 _1 l Performance}
+ addUserKnob {26 name_4 l "" +STARTLINE T "<font face=\"helvetica\"\ncolor=#4b6fdb size=\"5\">blitz defocus</font>\n<font color=#4b6fdb size=\"2\">| v6.4 | maxime servoise |</font>"}
+ addUserKnob {26 _6 l "" +STARTLINE T " "}
+ addUserKnob {4 bokehQuality l "quality |" t "scale down before convolve for faster result at price of sharpness" M {Highest High Medium Low "" "" "" "" "" "" "" "" "" "" "" ""}}
+ addUserKnob {6 useGpu l "use GPU if available" -STARTLINE}
+ useGpu true
+ addUserKnob {26 ""}
+ addUserKnob {26 depthFix l "depth extend |" T " "}
+ addUserKnob {6 edgeEnable l enable -STARTLINE}
+ addUserKnob {6 depthEdgesViz l visualize -STARTLINE}
+ addUserKnob {7 alphaDilate l dilate t "dilate : dilate depth through the alpha before extending it\nextend : extend depth to prevent high value defocus issues " R -1 1}
+ alphaDilate 1
+ addUserKnob {7 alphaExtend l extend t "dilate : dilate depth through the alpha before extending it\nextend : extend depth to prevent high value defocus issues " R 0 10}
+ alphaExtend 10
+ addUserKnob {26 ""}
+ addUserKnob {26 alphaOverscanText l "proc restrain |" T " "}
+ addUserKnob {6 restrainEnable l enable -STARTLINE}
+ restrainEnable true
+ addUserKnob {6 alphaViz l visualize -STARTLINE}
+ addUserKnob {7 alphaOverscan l overscan t "premults the depth by the alpha to improve the blinkscript proccessing speed" R 0 10}
+ alphaOverscan 3
+}
+ BackdropNode {
+  inputs 0
+  name BackdropNode6
+  tile_color 0x7171c600
+  note_font_size 42
+  xpos 1115
+  ypos 105
+  bdwidth 1562
+  bdheight 2336
+ }
+ Reformat {
+  inputs 0
+  format "1920 1080 0 0 1920 1080 1 HD_1080"
+  resize distort
+  name inputFormat
+  xpos 1770
+  ypos 1537
+ }
+ set C26080800 [stack 0]
+set N26080800 [stack 0]
+ Expression {
+  temp_name0 xCenter
+  temp_expr0 input.width/2
+  temp_name1 yCenter
+  temp_expr1 input.height/2
+  temp_name2 xRamp
+  temp_expr2 (xCenter-x)/width
+  temp_name3 yRamp
+  temp_expr3 (yCenter-y)/height
+  expr0 (atan2((xCenter-x),(yCenter-y)))
+  expr1 1-(((xRamp)*(xRamp)*anamorph_x+(yRamp)*(yRamp)*anamorph_y))
+  name rotMap
+  xpos 1770
+  ypos 1663
+  addUserKnob {20 User}
+  addUserKnob {7 anamorph_x}
+  anamorph_x {{parent.rotAnamorph}}
+  addUserKnob {7 anamorph_y}
+  anamorph_y {{1-anamorph_x}}
+ }
+ Gamma {
+  channels {-rgba.red rgba.green -rgba.blue none}
+  value {{parent.rotDistance+0.01}}
+  name rotDistanceCurve
+  xpos 1770
+  ypos 1687
+ }
+ Add {
+  channels {rgba.red -rgba.green -rgba.blue none}
+  value 1.6
+  mix 0
+  name rotAdd
+  xpos 1770
+  ypos 1711
+ }
+ Add {
+  channels {rgba.red -rgba.green -rgba.blue none}
+  value {{parent.rotAngle*3.14/180}}
+  mix 0
+  name rotCustomAdd
+  xpos 1770
+  ypos 1737
+ }
+ Reformat {
+  type scale
+  scale {{"parent.bokehQuality == 0 ? 1 : parent.bokehQuality == 1 ? .75 : parent.bokehQuality == 2 ? .5 : 0.25"}}
+  resize distort
+  black_outside true
+  name downRes
+  xpos 1770
+  ypos 1822
+ }
+ set C2603ac00 [stack 0]
+ Dot {
+  name blitzDot12
+  xpos 1804
+  ypos 1892
+ }
+set N2603a400 [stack 0]
+ Dot {
+  name blitzDot24
+  xpos 2158
+  ypos 2375
+  hide_input true
+ }
+ Shuffle {
+  red green
+  blue green
+  alpha green
+  name vizShuffle2
+  xpos 2124
+  ypos 2393
+ }
+ Input {
+  inputs 0
+  name Filter
+  xpos 1635
+  ypos 1413
+  number 2
+  addUserKnob {20 User}
+ }
+ Reformat {
+  type "to box"
+  box_width {{parent.filterRes}}
+  box_height {{parent.filterRes*parent.anamorph}}
+  box_fixed true
+  resize fill
+  filter Lanczos4
+  black_outside true
+  name filterFormat
+  xpos 1635
+  ypos 1437
+ }
+ Dot {
+  name blitzDot4
+  xpos 1669
+  ypos 1461
+ }
+set N26038c00 [stack 0]
+ Reformat {
+  inputs 0
+  type "to box"
+  box_width {{parent.filterRes*parent.anamorph}}
+  box_height {{parent.filterRes}}
+  box_fixed true
+  resize none
+  center false
+  name filterFormat1
+  xpos 1534
+  ypos 993
+  hide_input true
+ }
+set N26038800 [stack 0]
+ Flare {
+  position {{parent.filterRes*parent.anamorph/2} {parent.filterRes/2}}
+  radius {{curve} {parent.filterSize*parent.falloffGamma} {parent.filterSize}}
+  size_mult {{"anamorph > 1 ? (1+(1-anamorph))/filterAspect : (1-(1-anamorph))/filterAspect"} {"anamorph > 1 ? 1+(1-anamorph) : 1-(1-anamorph)"}}
+  anamorph {{parent.anamorph}}
+  ring_color {{parent.ringBrightness}}
+  inner_color {{parent.innerBrightness}}
+  inner_falloff {{parent.innerFalloff}}
+  chroma_shift_angle_add true
+  brightness {1 1 1}
+  vis_out 1
+  corners {{parent.corners}}
+  flattening {{parent.edgeFlattening}}
+  sharpness {{parent.cornerSharpness}}
+  corners_angle {{parent.angle}}
+  name Flare
+  xpos 1534
+  ypos 1035
+ }
+set N25ff3c00 [stack 0]
+ Shuffle {
+  red black
+  green black
+  blue black
+  alpha black
+  name filterBlack
+  xpos 1719
+  ypos 1035
+ }
+ Expression {
+  temp_name0 xCenter
+  temp_expr0 parent.Flare.position.x
+  temp_name1 yCenter
+  temp_expr1 parent.Flare.position.y
+  temp_name2 xRamp
+  temp_expr2 (xCenter-x)/width
+  temp_name3 yRamp
+  temp_expr3 (yCenter-y)/height
+  expr0 "sin(sqrt( (xCenter -x)*(xCenter -x)/parent.Flare.anamorph/parent.Flare.anamorph*aaa+ (yCenter - y) *(yCenter - y)*parent.Flare.anamorph*parent.Flare.anamorph*aaa)*bbb)*sin(sqrt( (xCenter -x)*(xCenter -x)/parent.Flare.anamorph/parent.Flare.anamorph*ccc+ (yCenter - y) *(yCenter - y)*parent.Flare.anamorph*parent.Flare.anamorph*ccc))"
+  name circularNoise
+  xpos 1719
+  ypos 1313
+  addUserKnob {20 User}
+  addUserKnob {7 ccc}
+  ccc {{parent.circularNoiseSize}}
+  addUserKnob {7 aaa R 0 10}
+  aaa {{parent.circularNoiseSeed1}}
+  addUserKnob {7 bbb R 0 10}
+  bbb {{parent.circularNoiseSeed2}}
+ }
+ Clamp {
+  channels {rgba.red -rgba.green -rgba.blue none}
+  name noiseClamp
+  xpos 1719
+  ypos 1337
+ }
+ Shuffle {
+  green red
+  blue red
+  alpha red
+  name fromRed
+  xpos 1719
+  ypos 1369
+ }
+push $N25ff3c00
+push $N25ff3c00
+ Copy {
+  inputs 2
+  from0 rgba.red
+  to0 rgba.alpha
+  name fromRed2
+  xpos 1534
+  ypos 1159
+ }
+ Dot {
+  name blitzDot7
+  xpos 1568
+  ypos 1234
+ }
+set N25ff2000 [stack 0]
+ Dot {
+  name blitzDot6
+  xpos 1662
+  ypos 1234
+ }
+ Noise {
+  replace true
+  size {{128/10*parent.simpleNoiseSize} {128/10*parent.simpleNoiseSize*parent.filterAspect}}
+  zoffset {{parent.simpleNoiseSeed}}
+  gain {{parent.noiseGain}}
+  gamma {{parent.noiseGamma}}
+  center {320 240}
+  name filterNoise
+  xpos 1628
+  ypos 1252
+ }
+ Clamp {
+  channels rgba
+  name noiseClamp1
+  xpos 1628
+  ypos 1276
+ }
+ Dot {
+  name blitzDot5
+  xpos 1662
+  ypos 1334
+ }
+push $N25ff2000
+ Merge2 {
+  inputs 2
+  operation multiply
+  bbox B
+  mix {{parent.simpleNoiseStrength}}
+  name simpleMerge
+  xpos 1534
+  ypos 1331
+ }
+ Merge2 {
+  inputs 2
+  operation multiply
+  bbox B
+  mix {{parent.circularNoiseStrength}}
+  name circularMerge
+  xpos 1534
+  ypos 1369
+ }
+ Crop {
+  box {0 0 {parent.filterFormat1.box_width} {parent.filterFormat1.box_height}}
+  name blackOutside1
+  xpos 1534
+  ypos 1393
+ }
+ Switch {
+  inputs 2
+  which {{"\[exists parent.input2] ? 1 : 0"}}
+  name filterSwitch
+  xpos 1534
+  ypos 1458
+ }
+ Group {
+  name spread
+  tile_color 0x5fc0ffff
+  xpos 1534
+  ypos 1677
+  disable true
+  addUserKnob {20 settings l Settings}
+  addUserKnob {6 crop +STARTLINE}
+  crop true
+  addUserKnob {18 offset l Offset R 0 0.1}
+  offset {{parent.spreadRed/1000} {parent.spreadGreen/1000} {parent.spreadBlue/1000}}
+  addUserKnob {6 offset_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {7 opacity}
+  opacity 1
+ }
+  Input {
+   inputs 0
+   name input
+   xpos -410
+   ypos -161
+  }
+  Dot {
+   name Dot8
+   xpos -376
+   ypos -93
+  }
+set N25f6b800 [stack 0]
+  Dot {
+   name Dot4
+   xpos -627
+   ypos -93
+  }
+set N25f6b400 [stack 0]
+  NoOp {
+   name param
+   xpos -764
+   ypos -96
+   hide_input true
+   addUserKnob {20 User}
+   addUserKnob {12 resolution}
+   resolution {{input.width} {input.height}}
+   addUserKnob {12 center}
+   center {{input.width/2} {input.height/2}}
+   addUserKnob {7 offsetR}
+   offsetR {{parent.offset.r}}
+   addUserKnob {7 offsetG}
+   offsetG {{parent.offset.g}}
+   addUserKnob {7 offsetB}
+   offsetB {{parent.offset.b}}
+   addUserKnob {7 opacity}
+   opacity {{parent.opacity}}
+  }
+push $N25f6b400
+  Dot {
+   name Dot1
+   xpos -627
+   ypos -61
+  }
+set N25f6ac00 [stack 0]
+  Dot {
+   name Dot2
+   xpos -724
+   ypos -61
+  }
+  Shuffle {
+   green black
+   blue black
+   alpha black
+   name Shuffle1
+   tile_color 0xff0000ff
+   xpos -758
+   ypos -43
+  }
+set N25f6a400 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform1
+   xpos -758
+   ypos -19
+  }
+push $N25f6a400
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve2
+   xpos -758
+   ypos 5
+  }
+set N25f69c00 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform5
+   xpos -758
+   ypos 37
+  }
+push $N25f69c00
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve5
+   xpos -758
+   ypos 61
+  }
+set N25f69400 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform6
+   xpos -758
+   ypos 93
+  }
+push $N25f69400
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve6
+   xpos -758
+   ypos 117
+  }
+set N25f68c00 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform7
+   xpos -758
+   ypos 149
+  }
+push $N25f68c00
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve8
+   xpos -758
+   ypos 173
+  }
+set N25f68400 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform13
+   xpos -758
+   ypos 205
+  }
+push $N25f68400
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve14
+   xpos -758
+   ypos 229
+  }
+set N25f1b800 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform14
+   xpos -758
+   ypos 261
+  }
+push $N25f1b800
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve15
+   xpos -758
+   ypos 285
+  }
+set N25f1b000 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform15
+   xpos -758
+   ypos 317
+  }
+push $N25f1b000
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve16
+   xpos -758
+   ypos 341
+  }
+set N25f1a800 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform16
+   xpos -758
+   ypos 373
+  }
+push $N25f1a800
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve17
+   xpos -758
+   ypos 397
+  }
+  Dot {
+   name Dot5
+   xpos -724
+   ypos 432
+  }
+push 0
+push $N25f6ac00
+  Dot {
+   name Dot3
+   xpos -529
+   ypos -61
+  }
+  Shuffle {
+   red black
+   green black
+   alpha black
+   name Shuffle3
+   tile_color 0xffff
+   xpos -563
+   ypos -43
+  }
+set N25f19400 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform2
+   xpos -563
+   ypos -19
+  }
+push $N25f19400
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve12
+   xpos -563
+   ypos 5
+  }
+set N25f18c00 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform4
+   xpos -563
+   ypos 37
+  }
+push $N25f18c00
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve4
+   xpos -563
+   ypos 61
+  }
+set N25f18400 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform11
+   xpos -563
+   ypos 93
+  }
+push $N25f18400
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve11
+   xpos -563
+   ypos 117
+  }
+set N3168f800 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform12
+   xpos -563
+   ypos 149
+  }
+push $N3168f800
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve13
+   xpos -563
+   ypos 173
+  }
+set N3168f000 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform21
+   xpos -563
+   ypos 205
+  }
+push $N3168f000
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve22
+   xpos -563
+   ypos 229
+  }
+set N3168e800 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform22
+   xpos -563
+   ypos 261
+  }
+push $N3168e800
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve23
+   xpos -563
+   ypos 285
+  }
+set N3168e000 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform23
+   xpos -563
+   ypos 317
+  }
+push $N3168e000
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve24
+   xpos -563
+   ypos 341
+  }
+set N3168d800 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform24
+   xpos -563
+   ypos 373
+  }
+push $N3168d800
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve25
+   xpos -563
+   ypos 397
+  }
+  Dot {
+   name Dot6
+   xpos -529
+   ypos 432
+  }
+push $N25f6ac00
+  Shuffle {
+   red black
+   blue black
+   alpha black
+   name Shuffle2
+   tile_color 0xff00ff
+   xpos -661
+   ypos -43
+  }
+set N3168c800 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform8
+   xpos -661
+   ypos -19
+  }
+set N3168c400 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform3
+   xpos -661
+   ypos 37
+  }
+push $N3168c400
+push $N3168c800
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve7
+   xpos -661
+   ypos 5
+  }
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve3
+   xpos -661
+   ypos 61
+  }
+set N31633400 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform9
+   xpos -661
+   ypos 93
+  }
+set N31633000 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform10
+   xpos -661
+   ypos 149
+  }
+push $N31633000
+push $N31633400
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve9
+   xpos -661
+   ypos 117
+  }
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve10
+   xpos -661
+   ypos 173
+  }
+set N31632400 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform17
+   xpos -661
+   ypos 205
+  }
+set N31632000 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform18
+   xpos -661
+   ypos 261
+  }
+push $N31632000
+push $N31632400
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve18
+   xpos -661
+   ypos 229
+  }
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve19
+   xpos -661
+   ypos 285
+  }
+set N31631400 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform19
+   xpos -661
+   ypos 317
+  }
+set N31631000 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform20
+   xpos -661
+   ypos 373
+  }
+push $N31631000
+push $N31631400
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve20
+   xpos -661
+   ypos 341
+  }
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve21
+   xpos -661
+   ypos 397
+  }
+  Merge2 {
+   inputs 3+1
+   bbox intersection
+   name Merge1
+   xpos -661
+   ypos 429
+  }
+  Dot {
+   name Dot7
+   xpos -627
+   ypos 479
+  }
+push $N25f6b800
+  Dot {
+   name Dot10
+   xpos -373
+   ypos 338
+  }
+  Dissolve {
+   inputs 2
+   channels rgb
+   which {{parent.param.opacity}}
+   name Dissolve1
+   xpos -410
+   ypos 476
+  }
+set N315cb000 [stack 0]
+  Crop {
+   box {0 0 {parent.param.resolution.x} {parent.param.resolution.y}}
+   reformat true
+   crop false
+   name Crop1
+   xpos -410
+   ypos 513
+  }
+push $N315cb000
+  Switch {
+   inputs 2
+   which {{parent.crop}}
+   name Switch1
+   xpos -410
+   ypos 551
+  }
+  Output {
+   name Output1
+   xpos -410
+   ypos 607
+  }
+ end_group
+ Dot {
+  name blitzDot11
+  xpos 1567
+  ypos 1892
+ }
+set N315ca400 [stack 0]
+ Dot {
+  name blitzDot21
+  xpos 1970
+  ypos 2372
+  hide_input true
+ }
+ Input {
+  inputs 0
+  name Source
+  xpos 2013
+  ypos 16
+  addUserKnob {20 User}
+ }
+ Dot {
+  name Dot10
+  xpos 2047
+  ypos 71
+ }
+set N315c9800 [stack 0]
+ Dot {
+  name Dot24
+  xpos 2047
+  ypos 288
+ }
+set N315c9400 [stack 0]
+ Dot {
+  name blitzDot14
+  xpos 2048
+  ypos 1490
+ }
+set N315c9000 [stack 0]
+clone $C26080800 {
+  xpos 2014
+  ypos 1527
+  selected false
+ }
+ Clamp {
+  channels alpha
+  name alphaClamp2
+  xpos 2014
+  ypos 1559
+ }
+ Dot {
+  name blitzDot1
+  xpos 2048
+  ypos 1671
+ }
+set N33763c00 [stack 0]
+ Group {
+  name blitzThresholdSelector
+  xpos 2083
+  ypos 1667
+  addUserKnob {20 User}
+  addUserKnob {19 min l Min}
+  min 0.0001
+  addUserKnob {6 min_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 min_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {19 max l Max}
+  max 100
+  addUserKnob {6 max_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 max_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+ }
+  Input {
+   inputs 0
+   name Input
+   xpos -833
+   ypos -169
+  }
+  Expression {
+   expr3 "( a >= parent.min.a ? 1 : 0 ) * ( a <= parent.max.a ? 1 : 0 )"
+   name Expression1
+   xpos -833
+   ypos -101
+  }
+  Output {
+   name Output1
+   xpos -833
+   ypos -31
+  }
+ end_group
+ Dilate {
+  channels alpha
+  size {{parent.convolver.Convolution_size.x*parent.alphaOverscan x1 0}}
+  name alphaDilate
+  xpos 2083
+  ypos 1693
+ }
+set N33762c00 [stack 0]
+ Dot {
+  name blitzDot3
+  xpos 2461
+  ypos 2337
+  hide_input true
+ }
+ Shuffle {
+  red alpha
+  green black
+  blue black
+  name fromAlpha2
+  xpos 2362
+  ypos 2334
+ }
+push $N315c9000
+ Dot {
+  name blitzDot8
+  xpos 2306
+  ypos 2286
+  hide_input true
+ }
+ Shuffle {
+  red alpha
+  green alpha
+  blue alpha
+  name fromAlpha1
+  xpos 2272
+  ypos 2304
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  name vizMerge2
+  xpos 2272
+  ypos 2334
+ }
+push $N315c9400
+push $N315c9800
+ Input {
+  inputs 0
+  name Depth
+  xpos 2144
+  ypos 18
+  number 1
+ }
+ Switch {
+  inputs 2
+  which 1
+  name noDepthSwitch
+  xpos 2144
+  ypos 68
+  disable {{"\[exists parent.input1]?1:0"}}
+ }
+set N33774f00 [stack 0]
+ Dot {
+  name Dot1
+  xpos 2178
+  ypos 128
+ }
+set N33761000 [stack 0]
+ Grade {
+  channels alpha
+  whitepoint {{parent.depthCurve.maxlumapixvalue.r}}
+  name zNorm
+  xpos 2144
+  ypos 153
+  disable {{!parent.norm}}
+  addUserKnob {20 User}
+  addUserKnob {3 vizWhite}
+  vizWhite {{ceil(whitepoint)}}
+ }
+ Expression {
+  temp_name3 max_dist
+  temp_expr3 10000
+  channel0 alpha
+  expr0 "parent.norm ? 1-a : a == 0 ? max_dist : 1/a"
+  channel1 none
+  channel2 none
+  name DepthInvert1
+  xpos 2144
+  ypos 197
+  disable {{!parent.zInvert}}
+ }
+ Shuffle {
+  red alpha
+  green alpha
+  blue alpha
+  name fromZ
+  label "\[value in] -&gt; \[value out]"
+  xpos 2144
+  ypos 239
+ }
+set N33760400 [stack 0]
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 rgba.alpha
+  name alphaCopy
+  xpos 2144
+  ypos 281
+ }
+ Clamp {
+  channels rgb
+  maximum 1000000
+  name alphaClamp
+  xpos 2144
+  ypos 319
+ }
+ Erode {
+  size {{parent.alphaDilate/4}}
+  name alphaErode1
+  xpos 2144
+  ypos 343
+ }
+ Erode {
+  size {{parent.alphaDilate/4}}
+  name alphaErode2
+  xpos 2144
+  ypos 375
+ }
+ Erode {
+  size {{parent.alphaDilate/4}}
+  name alphaErode3
+  xpos 2144
+  ypos 407
+ }
+ Erode {
+  size {{parent.alphaDilate/4}}
+  name alphaErode4
+  xpos 2144
+  ypos 439
+ }
+ Premult {
+  name zPremult
+  xpos 2144
+  ypos 491
+ }
+set N33706400 [stack 0]
+ Dot {
+  name Dot23
+  xpos 2329
+  ypos 494
+ }
+push $N33706400
+ Blur {
+  size {{parent.alphaExtend}}
+  name zBlur
+  xpos 2144
+  ypos 515
+ }
+ Unpremult {
+  name zUnpremult
+  xpos 2144
+  ypos 555
+ }
+ Expression {
+  expr0 r*(a/a?a>0.001:r)
+  expr1 g*(a/a?a>0.001:g)
+  expr2 b*(a/a?a>0.001:b)
+  expr3 a/a?a>0.001:0
+  name zExpression
+  xpos 2144
+  ypos 581
+ }
+set N33705400 [stack 0]
+ Merge2 {
+  inputs 2
+  name zMerge
+  xpos 2295
+  ypos 581
+ }
+push $N33705400
+ Premult {
+  name zPremult1
+  xpos 2144
+  ypos 612
+ }
+ Blur {
+  size {{parent.alphaExtend}}
+  name zBlur1
+  xpos 2144
+  ypos 636
+ }
+ Unpremult {
+  name zUnpremult1
+  xpos 2144
+  ypos 676
+ }
+ Expression {
+  expr0 r*(a/a?a>0.001:r)
+  expr1 g*(a/a?a>0.001:g)
+  expr2 b*(a/a?a>0.001:b)
+  expr3 a/a?a>0.001:0
+  name zExpression1
+  xpos 2144
+  ypos 702
+ }
+ Merge2 {
+  inputs 2
+  name zMerge1
+  xpos 2295
+  ypos 702
+ }
+push $N33760400
+ Dot {
+  name Dot32
+  xpos 2496
+  ypos 251
+ }
+ Dot {
+  name Dot33
+  xpos 2496
+  ypos 775
+ }
+ Switch {
+  inputs 2
+  which 1
+  name Switch2
+  xpos 2295
+  ypos 772
+  disable {{1-parent.edgeEnable}}
+ }
+ Dot {
+  name Dot3
+  xpos 2329
+  ypos 846
+ }
+set N3368ec00 [stack 0]
+ Shuffle {
+  green red
+  blue red
+  alpha red
+  name fromRed3
+  label "\[value in] -&gt; \[value out]"
+  xpos 2295
+  ypos 909
+ }
+set N3368e800 [stack 0]
+ Dot {
+  name blitzDot2
+  xpos 2254
+  ypos 2304
+  hide_input true
+ }
+push $N33763c00
+ Dot {
+  name Dot6
+  xpos 2357
+  ypos 2101
+  hide_input true
+ }
+ Shuffle {
+  red alpha
+  green alpha
+  blue alpha
+  name fromAlpha4
+  xpos 2323
+  ypos 2144
+ }
+push $N315c9000
+ Shuffle {
+  red white
+  green white
+  blue white
+  alpha white
+  name constant
+  xpos 2159
+  ypos 1487
+ }
+push $N3368e800
+ Multiply {
+  channels alpha
+  value {{"parent.depth_unit == 1 ? 10 : parent.depth_unit == 2 ? 100 : parent.depth_unit == 3 ? 1000 : 1000000"}}
+  name _UNIT_MULTIPLIER_
+  xpos 2295
+  ypos 1240
+  addUserKnob {20 User}
+  addUserKnob {7 depth_unit_divider R 0 500}
+  depth_unit_divider {{"parent.depth_unit == 1 ? 10 : parent.depth_unit == 2 ? 100 : parent.depth_unit == 3 ? 1000 : parent.depth_unit == 4 ? 25.4 : parent.depth_unit == 5 ? 304.8 : 1"}}
+ }
+ Expression {
+  temp_name0 zdepth
+  temp_expr0 a
+  temp_name1 focus_dist
+  temp_expr1 "s * _UNIT_MULTIPLIER_.value"
+  temp_name2 coc
+  temp_expr2 "(fabs(focus_dist - zdepth) * pow(f,2) / (N * (zdepth+(fbDif*_UNIT_MULTIPLIER_.value)) * (focus_dist - f)))"
+  temp_name3 coc_px
+  temp_expr3 "fabs(coc / haperture * input.width / 2)"
+  channel0 alpha
+  expr0 coc_px
+  channel1 none
+  channel2 none
+  channel3 {none none none -rgba.alpha}
+  name Generate_Direct_Z
+  xpos 2295
+  ypos 1303
+  addUserKnob {20 Optical l "Optical Characteristics"}
+  addUserKnob {7 fbDif}
+  fbDif {{parent.fbDif}}
+  addUserKnob {7 f l "focal length" R 0 500}
+  f {{parent.focalLength}}
+  addUserKnob {7 N l f-stop R 0 44}
+  N {{parent.fStop}}
+  addUserKnob {7 haperture R 0 50}
+  haperture {{parent.aperture}}
+  addUserKnob {7 s l "focus distance" R 0 1000}
+  s {{parent.sliceCenter}}
+ }
+ Grade {
+  channels alpha
+  multiply {{parent.fbDif+1}}
+  white_clamp true
+  name fb
+  xpos 2295
+  ypos 1329
+ }
+push $N33774f00
+ Dot {
+  name Dot14
+  xpos 2577
+  ypos 71
+ }
+ Dot {
+  name Dot13
+  xpos 2577
+  ypos 1417
+ }
+ Switch {
+  inputs 2
+  which 1
+  name Switch1
+  selected true
+  xpos 2295
+  ypos 1414
+  disable {{parent.inputAsDepth}}
+ }
+ Shuffle {
+  red alpha
+  green alpha
+  blue alpha
+  name fromAlpha
+  xpos 2295
+  ypos 1438
+ }
+ Switch {
+  inputs 2
+  which 1
+  name constantSwitch
+  xpos 2295
+  ypos 1487
+  disable {{1-parent.constantDefocus x1 1}}
+ }
+set N3363b200 [stack 0]
+ Dot {
+  name blitzDot16
+  xpos 2471
+  ypos 2104
+  hide_input true
+ }
+ Merge2 {
+  inputs 2
+  operation multiply
+  name vizMerge
+  xpos 2437
+  ypos 2144
+ }
+ Dot {
+  name Dot5
+  xpos 2471
+  ypos 2262
+ }
+push $N33760400
+ Dot {
+  name blitzDot9
+  xpos 2226
+  ypos 2199
+  hide_input true
+ }
+ Shuffle {
+  red alpha
+  green alpha
+  blue alpha
+  name fromAlpha5
+  xpos 2124
+  ypos 2196
+ }
+push $N3368ec00
+ Dot {
+  name Dot4
+  xpos 2227
+  ypos 846
+ }
+push $N33762c00
+ ChannelMerge {
+  inputs 2
+  operation multiply
+  name alphaMult
+  xpos 2193
+  ypos 1688
+  disable {{1-parent.edgeEnable}}
+ }
+push $N3363b200
+clone $C26080800 {
+  xpos 2295
+  ypos 1511
+  selected false
+ }
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 mask.a
+  bbox B
+  name alphaCopy2
+  xpos 2295
+  ypos 1693
+  disable {{1-restrainEnable}}
+ }
+ Premult {
+  channels alpha
+  alpha mask.a
+  name maskPremult
+  xpos 2295
+  ypos 1725
+  disable {{1-restrainEnable}}
+ }
+ Shuffle {
+  red alpha
+  green alpha
+  blue alpha
+  name fromAlpha3
+  xpos 2295
+  ypos 1785
+ }
+clone $C2603ac00 {
+  xpos 2295
+  ypos 1809
+  selected false
+ }
+ Dot {
+  name Dot2
+  xpos 2329
+  ypos 1892
+ }
+set N335e3c00 [stack 0]
+ Dot {
+  name blitzDot18
+  xpos 2329
+  ypos 1971
+ }
+push $N26080800
+ Dot {
+  name blitzDot10
+  xpos 1897
+  ypos 1540
+ }
+ Expression {
+  temp_name0 xCenter
+  temp_expr0 input.width/2
+  temp_name1 yCenter
+  temp_expr1 input.height/2
+  temp_name2 xRamp
+  temp_expr2 (xCenter-x)/width
+  temp_name3 yRamp
+  temp_expr3 (yCenter-y)/height
+  expr0 xCenter/width-(x/width)
+  expr1 yCenter/height-(y/height)
+  expr2 1-((xRamp)*(xRamp)+(yRamp)*(yRamp))
+  name occluMap
+  xpos 1863
+  ypos 1689
+ }
+ Multiply {
+  channels {rgba.red rgba.green -rgba.blue none}
+  value {{"parent.occluOffset * parent.occluX"} {"parent.occluOffset * parent.occluY"} {curve} {curve}}
+  name occluMultiply
+  xpos 1863
+  ypos 1713
+ }
+ Multiply {
+  channels {rgba.red rgba.green -rgba.blue none}
+  value {1 1 1 1}
+  name occluButtons
+  xpos 1863
+  ypos 1737
+ }
+clone $C2603ac00 {
+  xpos 1863
+  ypos 1821
+  selected false
+ }
+ Dot {
+  name blitzDot13
+  xpos 1897
+  ypos 1892
+ }
+push $N2603a400
+push $N26038c00
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  mappings "4 white -1 -1 rgba.red 0 0 white -1 -1 rgba.green 0 1 white -1 -1 rgba.blue 0 2 white -1 -1 rgba.alpha 0 3"
+  name barnDoorShuffle1
+  xpos 1635
+  ypos 1479
+  disable {{!parent.barnDoors}}
+ }
+ Transform {
+  scale 0.95
+  center {64 64}
+  name barnDoorTranform1
+  xpos 1635
+  ypos 1503
+  disable {{!parent.barnDoors}}
+ }
+ Dot {
+  name Dot12
+  xpos 1669
+  ypos 1558
+ }
+push $N26038800
+ Dot {
+  name Dot8
+  xpos 1447
+  ypos 996
+ }
+set N335e0c00 [stack 0]
+ Dot {
+  name Dot11
+  xpos 1327
+  ypos 996
+ }
+ Flare {
+  position {{parent.filterRes*parent.anamorph/2} {parent.filterRes/2}}
+  radius {{curve} {parent.filterSize*parent.falloffGamma} {parent.filterSize}}
+  size_mult {{parent.Flare.size_mult.w*1.1} {parent.Flare.size_mult.h*1.1}}
+  anamorph {{parent.anamorph}}
+  ring_color {{"parent.occluRing ? parent.ringBrightness : inner_color"}}
+  inner_color 0
+  inner_falloff {{parent.innerFalloff}}
+  chroma_shift_angle_add true
+  brightness {1 1 1}
+  vis_out 1
+  corners {{parent.corners}}
+  flattening {{parent.edgeFlattening}}
+  sharpness {{parent.cornerSharpness}}
+  corners_angle {{parent.angle}}
+  name Flare2
+  xpos 1293
+  ypos 1033
+ }
+ Dot {
+  name Dot9
+  xpos 1327
+  ypos 1124
+ }
+push $N335e0c00
+ Flare {
+  position {{parent.filterRes*parent.anamorph/2} {parent.filterRes/2}}
+  radius {{curve} {parent.filterSize*parent.falloffGamma} {parent.filterSize}}
+  size_mult {{parent.Flare.size_mult.w*1.1} {parent.Flare.size_mult.h*1.1}}
+  anamorph {{parent.anamorph}}
+  ring_color {{inner_color}}
+  inner_color {{"parent.occluRing ? parent.innerBrightness : 1"}}
+  inner_falloff {{parent.innerFalloff}}
+  chroma_shift_angle_add true
+  brightness {1 1 1}
+  vis_out 1
+  corners {{parent.corners}}
+  flattening {{parent.edgeFlattening}}
+  sharpness {{parent.cornerSharpness}}
+  corners_angle {{parent.angle}}
+  name Flare1
+  xpos 1413
+  ypos 1037
+ }
+ ChannelMerge {
+  inputs 2
+  A rgba.red
+  operation plus
+  B rgba.red
+  output rgba.red
+  bbox B
+  mix {{parent.occluRing}}
+  name addRing
+  xpos 1413
+  ypos 1112
+ }
+set N317aac00 [stack 0]
+push $N317aac00
+ Copy {
+  inputs 2
+  from0 rgba.red
+  to0 rgba.alpha
+  name fromRed1
+  xpos 1413
+  ypos 1154
+ }
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  mappings "4 white -1 -1 rgba.red 0 0 white -1 -1 rgba.green 0 1 white -1 -1 rgba.blue 0 2 white -1 -1 rgba.alpha 0 3"
+  name barnDoorShuffle
+  xpos 1413
+  ypos 1202
+  disable {{!parent.barnDoors}}
+ }
+ Transform {
+  scale 0.95
+  center {64 64}
+  name barnDoorTranform
+  xpos 1413
+  ypos 1226
+  disable {{!parent.barnDoors}}
+ }
+ Crop {
+  box {0 0 {parent.filterFormat1.box_width} {parent.filterFormat1.box_height}}
+  name blackOutside3
+  xpos 1413
+  ypos 1393
+ }
+ Switch {
+  inputs 2
+  which {{"\[exists parent.input2] ? 1 : 0"}}
+  name filterSwitch1
+  xpos 1413
+  ypos 1555
+ }
+ Dot {
+  name Dot7
+  xpos 1447
+  ypos 1892
+ }
+push $N315ca400
+push $N335e3c00
+push $N33763c00
+clone $C2603ac00 {
+  xpos 2014
+  ypos 1813
+  selected false
+ }
+ Grade {
+  gamma {{1-parent.bokehPop/2}}
+  name bokehPop1
+  xpos 2014
+  ypos 1861
+ }
+ BlinkScript {
+  inputs 6
+  recompileCount 3347
+  ProgramGroup 1
+  KernelDescription "2 \"Convolution\" iterate pixelWise 10899ebcae453a1637057d6210cded372101a6fef9b0c03b8bf1e6113e9a7a5a 7 \"src\" Read Ranged2D \"depth\" Read Point \"filter\" Read Random \"occluFilter\" Read Random \"rotMap\" Read Point \"occluMap\" Read Point \"dst\" Write Point 2 \"size\" Float 2 AAAAAAAAAAA= \"occlu\" Bool 1 AA== 2 \"size\" 2 1 \"occlu\" 1 1 4 \"srcrangeMin\" Int 2 1 AAAAAAAAAAA= \"srcrangeMax\" Int 2 1 AAAAAAAAAAA= \"filterBounds\" Float 2 1 AAAAAAAAAAA= \"filterRadius\" Float 2 1 AAAAAAAAAAA="
+  EncodedSource "1 3712 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"
+  useGPUIfAvailable {{parent.useGpu}}
+  rebuild ""
+  Convolution_size {{parent.radius*parent.downRes.scale} {parent.radius*parent.downRes.scale}}
+  Convolution_occlu {{parent.occluOffset}}
+  protectKernelWhenPublishing true
+  rebuild_finalise ""
+  name convolver
+  xpos 2014
+  ypos 1885
+ }
+ Grade {
+  gamma {{1-parent.bokehPop/2}}
+  reverse true
+  name bokehPop2
+  xpos 2014
+  ypos 1941
+ }
+ Group {
+  inputs 2
+  name abb
+  tile_color 0x5babffff
+  xpos 2014
+  ypos 1967
+  disable true
+  addUserKnob {20 settings l Settings}
+  addUserKnob {18 offset l Offset R 0 0.1}
+  offset {{parent.lensRed/100000} {parent.lensGreen/100000} {parent.lensBlue/100000}}
+  addUserKnob {6 offset_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 offset_panelDropped_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1_1 l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {7 opacity}
+  opacity 1
+ }
+  Input {
+   inputs 0
+   name mask
+   xpos -520
+   ypos 577
+   number 1
+  }
+  Input {
+   inputs 0
+   name input
+   xpos -410
+   ypos -161
+  }
+  Dot {
+   name Dot8
+   xpos -376
+   ypos -93
+  }
+set N3171f400 [stack 0]
+  Dot {
+   name Dot10
+   xpos -373
+   ypos 338
+  }
+set N3171f000 [stack 0]
+  Dot {
+   name Dot11
+   xpos -247
+   ypos 338
+  }
+  Dot {
+   name Dot9
+   xpos -247
+   ypos 580
+  }
+push $N3171f400
+  Dot {
+   name Dot4
+   xpos -627
+   ypos -93
+  }
+set N3171e400 [stack 0]
+  Dot {
+   name Dot1
+   xpos -627
+   ypos -61
+  }
+set N3171e000 [stack 0]
+  Dot {
+   name Dot2
+   xpos -724
+   ypos -61
+  }
+  Shuffle {
+   green black
+   blue black
+   alpha black
+   name Shuffle1
+   tile_color 0xff0000ff
+   xpos -758
+   ypos -43
+  }
+set N3171d800 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform1
+   xpos -758
+   ypos -19
+  }
+push $N3171d800
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve2
+   xpos -758
+   ypos 5
+  }
+set N3171d000 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform5
+   xpos -758
+   ypos 37
+  }
+push $N3171d000
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve5
+   xpos -758
+   ypos 61
+  }
+set N3171c800 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform6
+   xpos -758
+   ypos 93
+  }
+push $N3171c800
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve6
+   xpos -758
+   ypos 117
+  }
+set N316d7c00 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform7
+   xpos -758
+   ypos 149
+  }
+push $N316d7c00
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve8
+   xpos -758
+   ypos 173
+  }
+set N316d7400 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform13
+   xpos -758
+   ypos 205
+  }
+push $N316d7400
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve14
+   xpos -758
+   ypos 229
+  }
+set N316d6c00 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform14
+   xpos -758
+   ypos 261
+  }
+push $N316d6c00
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve15
+   xpos -758
+   ypos 285
+  }
+set N316d6400 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform15
+   xpos -758
+   ypos 317
+  }
+push $N316d6400
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve16
+   xpos -758
+   ypos 341
+  }
+set N316d5c00 [stack 0]
+  Transform {
+   scale {{1+param.offsetR}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform16
+   xpos -758
+   ypos 373
+  }
+push $N316d5c00
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve17
+   xpos -758
+   ypos 397
+  }
+  Dot {
+   name Dot5
+   xpos -724
+   ypos 432
+  }
+push 0
+push $N3171e000
+  Dot {
+   name Dot3
+   xpos -529
+   ypos -61
+  }
+  Shuffle {
+   red black
+   green black
+   alpha black
+   name Shuffle3
+   tile_color 0xffff
+   xpos -563
+   ypos -43
+  }
+set N316d4800 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform2
+   xpos -563
+   ypos -19
+  }
+push $N316d4800
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve12
+   xpos -563
+   ypos 5
+  }
+set N369bbc00 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform4
+   xpos -563
+   ypos 37
+  }
+push $N369bbc00
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve4
+   xpos -563
+   ypos 61
+  }
+set N369bb400 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform11
+   xpos -563
+   ypos 93
+  }
+push $N369bb400
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve11
+   xpos -563
+   ypos 117
+  }
+set N369bac00 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform12
+   xpos -563
+   ypos 149
+  }
+push $N369bac00
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve13
+   xpos -563
+   ypos 173
+  }
+set N369ba400 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform21
+   xpos -563
+   ypos 205
+  }
+push $N369ba400
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve22
+   xpos -563
+   ypos 229
+  }
+set N369b9c00 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform22
+   xpos -563
+   ypos 261
+  }
+push $N369b9c00
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve23
+   xpos -563
+   ypos 285
+  }
+set N369b9400 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform23
+   xpos -563
+   ypos 317
+  }
+push $N369b9400
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve24
+   xpos -563
+   ypos 341
+  }
+set N369b8c00 [stack 0]
+  Transform {
+   scale {{1+param.offsetB}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform24
+   xpos -563
+   ypos 373
+  }
+push $N369b8c00
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve25
+   xpos -563
+   ypos 397
+  }
+  Dot {
+   name Dot6
+   xpos -529
+   ypos 432
+  }
+push $N3171e000
+  Shuffle {
+   red black
+   blue black
+   alpha black
+   name Shuffle2
+   tile_color 0xff00ff
+   xpos -661
+   ypos -43
+  }
+set N3695f800 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform8
+   xpos -661
+   ypos -19
+  }
+set N3695f400 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform3
+   xpos -661
+   ypos 37
+  }
+push $N3695f400
+push $N3695f800
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve7
+   xpos -661
+   ypos 5
+  }
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve3
+   xpos -661
+   ypos 61
+  }
+set N3695e800 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform9
+   xpos -661
+   ypos 93
+  }
+set N3695e400 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform10
+   xpos -661
+   ypos 149
+  }
+push $N3695e400
+push $N3695e800
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve9
+   xpos -661
+   ypos 117
+  }
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve10
+   xpos -661
+   ypos 173
+  }
+set N3695d800 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform17
+   xpos -661
+   ypos 205
+  }
+set N3695d400 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform18
+   xpos -661
+   ypos 261
+  }
+push $N3695d400
+push $N3695d800
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve18
+   xpos -661
+   ypos 229
+  }
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve19
+   xpos -661
+   ypos 285
+  }
+set N3695c800 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform19
+   xpos -661
+   ypos 317
+  }
+set N3695c400 [stack 0]
+  Transform {
+   scale {{1+param.offsetG}}
+   center {{parent.param.center} {parent.param.center}}
+   name Transform20
+   xpos -661
+   ypos 373
+  }
+push $N3695c400
+push $N3695c800
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve20
+   xpos -661
+   ypos 341
+  }
+  Dissolve {
+   inputs 2
+   which 0.5
+   name Dissolve21
+   xpos -661
+   ypos 397
+  }
+  Merge2 {
+   inputs 3+1
+   bbox intersection
+   name Merge1
+   xpos -661
+   ypos 429
+  }
+  Dot {
+   name Dot7
+   xpos -627
+   ypos 479
+  }
+push $N3171f000
+  Dissolve {
+   inputs 2
+   channels rgb
+   which {{parent.param.opacity}}
+   name Dissolve1
+   xpos -410
+   ypos 476
+  }
+  Keymix {
+   inputs 3
+   invertMask true
+   name Keymix1
+   xpos -410
+   ypos 573
+   disable {{"\[exists parent.input1] ? 0 : 1"}}
+  }
+  Output {
+   name Output1
+   xpos -410
+   ypos 658
+  }
+push $N3171e400
+  NoOp {
+   name param
+   xpos -764
+   ypos -96
+   hide_input true
+   addUserKnob {20 User}
+   addUserKnob {12 center}
+   center {{input.width/2} {input.height/2}}
+   addUserKnob {7 offsetR}
+   offsetR {{parent.offset.r}}
+   addUserKnob {7 offsetG}
+   offsetG {{parent.offset.g}}
+   addUserKnob {7 offsetB}
+   offsetB {{parent.offset.b}}
+   addUserKnob {7 opacity}
+   opacity {{parent.opacity}}
+  }
+ end_group
+clone $C26080800 {
+  xpos 2014
+  ypos 1989
+  selected false
+ }
+ Log2Lin {
+  operation lin2log
+  name breathSpace1
+  xpos 2014
+  ypos 2091
+ }
+ Transform {
+  scale {1 {"parent.breathInvert==0 ? (1-parent.sliceCenter)*parent.lensBreathing/10+1+parent.breathOffset : (parent.sliceCenter)*parent.lensBreathing/10+1+parent.breathOffset"}}
+  center {{input.width/2} {input.height/2}}
+  name breathTransform
+  xpos 2014
+  ypos 2122
+ }
+ Log2Lin {
+  name breathSpace2
+  xpos 2014
+  ypos 2148
+ }
+ Switch {
+  inputs 2
+  which {{"parent.output == 1 ? 1 : 0"}}
+  name visZ
+  xpos 2014
+  ypos 2196
+ }
+ Switch {
+  inputs 2
+  which {{"parent.output == 2 ? 1 : 0"}}
+  name visDepth
+  xpos 2014
+  ypos 2258
+ }
+ Switch {
+  inputs 2
+  which {{parent.depthEdgesViz}}
+  name visDepthEdges
+  xpos 2014
+  ypos 2301
+ }
+ Switch {
+  inputs 2
+  which {{parent.alphaViz}}
+  name visDepthEdges1
+  xpos 2014
+  ypos 2334
+ }
+ Switch {
+  inputs 2
+  which {{parent.vizDiaphragm}}
+  name visBokeh
+  xpos 2014
+  ypos 2369
+ }
+ Switch {
+  inputs 2
+  which {{parent.visRotMap}}
+  name visrotMap
+  xpos 2014
+  ypos 2393
+ }
+ Output {
+  name OutputDefocus
+  xpos 2014
+  ypos 2445
+ }
+push $N33761000
+ CurveTool {
+  operation "Max Luma Pixel"
+  channels alpha
+  ROI {0 0 {input.width} {input.height}}
+  autocropdata {0 0 {input.width} {input.height}}
+  maxlumapixdata {0 725}
+  maxlumapixvalue {1 1 1}
+  minlumapixdata {1768 292}
+  minlumapixvalue {0 0 0}
+  name depthCurve
+  xpos 2291
+  ypos 148
+ }
+end_group

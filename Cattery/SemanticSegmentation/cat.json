@@ -1,0 +1,13 @@
+{
+    "minimum_nuke_version_required": 13.1,
+    "version": 1,
+    "category": "Segmentation",
+    "description": "Semantic Segmentation on MIT ADE20K dataset",
+    "cats": [
+        {
+            "filepath": "SemanticSegmentation.gizmo",
+            "name": "Semantic Segmentation",
+            "icon": "Semantic.png"
+        }
+    ]
+}

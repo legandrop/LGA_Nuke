@@ -1,0 +1,161 @@
+#! C:/Program Files/Nuke11.3v2/nuke-11.3.2.dll -nx
+version 11.3 v2
+add_layer {N N.X N.Y N.Z}
+Gizmo {
+ inputs 2
+ lock_connections true
+ addUserKnob {20 User l "Normal Relighter"}
+ addUserKnob {26 nRelight l "" +STARTLINE T "                                                                                              Normal Relighter v01b. by Emilio Aranguren"}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {41 in l "Normal Pass" T Shuffle1.in}
+ addUserKnob {41 alpha l "Orbit Axis" t "Red, Green or Blue" -STARTLINE T Shuffle2.alpha}
+ addUserKnob {41 disable_1 l Opposite -STARTLINE T Invert2.disable}
+ addUserKnob {26 L01 l "Main Parameters"}
+ addUserKnob {41 _1_1 l "Light Intensity" T LightG._1}
+ addUserKnob {41 hue_rotation l "Light Angle" T HueShift1.hue_rotation}
+ addUserKnob {41 _1 l "Shadow Gain" T ShadowG._1}
+ addUserKnob {26 _2 l "" +STARTLINE}
+ addUserKnob {41 saturation l "Light Size" T HueShift1.saturation}
+ addUserKnob {41 size l "Light Softness" T Blur1.size}
+ addUserKnob {41 which l Mix T Dissolve1.which}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos 282
+  ypos -916
+ }
+set Nfc210400 [stack 0]
+ Dot {
+  name Dot1
+  xpos 541
+  ypos -730
+ }
+set Nfc211400 [stack 0]
+ Shuffle {
+  in N
+  name Shuffle1
+  label "\[value in]"
+  xpos 754
+  ypos -740
+ }
+ HueShift {
+  outgray 0.315
+  color_saturation 0.89
+  brightness 0.64
+  name HueShift1
+  xpos 754
+  ypos -663
+ }
+ Blur {
+  name Blur1
+  xpos 754
+  ypos -605
+ }
+ Shuffle {
+  alpha green
+  name Shuffle2
+  label "\[value in]"
+  xpos 754
+  ypos -522
+ }
+set Nfc211800 [stack 0]
+ Dot {
+  name Dot2
+  xpos 788
+  ypos -378
+ }
+ Invert {
+  name Invert1
+  xpos 646
+  ypos -388
+  disable {{parent.Invert2.disable-1}}
+ }
+push $Nfc211800
+ Invert {
+  name Invert2
+  xpos 644
+  ypos -522
+ }
+push $Nfc211400
+ Grade {
+  inputs 1+1
+  multiply 0.98
+  gamma {{1+parent.ShadowG._1*-1}}
+  name Grade2
+  xpos 507
+  ypos -515
+ }
+ Grade {
+  inputs 1+1
+  multiply {{1+parent.LightG._1}}
+  name Grade1
+  xpos 507
+  ypos -382
+ }
+set Nfc262000 [stack 0]
+ Viewer {
+  frame_range 1-203
+  fps 25
+  name Viewer1
+  xpos 634
+  ypos -183
+ }
+ Input {
+  inputs 0
+  name mask
+  xpos 73
+  ypos -472
+  number 1
+ }
+ Dot {
+  name Dot3
+  xpos 107
+  ypos -229
+ }
+push $Nfc262000
+ Dot {
+  name Dot4
+  xpos 541
+  ypos -310
+ }
+push $Nfc210400
+ Dissolve {
+  inputs 2+1
+  which 1
+  name Dissolve1
+  xpos 282
+  ypos -237
+ }
+ Output {
+  name Output1
+  xpos 282
+  ypos -60
+ }
+ NoOp {
+  inputs 0
+  name LightG
+  xpos 380
+  ypos -384
+  addUserKnob {20 User}
+  addUserKnob {7 _1 l li R 0 3}
+  _1 1
+ }
+ NoOp {
+  inputs 0
+  name ShadowG
+  xpos 392
+  ypos -518
+  addUserKnob {20 User}
+  addUserKnob {7 _1 l Sha R 0 0.6}
+  _1 0.1
+ }
+ Merge {
+  inputs 0
+  operation mask
+  bbox A
+  name Merge1
+  xpos 950
+  ypos -10
+ }
+end_group

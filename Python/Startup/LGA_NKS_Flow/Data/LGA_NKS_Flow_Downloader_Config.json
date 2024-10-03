@@ -1,0 +1,11 @@
+{
+    "auto_sync": 1,
+    "sync_interval": "15",
+    "start_minimized": false,
+    "close_to_tray": false,
+    "log_file_path": "F:/",
+    "project_names": [
+        "VL"
+    ],
+    "new_versions_popup": true
+}

@@ -1,0 +1,364 @@
+set cut_paste_input [stack 0]
+version 13.1 v2
+Roto {
+ inputs 0
+ output alpha
+ curves {{{v x3f99999a}
+  {f 0}
+  {n
+   {layer Root
+    {f 0}
+    {t x45000000 x44870000}
+    {a pt1x 0 pt1y 0 pt2x 0 pt2y 0 pt3x 0 pt3y 0 pt4x 0 pt4y 0 ptex00 0 ptex01 0 ptex02 0 ptex03 0 ptex10 0 ptex11 0 ptex12 0 ptex13 0 ptex20 0 ptex21 0 ptex22 0 ptex23 0 ptex30 0 ptex31 0 ptex32 0 ptex33 0 ptof1x 0 ptof1y 0 ptof2x 0 ptof2y 0 ptof3x 0 ptof3y 0 ptof4x 0 ptof4y 0 pterr 0 ptrefset 0 ptmot x40800000 ptref 0}}}}}
+ toolbox {createBezier {
+  { createBezier str 1 ssx 1 ssy 1 sf 1 sb 1 tt 4 }
+  { createBezierCusped str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createBSpline str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createEllipse str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createRectangle str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createRectangleCusped str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { brush str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { eraser src 2 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { clone src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { reveal src 3 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { dodge src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { burn src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { blur src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { sharpen src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { smear src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+} }
+ toolbar_brush_hardness 0.200000003
+ toolbar_source_transform_scale {1 1}
+ toolbar_source_transform_center {2048 1080}
+ name Roto16
+ selected true
+ xpos -2438
+ ypos 948
+}
+Blur {
+ channels rgba
+ size 7
+ name Blur16
+ label "\[value size]"
+ selected true
+ xpos -2438
+ ypos 994
+}
+Dot {
+ name Dot25
+ selected true
+ xpos -2404
+ ypos 1049
+}
+push $cut_paste_input
+Group {
+ inputs 2
+ name ITransformU
+ tile_color 0xa57aaaff
+ selected true
+ xpos -2585
+ ypos 1040
+ addUserKnob {20 "" l Transform}
+ addUserKnob {14 AdjBBox1_numpixels l "Add Pixels" +INVISIBLE R 0 100}
+ AdjBBox1_numpixels 1024
+ addUserKnob {41 channels T IDistort2.channels}
+ addUserKnob {6 blackOutside_1 l "Black Outside Before?" +STARTLINE}
+ addUserKnob {41 matrix T Transform1.matrix}
+ addUserKnob {41 translate T Transform1.translate}
+ addUserKnob {41 rotate T Transform1.rotate}
+ addUserKnob {41 scale T Transform1.scale}
+ addUserKnob {41 skewX l "skew X" T Transform1.skewX}
+ addUserKnob {41 skewY l "skew Y" T Transform1.skewY}
+ addUserKnob {41 center T Transform1.center}
+ addUserKnob {22 setCenter l "Set Center" -STARTLINE T "n = nuke.thisGroup()\nw= n.width()\nh=n.height()\nprint w,h\nn\['center'].setValue(\[w/2,h/2])"}
+ addUserKnob {41 filter_1 l filter T IDistort2.filter}
+ addUserKnob {41 clamp T Transform1.clamp}
+ addUserKnob {26 ""}
+ addUserKnob {6 cropToFormat l "Crop To Format" +STARTLINE}
+ addUserKnob {6 blackOutside2 l "Black Outside After" -STARTLINE}
+ addUserKnob {14 addPixels l "Add Pixels" R 0 100}
+ addUserKnob {41 mix T Transform3.mix}
+}
+ Input {
+  inputs 0
+  name ctrlMask
+  xpos -40
+  ypos -338
+  number 1
+ }
+set N95377c00 [stack 0]
+ Shuffle {
+  red alpha
+  green alpha
+  blue alpha
+  alpha black
+  name Shuffle1
+  xpos -40
+  ypos -25
+ }
+set N95377800 [stack 0]
+ Input {
+  inputs 0
+  name img
+  xpos -517
+  ypos -411
+ }
+ BlackOutside {
+  name BlackOutside1
+  xpos -517
+  ypos -357
+  disable {{!parent.blackOutside_1}}
+ }
+ Dot {
+  name Dot5
+  note_font_size 41
+  xpos -483
+  ypos -294
+ }
+set N95376c00 [stack 0]
+ Remove {
+  name Remove1
+  xpos -210
+  ypos -304
+ }
+set N95376800 [stack 0]
+push $N95377c00
+ Merge2 {
+  inputs 2
+  Achannels {-rgba.red -rgba.green -rgba.blue -rgba.alpha}
+  Bchannels {-rgba.red -rgba.green -rgba.blue -rgba.alpha}
+  output {-rgba.red -rgba.green -rgba.blue -rgba.alpha}
+  name Merge3
+  xpos -111
+  ypos -258
+ }
+ AdjBBox {
+  numpixels {{parent.AdjBBox1_numpixels}}
+  name AdjBBox1
+  xpos -111
+  ypos -232
+ }
+push $N95376800
+ CopyBBox {
+  inputs 2
+  name CopyBBox2
+  xpos -210
+  ypos -232
+ }
+ Expression {
+  expr0 x
+  expr1 y
+  name Expression1
+  xpos -210
+  ypos -176
+ }
+set N95375800 [stack 0]
+ Dot {
+  name Dot2
+  xpos -286
+  ypos -172
+ }
+ TransformMasked {
+  channels rgba
+  translate {{parent.Transform1.translate} {parent.Transform1.translate}}
+  rotate {{parent.Transform1.rotate}}
+  scale {{parent.Transform1.scale} {parent.Transform1.scale}}
+  skewX {{parent.Transform1.skewX}}
+  skewY {{parent.Transform1.skewY}}
+  skew_order {{Transform1.skew_order}}
+  center {{parent.Transform1.center} {parent.Transform1.center}}
+  filter {{Transform1.filter}}
+  motionblur {{parent.Transform1.motionblur}}
+  shutter {{parent.Transform1.shutter}}
+  shutteroffset {{Transform1.shutteroffset}}
+  shuttercustomoffset {{parent.Transform1.shuttercustomoffset}}
+  name Transform3
+  xpos -320
+  ypos -121
+ }
+push $N95375800
+ Merge2 {
+  inputs 2
+  operation minus
+  bbox B
+  name Merge1
+  xpos -210
+  ypos -121
+ }
+ Merge2 {
+  inputs 2
+  operation multiply
+  bbox B
+  name Merge2
+  xpos -210
+  ypos -25
+ }
+set N95374800 [stack 0]
+ Dot {
+  name Dot1
+  xpos -270
+  ypos -21
+ }
+ Dot {
+  name Dot3
+  xpos -270
+  ypos 423
+ }
+push $N95376c00
+ Dot {
+  name Dot4
+  xpos -483
+  ypos 46
+ }
+set N99d37800 [stack 0]
+ Copy {
+  inputs 2
+  from0 rgba.red
+  to0 rgba.red
+  from1 rgba.green
+  to1 rgba.green
+  name Copy2
+  xpos -517
+  ypos 407
+ }
+ IDistort {
+  channels none
+  name IDistort1
+  xpos -517
+  ypos 457
+ }
+push $N95376c00
+push $N95376c00
+ TransformMasked {
+  channels rgba
+  translate {{parent.Transform1.translate} {parent.Transform1.translate}}
+  rotate {{parent.Transform1.rotate}}
+  scale {{parent.Transform1.scale} {parent.Transform1.scale}}
+  skewX {{parent.Transform1.skewX}}
+  skewY {{parent.Transform1.skewY}}
+  skew_order {{Transform1.skew_order}}
+  center {{parent.Transform1.center} {parent.Transform1.center}}
+  filter {{Transform1.filter}}
+  motionblur {{parent.Transform1.motionblur}}
+  shutter {{parent.Transform1.shutter}}
+  shutteroffset {{Transform1.shutteroffset}}
+  shuttercustomoffset {{parent.Transform1.shuttercustomoffset}}
+  name Transform2
+  xpos -446
+  ypos -202
+ }
+ Merge2 {
+  inputs 2
+  name Merge4
+  label "\[ expr \{ \[value mix] == 1 ? \" \" : \[concat Mix: \[value mix]] \}]"
+  xpos -446
+  ypos -123
+ }
+ Crop {
+  box {0 0 {input.width} {input.height}}
+  name Crop1
+  xpos -446
+  ypos 182
+  disable {{!parent.cropToFormat}}
+  addUserKnob {20 User}
+  addUserKnob {22 cropToBbox l "Crop to Bounding Box" -STARTLINE T codeBBox()}
+ }
+ AdjBBox {
+  numpixels {{parent.addPixels} {parent.addPixels}}
+  name AdjBBox3
+  xpos -446
+  ypos 208
+ }
+ Dot {
+  name Dot6
+  note_font_size 41
+  xpos -412
+  ypos 364
+ }
+push $N95377800
+push $N95374800
+push $N99d37800
+ Copy {
+  inputs 2
+  from0 rgba.red
+  to0 forward.u
+  from1 rgba.green
+  to1 forward.v
+  bbox A
+  name Copy1
+  xpos -210
+  ypos 30
+ }
+set N99d35800 [stack 0]
+ Merge2 {
+  inputs 2
+  Achannels {-rgba.red -rgba.green -rgba.blue rgba.alpha}
+  Bchannels {-rgba.red -rgba.green -rgba.blue rgba.alpha}
+  output {-rgba.red -rgba.green -rgba.blue rgba.alpha}
+  name Merge5
+  label "\[ expr \{ \[value mix] == 1 ? \" \" : \[concat Mix: \[value mix]] \}]"
+  xpos -40
+  ypos 108
+ }
+push $N99d35800
+ CopyBBox {
+  inputs 2
+  name CopyBBox1
+  xpos -210
+  ypos 114
+ }
+ AdjBBox {
+  numpixels {{parent.addPixels} {parent.addPixels}}
+  name AdjBBox2
+  xpos -210
+  ypos 140
+ }
+ IDistort {
+  uv forward
+  name IDistort2
+  selected true
+  xpos -210
+  ypos 187
+ }
+ CopyBBox {
+  inputs 2
+  name CopyBBox3
+  xpos -210
+  ypos 360
+ }
+ Remove {
+  channels none
+  name Remove2
+  xpos -210
+  ypos 419
+ }
+ Copy {
+  inputs 2
+  from0 -rgba.alpha
+  to0 -rgba.alpha
+  bbox B
+  name Copy3
+  xpos -210
+  ypos 457
+ }
+ BlackOutside {
+  name BlackOutside2
+  xpos -210
+  ypos 538
+  disable {{!parent.blackOutside2}}
+ }
+ Output {
+  name Output1
+  xpos -210
+  ypos 634
+ }
+ Transform {
+  inputs 0
+  center {1220 901}
+  black_outside false
+  name Transform1
+  label "expresison link this\nto avoid st map overlay"
+  xpos 51
+  ypos -201
+ }
+end_group

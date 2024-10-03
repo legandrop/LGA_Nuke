@@ -1,0 +1,10 @@
+# Ignorar archivos de caché de Python
+__pycache__/
+*.pyc
+
+# Ignorar la carpeta OLD en cualquier nivel
+OLD/
+
+# Ignorar carpetas especificas
+oz_backdrop/+OLD+BuildingBlocks/
+nuke_move_nodes/test/

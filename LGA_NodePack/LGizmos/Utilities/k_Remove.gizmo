@@ -1,0 +1,70 @@
+Group {
+ name k_Remove
+ help "<center><b>k_Remove</b>\n\nRemove color channels from the image.</center>\n\n\n<left><i>&#169; Nicolas Gauthier  |  contact@niko-vfx.com</i></left>"
+ tile_color 0x9e3c6300
+ label "<font size=1><font color=White>\[if \{\[value channels_1]==\"none\"\} \{return \"\"\} \{return \"- \[value channels_1]\"\}]\\n\[if \{\[value channels_2]==\"none\"\} \{return \"\"\} \{return \"- \[value channels_2]\"\}]\\n\[if \{\[value channels_3]==\"none\"\} \{return \"\"\} \{return \"- \[value channels_3]\"\}]\\n\[if \{\[value channels_4]==\"none\"\} \{return \"\"\} \{return \"- \[value channels_4]\"\}]\\n\[if \{\[value channels_5]==\"none\"\} \{return \"\"\} \{return \"- \[value channels_5]\"\}]\\n"
+ addUserKnob {20 k_Remove}
+ addUserKnob {20 TabBegin l "" +STARTLINE n -2}
+ addUserKnob {20 SettingsTab l Settings}
+ addUserKnob {26 divSettings l " " T " "}
+ addUserKnob {22 - T "\nn = nuke.thisNode()\nnum=n\['number'].value()-1\nif num < 1 :\n    num = 1\nn\['number'].setValue(num)\nk = n.knob(\"update\")\nk.execute()\n" +STARTLINE}
+ addUserKnob {3 number l "" -STARTLINE}
+ number 5
+ addUserKnob {22 + -STARTLINE T "\nn = nuke.thisNode()\nnum=n\['number'].value()+1\nn\['number'].setValue(num)\nk = n.knob(\"update\")\nk.execute()\n"}
+ addUserKnob {22 update -STARTLINE T "\nfrom __future__ import with_statement\n\n# params\nn = nuke.thisNode()\nTxNode = 150\nTyNode = 130\nnTx=0\nnTy=0\nnumber = int(n\['number'].value())\noldNumber=int(n\['oldNumber'].value())\nif number < 1:\n    n\['number'].setValue(1)\n    number = int(n\['number'].value())\nelse:\n    pass\n\nwith n :\n    if number != oldNumber:\n        #DEL\n        if oldNumber>number:\n            #Delete Knobs\n            for kDel, knob in n.knobs().iteritems():\n                if kDel.split('_')\[0] == 'channels':\n                    if int(kDel.split('_')\[1]) > number:\n                        n.removeKnob(knob)\n            #Delete Nodes\n            nAll = nuke.allNodes()\n            for nDel in nAll:\n                if nDel.name().split('_')\[0] == 'NUM':\n                    if int(nDel.name().split('_')\[1]) > number:\n                        nuke.delete(nDel)\n        #ADD\n        elif oldNumber<number:\n            for i in range(number):\n                if i >= oldNumber:\n                    j=i+1\n                    #Input\n                    inputNodeB=nuke.toNode('NUM_'+ str(i) +'_Remove')\n                    #Create n Remove nodes\n                    remove = nuke.nodes.Remove(xpos = nuke.toNode('Input').xpos() , ypos = nuke.toNode('Input').ypos()+(TyNode*j))\n                    remove.setName('NUM_' + str(j) + '_Remove', 'channel ' + str(j) )\n                    remove.setInput(0,inputNodeB)\n                    if i>0:\n                        remove\['operation'].setExpression('parent.NUM_'+ str(1) +'_Remove.operation')\n                    remove\['channels'].setValue('none')\n                    # Create knobs\n                    k=nuke.Link_Knob('channels_' + str(j) , 'channels ' + str(j) )\n                    k.makeLink('NUM_'+ str(j) +'_Remove','channels')\n                    k.setFlag(nuke.STARTLINE)\n                    n.addKnob(k)\n        output = nuke.toNode('Output')\n        output\['ypos'].setValue(nuke.toNode('NUM_'+ str(number) +'_Remove').ypos()+(TyNode))\n        output.setInput(0,nuke.toNode('NUM_'+ str(number) +'_Remove'))\n        #Label\n        label='<font size=1><font color=White>'\n        for i in range(number):\n            j=i+1\n            label = label + '\[if \{\[value channels_'+ str(j)+']==\"none\"\} \{return \"\"\} \{return \"- \[value channels_'+ str(j)+']\"\}]\\n'\n        n\['label'].setValue(str(label))\n        # Memory last number\n        n\['oldNumber'].setValue(number)\n    else:\n        pass\n"}
+ addUserKnob {26 DivOption l "" +STARTLINE}
+ addUserKnob {41 operation T NUM_1_Remove.operation}
+ addUserKnob {26 DivOperation l "" +STARTLINE}
+ addUserKnob {41 channels_1 l "channels 1" T NUM_1_Remove.channels}
+ addUserKnob {41 channels_2 l "channels 2" T NUM_2_Remove.channels}
+ addUserKnob {41 channels_3 l "channels 3" T NUM_3_Remove.channels}
+ addUserKnob {41 channels_4 l "channels 4" T NUM_4_Remove.channels}
+ addUserKnob {41 channels_5 l "channels 5" T NUM_5_Remove.channels}
+ addUserKnob {3 oldNumber +HIDDEN}
+ oldNumber 5
+}
+ Input {
+  inputs 0
+  name Input
+  xpos 0
+ }
+ Remove {
+  channels none
+  name NUM_1_Remove
+  xpos 0
+  ypos 130
+ }
+ Remove {
+  operation {{parent.NUM_1_Remove.operation}}
+  channels none
+  name NUM_2_Remove
+  xpos 0
+  ypos 260
+ }
+ Remove {
+  operation {{parent.NUM_1_Remove.operation}}
+  channels none
+  name NUM_3_Remove
+  xpos 0
+  ypos 390
+ }
+ Remove {
+  operation {{parent.NUM_1_Remove.operation}}
+  channels none
+  name NUM_4_Remove
+  xpos 0
+  ypos 520
+ }
+ Remove {
+  operation {{parent.NUM_1_Remove.operation}}
+  channels none
+  name NUM_5_Remove
+  xpos 0
+  ypos 650
+ }
+ Output {
+  name Output
+  xpos 0
+  ypos 780
+ }
+end_group

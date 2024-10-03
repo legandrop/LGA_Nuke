@@ -1,0 +1,28 @@
+set cut_paste_input [stack 0]
+version 15.0 v4
+push $cut_paste_input
+Transform {
+center {2048 1080}
+shutteroffset centred
+name Transform40
+selected true
+xpos 263
+ypos 13436
+}
+push 0
+MotionBlur2D {
+inputs 2
+name MotionBlur2D3
+selected true
+xpos 409
+ypos 13436
+}
+VectorBlur {
+channels rgba
+uv motion
+grow_bbox 34.5
+name VectorBlur3
+selected true
+xpos 409
+ypos 13489
+}

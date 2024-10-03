@@ -1,0 +1,35 @@
+set cut_paste_input [stack 0]
+version 13.1 v2
+Group {
+ inputs 0
+ name LGA_VenetianBlinds2
+ selected true
+ xpos -8
+ ypos -108
+ addUserKnob {20 User}
+ addUserKnob {41 freq l Frequency T Expression2.freq}
+ addUserKnob {41 line_width_black l "Black Width" T Expression2.line_width_black}
+ addUserKnob {41 offset l Offset T Expression2.offset}
+}
+ Expression {
+  inputs 0
+  expr0 "((y + offset) % (freq) / line_width_black) * (20 / 5) - (20 / 5) >= 0 ? 1 : 0\n"
+  expr1 "((y + offset) % (freq) / line_width_black) * (20 / 5) - (20 / 5) >= 0 ? 1 : 0\n"
+  expr2 "((y + offset) % (freq) / line_width_black) * (20 / 5) - (20 / 5) >= 0 ? 1 : 0\n"
+  expr3 "((y + offset) % (freq) / line_width_black) * (20 / 5) - (20 / 5) >= 0 ? 1 : 0\n"
+  name Expression2
+  xpos -572
+  ypos 487
+  addUserKnob {20 User}
+  addUserKnob {7 freq l Frequency R 0 40}
+  freq 23.6
+  addUserKnob {7 line_width_black l "Black Width" R 0 40}
+  line_width_black 13.6
+  addUserKnob {7 offset l Offset R 0 200}
+ }
+ Output {
+  name Output1
+  xpos -572
+  ypos 561
+ }
+end_group

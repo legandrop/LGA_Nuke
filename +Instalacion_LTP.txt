@@ -1,0 +1,10 @@
+Instalación:
+
+
+1- Copiar la carpeta LGA_ToolPack-Layout a %USERPROFILE%/.nuke
+
+
+2- Con un editor de texto, agregar esta línea de código al archivo init.py que está dentro de la carpeta %USERPROFILE%/.nuke
+
+   nuke.pluginAddPath('./LGA_ToolPack-Layout')
+

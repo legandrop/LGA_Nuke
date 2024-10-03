@@ -1,0 +1,296 @@
+version 11.3 v2
+Group {
+name STMapRefFrame
+ addUserKnob {20 stmap}
+ addUserKnob {41 format l "set input format" T Reformat1.format}
+ addUserKnob {26 ""}
+ addUserKnob {41 ref_frame l "New Reference Frame" T FrameHold1.first_frame}
+ addUserKnob {41 setframe l "Set to this frame" -STARTLINE T Controller.setframe}
+ addUserKnob {41 precision T Controller.precision}
+ addUserKnob {41 remove_outside l "remove unusable areas" t "your input stmap needs an alpha for this to work" T Controller.remove_outside}
+ addUserKnob {26 "" +STARTLINE}
+addUserKnob {26 info l "" +STARTLINE T "Your input stmap needs an alpha channel."}
+ addUserKnob {20 advanced l reverse_stmap}
+ addUserKnob {41 scale l "warp resolution" t "1 equals an reverse stmap resolution of 1000 square" T Reformat3.scale}
+ addUserKnob {26 ""}
+ addUserKnob {26 copyright l "" +STARTLINE T "© STMap_Ref_Frame v1.1    |     by Marcel Pichert"}
+}
+ Camera2 {
+  inputs 0
+  translate {0.5 0.5 1}
+  projection_mode orthographic
+  focal 25
+  haperture 25
+  vaperture 25
+  near 0.5
+  far 1.5
+  name Camera1
+  xpos -308
+  ypos 610
+  addUserKnob {20 User}
+  addUserKnob {22 reveal l "reveal in explorer" -STARTLINE T "from nuke_utils import reveal_in_explorer;reveal_in_explorer.reveal(nuke.thisNode())"}
+ }
+ Input {
+  inputs 0
+  name Input1
+  xpos -537
+  ypos -394
+ }
+ Dot {
+  name Dot28
+  xpos -503
+  ypos -263
+ }
+set N82296c00 [stack 0]
+ Dot {
+  name Dot26
+  xpos -503
+  ypos 103
+ }
+set N822a9000 [stack 0]
+ FrameHold {
+  first_frame 1001
+  name FrameHold1
+  xpos -340
+  ypos 93
+ }
+ Dot {
+  name Dot8
+  xpos -102
+  ypos 103
+ }
+set N822a9400 [stack 0]
+push $N82296c00
+ Dot {
+  name Dot29
+  xpos 876
+  ypos -263
+ }
+ Expression {
+  expr0 (x+0.5)/width
+  expr1 (y+0.5)/height
+  name Expression3
+  label st-map
+  xpos 842
+  ypos -94
+ }
+set N822a9c00 [stack 0]
+ Merge2 {
+  inputs 2
+  operation from
+  bbox B
+  Bchannels {rgba.red rgba.green -rgba.blue -rgba.alpha}
+  output {rgba.red rgba.green -rgba.blue}
+  name Merge1
+  label "\[if \{\[value mix]<1\} \{ value mix \}]"
+  xpos 842
+  ypos 99
+ }
+ Dot {
+  name Dot9
+  xpos 876
+  ypos 333
+ }
+set N822a6400 [stack 0]
+ Expression {
+  expr0 r*-1
+  expr1 g*-1
+  name Expression1
+  xpos 217
+  ypos 329
+ }
+push $N822a9400
+ ShuffleCopy {
+  inputs 2
+  red red
+  green green
+  blue blue
+  alpha alpha2
+  out2 forward
+  name ShuffleCopy1
+  label "\[value in] -> \[value out]"
+  xpos -135
+  ypos 323
+ }
+ PositionToPoints2 {
+  display textured
+  render_mode textured
+  P_channel forward
+  detail {{Reformat3.width/this.width+0.2}}
+  pointSize 1
+  name PositionToPoints1
+  xpos -135
+  ypos 472
+  disable {{Controller.precision}}
+ }
+ Reformat {
+  inputs 0
+  format "1024 1024 0 0 1024 1024 1 square_1K"
+  name Reformat2
+  xpos 43
+  ypos 537
+ }
+ Reformat {
+  type scale
+  name Reformat3
+  xpos 43
+  ypos 630
+  scale 0.5
+ }
+ ScanlineRender {
+  inputs 3
+  conservative_shader_sampling false
+  max_tessellation 1
+  shutteroffset centred
+  motion_vectors_type distance
+  name ScanlineRender1
+  label "\[if \{\[value samples]>1\} \{ value samples \} ] \[if \{\[value samples]>1\} \{ return samples \} ]\n\[if \{\[value projection_mode] != \"render camera\"\} \{ value projection_mode  \}]\n"
+  xpos -135
+  ypos 630
+ }
+ Reformat {
+  resize distort
+  name Reformat1
+  xpos -135
+  ypos 748
+ }
+ FrameHold {
+  first_frame {{parent.FrameHold1.knob.first_frame}}
+  name FrameHold2
+  xpos -135
+  ypos 851
+ }
+ Dot {
+  name Dot6
+  xpos -101
+  ypos 982
+ }
+set N822a4800 [stack 0]
+push $N822a9c00
+ Dot {
+  name Dot7
+  xpos 557
+  ypos -84
+ }
+ Merge2 {
+  inputs 2
+  operation from
+  bbox B
+  name Merge2
+  label "\[if \{\[value mix]<1\} \{ value mix \}]"
+  xpos 523
+  ypos 978
+ }
+push $N822a9000
+ Dot {
+  name Dot3
+  xpos -503
+  ypos 1175
+ }
+set N822a5400 [stack 0]
+ Dot {
+  name Dot4
+  xpos -269
+  ypos 1175
+ }
+set N822a5800 [stack 0]
+ STMap {
+  inputs 2
+  channels {rgba.red rgba.green -rgba.blue none}
+  uv rgb
+  name STMap1
+  xpos 523
+  ypos 1165
+ }
+push $N822a6400
+ STMap {
+  inputs 2
+  channels {rgba.red rgba.green -rgba.blue none}
+  uv rgb
+  name STMap2
+  xpos 842
+  ypos 1165
+  disable {{parent.Controller.precision_toggle}}
+ }
+ Dot {
+  name Dot27
+  xpos 876
+  ypos 1648
+ }
+set N822a2400 [stack 0]
+ Dot {
+  name Dot2
+  xpos 876
+  ypos 1815
+ }
+push $N822a4800
+ Dot {
+  name Dot5
+  xpos -101
+  ypos 1467
+ }
+push $N822a5800
+ ChannelMerge {
+  inputs 2
+  operation in
+  name ChannelMerge2
+  xpos -303
+  ypos 1450
+  disable {{parent.Controller.precision_toggle}}
+ }
+ ChannelMerge {
+  inputs 2
+  operation in
+  name ChannelMerge1
+  xpos -303
+  ypos 1798
+ }
+ Dot {
+  name Dot1
+  xpos -269
+  ypos 1990
+ }
+push $N822a2400
+push $N822a5400
+ Merge2 {
+  inputs 2
+  operation plus
+  bbox B
+  output rgb
+  name Merge7
+  label "\[if \{\[value mix]<1\} \{ value mix \}]"
+  xpos -537
+  ypos 1644
+ }
+ Multiply {
+  inputs 1+1
+  channels rgba
+  value 0
+  invert_mask true
+  name Multiply1
+  label "\[value value]"
+  xpos -537
+  ypos 1980
+  disable {{1-Controller.remove_outside}}
+ }
+ Output {
+  name Output1
+  xpos -537
+  ypos 2197
+ }
+ NoOp {
+  inputs 0
+  name Controller
+  note_font_size 74
+  xpos 1125
+  ypos 1672
+  addUserKnob {20 User}
+  addUserKnob {22 setframe l "Set to this frame" T "nuke.toNode(\"FrameHold1\")\[\"first_frame\"].setValue(nuke.frame())" +STARTLINE}
+  addUserKnob {6 precision_toggle l "precision toggle" +STARTLINE}
+  precision_toggle {{this.precision}}
+  addUserKnob {4 precision M {"high (slow)" "low (can cause sliding)" ""}}
+  precision "low (causes sliding)"
+  addUserKnob {6 remove_outside l "remove unusable areas" +STARTLINE}
+  remove_outside false
+ }
+end_group

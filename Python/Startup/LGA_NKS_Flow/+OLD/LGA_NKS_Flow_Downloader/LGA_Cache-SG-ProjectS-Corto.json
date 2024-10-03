@@ -1,0 +1,113 @@
+{
+    "projects": [
+        {
+            "project_name": "EHQALPV",
+            "shots": [
+                {
+                    "shot_name": "HAPV_R0_00_chroma_helicoptero_A",
+                    "sequence": "R0",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": "Sin descripción",
+                            "task_status": "rev_su",
+                            "versions": [
+                                {
+                                    "version_number": "HAPV_R0_00_chroma_helicoptero_comp_v05",
+                                    "version_description": "wip",
+                                    "version_status": "vwd",
+                                    "version_date": "2023-06-27T12:02:27-03:00"
+                                },
+                                {
+                                    "version_number": "HAPV_R0_00_chroma_helicoptero_comp_v16",
+                                    "version_description": "camera shake, retoque bg",
+                                    "version_status": "vwd",
+                                    "version_date": "2023-07-10T19:36:07-03:00"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "HAPV_R0_00_chroma_helicoptero_B",
+                    "sequence": "R0",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": "Sin descripción",
+                            "task_status": "ready",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "EHQALPV_089_65_OVNI_Estrella",
+                    "sequence": "076-100",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": "Sin descripción",
+                            "task_status": "noread",
+                            "versions": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "project_name": "PORH",
+            "shots": [
+                {
+                    "shot_name": "PORH_R1_01_escena_ciudad_A",
+                    "sequence": "R1",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": "Sin descripción",
+                            "task_status": "rev_su",
+                            "versions": [
+                                {
+                                    "version_number": "PORH_R1_01_ciudad_comp_v01",
+                                    "version_description": "Incorporación de elementos CGI",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-05-01T10:00:00-03:00"
+                                },
+                                {
+                                    "version_number": "PORH_R1_01_ciudad_comp_v03",
+                                    "version_description": "Finalización de efectos visuales",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-05-03T12:00:00-03:00"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "PORH_R1_02_escena_parque_B",
+                    "sequence": "R1",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": "Sin descripción",
+                            "task_status": "rev_su",
+                            "versions": [
+                                {
+                                    "version_number": "PORH_R1_02_parque_comp_v01",
+                                    "version_description": "Animación de elementos naturales",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-05-04T10:00:00-03:00"
+                                },
+                                {
+                                    "version_number": "PORH_R1_02_parque_comp_v03",
+                                    "version_description": "Retoques finales y estabilización",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-05-06T12:00:00-03:00"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

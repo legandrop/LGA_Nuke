@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+OLD/
+oz_backdrop/+OLD+BuildingBlocks/
+nuke_move_nodes/test/
+.git/
+.gitignore
++exclude.lst
++CrearZip.bat
+LGA_selectNodes.py.panel
+LICENSE

@@ -1,0 +1,79 @@
+set cut_paste_input [stack 0]
+version 14.0 v2
+push $cut_paste_input
+Group {
+ name ChromAB1
+ tile_color 0xda51ffff
+ selected true
+ xpos -352
+ ypos 44
+ addUserKnob {20 User}
+ addUserKnob {41 center l Center T centerPoint.center}
+ addUserKnob {22 toggleAutoManual l "Auto / Manual" t "Switch center between automatic or manual" -STARTLINE T "def toggleAutoManual():\n    node = nuke.thisNode()\n    isLocked = node\['center'].enabled()\n    expr_x = 'width()/2'\n    expr_y = 'height()/2'\n    value_x = node.width() / 2\n    value_y = node.height() / 2\n\n    if isLocked:\n        node\['center'].setEnabled(False)\n        node\['center'].clearAnimated()\n        node\['center'].setExpression(expr_x, 0)\n        node\['center'].setExpression(expr_y, 1)\n    else:\n        node\['center'].clearAnimated()\n        node\['center'].setValue(\[value_x, value_y])\n        node\['center'].setEnabled(True)\n\ntoggleAutoManual()\n"}
+ addUserKnob {26 ""}
+ addUserKnob {7 RedH l "<font  color='#bd3939'>Red Horizontal</font>" R 0.9978 1.0022}
+ RedH 0.9993
+ addUserKnob {7 RedV l "<font  color='#bd3939'>Red Vertical</font>" R 0.9978 1.0022}
+ RedV 0.9996
+ addUserKnob {26 ""}
+ addUserKnob {7 GreenH l "<font  color='#39bd49'>Green Horizontal</font>" R 0.9978 1.0022}
+ GreenH 0.9997
+ addUserKnob {7 GreenV l "<font  color='#39bd49'>Green Vertical</font>" R 0.9978 1.0022}
+ GreenV 1
+ addUserKnob {26 ""}
+ addUserKnob {7 BlueH l "<font color='#1e5dc6'>Blue Horizontal</font>" R 0.9978 1.0022}
+ BlueH 1.002
+ addUserKnob {7 BlueV l "<font color='#1e5dc6'>Blue Vertical</font>" R 0.9978 1.0022}
+ BlueV 1.0021
+ addUserKnob {26 ""}
+ addUserKnob {6 Invert +STARTLINE}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos 539
+  ypos 50
+ }
+ TransformMasked {
+  channels {rgba.red -rgba.green -rgba.blue none}
+  scale {{parent.RedH} {parent.RedV}}
+  center {{parent.centerPoint.center.x} {parent.centerPoint.center.y}}
+  invert_matrix {{parent.Invert}}
+  name Transform1
+  xpos 539
+  ypos 119
+ }
+ TransformMasked {
+  channels {-rgba.red rgba.green -rgba.blue none}
+  scale {{parent.GreenH} {parent.GreenV}}
+  center {{parent.centerPoint.center.x} {parent.centerPoint.center.y}}
+  invert_matrix {{parent.Invert}}
+  name Transform2
+  xpos 539
+  ypos 188
+ }
+ TransformMasked {
+  channels {-rgba.red -rgba.green rgba.blue none}
+  scale {{parent.BlueH} {parent.BlueV}}
+  center {{parent.centerPoint.center.x} {parent.centerPoint.center.y}}
+  invert_matrix {{parent.Invert}}
+  name Transform3
+  selected true
+  xpos 539
+  ypos 257
+ }
+ Output {
+  name Output1
+  xpos 539
+  ypos 326
+ }
+ NoOp {
+  inputs 0
+  name centerPoint
+  xpos 380
+  ypos 188
+  addUserKnob {20 centerPoint}
+  addUserKnob {12 center}
+  center {2862 1133}
+ }
+end_group

@@ -1,0 +1,40 @@
+Preferences {
+ inputs 0
+ name Preferences
+ localCachePath E:/z-z-Nuke_Localize/
+ localizationMode off
+ DiskCachePath E:/z-z-Nuke_Cache/
+ diskCacheGB 50
+ TimelineDiskCachePath E:/z-z-Nuke_Cache/
+ TimelineDiskCacheLimit 29
+ fileTypeColors exr,#a3557e
+ PaintCacheGB 50
+ selectedGPUDeviceName "NVIDIA GeForce RTX 4090"
+ platformPathRemaps ""
+ maxPanels 5
+ UIFontSize 12
+ NodeColourSlot14 "OCIO GeoTracker FaceTracker FacialExpressions PinTool TransformRiggedGeo "
+ postage_stamp_mode "Static frame"
+ ArrowColorUp 0xff0000ff
+ expression_arrows false
+ link_knob_arrows false
+ clone_arrows false
+ ShakeSensitivity 1.51
+ goofy_foot false
+ UISplineWarperBSourceColor 0xe9ff55ff
+ UISplineWarperBDestColor 0x1975ffff
+ vsync_enabled true
+ defaultFlipbook "Flipbook Viewer"
+ addUserKnob {20 Oz_Backdrop}
+ addUserKnob {26 Oz_Backdrop_info1 l <b>Defaults</b>}
+ addUserKnob {4 Oz_Backdrop_appearance l Appearance M {Fill Border}}
+ addUserKnob {4 Oz_Backdrop_color l "Backdrop color" M {Random red orange yellow green cyan blue dark_blue magenta pink input AOVs Mattee crypt refe otro}}
+ addUserKnob {4 Oz_Backdrop_text_alignment l "Text alignment" M {left center right}}
+ addUserKnob {7 Oz_Backdrop_margin l "Inner Margin" R 10 100}
+ Oz_Backdrop_margin 100
+ addUserKnob {7 Oz_Backdrop_font_size l "Font Size" R 10 128}
+ Oz_Backdrop_font_size 50
+ addUserKnob {6 Oz_Backdrop_bold l "Bold Text" t "Set default text to bold" +STARTLINE}
+ Oz_Backdrop_bold true
+ addUserKnob {4 Oz_Backdrop_Appearance l Appearance M {Fill Border}}
+}

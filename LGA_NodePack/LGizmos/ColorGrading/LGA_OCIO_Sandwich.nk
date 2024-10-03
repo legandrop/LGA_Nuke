@@ -1,0 +1,19 @@
+set cut_paste_input [stack 0]
+version 15.0 v4
+push $cut_paste_input
+OCIOColorSpace {
+in_colorspace "ACES - ACES2065-1"
+out_colorspace "Output - Rec.2020"
+name OCIOColorSpace1
+selected true
+xpos 1417
+ypos 448
+}
+OCIOColorSpace {
+in_colorspace "Output - Rec.2020"
+out_colorspace "ACES - ACES2065-1"
+name OCIOColorSpace2
+selected true
+xpos 1417
+ypos 548
+}

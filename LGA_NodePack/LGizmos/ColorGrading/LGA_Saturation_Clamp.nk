@@ -1,0 +1,27 @@
+set cut_paste_input [stack 0]
+version 15.0 v4
+push $cut_paste_input
+Colorspace {
+colorspace_out HSV
+name Colorspace1
+label "Linear -> HSV"
+selected true
+xpos 1255
+ypos 5407
+}
+Clamp {
+channels {-rgba.red rgba.green -rgba.blue none}
+name Clamp4
+label Green
+selected true
+xpos 1255
+ypos 5464
+}
+Colorspace {
+colorspace_in HSV
+name Colorspace2
+label "HSV -> Linear"
+selected true
+xpos 1255
+ypos 5527
+}

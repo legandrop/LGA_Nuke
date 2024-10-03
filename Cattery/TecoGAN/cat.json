@@ -1,0 +1,13 @@
+{
+    "minimum_nuke_version_required": 13.1,
+    "version": 1,
+    "category": "Upscaling",
+    "description": "This model takes a low resolution video sequence as input and outputs the high resolution (x4) video output.",
+    "cats": [
+        {
+            "filepath": "TecoGAN.gizmo",
+            "name": "TecoGAN",
+            "icon": "TecoGAN.png"
+        }
+    ]
+}

@@ -1,0 +1,59 @@
+set cut_paste_input [stack 0]
+version 13.1 v2
+push $cut_paste_input
+Group {
+ name Vanish
+ selected true
+ xpos -327
+ ypos 337
+ addUserKnob {20 User l vanish}
+ addUserKnob {12 p1}
+ p1 {1730 656}
+ addUserKnob {12 p2}
+ p2 {1934 588}
+ addUserKnob {26 ""}
+ addUserKnob {7 rad l radians}
+ rad {{"atan2((p2.x - p1.x), (p2.y - p1.y))"}}
+ addUserKnob {3 res l resolution}
+ res 10
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos 358
+  ypos 35
+ }
+ Expression {
+  expr3 "sin( (atan( x - p1.x, y - p1.y ) - rad) * res)"
+  name Expression3
+  xpos 358
+  ypos 84
+ }
+ Grade {
+  channels alpha
+  whitepoint 0
+  white_clamp true
+  name Grade1
+  xpos 358
+  ypos 161
+ }
+ EdgeDetectWrapper {
+  channels alpha
+  name EdgeDetect1
+  xpos 358
+  ypos 225
+ }
+ Shuffle1 {
+  red alpha
+  green alpha
+  blue alpha
+  name Shuffle2
+  xpos 358
+  ypos 299
+ }
+ Output {
+  name Output1
+  xpos 358
+  ypos 348
+ }
+end_group

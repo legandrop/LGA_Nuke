@@ -1,0 +1,609 @@
+version 13.1 v1
+Gizmo {
+ onCreate "import sys\nthis = nuke.thisNode()\ninference = nuke.toNode(f\"\{this.name()\}.Inference1\")\nthis[\"gpuName\"].setValue(inference[\"gpuName\"].value())\nthis[\"channelsIn\"].setValue(\"rgba.red, rgba.green, rgba.blue\")\ninference.forceValidate()\nis_enabled = inference\[\"modelFile\"\].enabled()\nif (sys.platform.lower() == \"darwin\") and (not inference\[\"useGPUIfAvailable\"\].enabled()): this\[\"useGPUIfAvailable\"\].setValue(False), this\[\"useGPUIfAvailable\"\].setEnabled(False)\nif not is_enabled:\n    for k in this.knobs(): this[k].setEnabled(False)\nthis[\"halfPrecision\"].setVisible(this[\"useGPUIfAvailable\"].enabled())"
+ knobChanged "this = nuke.thisNode()\nthis[\"halfPrecision\"].setVisible(this[\"useGPUIfAvailable\"].value())"
+ onDestroy "nuke.thisNode()\[\"knobChanged\"].setValue(\"\")"
+ addUserKnob {20 FaceMakeup}
+ addUserKnob {26 localGPU l "Local GPU:" T ""}
+ addUserKnob {26 gpuName l "" -STARTLINE T "NVIDIA TITAN RTX"}
+ addUserKnob {6 useGPUIfAvailable l "Use GPU if available" t "Select this to render on the <b>Local GPU</b>, if available.\n\nYou can select this even if no GPU is currently available on your machine. The GPU will then be used whenever the script is opened on a machine which does have a GPU available. You should also select this if you wish to render from the command line with the <b>--gpu</b> option.\n\nIf this node requires full frames from its inputs, and is therefore unable to reduce its memory overhead, it will fall back to the CPU if an attempt to render a frame on the GPU fails due to lack of memory. When this occurs, a warning message will be printed to the console." +STARTLINE}
+ useGPUIfAvailable true
+ addUserKnob {26 ""}
+ addUserKnob {26 channelsIn l "Channels In:" t "The channels the model expects as input." T "rgba.red, rgba.green, rgba.blue"}
+ addUserKnob {41 in_colorspace l "Input Colorspace" t "Define the colorspace that the input image is in." T OCIOColorSpace1.in_colorspace}
+ addUserKnob {6 halfPrecision l "Optimize for Speed and Memory" t "Whether to process at half float precision. This speeds up execution and enables the processing of larger images, however there is the risk of artifacts with some trained models." +STARTLINE}
+}
+ BackdropNode {
+  inputs 0
+  name BackdropNode1
+  tile_color 0x71c67100
+  label Mouth
+  note_font_size 42
+  xpos 464
+  ypos 323
+  bdwidth 296
+  bdheight 228
+ }
+ BackdropNode {
+  inputs 0
+  name BackdropNode2
+  tile_color 0x388e8e00
+  label "Eyes / Ears / Eyebrows"
+  note_font_size 42
+  xpos 460
+  ypos 571
+  bdwidth 305
+  bdheight 448
+ }
+ BackdropNode {
+  inputs 0
+  name BackdropNode3
+  tile_color 0x7171c600
+  label Accessories
+  note_font_size 42
+  xpos 395
+  ypos 1047
+  bdwidth 421
+  bdheight 359
+ }
+ BackdropNode {
+  inputs 0
+  name BackdropNode4
+  tile_color 0x7171c600
+  label Face
+  note_font_size 42
+  xpos 427
+  ypos 121
+  bdwidth 373
+  bdheight 194
+ }
+ Input {
+  inputs 0
+  name Input1
+  xpos 829
+  ypos -11
+ }
+ Dot {
+  name Dot14
+  xpos 863
+  ypos 39
+ }
+set Nd440ca0 [stack 0]
+ Dot {
+  name Dot16
+  xpos 963
+  ypos 39
+ }
+ Dot {
+  name Dot15
+  xpos 963
+  ypos 1435
+ }
+push $Nd440ca0
+ OCIOColorSpace {
+  in_colorspace scene_linear
+  out_colorspace color_picking
+  name OCIOColorSpace1
+  xpos 829
+  ypos 75
+ }
+ Inference {
+  useGPUIfAvailable {{parent.useGPUIfAvailable}}
+  modelFile "\[lsearch -inline \[plugins -all face-makeup.cat] *.cat]"
+  halfPrecision {{parent.halfPrecision}}
+  serialiseKnob {}
+  name Inference1
+  xpos 829
+  ypos 131
+ }
+set Nd8c66f0 [stack 0]
+ Dot {
+  name Dot4
+  xpos 606
+  ypos 135
+ }
+set Nd8d3c50 [stack 0]
+ Dot {
+  name Dot9
+  xpos 325
+  ypos 135
+ }
+ Dot {
+  name Dot10
+  xpos 325
+  ypos 367
+ }
+set Nc6bcc50 [stack 0]
+ Dot {
+  name Dot11
+  xpos 325
+  ypos 572
+ }
+set Nc6c1ca0 [stack 0]
+ Dot {
+  name Dot5
+  xpos 325
+  ypos 729
+ }
+set Nc6c6d40 [stack 0]
+ Dot {
+  name Dot7
+  xpos 325
+  ypos 883
+ }
+set Nc6cbde0 [stack 0]
+ Dot {
+  name Dot12
+  xpos 325
+  ypos 1069
+ }
+set Nc6d0e80 [stack 0]
+ Dot {
+  name Dot13
+  xpos 325
+  ypos 1333
+ }
+ Expression {
+  expr0 "r == 1.0 && g == 1.0 && b > 0.32 && b < 0.34 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name clothes
+  xpos 556
+  ypos 1329
+ }
+add_layer {clothes clothes.main}
+ Shuffle2 {
+  fromInput1 {{0} B}
+  in1 rgb
+  out1 clothes
+  fromInput2 {{0} B}
+  mappings "1 rgba.red 0 0 clothes.main 0 0"
+  name Shuffle12
+  xpos 556
+  ypos 1366
+ }
+push $Nc6d0e80
+ Dot {
+  name Dot3
+  xpos 589
+  ypos 1069
+ }
+set Nc6f2c60 [stack 0]
+ Expression {
+  expr0 "r == 0.0 && g == 1.0 && b > 0.65 && b < 0.67 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name earrings
+  xpos 405
+  ypos 1134
+ }
+push $Nc6f2c60
+ Expression {
+  expr0 "r == 1.0 && g == 1.0 && b == 0.0 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name necklace
+  xpos 510
+  ypos 1134
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  in1 rgb
+  out1 rgb
+  fromInput2 {{0} B A}
+  in2 rgb
+  mappings "3 rgba.red 0 0 rgba.red 0 0 rgba.red 1 0 rgba.green 0 1 black -1 -1 rgba.blue 0 2"
+  name Shuffle5
+  xpos 457
+  ypos 1181
+ }
+push $Nc6f2c60
+ Expression {
+  expr0 "r > 0.32 && r < 0.34 && g == 1.0 && b == 0.0 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name eyeglasses
+  xpos 607
+  ypos 1132
+ }
+push $Nc6f2c60
+ Expression {
+  expr0 "r == 1.0 && g == 0.0 && b == 1.0 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name hat
+  xpos 705
+  ypos 1134
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  in1 rgb
+  out1 rgb
+  fromInput2 {{0} B A}
+  in2 rgb
+  mappings "3 rgba.red 0 0 rgba.red 0 0 rgba.red 1 0 rgba.green 0 1 black -1 -1 rgba.blue 0 2"
+  name Shuffle9
+  xpos 646
+  ypos 1177
+ }
+add_layer {accessories accessories.earrings accessories.necklace accessories.eyeglasses accessories.hat}
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  in1 rgb
+  out1 accessories
+  fromInput2 {{0} B A}
+  in2 rgb
+  mappings "4 rgba.red 0 0 accessories.earrings 0 0 rgba.green 0 1 accessories.necklace 0 1 rgba.red 1 0 accessories.eyeglasses 0 2 rgba.green 1 1 accessories.hat 0 3"
+  name Shuffle10
+  xpos 545
+  ypos 1228
+ }
+push $Nc6cbde0
+ Dot {
+  name Dot1
+  xpos 588
+  ypos 883
+ }
+set Nc74e670 [stack 0]
+ Expression {
+  expr0 "r == 0.0 && g == 1.0 && b > 0.32 && b < 0.34 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name left_ear
+  xpos 504
+  ypos 930
+ }
+push $Nc74e670
+ Expression {
+  expr0 "r > 0.65 && r < 0.67 && g == 1.0 && b == 0.0 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name right_ear
+  xpos 594
+  ypos 930
+ }
+add_layer {ears ears.left ears.right}
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  in1 rgb
+  out1 ears
+  fromInput2 {{0} B A}
+  in2 rgb
+  mappings "2 rgba.red 0 0 ears.left 0 0 rgba.red 1 0 ears.right 0 1"
+  name Shuffle3
+  xpos 550
+  ypos 985
+ }
+push $Nc6c6d40
+ Dot {
+  name Dot6
+  xpos 591
+  ypos 729
+ }
+set Nc77a040 [stack 0]
+ Expression {
+  expr0 "r == 0.0 && g == 1.0 && b == 0.0 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name left_eye
+  xpos 504
+  ypos 773
+ }
+push $Nc77a040
+ Expression {
+  expr0 "r == 1.0 && g == 0.0 && b > 0.65 && b< 0.67 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name right_eye
+  xpos 599
+  ypos 772
+ }
+add_layer {eyes2 eyes2.left eyes2.right}
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  in1 rgb
+  out1 eyes2
+  fromInput2 {{0} B A}
+  in2 rgb
+  mappings "2 rgba.red 0 0 eyes2.left 0 0 rgba.red 1 0 eyes2.right 0 1"
+  name Shuffle1
+  xpos 551
+  ypos 829
+ }
+push $Nc6c1ca0
+ Dot {
+  name Dot8
+  xpos 592
+  ypos 572
+ }
+set Nc7a5810 [stack 0]
+ Expression {
+  expr0 "r == 1.0 && g == 0.0 && b > 0.32 && b < 0.34 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name left_eyebrow
+  xpos 510
+  ypos 632
+ }
+push $Nc7a5810
+ Expression {
+  expr0 "r == 1.0 && g > 0.65 && g < 0.67 && b == 0.0 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name right_eyebrow
+  xpos 603
+  ypos 632
+ }
+add_layer {eyebrows eyebrows.left eyebrows.right}
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  in1 rgb
+  out1 eyebrows
+  fromInput2 {{0} B A}
+  in2 rgb
+  mappings "2 rgba.red 0 0 eyebrows.left 0 0 rgba.red 1 0 eyebrows.right 0 1"
+  name Shuffle2
+  xpos 558
+  ypos 674
+ }
+push $Nc6bcc50
+ Dot {
+  name Dot2
+  xpos 600
+  ypos 367
+ }
+set Nc7d0f30 [stack 0]
+ Expression {
+  expr0 "r > 0.65 && r < 0.67 && g == 0.0 && b == 1.0 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name upper_lip
+  xpos 474
+  ypos 433
+ }
+push $Nc7d0f30
+ Expression {
+  expr0 "r == 0.0 && g > 0.32 && g < 0.34 && b == 1.0 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name lower_lip
+  xpos 566
+  ypos 434
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  in1 rgb
+  out1 rgb
+  fromInput2 {{0} B A}
+  in2 rgb
+  mappings "3 rgba.red 0 0 rgba.red 0 0 rgba.red 1 0 rgba.green 0 1 black -1 -1 rgba.blue 0 2"
+  name Shuffle11
+  xpos 566
+  ypos 471
+ }
+push $Nc7d0f30
+ Expression {
+  expr0 "r > 0.32 && r < 0.34 && g == 0.0 && b == 1.0 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name mouth_inside
+  xpos 659
+  ypos 434
+ }
+add_layer {mouth mouth.upper_lip mouth.lower_lip mouth.inside}
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  in1 rgb
+  out1 mouth
+  fromInput2 {{0} B A}
+  in2 rgb
+  mappings "3 rgba.red 0 0 mouth.upper_lip 0 0 rgba.green 0 1 mouth.lower_lip 0 1 rgba.red 1 0 mouth.inside 0 2"
+  name Shuffle4
+  xpos 566
+  ypos 520
+ }
+push $Nd8d3c50
+ Expression {
+  expr0 "r == 1.0 && g > 0.32 && g < 0.34 && b == 0.0 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name skin
+  xpos 437
+  ypos 201
+ }
+push $Nd8d3c50
+ Expression {
+  expr0 "r == 0.0 && g == 0.0 && b == 1.0 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name nose
+  xpos 524
+  ypos 202
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  in1 rgb
+  out1 rgb
+  fromInput2 {{0} B A}
+  in2 rgb
+  mappings "3 rgba.red 0 0 rgba.red 0 0 rgba.red 1 0 rgba.green 0 1 black -1 -1 rgba.blue 0 2"
+  name Shuffle6
+  xpos 484
+  ypos 242
+ }
+push $Nd8d3c50
+ Expression {
+  expr0 "r == 1 && g == 1 && b > 0.65 && b < 0.67 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name hair
+  xpos 617
+  ypos 202
+ }
+push $Nd8d3c50
+ Expression {
+  expr0 "r == 0.0 && g > 0.65 && g < 0.67 && b == 1.0 ? 1.0 : 0.0"
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {-rgba.alpha}
+  name neck
+  xpos 710
+  ypos 201
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  in1 rgb
+  out1 rgb
+  fromInput2 {{0} B A}
+  in2 rgb
+  mappings "3 rgba.red 0 0 rgba.red 0 0 rgba.red 1 0 rgba.green 0 1 black -1 -1 rgba.blue 0 2"
+  name Shuffle7
+  xpos 666
+  ypos 246
+ }
+add_layer {face face.skin face.nose face.hair face.neck}
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  in1 rgb
+  out1 face
+  fromInput2 {{0} B A}
+  in2 rgb
+  mappings "4 rgba.red 0 0 face.skin 0 0 rgba.green 0 1 face.nose 0 1 rgba.red 1 0 face.hair 0 2 rgba.green 1 1 face.neck 0 3"
+  name Shuffle8
+  xpos 566
+  ypos 285
+ }
+push $Nd8c66f0
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{0} B A}
+  in1 rgb
+  out1 rgb
+  fromInput2 {{1} B A}
+  in2 face
+  out2 face
+  mappings "7 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 face.neck 1 3 face.neck 1 3 face.skin 1 0 face.skin 1 0 face.nose 1 1 face.nose 1 1 face.hair 1 2 face.hair 1 2"
+  name Shuffle14
+  xpos 829
+  ypos 285
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{0} B A}
+  in1 rgb
+  out1 rgb
+  fromInput2 {{1} B A}
+  in2 mouth
+  out2 mouth
+  mappings "6 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 mouth.upper_lip 1 0 mouth.upper_lip 1 0 mouth.lower_lip 1 1 mouth.lower_lip 1 1 mouth.inside 1 2 mouth.inside 1 2"
+  name Shuffle15
+  xpos 829
+  ypos 520
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{0} B A}
+  in1 rgb
+  out1 rgb
+  fromInput2 {{1} B A}
+  in2 eyebrows
+  out2 eyebrows
+  mappings "5 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 eyebrows.left 1 0 eyebrows.left 1 0 eyebrows.right 1 1 eyebrows.right 1 1"
+  name Shuffle16
+  xpos 829
+  ypos 674
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{0} B A}
+  in1 rgb
+  out1 rgb
+  fromInput2 {{1} B A}
+  in2 eyes2
+  out2 eyes2
+  mappings "5 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 eyes2.left 1 0 eyes2.left 1 0 eyes2.right 1 1 eyes2.right 1 1"
+  name Shuffle17
+  xpos 829
+  ypos 829
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{0} B A}
+  in1 rgb
+  out1 rgb
+  fromInput2 {{1} B A}
+  in2 ears
+  out2 ears
+  mappings "5 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 ears.left 1 0 ears.left 1 0 ears.right 1 1 ears.right 1 1"
+  name Shuffle18
+  xpos 829
+  ypos 985
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{0} B A}
+  in1 rgb
+  out1 rgb
+  fromInput2 {{1} B A}
+  in2 accessories
+  out2 accessories
+  mappings "7 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 accessories.earrings 1 0 accessories.earrings 1 0 accessories.necklace 1 1 accessories.necklace 1 1 accessories.eyeglasses 1 2 accessories.eyeglasses 1 2 accessories.hat 1 3 accessories.hat 1 3"
+  name Shuffle19
+  xpos 829
+  ypos 1228
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{0} B A}
+  in1 rgb
+  out1 rgb
+  fromInput2 {{1} B A}
+  in2 clothes
+  out2 clothes
+  mappings "4 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 clothes.main 1 0 clothes.main 1 0"
+  name Shuffle13
+  xpos 829
+  ypos 1366
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  fromInput2 {{0} B A}
+  name Shuffle20
+  xpos 829
+  ypos 1431
+ }
+ Output {
+  name Output1
+  xpos 829
+  ypos 1503
+ }
+end_group

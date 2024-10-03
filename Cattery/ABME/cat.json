@@ -1,0 +1,18 @@
+{
+    "minimum_nuke_version_required": 13.1,
+    "version": 1,
+    "category": "Optical Flow",
+    "description": "Asymmetric Bilateral Motion Estimation for Video Frame Interpolation",
+    "cats": [
+        {
+            "filepath": "ABME_Retime.gizmo",
+            "name": "ABME Retime",
+            "icon": "ABME.png"
+        },
+        {
+            "filepath": "ABME_SV.gizmo",
+            "name": "ABME SV",
+            "icon": "ABME.png"
+        }
+    ]
+}

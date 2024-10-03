@@ -1,0 +1,6 @@
+la carpeta "Cattery" va en Custom 13.1
+
+y en el init de C:\TOOLS\users\default\nuke\Custom_13.1
+agregar la linea
+
+nuke.pluginAddPath('./Cattery')

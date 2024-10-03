@@ -1,0 +1,94 @@
+set cut_paste_input [stack 0]
+version 12.0 v3
+push $cut_paste_input
+Group {
+ name KF_LightWrap
+ tile_color 0x4e73ffff
+ selected true
+ xpos -260
+ ypos -633
+ addUserKnob {20 User}
+ addUserKnob {26 k_nn l "" +STARTLINE T "<font color=\"cornflower blue\" size=10>KF LightWrap<font color=\"gray\" size=2>v1.02</font>"}
+ addUserKnob {26 k_kf l "" +STARTLINE T "<font color=\"gray\">by Kevin Fisch</font>"}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {7 spread l Spread R 0 100}
+ spread 100
+ addUserKnob {7 mult l Strength}
+ mult 0.05
+ addUserKnob {7 luma l "Lume Tolerance"}
+}
+ Input {
+  inputs 0
+  name Input1
+  selected true
+  xpos 275
+  ypos -9
+ }
+ Dot {
+  name Dot1
+  xpos 309
+  ypos 169
+ }
+set Naa98520 [stack 0]
+ Input {
+  inputs 0
+  name bg
+  xpos 71
+  ypos -13
+  number 1
+ }
+ Grade {
+  blackpoint {{parent.luma}}
+  name Grade1
+  xpos 71
+  ypos 82
+ }
+ Merge2 {
+  inputs 2
+  operation stencil
+  name Merge1
+  xpos 71
+  ypos 165
+ }
+ Blur {
+  size {{parent.spread}}
+  name Blur8
+  xpos 71
+  ypos 215
+ }
+ Multiply {
+  value {{parent.mult}}
+  name Multiply1
+  xpos 71
+  ypos 253
+ }
+ Dot {
+  name Dot2
+  xpos 105
+  ypos 305
+ }
+push $Naa98520
+ Unpremult {
+  name Unpremult1
+  xpos 275
+  ypos 231
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  output {rgba.red rgba.green rgba.blue -rgba.alpha}
+  name Merge2
+  xpos 275
+  ypos 301
+ }
+ Premult {
+  name Premult2
+  xpos 275
+  ypos 354
+ }
+ Output {
+  name Output1
+  xpos 275
+  ypos 567
+ }
+end_group

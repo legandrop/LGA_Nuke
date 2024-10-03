@@ -1,0 +1,66 @@
+#! C:/Program Files/Nuke11.0v1/nuke-11.0.1.dll -nx
+version 11.0 v1
+Gizmo {
+ inputs 2
+ knobChanged "tn = nuke.thisNode()\ntk = nuke.thisKnob()\nif tk.name() in \['Frame_Count', 'Increment_Type', 'Step', 'Base', 'Multiply']:\n\n\timport math\n\tgrp = nuke.thisGroup()\n\tgrp.begin()\n\ttn = nuke.thisNode()\n\ttk = nuke.thisKnob()\n\n\tfor node in nuke.allNodes():\n\t\tif node.Class() == \"Grade\":\n\t\t\tif node.name() != \"Grade_Overlay\":\n\t\t\t\tnuke.delete(node)\n\tfor node in nuke.allNodes():\n\t\tif node.Class() == \"TimeOffset\":\n\t\t\tnuke.delete(node)\n\n\tMerge_Start = nuke.toNode('Merge_Start')\n\tMerge_End = nuke.toNode('Merge_End')\n\tOutput = nuke.toNode('Output1')\n\t\t\t\n\t\t\t\n\ttn = nuke.thisNode()\n\ttk = nuke.thisKnob()\n\tcount = tn.knob('Frame_Count').value()\n\tcount = int(count)\n\tnodename = tn\['name'].getValue()\n\toverlay = tn.knob('Overlay').getValue()\n\ttype = tn.knob('Increment_Type').value()\n\n\t\n\tfor i in tn.allKnobs():\n\t\tif i.name() in \[\"Frame_Count\",\"Increment_Type\",\"Step\",\"Base\",\"Multiply\"]:\n\t\t\ttn.knob(i.name()).setFlag(nuke.NO_ANIMATION)\n\n\n\tcounter = 0\n\tcounter = int(counter)\n\tsteps = int(tn.knob('Step').value())\n\n\n\n\tbase = tn.knob('Base').value()\n\tmult = tn.knob('Multiply').getValue()\n\tlogbase = 2\n\ttemp = 0\n\tend = False\n\n\n\n\tmaxinput = Merge_End.inputs()\n\t \n\n\tfor i in range(0, maxinput):\n\t\tMerge_End.setInput(i, None)\n\n\n\tif mult <= 0.1:\n\t\tmult = 0.1\n\t\ttn.knob('Multiply').setValue(0.1)\n\tif mult >= 10:\n\t\tmult = 10\n\t\ttn.knob('Multiply').setValue(10)\n\n\tif base <= 1:\n\t\tbase = 1\n\t\ttn.knob('Base').setValue(1)\n\tif base >= count:\n\t\tbase = count\n\t\ttn.knob('Base').setValue(count)\n\n\tif steps >= count:\n\t\tsteps = count\n\t\ttn.knob('Step').setValue(count)\t \n\n\tif steps <= 1:\n\t\tsteps = 1\n\t\ttn.knob('Step').setValue(1)\n\n\n\tif type == \"Constant\":\n\t\ttn.knob('Step').setEnabled(True)\n\t\ttn.knob('Step').setVisible(True)\n\t\ttn.knob('Base').setEnabled(False)\n\t\ttn.knob('Base').setVisible(False) \n\t\ttn.knob('Multiply').setEnabled(False)\n\t\ttn.knob('Multiply').setVisible(False)\n\t\n\n\t\tall = int(count/steps)*2+4\n\t\tmaxinput = all\n\n\n\t\tfor i in range(count+1) :\n\n\t\t\tif counter >= count:\n\t\t\t\tcounter = count\n\t\t\t\tend = True\n\n\t\t\n\t\t\toffset1 = nuke.nodes.TimeOffset(name=\"TimePos\"+str(counter),time_offset=counter)\n\t\t\toffset1.setInput(0, Merge_Start)\n\n\t\t  \n\t\t\tgrade1 = nuke.nodes.Grade(name=\"GradePos\"+str(counter),white=\"255\" + \" \" + \"255\" + \" \" + \"255\" + \" \" + \"255\")\n\t\t\tnuke.toNode('GradePos'+str(counter)).knob('white').setExpression(nodename+'.Grade_Overlay.white')\n\t\t\tnuke.toNode('GradePos'+str(counter)).knob('mix').setExpression(nodename+'.Overlay')\n\t\t\tgrade1.setInput(0, offset1)\n\n\t\t\t\n\t\t\tif i==0:\n\t\t\t\tnuke.toNode('GradePos'+str(counter))\['disable'].setValue(True)\n\t\t\tif i>0:\t \n\t\t\t\tnuke.toNode('GradePos'+str(counter))\['disable'].setExpression(nodename+'.Overlay==0')\n\n\t\t\n\t\t\tMerge_End.setInput(all, grade1)\n\t\t\tall = all-1\n\n\t\t\t\n\t\t\toffset2 = nuke.nodes.TimeOffset(name=\"TimeNeg\"+str(counter),time_offset=-1*counter)\n\t\t\toffset2.setInput(0, Merge_Start)\n\n\t\t\n\t\t\tgrade2 = nuke.nodes.Grade(name=\"GradeNeg\"+str(counter),white=\"255\" + \" \" + \"255\" + \" \" + \"255\" + \" \" + \"255\")\n\t\t\tnuke.toNode('GradeNeg'+str(counter)).knob('white').setExpression(nodename+'.Grade_Overlay.white')\n\t\t\tnuke.toNode('GradeNeg'+str(counter)).knob('mix').setExpression(nodename+'.Overlay')\n\t\t\tgrade2.setInput(0, offset2)\n\n\t\t\t\n\t\t\tif i==0:\n\t\t\t\tnuke.toNode('GradeNeg'+str(counter))\['disable'].setValue(True)\n\t\t\tif i>0:\t \n\t\t\t\tnuke.toNode('GradeNeg'+str(counter))\['disable'].setExpression(nodename+'.Overlay==0')\n\n\t\t\t\n\t\t\tprint(\"Offset no.\"+str(i+1)+\" : \"+str(counter))\n\n\t\t\t\n\t\t\tMerge_End.setInput(all, grade2)\n\t\t\tall = all-1\n\n\t\t\tcounter = counter+steps\n\t\t\tif end == True:\n\t\t\t\tbreak \n\n\t\n\telif type == \"Exponential\":\n\t\ttn.knob('Step').setEnabled(False)\n\t\ttn.knob('Step').setVisible(False)\n\t\ttn.knob('Base').setEnabled(True)\n\t\ttn.knob('Base').setVisible(True)\n\t\ttn.knob('Multiply').setEnabled(True)\n\t\ttn.knob('Multiply').setVisible(True)\n\n\t\tall = count*2+4\n\t\tmaxinput = all\n\n \n\t\tfor i in range(count+1):\n\t\t\tcounter = int((pow(base, i+i*mult)))\n\t\t\tif counter <= temp:\n\t\t\t\tif temp == 0:\n\t\t\t\t\tcounter = 0\n\t\t\t\telse:\n\t\t\t\t\tcounter = temp + 1\n\t\t\tif counter >= count:\n\t\t\t\tcounter = count\n\t\t\t\tend = True\n\t\t\tif i == 0:\n\t\t\t\tcounter = 0\n\t\t\tif count == 1:\n\t\t\t\tbreak\n\n\t\t\n\t\t\toffset1 = nuke.nodes.TimeOffset(name=\"TimePos\"+str(counter),time_offset=counter)\n\t\t\toffset1.setInput(0, Merge_Start)\n\n\t\t  \n\t\t\tgrade1 = nuke.nodes.Grade(name=\"GradePos\"+str(counter),white=\"255\" + \" \" + \"255\" + \" \" + \"255\" + \" \" + \"255\")\n\t\t\tnuke.toNode('GradePos'+str(counter)).knob('white').setExpression(nodename+'.Grade_Overlay.white')\n\t\t\tnuke.toNode('GradePos'+str(counter)).knob('mix').setExpression(nodename+'.Overlay')\n\t\t\tgrade1.setInput(0, offset1)\n\n\t\n\t\t\tif i==0:\n\t\t\t\tnuke.toNode('GradePos'+str(counter))\['disable'].setValue(True)\n\t\t\tif i>0:\t \n\t\t\t\tnuke.toNode('GradePos'+str(counter))\['disable'].setExpression(nodename+'.Overlay==0')\n\t\t\tprint(\"Offset no.\"+str(i+1)+\" : \"+str(counter))\n\t\n\t\t\tMerge_End.setInput(all, grade1)\n\t\t\tall = all-1\n\n\t\t\t\n\t\t\toffset2 = nuke.nodes.TimeOffset(name=\"TimeNeg\"+str(counter),time_offset=-1*counter)\n\t\t\toffset2.setInput(0, Merge_Start)\n\n\t\t\t\n\t\t\tgrade2 = nuke.nodes.Grade(name=\"GradeNeg\"+str(counter),white=\"255\" + \" \" + \"255\" + \" \" + \"255\" + \" \" + \"255\")\n\t\t\tnuke.toNode('GradeNeg'+str(counter)).knob('white').setExpression(nodename+'.Grade_Overlay.white')\n\t\t\tnuke.toNode('GradeNeg'+str(counter)).knob('mix').setExpression(nodename+'.Overlay')\n\t\t\tgrade2.setInput(0, offset2)\n\n\t\t\t\n\t\t\tif i==0:\n\t\t\t\tnuke.toNode('GradeNeg'+str(counter))\['disable'].setValue(True)\n\t\t\tif i>0:\t \n\t\t\t\tnuke.toNode('GradeNeg'+str(counter))\['disable'].setExpression(nodename+'.Overlay==0')\n\t\t\t\n\t\t\n\t\t\tMerge_End.setInput(all, grade2)\n\t\t\tall = all-1\n\n\t\t\ttemp = counter\n\t\t\tif end == True:\n\t\t\t\tbreak\n\t\n\n\telse:\n\t\tprint(\"Select Constant or Exponential\")\n\n\n\tOutput.setInput(0, Merge_End)\n\tgrp.end()"
+ addUserKnob {20 User}
+ addUserKnob {3 Frame_Count l " Frame Count " t "\nThe slower the movement is, the higher the frame count need to be." -STARTLINE}
+ addUserKnob {26 Divider03 l "" +STARTLINE}
+ addUserKnob {4 Increment_Type l Increment t "\nConstant :\nUsed for constant speed (linear) movement.\n\nExponential :\nUsed for variant speed (nonlinear) movement." M {Constant Exponential "" ""}}
+ addUserKnob {3 Step t "\nIn an arithmetic sequence the difference between one term and the next is a constant (step).\n\nThe sequece of the offsets :\n     Frame + (0 * step)\n     Frame + (1 * step)\n     Frame + (2 * step)\n     ..."}
+ Step 1
+ addUserKnob {7 Base t "\nExponentiation is a mathematical operation, written as b^n, involving two numbers, the base b and the exponent or power n." +DISABLED +HIDDEN R 1 10}
+ addUserKnob {7 Multiply l "Exponent Multiply" t "\nExponentiation is a mathematical operation, written as b^n, involving two numbers, the base b and the exponent n.\n\nThe exponent multiply is added to the exponent. The mathematical operation is b^(n*x), involving three numbers, the base b, the exponent n and the exponent multiply x.\n\nThe higher the exponent multiply, the faster the exponential growth." +DISABLED +HIDDEN R 0.1 10}
+ Multiply 0.1
+ addUserKnob {26 Divider01 l "" +STARTLINE}
+ addUserKnob {41 white l "Overlay Gain" t "White is turned into this color" T Grade_Overlay.white}
+ addUserKnob {7 Overlay l "Overlay Opacity"}
+ addUserKnob {26 Divider02 l "" +STARTLINE}
+ addUserKnob {26 Empty_Line_01 l "" +STARTLINE T " "}
+ addUserKnob {26 Copyright l "" -STARTLINE T "Clean_Offset v1\n©2019 Alexandre Laporte"}
+}
+ Input {
+  inputs 0
+  name Mask
+  xpos 6885
+  ypos -7531
+  number 1
+ }
+ Input {
+  inputs 0
+  name BG
+  xpos 7153
+  ypos -7532
+ }
+ Merge2 {
+  inputs 2
+  operation stencil
+  name Merge_Start
+  xpos 7010
+  ypos -7426
+ }
+set Ne99f2a80 [stack 0]
+push $Ne99f2a80
+push 0
+push 0
+push 0
+ Merge2 {
+  inputs 4+1
+  name Merge_End
+  xpos 7010
+  ypos -7199
+ }
+ Output {
+  name Output1
+  xpos 7010
+  ypos -7095
+ }
+ Grade {
+  inputs 0
+  white {0 0 0 1}
+  multiply {0.74 0.13 0.3 1}
+  name Grade_Overlay
+  xpos 7327
+  ypos -7538
+ }
+end_group

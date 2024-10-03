@@ -1,0 +1,230 @@
+version 13.1 v1
+Gizmo {
+ onCreate "import sys\nthis = nuke.thisNode()\ninference = nuke.toNode(f\"\{this.name()\}.Inference1\")\nthis[\"gpuName\"].setValue(inference[\"gpuName\"].value())\nthis[\"channelsIn\"].setValue(\"rgba.red, rgba.green, rgba.blue\")\ninference.forceValidate()\nis_enabled = inference\[\"modelFile\"\].enabled()\nif (sys.platform.lower() == \"darwin\") and (not inference\[\"useGPUIfAvailable\"\].enabled()): this\[\"useGPUIfAvailable\"\].setValue(False), this\[\"useGPUIfAvailable\"\].setEnabled(False)\nif not is_enabled:\n    for k in this.knobs(): this[k].setEnabled(False)\nthis[\"halfPrecision\"].setVisible(this[\"useGPUIfAvailable\"].enabled())"
+ knobChanged "this = nuke.thisNode()\nthis[\"halfPrecision\"].setVisible(this[\"useGPUIfAvailable\"].value())"
+ onDestroy "nuke.thisNode()\[\"knobChanged\"].setValue(\"\")"
+ addUserKnob {20 ABME_SV}
+ addUserKnob {26 localGPU l "Local GPU:" T ""}
+ addUserKnob {26 gpuName l "" -STARTLINE T "NVIDIA TITAN RTX"}
+ addUserKnob {6 useGPUIfAvailable l "Use GPU if available" t "Select this to render on the <b>Local GPU</b>, if available.\n\nYou can select this even if no GPU is currently available on your machine. The GPU will then be used whenever the script is opened on a machine which does have a GPU available. You should also select this if you wish to render from the command line with the <b>--gpu</b> option.\n\nIf this node requires full frames from its inputs, and is therefore unable to reduce its memory overhead, it will fall back to the CPU if an attempt to render a frame on the GPU fails due to lack of memory. When this occurs, a warning message will be printed to the console." +STARTLINE}
+ useGPUIfAvailable true
+ addUserKnob {26 ""}
+ addUserKnob {26 channelsIn l "Channels In:" t "The channels the model expects as input." T "rgba.red, rgba.green, rgba.blue"}
+ addUserKnob {41 in_colorspace l "Input Colorspace" t "Define the colorspace that the input image is in." T OCIOColorSpace1.in_colorspace}
+ addUserKnob {6 halfPrecision l "Optimize for Speed and Memory" t "Whether to process at half float precision. This speeds up execution and enables the processing of larger images, however there is the risk of artifacts with some trained models." +STARTLINE}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos 828
+  ypos 112
+ }
+ OCIOColorSpace {
+  in_colorspace scene_linear
+  out_colorspace color_picking
+  name OCIOColorSpace1
+  xpos 828
+  ypos 149
+ }
+ Dot {
+  name Dot36
+  xpos 862
+  ypos 194
+ }
+set N4c427e30 [stack 0]
+ Dot {
+  name Dot37
+  xpos 1102
+  ypos 194
+ }
+ Dot {
+  name Dot38
+  xpos 1102
+  ypos 245
+ }
+set N1159de00 [stack 0]
+ Dot {
+  name Dot39
+  xpos 1190
+  ypos 245
+ }
+ TimeOffset {
+  time_offset -1
+  time ""
+  name TimeOffset10
+  xpos 1156
+  ypos 285
+ }
+ Dot {
+  name Dot40
+  xpos 1190
+  ypos 329
+ }
+push $N1159de00
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  fromInput2 {{0} B A}
+  in2 rgb
+  out2 forward
+  mappings "6 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 rgba.green 1 1 forward.u 1 0 rgba.red 1 0 rgba.alpha 0 3 rgba.blue 1 2 forward.v 1 1"
+  name Shuffle15
+  xpos 1068
+  ypos 325
+ }
+ Inference {
+  useGPUIfAvailable {{parent.useGPUIfAvailable x21 1}}
+  modelFile "\[lsearch -inline \[plugins -all MENet.cat] *.cat]"
+  halfPrecision {{parent.halfPrecision}}
+  serialiseKnob {}
+  name Inference1
+  xpos 1068
+  ypos 379
+ }
+set N4c35f6b0 [stack 0]
+push $N4c35f6b0
+ Dot {
+  name Dot48
+  xpos 1190
+  ypos 383
+ }
+ Dot {
+  name Dot46
+  xpos 1190
+  ypos 423
+ }
+ Merge2 {
+  inputs 2
+  operation minus
+  Achannels forward
+  Bchannels backward
+  output forward
+  name Merge4
+  xpos 1068
+  ypos 413
+ }
+ Dot {
+  name Dot41
+  xpos 1102
+  ypos 470
+ }
+push $N4c427e30
+ Dot {
+  name Dot42
+  xpos 862
+  ypos 246
+ }
+set N542c4e10 [stack 0]
+ Dot {
+  name Dot43
+  xpos 950
+  ypos 246
+ }
+ TimeOffset {
+  time_offset 1
+  time ""
+  name TimeOffset11
+  xpos 916
+  ypos 287
+ }
+ Dot {
+  name Dot44
+  xpos 950
+  ypos 330
+ }
+push $N542c4e10
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{1} B A}
+  fromInput2 {{0} B A}
+  in2 rgb
+  out2 forward
+  mappings "6 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.green 0 1 rgba.blue 0 2 rgba.blue 0 2 rgba.green 1 1 forward.u 1 0 rgba.red 1 0 rgba.alpha 0 3 rgba.blue 1 2 forward.v 1 1"
+  name Shuffle26
+  xpos 828
+  ypos 326
+ }
+ Inference {
+  useGPUIfAvailable {{parent.useGPUIfAvailable x21 1}}
+  modelFile "\[lsearch -inline \[plugins -all MENet.cat] *.cat]"
+  halfPrecision {{parent.halfPrecision}}
+  serialiseKnob {}
+  name Inference2
+  xpos 828
+  ypos 376
+ }
+set N5411a2a0 [stack 0]
+push $N5411a2a0
+ Dot {
+  name Dot47
+  xpos 948
+  ypos 386
+ }
+ Dot {
+  name Dot45
+  xpos 948
+  ypos 425
+ }
+ Merge2 {
+  inputs 2
+  operation minus
+  Achannels forward
+  Bchannels backward
+  output forward
+  name Merge3
+  xpos 828
+  ypos 415
+ }
+ Shuffle2 {
+  inputs 2
+  fromInput1 {{0} B A}
+  in1 forward
+  out1 motion
+  fromInput2 {{1} B A}
+  in2 forward
+  mappings "4 forward.u 0 0 forward.u 0 0 forward.v 0 1 forward.v 0 1 forward.u 1 0 backward.u 0 2 forward.v 1 1 backward.v 0 3"
+  name Shuffle27
+  xpos 828
+  ypos 466
+ }
+ Grade {
+  channels {-forward.u forward.v}
+  white -1
+  black_clamp false
+  name Grade1
+  xpos 828
+  ypos 506
+ }
+ Grade {
+  channels {-backward.u backward.v}
+  white -1
+  black_clamp false
+  name Grade11
+  xpos 828
+  ypos 544
+ }
+add_layer {smartvector_f01_v01 smartvector_f01_v01.n_u smartvector_f01_v01.n_v smartvector_f01_v01.p_u smartvector_f01_v01.p_v}
+ Shuffle2 {
+  fromInput1 {{0} B}
+  in1 motion
+  out1 smartvector_f01_v01
+  fromInput2 {{0} B}
+  mappings "4 forward.u 0 0 smartvector_f01_v01.n_u 0 0 forward.v 0 1 smartvector_f01_v01.n_v 0 1 backward.u 0 2 smartvector_f01_v01.p_u 0 2 backward.v 0 3 smartvector_f01_v01.p_v 0 3"
+  name Shuffle28
+  label "\[value in] ---> \[value out]"
+  xpos 828
+  ypos 582
+ }
+ Remove {
+  operation keep
+  channels smartvector_f01_v01
+  name Remove2
+  xpos 828
+  ypos 620
+ }
+ Output {
+  name Output1
+  xpos 829
+  ypos 685
+ }
+end_group

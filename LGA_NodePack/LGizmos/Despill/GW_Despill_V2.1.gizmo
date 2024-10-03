@@ -1,0 +1,1492 @@
+#! C:/Program Files/Nuke12.2v3/nuke-12.2.3.dll -nx
+version 12.2 v3
+Group {
+ inputs 3
+ name GW_Despill
+ knobChanged "n = nuke.thisNode()\nk = nuke.thisKnob()\n\n\n###-----------------###\n\n### Hide/ Unhide BG controls\"\nif n\[\"pulldown\"].value() == \"Use BG Input\":\n                n\[\"BackgroundAdjustments\"].setVisible(True)                \nelse:\n n\[\"BackgroundAdjustments\"].setVisible(False)\n###-----------------###\n\n### Hide/ Unhide Constant Colour\"\nif n\[\"pulldown\"].value() == \"Use Constant Colour\":\n                n\[\"group_2\"].setVisible(True)\nelse:\n n\[\"group_2\"].setVisible(False)\n###----------###\n\n### Hide/ Unhide Edge Extend\"\nif n\[\"pulldown\"].value() == \"Edge Extend\":\n                n\[\"group_3\"].setVisible(True)\nelse:\n n\[\"group_3\"].setVisible(False)\n###----------###\n\n### Hide/ Unhide IBK\"\nif n\[\"pulldown\"].value() == \"IBK Extend\":\n                n\[\"group_4\"].setVisible(True)\nelse:\n n\[\"group_4\"].setVisible(False)\n###----------###\n\n ### Hide/ Unhide tuning controls\"\nif n\[\"tuning\"].value() == 1:\n               n\[\"tuning_g\"].setVisible(True)\nelse:\n n\[\"tuning_g\"].setVisible(False)\n###----------###"
+ tile_color 0x520cff
+ label GW_Despill_V2.1
+ note_font "Verdana Bold"
+ note_font_size 12
+ addUserKnob {20 Controls}
+ addUserKnob {20 group_1 l "Screen Colour / Spill correction" n 1}
+ addUserKnob {41 screenColour l "Select Spill Colour" T Keylight11.screenColour}
+ addUserKnob {6 tuning l "Activate spill correction" +STARTLINE}
+ addUserKnob {20 tuning_g l "Spill Tweaking (Credit to SpinFX)" +HIDDEN n 1}
+ addUserKnob {41 algorithm l Algorithm T Spill_Correct.algorithm}
+ addUserKnob {41 Fine_tune l "Fine Tune Spill Colour" T Spill_Correct.fine_tune}
+ addUserKnob {41 replace l "Replacement Gain" T Spill_Correct.replace}
+ addUserKnob {41 gamma_2 l "Replacement Gamma" T Spill_Correct.gamma}
+ addUserKnob {20 endGroup_8 l endGroup n -1}
+ addUserKnob {26 ""}
+ addUserKnob {20 endGroup_1 l endGroup n -1}
+ addUserKnob {20 group_6 l "Edge Blending" n 1}
+ addUserKnob {4 pulldown l "Edge Blending Method" M {"Use BG Input" "Use Constant Colour" "Edge Extend" None "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" ""}}
+ pulldown None
+ addUserKnob {26 ""}
+ addUserKnob {20 endGroup n -1}
+ addUserKnob {20 group_5 l "Luma Method" n 1}
+ addUserKnob {41 mode l "luminance math" T Saturation_Spill.mode}
+ addUserKnob {6 ViewLuma l "View Spill Map (Output)" +STARTLINE}
+ addUserKnob {26 ""}
+ addUserKnob {20 endGroup_5 l endGroup n -1}
+ addUserKnob {20 group_2 l "Constant Colour Despill" +HIDDEN n 1}
+ addUserKnob {26 text_1 l "If Using Constant Colour:"}
+ addUserKnob {41 color l "Pick a Colour " T Constant1.color}
+ addUserKnob {26 ""}
+ addUserKnob {20 endGroup_2 l endGroup n -1}
+ addUserKnob {20 group_3 l "Edge Extend Despill" +HIDDEN n 1}
+ addUserKnob {26 text_3 l "If Edge Extend:"}
+ addUserKnob {41 size_1 l "Edge Blur Size" T Blur2.size}
+ addUserKnob {26 ""}
+ addUserKnob {20 endGroup_3 l endGroup n -1}
+ addUserKnob {20 group_4 l "IBK Extend Despill" +HIDDEN n 1}
+ addUserKnob {26 text_4 l "If IBK Extend:"}
+ addUserKnob {41 st l "screen type" T IBKGizmoV3_1.st}
+ addUserKnob {41 white_1 l "IBK Alpha Gain" T Grade1.white}
+ addUserKnob {41 gamma_1 l "IBK Alpha Gamma" T Grade1.gamma}
+ addUserKnob {41 IBK_Saturation l "Cleanplate Saturation" T Saturation2.saturation}
+ addUserKnob {26 ""}
+ addUserKnob {20 endGroup_4 l endGroup n -1}
+ addUserKnob {20 BackgroundAdjustments l "Background Adjustments" +HIDDEN n 1}
+ addUserKnob {26 txt02 l " (Only if BG type selected)"}
+ addUserKnob {41 size l "Blur Amount" T Blur1.size}
+ addUserKnob {41 white l "BG gain" T Grade20.white}
+ addUserKnob {41 gamma l "BG gamma" T Grade20.gamma}
+ addUserKnob {41 saturation l "BG saturation" T Saturation3.saturation}
+ addUserKnob {26 ""}
+ addUserKnob {20 endGroup_6 l endGroup n -1}
+ addUserKnob {20 Masking n 1}
+ addUserKnob {41 maskChannelMask l "Despill Mask" T Merge43.maskChannelMask}
+ addUserKnob {6 invmask l Invert? -STARTLINE}
+ addUserKnob {41 Erode l "Choke / Expand Mask" T FilterErode1.size}
+ addUserKnob {41 BlurMask l "Blur Mask" T Blur4.size}
+ addUserKnob {6 Overall_M l "Overall Mask? (Masks Everything)" +STARTLINE}
+ addUserKnob {26 ""}
+ addUserKnob {20 endGroup_7 l endGroup n -1}
+ addUserKnob {26 Gavin l "" +STARTLINE T "                     \nGW_Despill V2.1 (2022)\n\nwww.gavinwhittaker.info"}
+}
+ BackdropNode {
+  inputs 0
+  name BackdropNode1
+  tile_color 0x896b2bff
+  label "Edge Extend"
+  note_font_size 38
+  xpos 1976
+  ypos -1513
+  bdwidth 222
+  bdheight 478
+ }
+ BackdropNode {
+  inputs 0
+  name BackdropNode2
+  tile_color 0xa5b06ff
+  label IBK
+  note_font_size 42
+  xpos 883
+  ypos -1246
+  bdwidth 227
+  bdheight 394
+ }
+ BackdropNode {
+  inputs 0
+  name BackdropNode21
+  tile_color 0x388e8e00
+  label "Tweak BG"
+  note_font_size 38
+  xpos 1277
+  ypos -1346
+  bdwidth 244
+  bdheight 370
+  z_order 1
+ }
+ StickyNote {
+  inputs 0
+  name StickyNote59
+  label "GS Color"
+  note_font "Verdana Bold"
+  note_font_size 22
+  xpos 546
+  ypos -957
+ }
+ StickyNote {
+  inputs 0
+  name StickyNote2
+  label "Replace Color Selector"
+  note_font "Verdana Bold"
+  note_font_size 22
+  xpos 1611
+  ypos -1092
+ }
+ StickyNote {
+  inputs 0
+  name StickyNote1
+  label "Replace GS Color with BG / Solid or Edge Extend"
+  note_font "Verdana Bold"
+  note_font_size 22
+  xpos 430
+  ypos -525
+ }
+ StickyNote {
+  inputs 0
+  name StickyNote6
+  label "Saturation if colors \ntoo bad"
+  note_font "Verdana Bold"
+  note_font_size 18
+  xpos 1079
+  ypos -1207
+ }
+ StickyNote {
+  inputs 0
+  name StickyNote3
+  label "IBK Unpremult Method"
+  note_font "Verdana Bold"
+  note_font_size 22
+  xpos 861
+  ypos -840
+ }
+ StickyNote {
+  inputs 0
+  name StickyNote4
+  label "Control Alpha"
+  note_font "Verdana Bold"
+  note_font_size 22
+  xpos 1048
+  ypos -984
+ }
+ StickyNote {
+  inputs 0
+  name StickyNote53
+  label "Insert New Color\n(only in spill areas)"
+  note_font "Verdana Bold"
+  note_font_size 22
+  xpos 139
+  ypos -332
+ }
+ Input {
+  inputs 0
+  name RGB_IN
+  label "RGB Input"
+  xpos -147
+  ypos -1398
+ }
+ Dot {
+  name Dot120
+  xpos -113
+  ypos -1157
+ }
+set N1ae2b800 [stack 0]
+ Dot {
+  name Dot126
+  xpos 279
+  ypos -1157
+ }
+set N1ae2b400 [stack 0]
+push $N1ae2b800
+ OFXuk.co.thefoundry.keylight.keylight_v201 {
+  show "Final Result"
+  unPreMultiply false
+  screenColour {0 1 0}
+  screenGain 1
+  screenBalance 0.5
+  alphaBias {0.5 0.5 0.5}
+  despillBias {0.5 0.5 0.5}
+  gangBiases true
+  preBlur 0
+  "Screen Matte" 0
+  screenClipMin 0
+  screenClipMax 1
+  screenClipRollback 0
+  screenGrowShrink 0
+  screenSoftness 0
+  screenDespotBlack 0
+  screenDespotWhite 0
+  screenReplaceMethod "Soft Colour"
+  screenReplaceColour {0.5 0.5 0.5}
+  Tuning 0
+  midPoint 0.5
+  lowGain 1
+  midGain 1
+  highGain 1
+  "Inside Mask" 1
+  sourceAlphaHandling Ignore
+  insideReplaceMethod "Soft Colour"
+  insideReplaceColour {0.5 0.5 0.5}
+  Crops 0
+  SourceXMethod Colour
+  SourceYMethod Colour
+  SourceEdgeColour 0
+  SourceCropL 0
+  SourceCropR 1
+  SourceCropB 0
+  SourceCropT 1
+  balanceSet false
+  insideComponent None
+  outsideComponent Alpha
+  cacheBreaker true
+  name Keylight11
+  xpos -147
+  ypos -1041
+ }
+set N1ae2b000 [stack 0]
+ Merge2 {
+  inputs 2
+  operation minus
+  name Merge32
+  xpos 245
+  ypos -826
+ }
+ Saturation {
+  saturation 0
+  mode Maximum
+  name Saturation_Spill
+  xpos 245
+  ypos -626
+ }
+ set C1ae2a800 [stack 0]
+set N1ae2a800 [stack 0]
+ Dot {
+  name Dot15
+  xpos 170
+  ypos -512
+ }
+ Dot {
+  name Dot13
+  label "\nView Spill Map"
+  note_font "Verdana Bold"
+  note_font_size 18
+  xpos 170
+  ypos 129
+ }
+ Input {
+  inputs 0
+  name MASK
+  label Mask
+  xpos -606
+  ypos -349
+  number 2
+ }
+ FilterErode {
+  size 0
+  name FilterErode1
+  xpos -606
+  ypos -286
+ }
+ Blur {
+  name Blur4
+  xpos -606
+  ypos -250
+ }
+ Invert {
+  name Invert1
+  xpos -605
+  ypos -187
+  disable {{invmask x33 0}}
+ }
+ Dot {
+  name Dot17
+  xpos -571
+  ypos -70
+ }
+set N1ae28c00 [stack 0]
+ Dot {
+  name Dot18
+  xpos -571
+  ypos 38
+ }
+push $N1ae2b800
+ Dot {
+  name Dot14
+  xpos -5
+  ypos -1074
+ }
+ Dot {
+  name Dot11
+  label "Overall Mask "
+  note_font "Verdana Bold"
+  note_font_size 18
+  xpos -5
+  ypos 38
+ }
+push $N1ae28c00
+ Constant {
+  inputs 0
+  channels rgb
+  color {{parent.Keylight11.screenColour.r} {parent.Keylight11.screenColour.g} {parent.Keylight11.screenColour.b} 0}
+  name Constant6
+  xpos 562
+  ypos -1019
+ }
+clone $C1ae2a800 {
+  xpos 562
+  ypos -626
+  selected false
+ }
+set N5bf5f400 [stack 0]
+ Dot {
+  name Dot12
+  label "Nothing - Despill Only"
+  note_font "Verdana Bold"
+  note_font_size 14
+  xpos 1190
+  ypos -623
+ }
+ Saturation {
+  inputs 0
+  name Saturation2
+  xpos 1118
+  ypos -1124
+  disable true
+ }
+ Dot {
+  name Dot10
+  xpos 1152
+  ypos -1034
+ }
+push $N1ae2b400
+ Dot {
+  name Dot7
+  xpos 987
+  ypos -1157
+ }
+ IBKGizmoV3 {
+  inputs 2
+  name IBKGizmoV3_1
+  selected false
+  xpos 1118
+  ypos -1016
+  disable true
+ }
+ Grade {
+  channels alpha
+  name Grade1
+  xpos 953
+  ypos -984
+  disable true
+ }
+ Unpremult {
+  name Unpremult2
+  xpos 953
+  ypos -903
+  disable true
+ }
+ Dot {
+  name Dot9
+  xpos 987
+  ypos -698
+ }
+push $N1ae2b000
+ Dot {
+  name Dot5
+  xpos 766
+  ypos -1700
+ }
+ Dot {
+  name Dot2
+  xpos 2060
+  ypos -1700
+ }
+push $N1ae2b000
+ Dot {
+  name Dot4
+  xpos 771
+  ypos -1700
+ }
+ Dot {
+  name Dot1
+  xpos 2060
+  ypos -1700
+ }
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 rgba.alpha
+  name Copy1
+  xpos 2026
+  ypos -1412
+ }
+ Premult {
+  name Premult1
+  xpos 2026
+  ypos -1325
+ }
+ Blur {
+  size 1
+  name Blur2
+  xpos 2026
+  ypos -1260
+ }
+ Unpremult {
+  name Unpremult1
+  xpos 2026
+  ypos -1201
+ }
+ Blur {
+  size {{parent.Blur2.size/2.5}}
+  name Blur3
+  xpos 2026
+  ypos -1138
+ }
+ Dot {
+  name Dot3
+  xpos 2060
+  ypos -698
+ }
+ Constant {
+  inputs 0
+  channels rgb
+  color {1 1 1 0}
+  name Constant1
+  xpos 1717
+  ypos -1182
+ }
+ Dot {
+  name Dot6
+  xpos 1751
+  ypos -817
+ }
+ Dot {
+  name Dot8
+  xpos 1622
+  ypos -817
+ }
+ Input {
+  inputs 0
+  name BG_IN
+  label BG
+  xpos 1355
+  ypos -1531
+  number 1
+ }
+ Grade {
+  name Grade20
+  xpos 1355
+  ypos -1246
+ }
+ Saturation {
+  name Saturation3
+  xpos 1355
+  ypos -1158
+ }
+ Blur {
+  channels rgb
+  name Blur1
+  xpos 1355
+  ypos -1078
+ }
+ Switch {
+  inputs 5
+  which {{pulldown}}
+  name Switch1
+  xpos 1355
+  ypos -701
+ }
+ Dot {
+  name Dot116
+  label "BG\n"
+  note_font "Verdana Bold"
+  note_font_size 24
+  xpos 1389
+  ypos -460
+ }
+push $N5bf5f400
+ Merge2 {
+  inputs 2
+  operation divide
+  name Merge28
+  xpos 562
+  ypos -463
+ }
+ Dot {
+  name Dot118
+  xpos 596
+  ypos -254
+ }
+push $N1ae2a800
+ Merge2 {
+  inputs 2
+  operation multiply
+  name Merge39
+  xpos 245
+  ypos -257
+ }
+ Dot {
+  name Dot135
+  xpos 279
+  ypos -70
+ }
+push $N1ae2b000
+ Dot {
+  name Dot16
+  xpos -113
+  ypos -223
+ }
+push 0
+push $N1ae2b000
+ Group {
+  inputs 3
+  name Spill_Correct
+  help "Use this tool to \"despill\" or mute colors introduced from Red/Green/Blue screens."
+  knobChanged "n = nuke.thisNode()\nk = nuke.thisKnob()\nkName = k.name()\nif kName == \"neutralize\":\n    n.knob('neutral_color').setEnabled(k.value())\n    n.knob('plate_only').setEnabled(k.value())"
+  selected true
+  xpos -147
+  ypos -159
+  disable {{1-tuning}}
+  addUserKnob {20 Spill_Correct}
+  addUserKnob {68 algorithm l Algorithm t "Choose Algorithm to perform Despill.\nKillspill is using an IBK inspired process.\nAverage/Double Average/Limits are algorithms taken from Despill_Madness, extrapolated to work on red despill as well." M {KeySpill Average "Double Average R>G>B" "Double Average B>G>R" "Limit R>G>B" "Limit B>G>R" "" ""}}
+  addUserKnob {18 screen_color l "Screen Color" t "Pick the color of the spill to remove."}
+  screen_color {{parent.Keylight11.screenColour x33 0.2929290235} {parent.Keylight11.screenColour x33 0.3547762334} {parent.Keylight11.screenColour x33 0.2791270614}}
+  addUserKnob {6 screen_color_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {7 fine_tune l "Fine Tune" t "Tweak for the algorithms." R 0.5 1.5}
+  fine_tune 1
+  addUserKnob {26 ""}
+  addUserKnob {6 neutralize l "Neutralize Color" t "On a plate with an overall color tint, the despill might affect more than the spill areas. \nNeutralizing the color before the despill can solve these this problem." +STARTLINE}
+  neutralize true
+  addUserKnob {18 neutral_color l "Neutral Color" t "Pick the color to protect.\nNote: No Neutralize will happen if one of the color values is 0, as this would break the math."}
+  neutral_color {1 1 1}
+  addUserKnob {6 neutral_color_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {6 plate_only l "Plate Only" t "By cheking this box, the Neutralize will leave the replacement color untouched. \nOtherwise, the replacement color will be tinted according to the original plate tint." -STARTLINE}
+  plate_only true
+  addUserKnob {26 ""}
+  addUserKnob {18 replace l "Replacement Gain" t "Spill color is desaturated to preserve brightness.\nGain this up or down to fix dark/bright edges." R 0 2}
+  replace 1
+  addUserKnob {6 replace_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {18 gamma l "Replacement Gamma" t "Gamma correct your spill replacement." R 0.5 1.5}
+  gamma 1
+  addUserKnob {6 gamma_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+  addUserKnob {26 ""}
+  addUserKnob {6 out_alpha l "Output Spill Alpha" t "If checked, the node will output an alpha of the area despilled. Otherwise the original alpha will be left untouched." +STARTLINE}
+  addUserKnob {7 mix l Mix t "Mix between original and despilled version."}
+  mix 1
+  addUserKnob {26 spin_copyright_div l "" +STARTLINE}
+  addUserKnob {26 spin_copyright l "" t "© <b>SPIN<span style=\"color:#b32026\">VFX</span></b>\nSpill_Correct\nVersion 2.0" +STARTLINE T "<span style=\"color:#aaa;font-family:sans-serif;font-size:8pt\"><b>SPIN<span style=\"color:#b32026\">VFX</span></b> - Version 2.0 - 2017-2019 - <a href=\"https://github.com/SpinVFX/spin_nuke_gizmos/\" style=\"color:#aaa\">Github Page</a></span>"}
+ }
+  BackdropNode {
+   inputs 0
+   name kbd8310
+   tile_color 0x5963525e
+   label "KeySpill(IBK Style)"
+   note_font_size 40
+   xpos -168
+   ypos -650
+   bdwidth 532
+   bdheight 471
+  }
+  BackdropNode {
+   inputs 0
+   name kbd9376
+   tile_color 0x5b655f64
+   label Average
+   note_font_size 40
+   xpos 414
+   ypos -650
+   bdwidth 408
+   bdheight 359
+   z_order 1
+  }
+  BackdropNode {
+   inputs 0
+   name kbd1
+   tile_color 0x587077ff
+   label "Double Average BGR"
+   note_font_size 40
+   xpos 1270
+   ypos -648
+   bdwidth 408
+   bdheight 359
+   z_order 2
+  }
+  BackdropNode {
+   inputs 0
+   name kbd2
+   tile_color 0x587077ff
+   label "Limit BGR"
+   note_font_size 40
+   xpos 2127
+   ypos -649
+   bdwidth 408
+   bdheight 359
+   z_order 2
+  }
+  BackdropNode {
+   inputs 0
+   name kbd3
+   tile_color 0x5850645d
+   label "Limit RGB"
+   note_font_size 40
+   xpos 1716
+   ypos -647
+   bdwidth 408
+   bdheight 359
+   z_order 2
+  }
+  BackdropNode {
+   inputs 0
+   name kbd3580
+   tile_color 0x5850645d
+   label "Double Average RGB"
+   note_font_size 40
+   xpos 859
+   ypos -647
+   bdwidth 408
+   bdheight 359
+   z_order 2
+  }
+  Input {
+   inputs 0
+   name mask
+   xpos 151
+   ypos 1031
+   number 1
+  }
+  Input {
+   inputs 0
+   name Input
+   xpos 262
+   ypos -920
+  }
+  Grade {
+   whitepoint {{parent.neutral_color} {parent.neutral_color} {parent.neutral_color} {parent.neutral_color}}
+   white {{parent.neutral_color.r*0.2126+parent.neutral_color.g*0.7152+parent.neutral_color.b*0.0722}}
+   black_clamp false
+   name Neutralize
+   xpos 262
+   ypos -860
+   disable {{(parent.neutral_color.r==0|parent.neutral_color.g==0|parent.neutral_color.b==0)|!parent.neutralize}}
+  }
+  Dot {
+   name Dot12
+   tile_color 0x7aa9ff00
+   xpos 296
+   ypos -725
+  }
+set N5be5a400 [stack 0]
+  Dot {
+   name Dot13
+   tile_color 0x7aa9ff00
+   xpos 616
+   ypos -725
+  }
+set N5be5a000 [stack 0]
+  Dot {
+   name Dot24
+   tile_color 0x7aa9ff00
+   xpos 1061
+   ypos -725
+  }
+set N5be59c00 [stack 0]
+  Dot {
+   name Dot26
+   tile_color 0x7aa9ff00
+   xpos 1472
+   ypos -725
+  }
+set N5be59800 [stack 0]
+  Dot {
+   name Dot31
+   tile_color 0x7aa9ff00
+   xpos 1918
+   ypos -725
+  }
+set N5be59400 [stack 0]
+  Dot {
+   name Dot36
+   tile_color 0x7aa9ff00
+   xpos 2329
+   ypos -725
+  }
+  Dot {
+   name Dot37
+   tile_color 0x7aa9ff00
+   xpos 2329
+   ypos -559
+  }
+set N5be58c00 [stack 0]
+  Dot {
+   name Dot38
+   tile_color 0x7aa9ff00
+   xpos 2439
+   ypos -559
+  }
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr2 b>g*LimitPercentage?g*LimitPercentage:b
+   name Limit_BG
+   xpos 2405
+   ypos -457
+  }
+push $N5be58c00
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr1 g>r*LimitPercentage?r*LimitPercentage:g
+   name Limit_GR
+   xpos 2295
+   ypos -459
+  }
+push $N5be58c00
+  Dot {
+   name Dot39
+   tile_color 0x7aa9ff00
+   xpos 2211
+   ypos -559
+  }
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr0 r>b*LimitPercentage?b*LimitPercentage:r
+   name Limit_RB
+   xpos 2177
+   ypos -460
+  }
+  Switch {
+   inputs 3
+   which {{parent.screen_color.r>max(parent.screen_color.g,parent.screen_color.b)?0:parent.screen_color.b>=max(parent.screen_color.r,parent.screen_color.g)?2:1}}
+   name Switch_maxRGB6
+   xpos 2295
+   ypos -360
+  }
+  Dot {
+   name Dot40
+   xpos 2329
+   ypos -130
+  }
+set N1dadec00 [stack 0]
+push $N5be59400
+  Dot {
+   name Dot32
+   tile_color 0x7aa9ff00
+   xpos 1918
+   ypos -557
+  }
+set N1dade800 [stack 0]
+  Dot {
+   name Dot33
+   tile_color 0x7aa9ff00
+   xpos 2028
+   ypos -557
+  }
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr2 b>r*LimitPercentage?r*LimitPercentage:b
+   name Limit_BR
+   xpos 1994
+   ypos -455
+  }
+push $N1dade800
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr1 g>b*LimitPercentage?b*LimitPercentage:g
+   name Limit_GB
+   xpos 1884
+   ypos -457
+  }
+push $N1dade800
+  Dot {
+   name Dot34
+   tile_color 0x7aa9ff00
+   xpos 1800
+   ypos -557
+  }
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr0 r>g*LimitPercentage?g*LimitPercentage:r
+   name Limit_RG
+   xpos 1766
+   ypos -458
+  }
+  Switch {
+   inputs 3
+   which {{parent.screen_color.r>max(parent.screen_color.g,parent.screen_color.b)?0:parent.screen_color.b>=max(parent.screen_color.r,parent.screen_color.g)?2:1}}
+   name Switch_maxRGB5
+   xpos 1884
+   ypos -358
+  }
+  Dot {
+   name Dot35
+   xpos 1918
+   ypos -119
+  }
+set N1dadcc00 [stack 0]
+push $N5be59800
+  Dot {
+   name Dot27
+   tile_color 0x7aa9ff00
+   xpos 1472
+   ypos -558
+  }
+set N1dadc800 [stack 0]
+  Dot {
+   name Dot28
+   tile_color 0x7aa9ff00
+   xpos 1582
+   ypos -558
+  }
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr2 b>(2*g+r)/2*LimitPercentage?(r+2*g)/2*LimitPercentage:b
+   name DoubleAverage_B_2
+   xpos 1548
+   ypos -456
+  }
+push $N1dadc800
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr1 g>(b+2*r)/3*LimitPercentage?(b+2*r)/3*LimitPercentage:g
+   name DoubleAverage_G_2
+   xpos 1438
+   ypos -458
+  }
+push $N1dadc800
+  Dot {
+   name Dot29
+   tile_color 0x7aa9ff00
+   xpos 1354
+   ypos -558
+  }
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr0 r>(g+2*b)/3*LimitPercentage?(g+2*b)/3*LimitPercentage:r
+   name DoubleAverage_R_2
+   xpos 1320
+   ypos -459
+  }
+  Switch {
+   inputs 3
+   which {{parent.screen_color.r>max(parent.screen_color.g,parent.screen_color.b)?0:parent.screen_color.b>=max(parent.screen_color.r,parent.screen_color.g)?2:1}}
+   name Switch_maxRGB4
+   xpos 1438
+   ypos -359
+  }
+  Dot {
+   name Dot30
+   xpos 1472
+   ypos -130
+  }
+set N1db26800 [stack 0]
+push $N5be59c00
+  Dot {
+   name Dot21
+   tile_color 0x7aa9ff00
+   xpos 1061
+   ypos -557
+  }
+set N1db26400 [stack 0]
+  Dot {
+   name Dot22
+   tile_color 0x7aa9ff00
+   xpos 1171
+   ypos -557
+  }
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr2 b>(g+2*r)/2*LimitPercentage?(2*r+g)/2*LimitPercentage:b
+   name DoubleAverage_B_1
+   xpos 1137
+   ypos -455
+  }
+push $N1db26400
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr1 g>(2*b+r)/3*LimitPercentage?(2*b+r)/3*LimitPercentage:g
+   name DoubleAverage_G_1
+   xpos 1027
+   ypos -457
+  }
+push $N1db26400
+  Dot {
+   name Dot23
+   tile_color 0x7aa9ff00
+   xpos 943
+   ypos -557
+  }
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr0 r>(2*g+b)/3*LimitPercentage?(2*g+b)/3*LimitPercentage:r
+   name DoubleAverage_R_1
+   xpos 909
+   ypos -458
+  }
+  Switch {
+   inputs 3
+   which {{parent.screen_color.r>max(parent.screen_color.g,parent.screen_color.b)?0:parent.screen_color.b>=max(parent.screen_color.r,parent.screen_color.g)?2:1}}
+   name Switch_maxRGB3
+   xpos 1027
+   ypos -358
+  }
+  Dot {
+   name Dot25
+   xpos 1061
+   ypos -119
+  }
+set N1db24800 [stack 0]
+push $N5be5a000
+  Dot {
+   name Dot6
+   tile_color 0x7aa9ff00
+   xpos 616
+   ypos -560
+  }
+set N1db24400 [stack 0]
+  Dot {
+   name Dot15
+   tile_color 0x7aa9ff00
+   xpos 726
+   ypos -560
+  }
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr2 b>(r+g)/2*LimitPercentage?(r+g)/2*LimitPercentage:b
+   name Average_B
+   xpos 692
+   ypos -458
+  }
+push $N1db24400
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr1 g>(b+r)/2*LimitPercentage?(b+r)/2*LimitPercentage:g
+   name Average_G
+   xpos 582
+   ypos -460
+  }
+push $N1db24400
+  Dot {
+   name Dot14
+   tile_color 0x7aa9ff00
+   xpos 498
+   ypos -560
+  }
+  Expression {
+   temp_name0 LimitPercentage
+   temp_expr0 parent.fine_tune
+   expr0 r>(g+b)/2*LimitPercentage?(g+b)/2*LimitPercentage:r
+   name Average_R
+   xpos 464
+   ypos -461
+  }
+  Switch {
+   inputs 3
+   which {{parent.screen_color.r>max(parent.screen_color.g,parent.screen_color.b)?0:parent.screen_color.b>=max(parent.screen_color.r,parent.screen_color.g)?2:1}}
+   name Switch_maxRGB2
+   xpos 582
+   ypos -361
+  }
+  Dot {
+   name Dot20
+   xpos 616
+   ypos -130
+  }
+set N18b0a400 [stack 0]
+push $N5be5a400
+  Dot {
+   name Dot9
+   tile_color 0x7aa9ff00
+   xpos 296
+   ypos -560
+  }
+set N18b0a000 [stack 0]
+  Dot {
+   name Dot3
+   tile_color 0x7aa9ff00
+   xpos 296
+   ypos -505
+  }
+set N18b09c00 [stack 0]
+  Dot {
+   name Dot11
+   tile_color 0x7aa9ff00
+   xpos 229
+   ypos -505
+  }
+set N18b09800 [stack 0]
+  Expression {
+   temp_name0 weight
+   temp_expr0 parent.fine_tune-0.5
+   channel0 rgba
+   expr0 (b-(g*weight+r*(1-weight)))/(parent.screen_color.b-(parent.screen_color.g*weight+parent.screen_color.r*(1-weight)))
+   name SpillMatte_B
+   xpos 195
+   ypos -451
+  }
+push $N18b09800
+  Dot {
+   name Dot10
+   tile_color 0x7aa9ff00
+   xpos 122
+   ypos -505
+  }
+set N18b09000 [stack 0]
+  Expression {
+   temp_name0 weight
+   temp_expr0 parent.fine_tune-0.5
+   channel0 rgba
+   expr0 (g-(r*weight+b*(1-weight)))/(parent.screen_color.g-(parent.screen_color.r*weight+parent.screen_color.b*(1-weight)))
+   name SpillMatte_G
+   xpos 88
+   ypos -451
+  }
+push $N18b09000
+  Dot {
+   name Dot1
+   tile_color 0x7aa9ff00
+   xpos 25
+   ypos -505
+  }
+  Expression {
+   temp_name0 weight
+   temp_expr0 parent.fine_tune-0.5
+   channel0 rgba
+   expr0 (r-(b*weight+g*(1-weight)))/(parent.screen_color.r-(parent.screen_color.b*weight+parent.screen_color.g*(1-weight)))
+   name SpillMatte_R
+   xpos -9
+   ypos -454
+  }
+  Switch {
+   inputs 3
+   which {{parent.screen_color.r>max(parent.screen_color.g,parent.screen_color.b)?0:parent.screen_color.b>=max(parent.screen_color.r,parent.screen_color.g)?2:1}}
+   name Switch_maxRGB1
+   xpos 89
+   ypos -395
+  }
+  Clamp {
+   maximum_enable false
+   name Clamp1
+   xpos 89
+   ypos -365
+  }
+  Expression {
+   channel0 rgba
+   expr0 "isinf(r)? 0:r"
+   name fix_inf
+   xpos 89
+   ypos -327
+  }
+  Expression {
+   channel0 rgba
+   expr0 "isnan(r)? 0:r"
+   name fix_nan
+   xpos 89
+   ypos -301
+  }
+  Dot {
+   name Dot8
+   xpos 123
+   ypos -276
+  }
+  Dot {
+   name Dot7
+   xpos -50
+   ypos -276
+  }
+push $N18b0a000
+  Dot {
+   name Dot2
+   tile_color 0x7aa9ff00
+   xpos -84
+   ypos -560
+  }
+  Expression {
+   expr0 parent.screen_color.r
+   expr1 parent.screen_color.g
+   expr2 parent.screen_color.b
+   name Screen_Color
+   xpos -118
+   ypos -479
+  }
+  Dot {
+   name Dot47
+   xpos -84
+   ypos -419
+  }
+set N18ab1c00 [stack 0]
+  Merge2 {
+   inputs 2
+   operation multiply
+   bbox B
+   name Merge1
+   xpos -118
+   ypos -251
+  }
+push $N18b09c00
+  Merge2 {
+   inputs 2
+   operation from
+   bbox B
+   name Merge2
+   xpos 262
+   ypos -251
+  }
+  Dot {
+   name Dot4
+   xpos 296
+   ypos -139
+  }
+set N18ab1000 [stack 0]
+  Switch {
+   inputs 6
+   which {{parent.algorithm}}
+   name Algorithm_Switch
+   xpos 582
+   ypos 225
+  }
+  Dot {
+   name Dot19
+   tile_color 0xcccccc00
+   xpos 616
+   ypos 310
+  }
+set N18ab0800 [stack 0]
+push $N5be5a400
+  Dot {
+   name Dot17
+   tile_color 0x7aa9ff00
+   xpos -236
+   ypos -725
+  }
+  Dot {
+   name Dot18
+   tile_color 0x7aa9ff00
+   xpos -236
+   ypos 310
+  }
+set N18a5bc00 [stack 0]
+  Merge2 {
+   inputs 2
+   operation from
+   bbox B
+   name Merge3
+   xpos 371
+   ypos 306
+  }
+  Saturation {
+   saturation 0
+   name DeSaturate
+   xpos 371
+   ypos 362
+  }
+set N18a5b400 [stack 0]
+  Input {
+   inputs 0
+   name Inputbg
+   xpos 69
+   ypos 70
+   number 2
+  }
+push $N18ab1c00
+  Dot {
+   name Dot48
+   xpos -155
+   ypos -419
+  }
+  Saturation {
+   saturation 0
+   name DeSaturate1
+   xpos -68
+   ypos 209
+  }
+  Merge2 {
+   inputs 2
+   operation divide
+   name Merge7
+   xpos 8
+   ypos 265
+  }
+  Merge2 {
+   inputs 2
+   operation multiply
+   name Merge6
+   xpos 88
+   ypos 362
+  }
+  Dot {
+   name Dot49
+   xpos 122
+   ypos 416
+  }
+push $N18a5b400
+  Switch {
+   inputs 2
+   which {{"\[exists parent.input2]"}}
+   name Switch2
+   xpos 371
+   ypos 412
+  }
+  Dot {
+   name Dot43
+   tile_color 0x7aa9ff00
+   xpos 405
+   ypos 450
+  }
+set N18a59400 [stack 0]
+  Multiply {
+   value {{parent.replace} {parent.replace} {parent.replace} {parent.replace}}
+   name Replace_color_Mult
+   xpos 371
+   ypos 484
+  }
+  Gamma {
+   value {{parent.gamma} {parent.gamma} {parent.gamma} {parent.gamma}}
+   name Gamma
+   xpos 371
+   ypos 536
+  }
+  Dot {
+   name Dot16
+   tile_color 0x7aa9ff00
+   xpos 405
+   ypos 609
+  }
+push $N18ab0800
+  Grade {
+   whitepoint {{parent.neutral_color} {parent.neutral_color} {parent.neutral_color} {parent.neutral_color}}
+   white {{parent.neutral_color.r*0.2126+parent.neutral_color.g*0.7152+parent.neutral_color.b*0.0722}}
+   reverse true
+   black_clamp false
+   name Neutralize1
+   xpos 582
+   ypos 456
+   disable {{((parent.neutral_color.r==0|parent.neutral_color.g==0|parent.neutral_color.b==0)|!parent.neutralize)|!parent.plate_only}}
+  }
+  Merge2 {
+   inputs 2
+   operation plus
+   bbox B
+   output rgb
+   name Merge5
+   xpos 582
+   ypos 605
+  }
+  Dot {
+   name Dot44
+   tile_color 0x4b5ec600
+   xpos 616
+   ypos 692
+  }
+push $N18a5bc00
+  Copy {
+   inputs 2
+   from0 rgba.red
+   to0 rgba.red
+   from1 rgba.green
+   to1 rgba.green
+   from2 rgba.blue
+   to2 rgba.blue
+   bbox B
+   name Copy2
+   xpos -270
+   ypos 670
+  }
+push $N18a5bc00
+  Dot {
+   name Dot46
+   tile_color 0x7aa9ff00
+   xpos -346
+   ypos 310
+  }
+  Dot {
+   name Dot41
+   tile_color 0x7aa9ff00
+   xpos -346
+   ypos 879
+  }
+set N18dfac00 [stack 0]
+  Dissolve {
+   inputs 2
+   which {{parent.mix}}
+   name Dissolve1
+   xpos -270
+   ypos 869
+  }
+set N18dfa800 [stack 0]
+  Expression {
+   expr0 0
+   expr1 0
+   expr2 0
+   expr3 1
+   name Expression1
+   xpos 26
+   ypos 875
+  }
+  Switch {
+   inputs 2
+   which {{"\[exists parent.input1] "}}
+   name Switch1
+   xpos 26
+   ypos 1031
+  }
+  Invert {
+   channels alpha
+   name Invert1
+   xpos -88
+   ypos 1025
+  }
+set N18df9c00 [stack 0]
+push $N18a59400
+  Dot {
+   name Dot5
+   tile_color 0x7aa9ff00
+   xpos 295
+   ypos 450
+  }
+  Multiply {
+   value {{parent.mix}}
+   name Multiply1
+   xpos 261
+   ypos 917
+  }
+  Dot {
+   name Dot45
+   tile_color 0x7aa9ff00
+   xpos 295
+   ypos 1162
+  }
+  Merge2 {
+   inputs 2
+   operation stencil
+   bbox B
+   name Merge4
+   xpos -88
+   ypos 1158
+  }
+  Clamp {
+   channels alpha
+   name Clamp2
+   xpos -88
+   ypos 1238
+  }
+push $N18df9c00
+push $N18dfac00
+  Dot {
+   name Dot42
+   tile_color 0x7aa9ff00
+   xpos -346
+   ypos 1035
+  }
+push $N18dfa800
+  Keymix {
+   inputs 3
+   bbox B
+   name Keymix1
+   xpos -270
+   ypos 1025
+  }
+  Copy {
+   inputs 2
+   from0 rgba.red
+   to0 rgba.alpha
+   bbox B
+   name Copy1
+   xpos -270
+   ypos 1238
+   disable {{!parent.out_alpha}}
+  }
+  Grade {
+   whitepoint {{parent.neutral_color} {parent.neutral_color} {parent.neutral_color} {parent.neutral_color}}
+   white {{parent.neutral_color.r*0.2126+parent.neutral_color.g*0.7152+parent.neutral_color.b*0.0722}}
+   reverse true
+   black_clamp false
+   name Neutralize2
+   xpos -270
+   ypos 1332
+   disable {{((parent.neutral_color.r==0|parent.neutral_color.g==0|parent.neutral_color.b==0)|!parent.neutralize)|parent.plate_only}}
+  }
+  Output {
+   name Output1
+   xpos -270
+   ypos 1429
+  }
+push $N1dadec00
+push $N1dadcc00
+push $N1db26800
+push $N1db24800
+push $N18b0a400
+push $N18ab1000
+  Viewer {
+   inputs 6
+   frame_range 1-173
+   input_number 2
+   gamma 4
+   viewerProcess "sRGB (ACES)"
+   name Viewer1
+   selected true
+   xpos 582
+   ypos 629
+  }
+ end_group
+set N5be73900 [stack 0]
+ Merge2 {
+  inputs 2+1
+  operation plus
+  name Merge43
+  xpos -147
+  ypos -73
+ }
+ Keymix {
+  inputs 3
+  name Keymix1
+  xpos -147
+  ypos 29
+  disable {{1-Overall_M}}
+ }
+ Switch {
+  inputs 2
+  which {{ViewLuma}}
+  name Switch3
+  xpos -147
+  ypos 126
+ }
+ Output {
+  name Output1
+  label OUT
+  xpos -147
+  ypos 451
+ }
+ StickyNote {
+  inputs 0
+  name StickyNote60
+  label "Spill Map"
+  note_font "Verdana Bold"
+  note_font_size 22
+  xpos 346
+  ypos -836
+ }
+ StickyNote {
+  inputs 0
+  name StickyNote58
+  label "Luminence only"
+  note_font "Verdana Bold"
+  note_font_size 22
+  xpos 57
+  ypos -630
+ }
+push $N5be73900
+ Viewer {
+  frame_range 1-173
+  colour_sample_bbox {0.485937506 0.240624994 0.5249999762 0.3000000119}
+  viewerProcess "sRGB (ACES)"
+  name Viewer1
+  xpos -375
+  ypos 168
+ }
+ StickyNote {
+  inputs 0
+  name StickyNote5
+  label "Spill Tuning\n(Credit = SpinFX)"
+  note_font "Verdana Bold"
+  note_font_size 22
+  xpos -378
+  ypos -171
+ }
+end_group

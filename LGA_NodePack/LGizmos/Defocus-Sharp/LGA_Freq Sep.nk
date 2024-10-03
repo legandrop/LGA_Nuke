@@ -1,0 +1,60 @@
+set cut_paste_input [stack 0]
+version 13.1 v2
+push $cut_paste_input
+Dot {
+name Dot39
+selected true
+xpos -206
+ypos 3514
+}
+set N1953e800 [stack 0]
+Dot {
+name Dot41
+selected true
+xpos -444
+ypos 3514
+}
+Blur {
+channels rgba
+size 7
+name Blur7
+label "\[value size]"
+selected true
+xpos -478
+ypos 3580
+}
+Dot {
+name Dot32
+selected true
+xpos -444
+ypos 3661
+}
+set N1953f400 [stack 0]
+Dot {
+name Dot33
+selected true
+xpos -444
+ypos 3931
+}
+push $N1953f400
+push $N1953e800
+Merge2 {
+inputs 2
+operation from
+bbox B
+name Merge10
+label "\[value mix]"
+selected true
+xpos -240
+ypos 3652
+}
+Merge2 {
+inputs 2
+operation plus
+bbox B
+name Merge11
+label "\[value mix]"
+selected true
+xpos -240
+ypos 3922
+}

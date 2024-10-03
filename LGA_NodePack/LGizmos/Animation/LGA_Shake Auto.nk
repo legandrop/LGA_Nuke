@@ -1,0 +1,36 @@
+set cut_paste_input [stack 0]
+version 13.1 v2
+push $cut_paste_input
+Transform {
+translate {{"random((frame+50)/Velocidad) * (1-Maximo/4) + Maximo/4"} {"random((frame)/Velocidad) * (1-Maximo/3) + Maximo/3"}}
+center {1920 1080}
+name Transform_SF
+label "Shake\nFG\n."
+selected true
+xpos 1486
+ypos 166
+addUserKnob {20 User}
+addUserKnob {7 VarMax}
+VarMax {{curve x1006 30 x1052 30 x1099 0 x1141 10 x1193 0 x1270 30 x1318 5 x1384 15 x1418 0 x1455 30 x1499 10 x1530 0}}
+addUserKnob {7 VarVel}
+VarVel 2
+addUserKnob {7 Maximo R 0 50}
+Maximo {{"random((frame)/VarVel) * (1-VarMax) + VarMax"}}
+addUserKnob {7 Velocidad R 20 1}
+Velocidad 1
+}
+push $cut_paste_input
+Transform {
+translate {{parent.Transform_SF.translate.x/DividerX} {parent.Transform_SF.translate/DividerY}}
+center {1920 1080}
+name Transform_SB
+label "Shake\nBG\n."
+selected true
+xpos 1698
+ypos 165
+addUserKnob {20 User}
+addUserKnob {7 DividerX R 0 6}
+DividerX 3
+addUserKnob {7 DividerY R 0 6}
+DividerY 4
+}

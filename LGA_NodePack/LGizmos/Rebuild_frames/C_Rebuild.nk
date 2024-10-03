@@ -1,0 +1,150 @@
+set cut_paste_input [stack 0]
+version 11.0 v1
+push $cut_paste_input
+Group {
+ name C_Rebuild
+ label V1.0
+ selected true
+ xpos 10080
+ ypos 385
+ addUserKnob {20 Timeline}
+ addUserKnob {26 text1 l "" +STARTLINE T "1) Hit 'Reset' before beginning"}
+ addUserKnob {22 reset l Reset T "n = nuke.thisNode()\['inputframe']\nkt = nuke.thisNode()\['kt']\nko = nuke.thisNode()\['ko']\np = nuke.thisNode()\['passthrough']\nn.clearAnimated()\nkt.clearAnimated()\nko.clearAnimated()\nn.setAnimated()\nf = nuke.thisNode().firstFrame()\nl = nuke.thisNode().lastFrame() \nn.animation(0).setKey(f,f)\nn.animation(0).setKey(l,l)\np.setValue(0)" +STARTLINE}
+ addUserKnob {26 ""}
+ addUserKnob {26 text2 l "" +STARTLINE T "2) Add keys on frames that are good\n    Remove keys on frames to be rebuilt "}
+ addUserKnob {22 addall l "Keyframe all" T "n = nuke.thisNode()\['inputframe']\nn.setAnimated()\nf = nuke.thisNode().firstFrame()\nl = nuke.thisNode().lastFrame()\n\nn.animation(0).setKey(f,f)\nn.animation(0).setKey(l,l)\n\nfor i in xrange( f, l, 1 ):\n\tn.setValueAt(i, i)\n" +STARTLINE}
+ addUserKnob {3 inputframe l Frame}
+ inputframe {{curve 0 1 2 3 4 5 6 7 8 x10 10 x11 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100}}
+ addUserKnob {22 addkey l "Add Key" -STARTLINE T "n = nuke.thisNode()\['inputframe']\nn.setAnimated()\nt = nuke.frame()\nn.animation(0).setKey(t,t)\n"}
+ addUserKnob {22 deletekey l "Delete key" -STARTLINE T "n = nuke.thisNode()\['inputframe']\nt = nuke.frame()\n#n.animation(0).removeKeyAt(t)\nn.removeKeyAt(t)"}
+ addUserKnob {3 RangeFirst l Range}
+ addUserKnob {3 RangeLast l "" -STARTLINE}
+ RangeLast 100
+ addUserKnob {22 AddRange -STARTLINE T "n = nuke.thisNode()\['inputframe']\nn.setAnimated()\no = nuke.thisNode()\['RangeFirst'].value()\np = nuke.thisNode()\['RangeLast'].value()\n\t\nn.animation(0).setKey( o, o )\nn.animation(0).setKey( p, p )\n\nfor i in xrange( (int(o)), (int(p)), 1 ):\n\tn.setValueAt(i, i)"}
+ addUserKnob {22 DeleteRange t "n = nuke.thisNode()\['inputframe']\nn.setAnimated()\no = nuke.thisNode()\['RangeFirst'].value()\np = nuke.thisNode()\['RangeLast'].value()\n\t\nn.animation(0).setKey( o, o )\nn.animation(0).setKey( p, p )\n\nfor i in xrange( (int(o)), (int(p)), 1 ):\n\tn.setValueAt(i, i)\n\n\nn = nuke.thisNode()\['inputframe']\nt = nuke.frame()\n#n.animation(0).removeKeyAt(t)\nn.removeKeyAt(t)" -STARTLINE T "n = nuke.thisNode()\['inputframe']\nn.setAnimated()\no = nuke.thisNode()\['RangeFirst'].value()\np = nuke.thisNode()\['RangeLast'].value()\n\t\n#n.animation(0).removeKeyAt( o )\n#n.animation(0).removeKeyAt( p )\n\nfor i in xrange( ((int(o))), ((int(p) + 1)), 1 ):\n\tn.removeKeyAt( i )\n"}
+ addUserKnob {26 text3 l "" +STARTLINE T "(Do not change value of 'Frame' - leave it as frame number)"}
+ addUserKnob {26 ""}
+ addUserKnob {3 kt l INVISIBLE +INVISIBLE}
+ kt {{curve L 0 1 2 3 4 5 6 7 8 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100}}
+ addUserKnob {3 ko l INVISIBLE +INVISIBLE}
+ ko {{curve L 0 1 2 3 4 5 6 7 8 x10 9 x11 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99}}
+ addUserKnob {3 passthrough l INVISIBLE +INVISIBLE}
+ passthrough 1
+ addUserKnob {26 text4 l "" +STARTLINE T "3) Hit 'Rebuild' to rebuild 'bad' frames"}
+ addUserKnob {22 rebuild l Rebuild! T "k = nuke.thisNode()\['inputframe']\n\nif(k.isAnimated()):\n\t\t\t\n\ttOriginalCurve = k.animation(0)\n\t\t\t\t\n\ttKeys = tOriginalCurve.keys()\n\n\ti = 0\n\n\t\n\tkt = nuke.thisNode()\['kt']\n\n\tko  = nuke.thisNode()\['ko']\n\n\tkt.clearAnimated()\n\n\tko.clearAnimated()\n\n\tkt.setAnimated()\n\n\tko.setAnimated()\n\n\tfor tKey in tKeys:\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\ttFrame = tKey.x \n\t\ttFrameY = tKey.y\n\n\t\tprint(\"key \" + str(i) + \" has x value \" + str(tFrame) + \", y value \" + str(tFrameY))\n\n\t\tko.setValueAt( i, tFrame )\n\n\t\tkt.setValueAt( tFrame, i )\n\n\t\ti = i+1\n\n\tkoKeys = ko.animation(0).keys()\n\n\tfor tKey in koKeys:\t\n\n\t\ttKey.interpolation = nuke.LINEAR\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\n\tktKeys = kt.animation(0).keys()\n\n\tfor tKey in ktKeys:\t\n\n\t\ttKey.interpolation = nuke.LINEAR\n\np = nuke.thisNode()\['passthrough']\np.setValue(1)" +STARTLINE}
+ addUserKnob {20 Kronos}
+ addUserKnob {41 useGPUIfAvailable l "Use GPU if available" T Kronos5.useGPUIfAvailable}
+ addUserKnob {26 ""}
+ addUserKnob {41 input.first l "Input Range" T Kronos5.input.first}
+ addUserKnob {41 input.last l "" -STARTLINE T Kronos5.input.last}
+ addUserKnob {41 resetInputRange l Reset T Kronos5.resetInputRange}
+ addUserKnob {41 retimedChannels l Channels T Kronos5.retimedChannels}
+ addUserKnob {41 interpolation l Method T Kronos5.interpolation}
+ addUserKnob {41 timing2 l Timing T Kronos5.timing2}
+ addUserKnob {41 timingOutputSpeed l "Output Speed" T Kronos5.timingOutputSpeed}
+ addUserKnob {41 timingInputSpeed l "Input Speed" T Kronos5.timingInputSpeed}
+ addUserKnob {41 timingFrame2 l Frame T Kronos5.timingFrame2}
+ addUserKnob {41 motionEstimation l Motion T Kronos5.motionEstimation}
+ addUserKnob {41 vectorDetailLocal l "Vector Detail" T Kronos5.vectorDetailLocal}
+ addUserKnob {41 smoothnessLocal l Smoothness T Kronos5.smoothnessLocal}
+ addUserKnob {41 vectorDetailReg l "Vector Detail" T Kronos5.vectorDetailReg}
+ addUserKnob {41 strengthReg l Strength T Kronos5.strengthReg}
+ addUserKnob {41 resampleType l Resampling T Kronos5.resampleType}
+ addUserKnob {20 Shutter n 2}
+ addUserKnob {41 shutterSamples l "Shutter Samples" T Kronos5.shutterSamples}
+ addUserKnob {41 shutterTime l "Shutter Time" T Kronos5.shutterTime}
+ addUserKnob {26 "" l " "}
+ addUserKnob {41 autoShutterTime l "Automatic Shutter Time" T Kronos5.autoShutterTime}
+ addUserKnob {20 "" n -1}
+ addUserKnob {41 output l Output T Kronos5.output}
+ addUserKnob {41 matteChannel l "Matte Channel" T Kronos5.matteChannel}
+ addUserKnob {20 Advanced n 2}
+ addUserKnob {41 flickerCompensation l "Flicker Compensation" T Kronos5.flickerCompensation}
+ addUserKnob {41 legacyModeNuke9 l "Legacy Mode" T Kronos5.legacyModeNuke9}
+ addUserKnob {20 Tolerances n 2}
+ addUserKnob {41 weightRed l "Weight Red" T Kronos5.weightRed}
+ addUserKnob {41 weightGreen l "Weight Green" T Kronos5.weightGreen}
+ addUserKnob {41 weightBlue l "Weight Blue" T Kronos5.weightBlue}
+ addUserKnob {20 "" n -1}
+ addUserKnob {41 vectorSpacing l "Vector Spacing" T Kronos5.vectorSpacing}
+ addUserKnob {41 showVectors l "Overlay Vectors" T Kronos5.showVectors}
+ addUserKnob {20 "" n -1}
+ addUserKnob {20 about l About}
+ addUserKnob {26 credit l "" -STARTLINE T "Original concept and coding by Richard Frazer\nModified by Chris Charlton"}
+ addUserKnob {26 ""}
+ addUserKnob {20 "" n -1}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos 475
+  ypos -625
+ }
+ Dot {
+  name Dot3
+  xpos 509
+  ypos -547
+ }
+set Nfd4aae00 [stack 0]
+ TimeWarp {
+  lookup {{parent.kt}}
+  time ""
+  name TimeWarp5
+  xpos 475
+  ypos -480
+ }
+ Kronos {
+  input.first 0
+  input.last 298
+  retimedChannels all
+  timing2 Frame
+  timingFrame2 {{parent.ko}}
+  showLegacyMode false
+  vectorDetailLocal 1
+  smoothnessLocal 0.2
+  vectorDetailReg 1
+  resampleType Lanczos6
+  Shutter 1
+  autoShutterTime true
+  Advanced 1
+  flickerCompensation true
+  legacyModeNuke9 false
+  Tolerances 1
+  vectorSpacing 10
+  name Kronos5
+  selected true
+  xpos 475
+  ypos -392
+ }
+push $Nfd4aae00
+ Dot {
+  name Dot2
+  xpos 596
+  ypos -492
+ }
+ Dot {
+  name Dot1
+  xpos 596
+  ypos -325
+ }
+ Switch {
+  inputs 2
+  which {{parent.passthrough}}
+  name Switch1
+  xpos 475
+  ypos -287
+ }
+ Output {
+  name Output1
+  xpos 475
+  ypos -215
+ }
+ Viewer {
+  frame 1026
+  input_process false
+  name Viewer1
+  xpos 950
+  ypos -10
+  hide_input true
+ }
+end_group

@@ -1,0 +1,169 @@
+#! C:/Program Files/Nuke11.0v1/nuke-11.0.1.dll -nx
+version 11.0 v1
+Gizmo {
+ addUserKnob {20 Color_1 l Color}
+ addUserKnob {26 Color l "C O L O R"}
+ addUserKnob {41 toolbox l "" -STARTLINE T RotoPaint3.toolbox}
+ addUserKnob {41 curves l "" -STARTLINE T RotoPaint3.curves}
+ addUserKnob {20 Texture}
+ addUserKnob {26 Texture_1 l "T E X T U R E"}
+ addUserKnob {41 toolbox_1 l "" -STARTLINE T RotoPaint4.toolbox}
+ addUserKnob {41 curves_1 l "" -STARTLINE T RotoPaint4.curves}
+ addUserKnob {20 Size}
+ addUserKnob {41 size T Blur1.size}
+ addUserKnob {20 Help}
+ addUserKnob {26 Help_1 l "" +STARTLINE T "This gizmo separates the texture and the color of  the \nimage giving you aiblity to work with independently.\n\nSelect the tab based on your task,\npick the Clone tool and start painting.\n\nIf the tool isn't working properly - adjust the size in the corresponding tab."}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {22 button l www.andriykoval.net T "import webbrowser\nwebbrowser.open(\"http://www.andriykoval.net\")\n\n" +STARTLINE}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos 812
+  ypos -262
+ }
+ Dot {
+  name Dot1
+  xpos 846
+  ypos -106
+ }
+set N6afaa380 [stack 0]
+ Dot {
+  name Dot2
+  xpos 676
+  ypos -106
+ }
+ Blur {
+  size 5
+  name Blur1
+  xpos 642
+  ypos -29
+ }
+set N6afabc00 [stack 0]
+ RotoPaint {
+  curves {{{v x3f99999a}
+  {f 0}
+  {n
+   {layer Root
+    {f 2097664}
+    {t x44800000 x44428000}
+    {a pt1x 0 pt1y 0 pt2x 0 pt2y 0 pt3x 0 pt3y 0 pt4x 0 pt4y 0 ptex00 0 ptex01 0 ptex02 0 ptex03 0 ptex10 0 ptex11 0 ptex12 0 ptex13 0 ptex20 0 ptex21 0 ptex22 0 ptex23 0 ptex30 0 ptex31 0 ptex32 0 ptex33 0 ptof1x 0 ptof1y 0 ptof2x 0 ptof2y 0 ptof3x 0 ptof3y 0 ptof4x 0 ptof4y 0 pterr 0 ptrefset 0 ptmot x40800000 ptref 0}}}}}
+  toolbox {clone {
+  { selectAll bs 57.4 src 1 str 1 ssx 1 ssy 1 sf 1 }
+  { createBezier str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createBezierCusped str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createBSpline str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createEllipse str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createRectangle str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createRectangleCusped str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { brush r 0 b 0.26079 a 0.72 opc 0.01 bs 152 str 1 ssx 1 ssy 1 sf 1 sb 1 tt 17 }
+  { eraser bs 22.2 src 2 str 1 ssx 1 ssy 1 sf 1 sb 1 tt 18 }
+  { clone bs 57.4 src 1 stx 127.8 sty 39.5002 str 1 ssx 1 ssy 1 sf 1 sb 1 tt 19 }
+  { reveal src 3 str 1 ssx 1 ssy 1 sf 1 sb 1 tt 20 }
+  { dodge src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 tt 21 }
+  { burn src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 tt 22 }
+  { blur src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { sharpen src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { smear src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+} }
+  toolbar_brush_size 57.40000153
+  toolbar_brush_hardness 0.200000003
+  toolbar_lifetime_type single
+  toolbar_paint_source fg
+  toolbar_source_transform_translate {127.7999878 39.50018311}
+  toolbar_source_transform_scale {1 1}
+  toolbar_source_transform_center {1024 778}
+  colorOverlay {0 0 0 0}
+  paint_source foreground
+  motionblur_on true
+  brush_size 57.40000153
+  brush_spacing 0.05000000075
+  brush_hardness 0.200000003
+  source_black_outside true
+  name RotoPaint3
+  xpos 642
+  ypos 64
+ }
+ Dot {
+  name Dot3
+  xpos 676
+  ypos 144
+ }
+push $N6afaa380
+push $N6afabc00
+ Merge2 {
+  inputs 2
+  operation divide
+  name Merge1
+  xpos 812
+  ypos -23
+ }
+ RotoPaint {
+  curves {{{v x3f99999a}
+  {f 0}
+  {n
+   {layer Root
+    {f 2097664}
+    {t x44800000 x44428000}
+    {a pt1x 0 pt1y 0 pt2x 0 pt2y 0 pt3x 0 pt3y 0 pt4x 0 pt4y 0 ptex00 0 ptex01 0 ptex02 0 ptex03 0 ptex10 0 ptex11 0 ptex12 0 ptex13 0 ptex20 0 ptex21 0 ptex22 0 ptex23 0 ptex30 0 ptex31 0 ptex32 0 ptex33 0 ptof1x 0 ptof1y 0 ptof2x 0 ptof2y 0 ptof3x 0 ptof3y 0 ptof4x 0 ptof4y 0 pterr 0 ptrefset 0 ptmot x40800000 ptref 0}}}}}
+  toolbox {clone {
+  { selectAll bs 62.7 src 1 str 1 ssx 1 ssy 1 sf 1 }
+  { createBezier str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createBezierCusped str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createBSpline str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createEllipse str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createRectangle str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { createRectangleCusped str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { brush str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { eraser src 2 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { clone bs 62.7 src 1 stx 160.8 sty 32.3 str 1 ssx 1 ssy 1 sf 1 sb 1 tt 19 }
+  { reveal src 3 str 1 ssx 1 ssy 1 sf 1 sb 1 tt 20 }
+  { dodge src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { burn src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { blur src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { sharpen src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+  { smear src 1 str 1 ssx 1 ssy 1 sf 1 sb 1 }
+} }
+  toolbar_brush_size 62.70000076
+  toolbar_brush_hardness 0.200000003
+  toolbar_lifetime_type single
+  toolbar_paint_source fg
+  toolbar_source_transform_translate {160.7999878 32.29998779}
+  toolbar_source_transform_scale {1 1}
+  toolbar_source_transform_center {1024 778}
+  colorOverlay {0 0 0 0}
+  paint_source foreground
+  motionblur_on true
+  brush_size 62.70000076
+  brush_spacing 0.05000000075
+  brush_hardness 0.200000003
+  source_black_outside true
+  name RotoPaint4
+  selected true
+  xpos 812
+  ypos 66
+ }
+ Merge2 {
+  inputs 2
+  operation multiply
+  name Merge2
+  xpos 812
+  ypos 140
+ }
+set N7b5cb180 [stack 0]
+ Output {
+  name Output1
+  xpos 812
+  ypos 353
+ }
+push $N6afaa380
+push $N7b5cb180
+ Viewer {
+  inputs 2
+  frame_range 1-100
+  gain 0.5
+  name Viewer1
+  xpos 985
+  ypos 254
+ }
+end_group

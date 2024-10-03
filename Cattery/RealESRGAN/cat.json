@@ -1,0 +1,13 @@
+{
+    "minimum_nuke_version_required": 13.1,
+    "version": 1,
+    "category": "Upscaling",
+    "description": "Provides image enhancement and super resolution capabilities for images that have been degraded by means of compression, transmission or any other function that adds noise to the image.",
+    "cats": [
+        {
+            "filepath": "RealESRGAN.gizmo",
+            "name": "Real-ESRGAN",
+            "icon": "RealESRGAN.png"
+        }
+    ]
+}

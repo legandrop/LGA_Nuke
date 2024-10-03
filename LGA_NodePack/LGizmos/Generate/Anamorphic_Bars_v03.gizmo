@@ -1,0 +1,124 @@
+#! /opt/Nuke8.0v6/libnuke-8.0.v6.so -nx
+version 8.0 v6
+Gizmo {
+ tile_color 0x3e23ffff
+ addUserKnob {20 User l Control}
+ addUserKnob {41 Aspect_Ratio t "Default is (1.777)16:9\nCommon Aspect Ratios are\n- 1.777 (16:9) (1920x1080)\n- 2.33 (21:9) (1792x768)\n- 2.35 Cinamascope\n- 2.37 (21:9) (2560x1080)" T NoOp1.Aspect_Ratio}
+ addUserKnob {26 ""}
+ addUserKnob {26 Createdby l "Created By" T "Josh Robertson\nDragoby.com"}
+ addUserKnob {26 v l Version -STARTLINE T v2.0}
+}
+ Constant {
+  inputs 0
+  channels rgb
+  name Constant1
+  xpos -56
+  ypos -416
+ }
+set N5ad0300 [stack 0]
+ Reformat {
+  type "to box"
+  box_width {{"\[value Input1.width]"}}
+  box_height {{(NoOp1.res)}}
+  box_fixed true
+  black_outside true
+  name Reformat1
+  xpos -166
+  ypos -393
+ }
+ Crop {
+  box {0 0 {"\[value Input1.width]"} {NoOp1.res}}
+  name Crop1
+  xpos -166
+  ypos -369
+ }
+ Transform {
+  translate {0 {"floor((\[value Input1.height]-(NoOp1.res))/2)"}}
+  center {960 405}
+  name Transform1
+  xpos -166
+  ypos -343
+ }
+ Constant {
+  inputs 0
+  channels rgb
+  color 1
+  name Constant2
+  xpos -276
+  ypos -320
+ }
+ Merge2 {
+  inputs 2
+  name Merge1
+  xpos -166
+  ypos -297
+ }
+set N5b00cb0 [stack 0]
+ Invert {
+  channels alpha
+  name Invert1
+  xpos -166
+  ypos -255
+ }
+push $N5ad0300
+ ShuffleCopy {
+  inputs 2
+  name ShuffleCopy1
+  xpos -56
+  ypos -249
+ }
+ Premult {
+  name Premult1
+  xpos -56
+  ypos -179
+ }
+ Input {
+  inputs 0
+  name Input1
+  xpos -386
+  ypos -465
+ }
+set N5b2be20 [stack 0]
+ Dot {
+  name Dot1
+  xpos -352
+  ypos -149
+ }
+ Merge2 {
+  inputs 2
+  name Merge2
+  xpos -56
+  ypos -153
+ }
+ Output {
+  name Output1
+  xpos -56
+  ypos -53
+ }
+push $N5b00cb0
+ Viewer {
+  input_process false
+  name Viewer1
+  xpos -519
+  ypos -226
+ }
+push $N5b2be20
+ Dot {
+  name Dot2
+  xpos -242
+  ypos -461
+ }
+ NoOp {
+  name NoOp1
+  selected true
+  xpos -276
+  ypos -394
+  addUserKnob {20 User}
+  addUserKnob {7 Aspect_Ratio t "Default is (1.777)16:9\nCommon Aspect Ratios are\n- 1.777 (16:9) (1920x1080)\n- 2.33 (21:9) (1792x768)\n- 2.35 Cinamascope\n- 2.37 (21:9) (2560x1080)" R 1.777 2.39}
+  Aspect_Ratio {2.33}
+  addUserKnob {3 Test}
+  Test {{"\[value Input1.width] /Aspect_Ratio"}}
+  addUserKnob {3 res}
+  res {{floor(Test)}}
+ }
+end_group

@@ -1,0 +1,13 @@
+{
+    "minimum_nuke_version_required": 14.0,
+    "version": 1,
+    "category": "Denoising",
+    "description": "NAFNet: Nonlinear Activation Free Network for Image Restoration",
+    "cats": [
+        {
+            "filepath": "NAFNet.gizmo",
+            "name": "NAFNet",
+            "icon": "NAFNet.png"
+        }
+    ]
+}

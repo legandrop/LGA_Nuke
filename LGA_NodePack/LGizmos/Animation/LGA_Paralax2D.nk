@@ -1,0 +1,112 @@
+set cut_paste_input [stack 0]
+version 13.1 v2
+push $cut_paste_input
+Group {
+ name LGA_Paralax2D1
+ selected true
+ xpos 36
+ ypos -112
+ addUserKnob {20 User}
+ addUserKnob {3 referenceframe l "Reference Frame"}
+ referenceframe 1
+ addUserKnob {32 currentFrame l "Use Current Frame" -STARTLINE T "knob referenceframe \[frame]"}
+ addUserKnob {7 NearFar l "Far / Near" t "Far: 0 to 1 \nNear: 1 to 2 (or more)" R 2 0}
+ NearFar 1
+ addUserKnob {26 ""}
+ addUserKnob {41 filter T TransformMil.filter}
+ addUserKnob {41 motionblur T TransformMil.motionblur}
+ addUserKnob {41 shutter l Shutter T TransformMil.shutter}
+ addUserKnob {41 shutteroffset l "Shutter Offset" T TransformMil.shutteroffset}
+ addUserKnob {41 shuttercustomoffset l "" -STARTLINE T TransformMil.shuttercustomoffset}
+}
+ Input {
+  inputs 0
+  name Inputimg
+  xpos 238
+  ypos -78
+ }
+ Transform {
+  translate {{parent.NoOp1.xy_final.x} {parent.NoOp1.xy_final.y}}
+  rotate {{parent.NoOp1.rot_final}}
+  scale {{parent.NoOp1.scale_final}}
+  center {{parent.NoOp1.center.x} {parent.NoOp1.center.y}}
+  shutteroffset centred
+  name TransformMil
+  xpos 238
+  ypos -7
+ }
+set N6a1f5c00 [stack 0]
+ Output {
+  name Output1
+  xpos 238
+  ypos 62
+ }
+push $N6a1f5c00
+push 0
+push 0
+ Viewer {
+  inputs 3
+  frame_range 1-100
+  input_number 2
+  viewerProcess "sRGB (ACES)"
+  name Viewer1
+  tile_color 0x323232ff
+  xpos 432
+  ypos 126
+ }
+ Input {
+  inputs 0
+  name Inputtransform
+  xpos 52
+  ypos -81
+  number 1
+ }
+ NoOp {
+  name NoOp1
+  selected true
+  xpos 52
+  ypos -8
+  addUserKnob {20 User}
+  addUserKnob {12 xy_input}
+  xy_input {{"\[value \[input parent 1].translate.x]"} {"\[value \[input parent 1].translate.y]"}}
+  addUserKnob {12 xy_mult}
+  xy_mult {{xy_input.x*NearFar} {xy_input.y*NearFar}}
+  addUserKnob {12 xy_input_ref}
+  xy_input_ref {{xy_input.x(referenceframe)} {xy_input.y(referenceframe)}}
+  addUserKnob {12 xy_mult_ref}
+  xy_mult_ref {{xy_mult.x(referenceframe)} {xy_mult.y(referenceframe)}}
+  addUserKnob {12 xy_ref_dif}
+  xy_ref_dif {{xy_input_ref.x-xy_mult_ref.x} {xy_input_ref.y-xy_mult_ref.y}}
+  addUserKnob {12 xy_final}
+  xy_final {{xy_mult.x+xy_ref_dif.x} {xy_mult.y+xy_ref_dif.y}}
+  addUserKnob {26 ""}
+  addUserKnob {7 rot_input}
+  rot_input {{"\[value \[input parent 1].rotate]"}}
+  addUserKnob {7 rot_mult}
+  rot_mult {{rot_input*NearFar}}
+  addUserKnob {7 rot_input_ref}
+  rot_input_ref {{rot_input(referenceframe)}}
+  addUserKnob {7 rot_mult_ref}
+  rot_mult_ref {{rot_mult(referenceframe)}}
+  addUserKnob {7 rot_ref_dif}
+  rot_ref_dif {{rot_input_ref-rot_mult_ref}}
+  addUserKnob {7 rot_final}
+  rot_final {{rot_mult+rot_ref_dif}}
+  addUserKnob {26 ""}
+  addUserKnob {7 scale_input}
+  scale_input {{"\[expr \{\[exists \[input parent 1]] && \[exists \[input parent 1].scale] ? \[value \[input parent 1].scale] : 1\}]"}}
+  addUserKnob {7 scale_mult}
+  scale_mult {{scale_input*NearFar}}
+  addUserKnob {7 scale_input_ref}
+  scale_input_ref {{scale_input(referenceframe)}}
+  addUserKnob {7 scale_mult_ref}
+  scale_mult_ref {{scale_mult(referenceframe)}}
+  addUserKnob {7 scale_ref_dif}
+  scale_ref_dif {{scale_input_ref-scale_mult_ref}}
+  addUserKnob {7 scale_final}
+  scale_final {{scale_mult+scale_ref_dif}}
+  addUserKnob {26 ""}
+  addUserKnob {12 center}
+  center {{"\[value \[input parent 1].center.x]"} {"\[value \[input parent 1].center.y]"}}
+ }
+end_group
