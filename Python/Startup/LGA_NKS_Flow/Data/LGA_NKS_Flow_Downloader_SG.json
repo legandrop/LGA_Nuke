@@ -252,7 +252,7 @@
                                 {
                                     "version_number": "VL_33H_020_Clean_Sogas_comp_v05",
                                     "version_description": "WIP. compo debris extras (pedido x dire)",
-                                    "version_status": "rev",
+                                    "version_status": "vwd",
                                     "version_date": "2024-09-25T00:44:40+02:00",
                                     "comments": []
                                 },
@@ -283,7 +283,7 @@
                                 {
                                     "version_number": "VL_33H_020_Clean_Sogas_comp_v08",
                                     "version_description": "Caida más lenta mugre parte izquierda . Sumé sombra madera que cae al final",
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-01T16:15:28+02:00",
                                     "comments": [
                                         {
@@ -2870,6 +2870,13 @@
                                     "version_status": "unvleg",
                                     "version_date": "2024-10-01T21:19:21+02:00",
                                     "comments": []
+                                },
+                                {
+                                    "version_number": "VL_33_020_Chroma_Sotano_comp_v24",
+                                    "version_description": "render SIN alhpa",
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-03T17:30:07+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -3443,9 +3450,22 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
+                            "task_description": "El acting de Hendler a derecha fue reemplazado por otro momento.",
+                            "task_status": "ready",
+                            "task_assigned_to": "Mariel Falco",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_20_170_Reducir_Pajaro",
+                    "sequence": "011-020",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
+                            "task_status": "ready",
+                            "task_assigned_to": "Patricio Barreiro",
                             "versions": []
                         }
                     ]
