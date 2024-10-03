@@ -48,6 +48,7 @@ class ReconnectMediaWidget(QWidget):
             ("Rec709 | Clip", self.rec709_clip, "#434c41"),
             ("Default | Clip", self.default_clip, "#434c41"),
             ("Refresh Timeline", self.refresh_timeline, "#4c4350"),
+            ("Top Track ", self.top_track, "#4c4350"),
             ("Set Shot Name", self.set_shot_name, "#453434"),
             ("Extend &Edit", self.extend_edit_to_playhead, "#453434", "Alt+E", "Alt+E"),
             ("Reconnect T > N", self.reconnect_t_to_n, "#4a4329"),
@@ -161,6 +162,41 @@ class ReconnectMediaWidget(QWidget):
         else:
             debug_print(f"Script not found at path: {script_path}")
 
+        # Pausa de 500 milisegundos
+        timer = QTimer(self)
+        timer.setSingleShot(True)  # Asegurarse de que solo se dispare una vez
+        timer.timeout.connect(self.execute_scroll_to_top_track)
+        timer.start(200)  # Esperar 1.5 segundos antes de ejecutar el siguiente script
+                    
+    def execute_scroll_to_top_track(self):
+        # Ruta al script dentro de la subcarpeta LGA_NKS
+        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS-ScrollTo_TopTrack.py')
+        if os.path.exists(script_path):
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("LGA_NKS-ScrollTo_TopTrack", script_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+
+            # Llamar a la funcion principal del script
+            module.main()
+        else:
+            debug_print(f"Script not found at path: {script_path}")
+
+###### Refresh timeline
+    def top_track(self):
+                    
+         # Ruta al script dentro de la subcarpeta LGA_NKS
+        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS-ScrollTo_TopTrack.py')
+        if os.path.exists(script_path):
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("LGA_NKS-ScrollTo_TopTrack", script_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+
+            # Llamar a la funcion principal del script
+            module.main()
+        else:
+            debug_print(f"Script not found at path: {script_path}")
 
 ###### Shot name
     def set_shot_name(self):

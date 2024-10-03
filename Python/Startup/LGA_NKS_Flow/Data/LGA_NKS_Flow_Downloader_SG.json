@@ -1287,7 +1287,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Borrado de comida, beauty uña, movimiento dedo cuando lo picotea y ajuste de un picoteo para que quede sobre dedo y no por detrás.",
-                            "task_status": "rev_di",
+                            "task_status": "corr",
                             "task_assigned_to": "Sebas Romano",
                             "versions": [
                                 {
@@ -1416,7 +1416,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Borrado de comida, beauty uña y movimiento dedo en uno de los picoteos del pájaro.",
-                            "task_status": "rev_di",
+                            "task_status": "corr",
                             "task_assigned_to": "Sebas Romano",
                             "versions": [
                                 {
@@ -3321,7 +3321,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
+                            "task_status": "ready",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
@@ -3466,6 +3466,552 @@
                             "task_description": null,
                             "task_status": "ready",
                             "task_assigned_to": "Patricio Barreiro",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_37B_010_Add_Reflejo",
+                    "sequence": "031-037",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "ready",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_35_010_Estabilizar_General",
+                    "sequence": "031-037",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_33F_020_Agregar_Humo",
+                    "sequence": "031-037",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_33AB_020_Split_Pedro",
+                    "sequence": "031-037",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "ready",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_33AB_010_Split_Pedro",
+                    "sequence": "031-037",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_31_010_Clean_Atizador",
+                    "sequence": "031-037",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "ready",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_24B_010_Stitch_Speed",
+                    "sequence": "021-030",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_24_030_Stitch_Alicia",
+                    "sequence": "021-030",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_24_020_Split_Espejo",
+                    "sequence": "021-030",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_20_160_Clean_Alpiste",
+                    "sequence": "011-020",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_20_150_Clean _Alpiste",
+                    "sequence": "011-020",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_20_140_Clean_Alpiste",
+                    "sequence": "011-020",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "ready",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_20_130_Vuela_Pajaro",
+                    "sequence": "011-020",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_20_120_Vuela_Pajaro",
+                    "sequence": "011-020",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "ready",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_20_110_Vuela_Pajaro",
+                    "sequence": "011-020",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_20_100_Vuela_Pajaro",
+                    "sequence": "011-020",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "ready",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_20_090_Vuela_Pajaro",
+                    "sequence": "011-020",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "ready",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_14A_020_Rampa_Puerta",
+                    "sequence": "011-020",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_14A_010_SplitStabRampa_Baile",
+                    "sequence": "011-020",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "ready",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_09EF_005_Rampa_Pedro",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_09C_140_Split-Stitch_Alicia",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_09C_130_Split_Alicia",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_09C_080_Retime_Pie",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_09B_003_Split_Puerta-izq",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_09A_050_Split_Alicia",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_09A_009_Clean_Mic",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_09A_009_Atizador_Caliente",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_09A_008_Atizador_Caliente",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_09A_007_Atizador_Caliente",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_09A_006_Atizador_Caliente",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_09A_003_Retime_Hogar",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_06C_030_Retime_Muerto",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_06C_020_Retime_Golpe",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_06B_030_Split_Cena",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_06A_040_Split-retime_Parpados",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_06A_030_Split-retime_Cena",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_06A_020_Split-retime_Cena",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_06A_005_Split_Mano",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_04A_005_Stitch_Puerta",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_002_010_Agregar_Luces-Ventana",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_01C_030_Agregar_Rayo-Speed",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
+                            "versions": []
+                        }
+                    ]
+                },
+                {
+                    "shot_name": "VL_01C_010_Stab_Auto",
+                    "sequence": "001-010",
+                    "tasks": [
+                        {
+                            "task_type": "Comp",
+                            "task_description": null,
+                            "task_status": "noread",
+                            "task_assigned_to": "No asignado",
                             "versions": []
                         }
                     ]

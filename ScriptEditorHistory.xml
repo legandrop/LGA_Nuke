@@ -10042,22 +10042,50 @@ def main():
 # Ejecutar el script principal
 if __name__ == &quot;__main__&quot;:
     main()
-def scroll_to_position(position):
+import hiero
+import time
+
+def obtener_limites_scrollbar():
     try:
-        # Obtener el editor de la secuencia activa
         t = hiero.ui.getTimelineEditor(hiero.ui.activeSequence())
+        scrollbar = t.window().children()[3].children()[0].children()[0].children()[7].children()[0]
         
-        # Navegar directamente en la jerarquía de widgets como indicó soporte
-        t.window().children()[3].children()[0].children()[0].children()[7].children()[0].setValue(position)
+        limite_inferior = scrollbar.minimum()
+        limite_superior = scrollbar.maximum()
         
-        print(f&quot;Scrolled to position {position}.&quot;)
+        posicion_actual = scrollbar.value()
         
+        print(f&quot;Posición actual del scrollbar: {posicion_actual}&quot;)
+        print(f&quot;Rango del scrollbar: {scrollbar.minimum()} a {scrollbar.maximum()}&quot;)
+        print(f&quot;Tamaño de página del scrollbar: {scrollbar.pageStep()}&quot;)
+        
+        return limite_inferior, limite_superior, scrollbar
+    
     except Exception as e:
-        print(f&quot;An error occurred: {e}&quot;)
+        print(f&quot;Ocurrió un error al obtener los límites: {e}&quot;)
+        return None, None, None
 
-# Variable para la posición del scroll
-scroll_position = -160
+def scroll_to_position(scrollbar, position):
+    try:
+        scrollbar.setValue(position)
+        print(f&quot;Scrolled to position {position}.&quot;)
+    except Exception as e:
+        print(f&quot;Ocurrió un error al mover el scrollbar: {e}&quot;)
 
-# Llamar a la función con la posición deseada
-scroll_to_position(scroll_position)
-</script>
+# Obtener los límites y el scrollbar
+tiempo_inicio = time.time()
+limite_inferior, limite_superior, scrollbar = obtener_limites_scrollbar()
+tiempo_total = time.time() - tiempo_inicio
+
+if limite_inferior is not None and limite_superior is not None:
+    print(f&quot;Límite inferior del scrollbar: {limite_inferior}&quot;)
+    print(f&quot;Límite superior del scrollbar: {limite_superior}&quot;)
+    print(f&quot;Tiempo de ejecución: {tiempo_total:.2f} segundos&quot;)
+    
+    # Calcular la nueva posición y mover el scrollbar
+    nueva_posicion = limite_inferior + 70
+    scroll_to_position(scrollbar, nueva_posicion)
+    
+    # Verificar la posición final
+    posicion_final = scrollbar.value()
+    print(f&quot;Posición final del scrollbar: {posicion_final}&quot;)</script>

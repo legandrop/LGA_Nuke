@@ -1,7 +1,7 @@
 import hiero.core
 import hiero.ui
 
-def main():
+def close_and_reopen_active_sequence():
     """
     Cierra el viewer activo y reabre la misma secuencia en un nuevo timeline viewer.
     Luego, cambia la visualizacion del viewer a Rec.709.
@@ -34,4 +34,4 @@ def main():
             new_viewer.player().setLUT('ACES/Rec.709')
 
 # Llamar a la funcion para cerrar el viewer activo y reabrir la misma secuencia
-#close_and_reopen_active_sequence()
+close_and_reopen_active_sequence()
