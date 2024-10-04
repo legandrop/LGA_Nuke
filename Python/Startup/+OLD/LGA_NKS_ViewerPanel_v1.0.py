@@ -13,7 +13,7 @@ import os
 import subprocess
 import socket
 from PySide2.QtWidgets import *
-from PySide2.QtGui import QIcon, QKeySequence
+from PySide2.QtGui import QIcon
 from PySide2.QtCore import *
 from PySide2 import QtWidgets, QtCore
 
@@ -38,9 +38,7 @@ class ViewerPanel(QWidget):
         # Crear botones y agregarlos al layout
         self.buttons = [
             ("&Viewer | Rec709", self.rec709_viewer, "#311840", "Shift+V", "Shift+V"),
-            ("Viewer | 2.35:1 ", self.viewer_235, "#311840"),
-            ("Refresh Timeline", self.refresh_timeline, "#4c4350"),
-            ("Top Track ", self.top_track, "#4c4350", "Ctrl+Shift+T")            
+            ("Viewer | 2.35:1 ", self.viewer_235, "#311840")
         ]
 
         self.num_columns = 1  # Inicialmente una columna
@@ -62,14 +60,13 @@ class ViewerPanel(QWidget):
             button.setStyleSheet(f"background-color: {style}")
             button.clicked.connect(handler)
             if shortcut:
-                button.setShortcut(QKeySequence(shortcut))  # Usar QKeySequence
+                button.setShortcut(shortcut)
             if tooltip:
                 button.setToolTip(tooltip)
 
             row = index // self.num_columns
             column = index % self.num_columns
             self.layout.addWidget(button, row, column)
-
 
     def adjust_columns_on_resize(self, event=None):
         # Obtener el ancho actual del widget
@@ -125,59 +122,6 @@ class ViewerPanel(QWidget):
                 debug_print(f"Script not found at path: {script_path}")
         except Exception as e:
             debug_print(f"Error during running Viewer 2.35 script: {e}")
-
-
-###### Refresh timeline
-    def refresh_timeline(self):
-        # Ruta al script dentro de la subcarpeta LGA_NKS
-        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS_Refresh_Timeline.py')
-        if os.path.exists(script_path):
-            import importlib.util
-            spec = importlib.util.spec_from_file_location("LGA_NKS_Refresh_Timeline", script_path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-
-            # Llamar a la funcion principal del script
-            module.main()
-        else:
-            debug_print(f"Script not found at path: {script_path}")
-
-        # Pausa de 500 milisegundos
-        timer = QTimer(self)
-        timer.setSingleShot(True)  # Asegurarse de que solo se dispare una vez
-        timer.timeout.connect(self.execute_scroll_to_top_track)
-        timer.start(200)  # Esperar 1.5 segundos antes de ejecutar el siguiente script
-                    
-    def execute_scroll_to_top_track(self):
-        # Ruta al script dentro de la subcarpeta LGA_NKS
-        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS-ScrollTo_TopTrack.py')
-        if os.path.exists(script_path):
-            import importlib.util
-            spec = importlib.util.spec_from_file_location("LGA_NKS-ScrollTo_TopTrack", script_path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-
-            # Llamar a la funcion principal del script
-            module.main()
-        else:
-            debug_print(f"Script not found at path: {script_path}")
-
-
-###### Refresh timeline
-    def top_track(self):
-                    
-         # Ruta al script dentro de la subcarpeta LGA_NKS
-        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS-ScrollTo_TopTrack.py')
-        if os.path.exists(script_path):
-            import importlib.util
-            spec = importlib.util.spec_from_file_location("LGA_NKS-ScrollTo_TopTrack", script_path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-
-            # Llamar a la funcion principal del script
-            module.main()
-        else:
-            debug_print(f"Script not found at path: {script_path}")            
 
 # Crear la instancia del widget y añadirlo al gestor de ventanas de Hiero
 viewerPanel = ViewerPanel()

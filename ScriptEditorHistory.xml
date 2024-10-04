@@ -10088,4 +10088,189 @@ if limite_inferior is not None and limite_superior is not None:
     
     # Verificar la posición final
     posicion_final = scrollbar.value()
-    print(f&quot;Posición final del scrollbar: {posicion_final}&quot;)</script>
+    print(f&quot;Posición final del scrollbar: {posicion_final}&quot;)&quot;&quot;&quot;
+_________________________________________________
+
+  LGA_ViewerPanel v1.0 - 2024 - Lega Pugliese
+  Viewer panel for Hiero / Nuke Studio
+_________________________________________________
+
+&quot;&quot;&quot;
+
+import hiero.ui
+import hiero.core
+import os
+import subprocess
+import socket
+from PySide2.QtWidgets import *
+from PySide2.QtGui import QIcon, QKeySequence
+from PySide2.QtCore import *
+from PySide2 import QtWidgets, QtCore
+
+# Variable global para activar o desactivar los prints
+DEBUG = False
+
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+class ViewerPanel(QWidget):
+    def __init__(self):
+        super(ViewerPanel, self).__init__()
+
+        self.setObjectName(&quot;com.lega.ViewerPanel&quot;)
+        self.setWindowTitle(&quot;Viewer&quot;)
+        self.setStyleSheet(&quot;QToolTip { color: #ffffff; background-color: #2a2a2a; border: 1px solid white; }&quot;)
+
+        self.layout = QGridLayout(self)
+        self.setLayout(self.layout)
+
+        # Crear botones y agregarlos al layout
+        self.buttons = [
+            (&quot;&amp;Viewer | Rec709&quot;, self.rec709_viewer, &quot;#311840&quot;, &quot;Shift+V&quot;, &quot;Shift+V&quot;),
+            (&quot;Viewer | 2.35:1 &quot;, self.viewer_235, &quot;#311840&quot;),
+            (&quot;Refresh Timeline&quot;, self.refresh_timeline, &quot;#4c4350&quot;),
+            (&quot;Top Track &quot;, self.top_track, &quot;#4c4350&quot;, &quot;Ctrl+Shift+T&quot;)            
+        ]
+
+        self.num_columns = 1  # Inicialmente una columna
+        self.create_buttons()
+
+        # Conectar la señal de cambio de tamaño del widget al método correspondiente
+        self.adjust_columns_on_resize()
+        self.resizeEvent = self.adjust_columns_on_resize
+
+    def create_buttons(self):
+        for index, button_info in enumerate(self.buttons):
+            name = button_info[0]
+            handler = button_info[1]
+            style = button_info[2]
+            shortcut = button_info[3] if len(button_info) &gt; 3 else None
+            tooltip = button_info[4] if len(button_info) &gt; 4 else None
+
+            button = QPushButton(name)
+            button.setStyleSheet(f&quot;background-color: {style}&quot;)
+            button.clicked.connect(handler)
+            if shortcut:
+                button.setShortcut(QKeySequence(shortcut))  # Usar QKeySequence
+            if tooltip:
+                button.setToolTip(tooltip)
+
+            row = index // self.num_columns
+            column = index % self.num_columns
+            self.layout.addWidget(button, row, column)
+
+
+    def adjust_columns_on_resize(self, event=None):
+        # Obtener el ancho actual del widget
+        panel_width = self.width()
+        button_width = 150  # Ancho aproximado de cada botón
+        min_button_spacing = 10  # Espacio mínimo entre botones
+
+        # Calcular el número de columnas en función del ancho del widget
+        self.num_columns = max(1, (panel_width + min_button_spacing) // (button_width + min_button_spacing))
+
+        # Limpiar el layout actual y eliminar widgets solo si existen
+        while self.layout.count():
+            item = self.layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+
+        # Volver a crear los botones con el nuevo número de columnas
+        self.create_buttons()
+
+        # Calcular el número de filas usadas
+        num_rows = (len(self.buttons) + self.num_columns - 1) // self.num_columns
+
+        # Añadir el espaciador vertical
+        spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.layout.addItem(spacer, num_rows, 0, 1, self.num_columns)
+
+    ##### Rec709 en Viewer
+    def rec709_viewer(self):
+        try:
+            current_viewer = hiero.ui.currentViewer()
+            if current_viewer:
+                current_viewer.player().setLUT('ACES/Rec.709')
+                debug_print(&quot;LUT set to ACES/Rec.709&quot;)
+            else:
+                debug_print(&quot;No active viewer found.&quot;)
+        except Exception as e:
+            debug_print(f&quot;Error setting Rec.709 LUT: {e}&quot;)
+
+    def viewer_235(self):
+        try:
+            script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS_Viewer_235.py')
+            if os.path.exists(script_path):
+                import importlib.util
+                spec = importlib.util.spec_from_file_location(&quot;LGA_NKS_Viewer_235&quot;, script_path)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+
+                # Llamar a la función main del script
+                module.main()
+                debug_print(&quot;Executed LGA_NKS_Viewer_235 script.&quot;)
+            else:
+                debug_print(f&quot;Script not found at path: {script_path}&quot;)
+        except Exception as e:
+            debug_print(f&quot;Error during running Viewer 2.35 script: {e}&quot;)
+
+
+###### Refresh timeline
+    def refresh_timeline(self):
+        # Ruta al script dentro de la subcarpeta LGA_NKS
+        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS_Refresh_Timeline.py')
+        if os.path.exists(script_path):
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(&quot;LGA_NKS_Refresh_Timeline&quot;, script_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+
+            # Llamar a la funcion principal del script
+            module.main()
+        else:
+            debug_print(f&quot;Script not found at path: {script_path}&quot;)
+
+        # Pausa de 500 milisegundos
+        timer = QTimer(self)
+        timer.setSingleShot(True)  # Asegurarse de que solo se dispare una vez
+        timer.timeout.connect(self.execute_scroll_to_top_track)
+        timer.start(200)  # Esperar 1.5 segundos antes de ejecutar el siguiente script
+                    
+    def execute_scroll_to_top_track(self):
+        # Ruta al script dentro de la subcarpeta LGA_NKS
+        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS-ScrollTo_TopTrack.py')
+        if os.path.exists(script_path):
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(&quot;LGA_NKS-ScrollTo_TopTrack&quot;, script_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+
+            # Llamar a la funcion principal del script
+            module.main()
+        else:
+            debug_print(f&quot;Script not found at path: {script_path}&quot;)
+
+
+###### Refresh timeline
+    def top_track(self):
+                    
+         # Ruta al script dentro de la subcarpeta LGA_NKS
+        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS-ScrollTo_TopTrack.py')
+        if os.path.exists(script_path):
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(&quot;LGA_NKS-ScrollTo_TopTrack&quot;, script_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+
+            # Llamar a la funcion principal del script
+            module.main()
+        else:
+            debug_print(f&quot;Script not found at path: {script_path}&quot;)            
+
+# Crear la instancia del widget y añadirlo al gestor de ventanas de Hiero
+viewerPanel = ViewerPanel()
+wm = hiero.ui.windowManager()
+wm.addWindow(viewerPanel)
+</script>

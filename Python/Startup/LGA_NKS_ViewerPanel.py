@@ -1,9 +1,9 @@
 """
-_________________________________________________
+________________________________________________________________
 
-  LGA_ViewerPanel v1.0 - 2024 - Lega Pugliese
-  Viewer panel for Hiero / Nuke Studio
-_________________________________________________
+  LGA_ViewerPanel v1.2 - 2024 - Lega Pugliese
+  Panel con herramientas para el viewer y el timeline de Hiero
+________________________________________________________________
 
 """
 
@@ -29,7 +29,7 @@ class ViewerPanel(QWidget):
         super(ViewerPanel, self).__init__()
 
         self.setObjectName("com.lega.ViewerPanel")
-        self.setWindowTitle("Viewer")
+        self.setWindowTitle("ViewerTL")
         self.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a2a2a; border: 1px solid white; }")
 
         self.layout = QGridLayout(self)

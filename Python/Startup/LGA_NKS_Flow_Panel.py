@@ -1,7 +1,7 @@
 """
 ____________________________________________________________________________________
 
-  LGA_NKS_Flow_Panel v2.2 - 2024 - Lega Pugliese
+  LGA_NKS_Flow_Panel v2.3 - 2024 - Lega Pugliese
   Panel con herramientas que interactuan con las tasks de Flow Production Tracking 
   que fueron descargadas previamente con la app LGA_NKS_Flow_Downloader
 ____________________________________________________________________________________
