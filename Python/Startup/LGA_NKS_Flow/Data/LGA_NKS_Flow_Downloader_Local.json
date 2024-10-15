@@ -1865,7 +1865,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Tiene 5 de Handle IN y 3 de Handle OUT. Clean aureola de quemado en el pantalón. Sumar la aureola cuando lo quema y el humo.",
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
                                 {
@@ -2043,9 +2043,14 @@
                                 {
                                     "version_number": "VL_09A_010_Add_Humo_comp_v16",
                                     "version_description": "CC humo (menos cálido)",
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-14T16:48:15+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "perfe",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -3635,7 +3640,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "El acting de Hendler a derecha fue reemplazado por otro momento.",
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
                                 {
@@ -3721,9 +3726,14 @@
                                 {
                                     "version_number": "VL_06B_010_Split_Cena_comp_v07",
                                     "version_description": "fix roto hombro",
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-14T18:00:43+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "impecable",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -3956,7 +3966,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "El acting de Hendler a derecha fue reemplazado por otro momento.",
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
                                 {
@@ -4030,9 +4040,14 @@
                                 {
                                     "version_number": "VL_06B_020_Split_Cena_comp_v06",
                                     "version_description": "ajuste bordecito en hombro 1015-1020 aprox",
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-10T16:35:27+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "tambien!",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -4903,7 +4918,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Incluye agregado de rayo, rampa de velocidad y estabilizada.",
-                            "task_status": "ready",
+                            "task_status": "progre",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": []
                         }
@@ -4916,18 +4931,22 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": [
                                 {
                                     "version_number": "VL_01C_010_Stab_Auto_comp_v06",
                                     "version_description": null,
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-14T22:03:38+02:00",
                                     "comments": [
                                         {
                                             "text": "Check sync con editref 01",
                                             "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Perfe!",
+                                            "user": "Lega Pugliese"
                                         }
                                     ]
                                 }
