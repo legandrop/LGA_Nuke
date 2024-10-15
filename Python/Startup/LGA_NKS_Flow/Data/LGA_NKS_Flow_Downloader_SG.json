@@ -514,7 +514,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "corr",
+                            "task_status": "rev_su",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
                                 {
@@ -941,6 +941,13 @@
                                             "user": "Sebas Romano"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v82",
+                                    "version_description": null,
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-15T19:54:44+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -3531,7 +3538,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
+                            "task_status": "ready",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
@@ -3745,7 +3752,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Split para acortar pausa.",
                             "task_status": "ready",
                             "task_assigned_to": "No asignado",
                             "versions": []
@@ -3953,9 +3960,30 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Acortar el tiempo hasta que abre la puerta",
-                            "task_status": "ready",
+                            "task_status": "corr",
                             "task_assigned_to": "martin villarreal",
-                            "versions": []
+                            "versions": [
+                                {
+                                    "version_number": "VL_04A_005_Stitch_Puerta_comp_v01",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-15T18:02:07+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Paso ajustes :\n\n1. Ajustar transición (en frames 1208 a 1220 se nota que \"warpea\")",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "2. Check regrain (en algunos frames se nota mask, por ej 1288)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "3. Fix pixel muerto (frame 1051)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -4764,9 +4792,22 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Ella tiene una rampa de velocidad en slow y una máscara",
-                            "task_status": "ready",
+                            "task_status": "rev_su",
                             "task_assigned_to": "Mariel Falco",
-                            "versions": []
+                            "versions": [
+                                {
+                                    "version_number": "VL_09A_003_Retime_Hogar_comp_v02",
+                                    "version_description": "Retime actriz, luz de chimenea de bplate",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-15T19:12:12+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Ajustar reencuadre de la secuencia .exr según editref v01",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -4839,10 +4880,18 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_description": "La toma esta ralentizada, y ademas hay una mascara reemplazando los parpados.",
+                            "task_status": "rev_su",
+                            "task_assigned_to": "Mariel Falco",
+                            "versions": [
+                                {
+                                    "version_number": "VL_06A_040_Split-retime_Parpados_comp_v01",
+                                    "version_description": "retime aPlate y clean parpadeo 1052-1074",
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-15T20:44:05+02:00",
+                                    "comments": []
+                                }
+                            ]
                         }
                     ]
                 },
@@ -4888,15 +4937,7 @@
                 {
                     "shot_name": "VL_04A_005_Stitch_Puerta",
                     "sequence": "001-010",
-                    "tasks": [
-                        {
-                            "task_type": "Comp",
-                            "task_description": null,
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
-                        }
-                    ]
+                    "tasks": []
                 },
                 {
                     "shot_name": "VL_002_010_Agregar_Luces-Ventana",
@@ -4918,9 +4959,17 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Incluye agregado de rayo, rampa de velocidad y estabilizada.",
-                            "task_status": "progre",
+                            "task_status": "rev_su",
                             "task_assigned_to": "Patricio Barreiro",
-                            "versions": []
+                            "versions": [
+                                {
+                                    "version_number": "VL_01C_030_Agregar_Rayo-Speed_comp_v08",
+                                    "version_description": "WIP",
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-15T19:40:55+02:00",
+                                    "comments": []
+                                }
+                            ]
                         }
                     ]
                 },
