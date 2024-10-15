@@ -206,7 +206,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Sebas Romano",
                             "versions": [
                                 {
@@ -295,9 +295,18 @@
                                 {
                                     "version_number": "VL_33H_020_Clean_Sogas_comp_v09",
                                     "version_description": "v Debris 33% más veloz y madera   0.6 menos veloz.",
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-01T23:27:07+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "Lujo!",
+                                            "user": "Lega Pugliese"
+                                        },
+                                        {
+                                            "text": "Se agregó polvo y escombro a izquierda del agujero.",
+                                            "user": "Fede Blesa"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -310,7 +319,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "- Ajustar ancho de la mano\n- Sumar sangre en la mano en el sector del corte.\n- Dedo 3D para reemplazar en el momento entre que se lo suelta y lo agarra para cortarlo.\n- Disimular farol de rodaje por época",
-                            "task_status": "corr",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": [
                                 {
@@ -454,9 +463,45 @@
                                 {
                                     "version_number": "VL_09EF_010_Dedo_Corte_comp_v47",
                                     "version_description": "Correccion Lega: que tenga mas lectura la sangre del dorso de la mano.",
-                                    "version_status": "rev",
+                                    "version_status": "vwd",
                                     "version_date": "2024-09-09T20:23:21+02:00",
                                     "comments": []
+                                },
+                                {
+                                    "version_number": "VL_09EF_010_Dedo_Corte_comp_v51",
+                                    "version_description": "Sangre de arriba, track y detallecitos.",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-04T13:34:10+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Va feedback:\n1. Ajustaría track parche mano/sangre en rango 1560 a 1625",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "2 Recheck CC highlights . Pierden gain vs aplate.",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_09EF_010_Dedo_Corte_comp_v52",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-08T14:51:33+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Lo veo muy bien .\nYá poniendo la lupa muy fina , quedan algunos frames donde el track del parche (parte superior  de la mano vs el costado) no está al 100 % . Son algunos cuadros que se desplazan milimetricamente, jajaj\nLos marco : 1631, 1636, 1643, 1660 , 1677",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": null,
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Mandemoslo como está, si lo aprueban ajustamos los detallecitos de track que faltan. Por si nos cae algun cambio grande que afecte todo...\n\nFede, si lo aprueban pasamelo a rev Lega así le meto esos ajustes",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -795,6 +840,104 @@
                                         },
                                         {
                                             "text": "3_ Ajustar roto hombro (entra back) en : 1100 a 1108 , 1150 a 179 y 1192",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v73",
+                                    "version_description": "Todavia quedan bastantes cosas del pelo x corregir, sobre todo hasta el cuadro 1100, y falta agregar el polvo",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-05T01:38:45+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v75",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-07T22:46:49+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Se vé super !!!!! \nPaso detalles a corregir:\n\n1. Borrar soga (rango 1113 a 1117",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "2. Borrar soga (rango 1204 a 1211)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Borrar soga (rango 1138 a 1144)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Ajustar parche o \"algo que flota\" en zona solapa izquierda (frames 1186 a final)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v76",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-08T17:37:55+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Vamos que falta poco, jajajaj\nDescubrí una cosa a ajustar :\n\n1. Chequemos roto en esta zona entre 1187-1207 (aparece y desaparece pliegue de pañuelo)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v77",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-09T16:34:10+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Probar combinar con v17 para ver si se puede recuperar algo de detalle en las zonas no trabajadas",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v80",
+                                    "version_description": "Sombras maderas, recupera detalle cara, agrega motion blur",
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-14T17:51:08+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v80",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-14T18:00:51+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Paso un par de nuevos ajustes\n\n1. Roto dedos",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "2. Check roto madera",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "3. Check parche en zona trasera solapa",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "4. Check regrain gral parches (hay diferencias en el regrain )",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v81",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-14T23:00:07+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Reajustar regrain",
                                             "user": "Sebas Romano"
                                         }
                                     ]
@@ -1287,7 +1430,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Borrado de comida, beauty uña, movimiento dedo cuando lo picotea y ajuste de un picoteo para que quede sobre dedo y no por detrás.",
-                            "task_status": "corr",
+                            "task_status": "revleg",
                             "task_assigned_to": "Sebas Romano",
                             "versions": [
                                 {
@@ -1404,6 +1547,13 @@
                                             "user": "Lega Pugliese"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_20_060_Picotea_Pajaro_comp_v11",
+                                    "version_description": "simil v10 (con cambio plates sin noise)",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-04T17:53:32+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -1416,7 +1566,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Borrado de comida, beauty uña y movimiento dedo en uno de los picoteos del pájaro.",
-                            "task_status": "corr",
+                            "task_status": "revleg",
                             "task_assigned_to": "Sebas Romano",
                             "versions": [
                                 {
@@ -1498,6 +1648,20 @@
                                             "user": "Lega Pugliese"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_20_070_Picotea_Pajaro_comp_v08",
+                                    "version_description": "simil v07 (cambio aplates sin noise)",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-04T17:45:34+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_20_070_Picotea_Pajaro_comp_v09",
+                                    "version_description": "WIP-TEST agregado sangre dedo",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-10T16:56:03+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -1510,7 +1674,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Borrado de comida + Beauty uña",
-                            "task_status": "rev_di",
+                            "task_status": "corr",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
                                 {
@@ -1542,7 +1706,12 @@
                                     "version_description": "va con footage sin pixeles rotos",
                                     "version_status": "vwd",
                                     "version_date": "2024-09-14T03:02:27+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "Le aparece un alpiste al final",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -1636,6 +1805,10 @@
                                         {
                                             "text": "Están buenos los dedos, está bueno que tengan distintos tamaños, tal vez el dedo anular deba ser un poquiiiiito más chico, como que fue cortadi por la mitad de la articulación. ¿Después le darán un acabado a esos muñoncitos? Esos dedos fueron cortados hace muchos años-",
                                             "user": "Martin Mauregui"
+                                        },
+                                        {
+                                            "text": "Me parece bien el largo, me perturba la diferencia de tamaños de los dedos. Esta imagen tiene que ser entre delicada y perturbadora.",
+                                            "user": "Martin Mauregui"
                                         }
                                     ]
                                 },
@@ -1692,7 +1865,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Tiene 5 de Handle IN y 3 de Handle OUT. Clean aureola de quemado en el pantalón. Sumar la aureola cuando lo quema y el humo.",
-                            "task_status": "rev_di",
+                            "task_status": "revleg",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
                                 {
@@ -1860,8 +2033,19 @@
                                         {
                                             "text": "09A_10 v15\nEsta versión tiene más humo e hicimos la prueba del atizador incandescente.",
                                             "user": "Fede Blesa"
+                                        },
+                                        {
+                                            "text": "Está bueno esto, Federico. Y le pondríamos la punta incandescente a todos los planos, no?",
+                                            "user": "Martin Mauregui"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_09A_010_Add_Humo_comp_v16",
+                                    "version_description": "CC humo (menos cálido)",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-14T16:48:15+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -2216,9 +2400,40 @@
                                 {
                                     "version_number": "VL_00A_010_StabRampa_Auto_comp_v08",
                                     "version_description": "v stabb (stabb 1point) + retime nuke",
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-09-17T22:41:27+02:00",
                                     "comments": []
+                                },
+                                {
+                                    "version_number": "VL_00A_010_StabRampa_Auto_comp_v20",
+                                    "version_description": "v Stabb Lega +WIP stabb parante auto (frames finales). Queda ajustar detalles roto (manos y borde parante). Hay que recheck Retime y manejo del grano.",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-08T01:18:11+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "- Ajustecitos + chequear si se puede mejorar el momento de motion blur.\n\n- Una vez terminado esto, habría que hacer una versión con shake también",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_00A_010_StabRampa_Auto_comp_v21",
+                                    "version_description": "ajuste Stabb parante y detalles. Queda recheck retimey reencuadre  vs editref )",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-09T02:13:09+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_00A_010_StabRampa_Auto_comp_v22",
+                                    "version_description": "v21 + cam shake",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-09T17:44:21+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Veo muy bien ambos! metele retime al que no tiene shake, y después a ese le sumás el shake como se lo hiciste a la v22, dale?",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -2231,7 +2446,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Agregar cartel iluminado de HOTEL. hotel, pero entre hoy y mañana te paso referencias, estaría bueno que le faltara alguna letra, algo como \"H O - E L\".",
-                            "task_status": "corr",
+                            "task_status": "revleg",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": [
                                 {
@@ -2253,15 +2468,22 @@
                                 {
                                     "version_number": "VL_09D_010_Dedo_Pie_comp_v32",
                                     "version_description": "MAL SUBIDO, DESCARTAR",
-                                    "version_status": "rev",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-02T23:16:00+02:00",
                                     "comments": []
                                 },
                                 {
                                     "version_number": "VL_010_010_Add_Hotel_comp_v07",
                                     "version_description": "WIP: agreagada lluvia en el piso. Falta version 2 del cartel  HOTEL",
-                                    "version_status": "rev",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-02T23:23:29+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_010_010_Add_Hotel_comp_v12",
+                                    "version_description": null,
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-10T18:35:10+02:00",
                                     "comments": []
                                 }
                             ]
@@ -2775,7 +2997,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": [
                                 {
@@ -2877,6 +3099,34 @@
                                     "version_status": "rev",
                                     "version_date": "2024-10-03T17:30:07+02:00",
                                     "comments": []
+                                },
+                                {
+                                    "version_number": "VL_33_020_Chroma_Sotano_comp_v28",
+                                    "version_description": "agregado de animacion/vibracion piso de madera",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-04T01:43:09+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "sale con toda",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_33_020_Chroma_Sotano_comp_v29",
+                                    "version_description": "Correccion de color del BG",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-04T16:52:11+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "mandemos esta!",
+                                            "user": "Lega Pugliese"
+                                        },
+                                        {
+                                            "text": "A este plano le arqueamos un poquito el piso, por el peso del sillón. \nTambién le dimos un pequeño movimiento y agregamos polvo cayendo. \nSon sutilezas que sumadas al sonido seguramente ayuden a generar la sensación de que abajo hay un sótano y el piso no está estable.",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -3011,14 +3261,60 @@
                                 {
                                     "version_number": "VL_33_030_Chroma_Sotano_comp_v09",
                                     "version_description": "va sin linea azul!",
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-01T19:51:38+02:00",
                                     "comments": [
                                         {
                                             "text": "* Queda pendiente borrado pixel muerto  frame 1058 (check si estamos usando aplate v2)",
                                             "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "- probar que se mueva menos el fondo en realcion al fg (es decir, que se mueva más parecido al fg)\n\n- arqueale un poquito la madera, para que parezca vencida\n\n- sumale algun rebotecito al piso para que no esté tan rigido",
+                                            "user": "Lega Pugliese"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_33_030_Chroma_Sotano_comp_v12",
+                                    "version_description": "Baje el mov del BG. Le agregue tierrita y movimiento al piso.",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-04T22:24:58+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Paso a Lega. La intención de el arqueo de la madera y su movimiento me parece que suman. No sé si la deformacion no la haría más lenta y acotada a la madera del medio (se nota que se deforma el borde inferior del sillon de forma elástica)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "- La primera distorsión la haría más suave, siguiendo a sus movimientos. La segunda funciona bien.\n\n- Hacer que no se note el corte de la distorsión en el sillón. Y que agarre hasta la pata que está mas cerca de cámara",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_33_030_Chroma_Sotano_comp_v14",
+                                    "version_description": "hice mas suave el primer golpe del piso, le di mas feather a la mascara del segundo",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-09T05:28:07+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Se ven bien los ajustes. \nQuedó pendiente de v anterior (lo veo ahora ) ajustar ruido en esta zona (creo que es producto del la deformacion y su regrain ).",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_33_030_Chroma_Sotano_comp_v16",
+                                    "version_description": "va con ajuste de lega mas la tierrita donde se mueve mas fuerte el piso",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-10T20:48:41+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_33_030_Chroma_Sotano_comp_v17",
+                                    "version_description": "va con tierrita que se ve!",
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-14T17:00:57+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -3211,7 +3507,7 @@
                     ]
                 },
                 {
-                    "shot_name": "VL_09A_005_Add_Light",
+                    "shot_name": "VL_09A_004_Add_Light",
                     "sequence": "001-010",
                     "tasks": [
                         {
@@ -3295,9 +3591,40 @@
                         {
                             "task_type": "Comp",
                             "task_description": "El acting de Carmen a derecha de plano es reemplazado en la primera parte.",
-                            "task_status": "progre",
+                            "task_status": "corr",
                             "task_assigned_to": "Silvina Lesa Brown",
-                            "versions": []
+                            "versions": [
+                                {
+                                    "version_number": "VL_06A_010_Split_Cena_comp_v03",
+                                    "version_description": "WIP faltan final",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-08T00:21:31+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_20_090_Vuela_Pajaro_comp_v02",
+                                    "version_description": "me falta los últimos frames",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-10T00:56:55+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_06A_010_Split_Cena_comp_v06",
+                                    "version_description": "banana split",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-10T23:07:36+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Chequemos sync con editref v01. A partir de frame 1060 se desfasa (parte derecha imagen))",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Check comp frame 1143",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3308,9 +3635,97 @@
                         {
                             "task_type": "Comp",
                             "task_description": "El acting de Hendler a derecha fue reemplazado por otro momento.",
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "revleg",
+                            "task_assigned_to": "Mariel Falco",
+                            "versions": [
+                                {
+                                    "version_number": "VL_06B_010_Split_Cena_comp_v01",
+                                    "version_description": "Split con retime de aPlate",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-08T00:35:45+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Lo veo bien !!!!\nSolo check que quedó ruido en algunas zonas",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": null,
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Se podrá recuperar sombra de él ?",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06B_010_Split_Cena_comp_v02",
+                                    "version_description": "ajuste grano y sombra",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-08T16:11:32+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Paso nuevos ajustes:\n1. Check regrain porque mete fantasma de otro plate o por tema scala.",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "2. Faltan frames en comp.exr (1146-1149)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "3. La sombra de él , se podrá hacer más dura , más definida como en bplate ?",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06B_010_Split_Cena_comp_v03",
+                                    "version_description": "grano y sombra",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-08T21:35:15+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Sabés que sigue habiendo algo raro con regrain.  En algunos frames de nota . Y además de pierde detalle. Este plano tiene retime, no ?",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06B_010_Split_Cena_comp_v04",
+                                    "version_description": "retoque grano",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-09T17:18:57+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Regrain oka .\nSabés que recheck descubro que la cortina se mueve un poco . Fijate de stabilizarla o matchearla al shot.",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06B_010_Split_Cena_comp_v06",
+                                    "version_description": "fix cortina",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-10T20:20:22+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "paso ajustes:\n1.Repasar  roto borde hombro (se filtra info del bplate)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "2. Check puntitos blancos (fix ). Frames 1075, 1150",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06B_010_Split_Cena_comp_v07",
+                                    "version_description": "fix roto hombro",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-14T18:00:43+02:00",
+                                    "comments": []
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3334,9 +3749,34 @@
                         {
                             "task_type": "Comp",
                             "task_description": "SPEED: RAMPA 100---400---200%",
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "corr",
+                            "task_assigned_to": "Javi Bravo",
+                            "versions": [
+                                {
+                                    "version_number": "VL_012_010_Tentaculos_Hunden_comp_v02",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-04T19:19:58+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Check retime. En frame 1293 se desfasa un pelín",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_012_010_Tentaculos_Hunden_comp_v03",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-04T20:39:58+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Perfecto el retimming. Lo paso a correcciones para que siga javi",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3360,9 +3800,22 @@
                         {
                             "task_type": "Comp",
                             "task_description": "MAQUILLAJE DE MONSTRUOS + SPEED 200%",
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "corr",
+                            "task_assigned_to": "Javi Bravo",
+                            "versions": [
+                                {
+                                    "version_number": "VL_012_030_Tentaculos_Corren_comp_v02",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-04T20:31:39+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Perfecto el retimming. Lo paso a correcciones para que siga javi",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3373,9 +3826,22 @@
                         {
                             "task_type": "Comp",
                             "task_description": "MAQUILLAJE DE MONSTRUOS + RAMPA DE VELOCIDADES",
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "corr",
+                            "task_assigned_to": "Javi Bravo",
+                            "versions": [
+                                {
+                                    "version_number": "VL_012_050_Tentaculos_Atacan_comp_v01",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-04T21:03:07+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Perfecto el retimming. Paso a corr para que lo siga Javi",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3386,9 +3852,22 @@
                         {
                             "task_type": "Comp",
                             "task_description": "MAQUILLAJE DE MONSTRUOS",
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "corr",
+                            "task_assigned_to": "Javi Bravo",
+                            "versions": [
+                                {
+                                    "version_number": "VL_012_040_Tentaculos_Salen_comp_v01",
+                                    "version_description": "retime para match aditref",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-04T21:17:51+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Perfecto el retimming. Borré los frames 1052 en adelante porque era el mismo frame repetido.\nPaso a correcciones para que lo siga Javi.",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3399,9 +3878,22 @@
                         {
                             "task_type": "Comp",
                             "task_description": "MAQUILLAJE DE MONSTRUOS + RAMPA DE VELOCIDADES",
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "corr",
+                            "task_assigned_to": "Patricio Barreiro",
+                            "versions": [
+                                {
+                                    "version_number": "VL_012_060_Tentaculos_Persiguen_comp_v01",
+                                    "version_description": "RETIME",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-09T17:01:18+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Perfe el retime. Paso a javi",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3412,9 +3904,22 @@
                         {
                             "task_type": "Comp",
                             "task_description": "MAQUILLAJE DE MONSTRUOS + RAMPA DE VELOCIDADES",
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "corr",
+                            "task_assigned_to": "Patricio Barreiro",
+                            "versions": [
+                                {
+                                    "version_number": "VL_012_070_Tentaculos_Agarran_comp_v01",
+                                    "version_description": "RETIME",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-09T17:02:32+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "perfe retime",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3425,8 +3930,8 @@
                         {
                             "task_type": "Comp",
                             "task_description": "MAQUILLAJE DE MONSTRUOS + RAMPA DE VELOCIDADES",
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
+                            "task_status": "ready",
+                            "task_assigned_to": "Patricio Barreiro",
                             "versions": []
                         }
                     ]
@@ -3438,8 +3943,8 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Acortar el tiempo hasta que abre la puerta",
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
+                            "task_status": "ready",
+                            "task_assigned_to": "martin villarreal",
                             "versions": []
                         }
                     ]
@@ -3451,9 +3956,85 @@
                         {
                             "task_type": "Comp",
                             "task_description": "El acting de Hendler a derecha fue reemplazado por otro momento.",
-                            "task_status": "ready",
+                            "task_status": "revleg",
                             "task_assigned_to": "Mariel Falco",
-                            "versions": []
+                            "versions": [
+                                {
+                                    "version_number": "VL_06B_020_Split_Cena_comp_v01",
+                                    "version_description": "Split cena. aPlate a izquierda con ajuste de escala según edit ref, bPlate a derecha",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-04T18:28:05+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Genial.\nRepasemos track, veo algúna diferencia entre los plates (mínima, pero en la zona tenedor y plato derecha veo algún shift)\nY chequemos mask plato",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": null,
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06B_020_Split_Cena_comp_v02",
+                                    "version_description": "ajuste track y máscara",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-04T21:34:32+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Reajustemos track (fijarse en zona del plato)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": null,
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06B_020_Split_Cena_comp_v03",
+                                    "version_description": "Ajuste track",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-08T15:14:20+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Lo veo perfecto !!!! \npero....jajajja\nQuizás haría (si no es muy \"time consuming\") una versión forzando a que aparezca la ventana del fondo a derecha (que está en bplate y por scala desaparece)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06B_020_Split_Cena_comp_v04",
+                                    "version_description": "Agrego ventana de bPlate",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-08T20:29:13+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Recuperaría el motion interno de la ventana (la lluvia). Creo que es un elemento importante para acompañar contexto y sonido)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06B_020_Split_Cena_comp_v05",
+                                    "version_description": "recupero lluvia",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-08T22:19:32+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Bordecito que sale y entra al rededor de 1018",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06B_020_Split_Cena_comp_v06",
+                                    "version_description": "ajuste bordecito en hombro 1015-1020 aprox",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-10T16:35:27+02:00",
+                                    "comments": []
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3464,9 +4045,77 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "ready",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Patricio Barreiro",
-                            "versions": []
+                            "versions": [
+                                {
+                                    "version_number": "VL_20_170_Reducir_Pajaro_comp_v04",
+                                    "version_description": "WIP: escalado del pajaro un 40%. Falta integracion, motionblur, etc etc",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-04T01:50:34+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_20_170_Reducir_Pajaro_comp_v07",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-04T17:21:13+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Detalles\n\n1. Parche sangre 1009 , siento que patina vs frames siguientes",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "2. Me da la sensación como que la sangre no tiene regrain",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_20_170_Reducir_Pajaro_comp_v10",
+                                    "version_description": "Coreccion: sangre patina, en un frame, y grano en zona de sangre",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-04T19:56:17+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Ajustar roto recuperación  vs parche (1010, Fijate que  se devela la sangre original que no es la misma que el parche",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Entiendo que el trabajo es el de escalar el pájaro, pero no sé si estaría bueno agregar una deformación al final para que la sangre gotee un poquito sobre pared. (Me meto en terreno , no propio, jajajaj)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_20_170_Reducir_Pajaro_comp_v12",
+                                    "version_description": "ajuste de posicion de sangre al caer",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-04T21:26:19+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Paso a Lega. Solo sugerir pequeña deformación de las gotas al final (como que chorrean por la pared por la gravedad)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_20_170_Reducir_Pajaro_comp_v14",
+                                    "version_description": "Agregado de sangre cayendo por pared",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-07T17:01:41+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "buenísimo!",
+                                            "user": "Lega Pugliese"
+                                        },
+                                        {
+                                            "text": "Se achicó el tamaño del pájaro.",
+                                            "user": "Fede Blesa"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3476,10 +4125,46 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_description": "Agregar reflejo blanco en auto (Hecho en offline). Tiene que dar la sensación de que esta en movimiento.",
+                            "task_status": "revleg",
+                            "task_assigned_to": "Patricio Barreiro",
+                            "versions": [
+                                {
+                                    "version_number": "VL_37B_010_Add_Reflejo_comp_v04",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-07T23:10:26+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Check posición aplate de Ella (en editref está encuadrado  más abajo)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Check mask de wipe (se nota  linea o halo que en original no está)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_37B_010_Add_Reflejo_comp_v06",
+                                    "version_description": "Correcciones: reencuadre y fantasmita de la cabeza del plate B",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-08T15:16:34+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Probaría de integrar más reflejos del bplate , si se puede.",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_37B_010_Add_Reflejo_comp_v07",
+                                    "version_description": null,
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-08T19:55:45+02:00",
+                                    "comments": []
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3542,9 +4227,81 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "revleg",
+                            "task_assigned_to": "martin villarreal",
+                            "versions": [
+                                {
+                                    "version_number": "VL_31_010_Clean_Atizador_comp_v01",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-08T22:07:06+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Lo veo bien !!!!\nSolo chequearía \"sombra\" sobre pared (quedó algo del parche del atizador, se mueve como el original)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_31_010_Clean_Atizador_comp_v02",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-09T17:15:44+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Borrar remanente de \"sombra\" atizador (en ultimos frames",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_31_010_Clean_Atizador_comp_v03",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-09T19:59:06+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Tema sombra OKA.\nCheck y ajuste regrain parche",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_31_010_Clean_Atizador_comp_v04",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-10T15:21:01+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Repasar tema sombra en parche",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_31_010_Clean_Atizador_comp_v05",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-10T20:36:42+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Ajustar regrain en parte derecha parche",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": null,
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_31_010_Clean_Atizador_comp_v06",
+                                    "version_description": null,
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-10T23:25:12+02:00",
+                                    "comments": []
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3607,9 +4364,17 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "progre",
+                            "task_assigned_to": "Silvina Lesa Brown",
+                            "versions": [
+                                {
+                                    "version_number": "VL_20_150_Clean_Alpiste_comp_v02",
+                                    "version_description": "WIP",
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-15T01:31:12+02:00",
+                                    "comments": []
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3620,9 +4385,73 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "revleg",
+                            "task_assigned_to": "Mariel Falco",
+                            "versions": [
+                                {
+                                    "version_number": "VL_20_140_Clean_Alpiste_comp_v02",
+                                    "version_description": "clean alpiste",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-08T18:36:08+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Paso ajustes:\n\n1. Fix pixel (1010)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "2. Borremos estas partículas.",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "3. Check y borrar partículas en esta zona (aparecen y desaparecen)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "4. Ajustar  bordes de las alas del  Pájaro (sobretodo cuando se mueven)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_20_140_Clean_Alpiste_comp_v03",
+                                    "version_description": "clean particulitas, repaso roto pájaro y fix pixel 1010",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-08T23:18:57+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Podremos rearmar sombra pájaro ?",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Y también recuperar detalle bordes alas (se sienten desenfocadas, o será degrain-regrain ?)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_20_140_Clean_Alpiste_comp_v04",
+                                    "version_description": "ajustes solicitados",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-09T18:12:51+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Genial lo de las alas y sombra, 2 Cositas más y no jodemos más , jajaaj\n\n1.Borrar un par de mugres más",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "2.Ajustar CC sombra en frames 1015 a 1020",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_20_140_Clean_Alpiste_comp_v05",
+                                    "version_description": "saqué mugrecitas en pantalón y cc parche en ingle",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-10T16:20:07+02:00",
+                                    "comments": []
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3646,9 +4475,29 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "revleg",
+                            "task_assigned_to": "Mariel Falco",
+                            "versions": [
+                                {
+                                    "version_number": "VL_20_120_Vuela_Pajaro_comp_v01",
+                                    "version_description": "clean artefacto",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-09T19:40:09+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Oka, solo ajustar matchmove parche (tiene un ligero shift de posición)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_20_120_Vuela_Pajaro_comp_v02",
+                                    "version_description": "fix mm",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-10T15:10:38+02:00",
+                                    "comments": []
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3685,9 +4534,34 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "corr",
+                            "task_assigned_to": "Silvina Lesa Brown",
+                            "versions": [
+                                {
+                                    "version_number": "VL_20_090_Vuela_Pajaro_comp_v01",
+                                    "version_description": "clean up del boom",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-09T17:24:20+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Lo veo bien.\nSolo quedó una  sombra  (muy suave, casi imperceptible) de la varilla en el piso sobre el final del shot. Borremos o suavicemosla .",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_20_090_Vuela_Pajaro_comp_v02",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-09T20:25:29+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Perfec el cleanup. La paso a correcciones para que lo agarre el próximo.",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3698,8 +4572,8 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
+                            "task_status": "progre",
+                            "task_assigned_to": "Sebas Romano",
                             "versions": []
                         }
                     ]
@@ -3802,9 +4676,17 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "revleg",
+                            "task_assigned_to": "Mariel Falco",
+                            "versions": [
+                                {
+                                    "version_number": "VL_09A_009B_Clean_Mic_comp_v01",
+                                    "version_description": "clean mic",
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-14T22:20:42+02:00",
+                                    "comments": []
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3866,9 +4748,9 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
+                            "task_description": "Ella tiene una rampa de velocidad en slow y una máscara",
+                            "task_status": "ready",
+                            "task_assigned_to": "Mariel Falco",
                             "versions": []
                         }
                     ]
@@ -3880,8 +4762,8 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
+                            "task_status": "ready",
+                            "task_assigned_to": "Patricio Barreiro",
                             "versions": []
                         }
                     ]
@@ -3893,9 +4775,33 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "rev_di",
+                            "task_assigned_to": "Patricio Barreiro",
+                            "versions": [
+                                {
+                                    "version_number": "VL_06C_020_Retime_Golpe_comp_v02",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-09T22:36:51+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_06C_020_Retime_Golpe_comp_v04",
+                                    "version_description": "le saque el transform del inicio",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-10T15:05:48+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Paso aLega . Se hizo pequeño reencuadre (en editref se dejaron 5 frames negros sobre derecha)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Perfe!",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3919,7 +4825,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
+                            "task_status": "ready",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
@@ -3996,9 +4902,9 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
+                            "task_description": "Incluye agregado de rayo, rampa de velocidad y estabilizada.",
+                            "task_status": "ready",
+                            "task_assigned_to": "Patricio Barreiro",
                             "versions": []
                         }
                     ]
@@ -4010,9 +4916,22 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "revleg",
+                            "task_assigned_to": "Patricio Barreiro",
+                            "versions": [
+                                {
+                                    "version_number": "VL_01C_010_Stab_Auto_comp_v06",
+                                    "version_description": null,
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-14T22:03:38+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Check sync con editref 01",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 }

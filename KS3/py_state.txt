@@ -121,8 +121,8 @@
             540
         ],
         "scripts/Untitled.py": [
-            7172,
-            7172
+            7144,
+            7144
         ],
         "scripts/Write_Default.py": [
             704,
@@ -206,7 +206,7 @@
         "scripts/oz_backdrop_replacer.py": 21
     },
     "splitter_sizes": [
-        319,
-        215
+        284,
+        192
     ]
 }
