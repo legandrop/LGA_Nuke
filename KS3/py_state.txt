@@ -206,7 +206,7 @@
         "scripts/oz_backdrop_replacer.py": 21
     },
     "splitter_sizes": [
-        284,
-        192
+        319,
+        215
     ]
 }

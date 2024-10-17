@@ -1,6 +1,6 @@
 """
 ____________________________________________________________________________
-  LGA_NKS_Flow_Pull v2.5 - 2024 - Lega Pugliese
+  LGA_NKS_Flow_Pull v2.6 - 2024 - Lega Pugliese
   Compara los estados de las task Comp de los shots del timeline de Hiero 
   con los estados registrados en un archivo JSON basado en Flow PT
   Tambien aplica tags con los colores de los estados en xyplorer 
@@ -367,6 +367,14 @@ class HieroOperations:
         if seq:
             te = hiero.ui.getTimelineEditor(seq)
             selected_clips = te.selection()
+            
+            # Si no hay clips seleccionados, obtener todos los clips del timeline
+            if not selected_clips:
+                all_tracks = seq.videoTracks()
+                selected_clips = []
+                for track in all_tracks:
+                    selected_clips.extend(track.items())
+            
             if selected_clips:
                 project = hiero.core.projects()[0]
                 for clip in selected_clips:
@@ -440,7 +448,7 @@ class HieroOperations:
                 # Llamar a enable_or_disable_clips al final del proceso
                 self.enable_or_disable_clips(selected_clips)
             else:
-                debug_print("No clips selected on the timeline.")
+                debug_print("No clips found in the timeline.")
                 pass
         else:
             debug_print("No active sequence found in Hiero.")

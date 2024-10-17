@@ -2518,13 +2518,6 @@
                                     ]
                                 },
                                 {
-                                    "version_number": "VL_09D_010_Dedo_Pie_comp_v32",
-                                    "version_description": "MAL SUBIDO, DESCARTAR",
-                                    "version_status": "vwd",
-                                    "version_date": "2024-10-02T23:16:00+02:00",
-                                    "comments": []
-                                },
-                                {
                                     "version_number": "VL_010_010_Add_Hotel_comp_v07",
                                     "version_description": "WIP: agreagada lluvia en el piso. Falta version 2 del cartel  HOTEL",
                                     "version_status": "vwd",
@@ -5012,7 +5005,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "La toma esta ralentizada, y ademas hay una mascara reemplazando los parpados.",
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
                                 {
@@ -5042,9 +5035,14 @@
                                 {
                                     "version_number": "VL_06A_040_Split-retime_Parpados_comp_v03",
                                     "version_description": "ajuste sync y saltito",
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-16T15:23:40+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "Perfe",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -5083,8 +5081,8 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
+                            "task_status": "ready",
+                            "task_assigned_to": "Mariel Falco",
                             "versions": []
                         }
                     ]
@@ -5114,7 +5112,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Incluye agregado de rayo, rampa de velocidad y estabilizada.",
-                            "task_status": "rev_su",
+                            "task_status": "revleg",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": [
                                 {
@@ -5162,9 +5160,14 @@
                                 {
                                     "version_number": "VL_01C_030_Agregar_Rayo-Speed_comp_v14",
                                     "version_description": null,
-                                    "version_status": "rev",
+                                    "version_status": "unvleg",
                                     "version_date": "2024-10-17T14:08:54+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "Paso a Lega. Queda pendiente borrado puntitos \"locos\" , tema clamp highlights (material de origen).",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -5208,7 +5211,7 @@
                             "task_type": "Comp",
                             "task_description": null,
                             "task_status": "ready",
-                            "task_assigned_to": "No asignado",
+                            "task_assigned_to": "Mariel Falco",
                             "versions": []
                         }
                     ]
