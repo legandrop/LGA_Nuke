@@ -953,6 +953,34 @@
                                             "user": "Sebas Romano"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v83",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-15T23:17:47+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Tema regrain lo veo bien.\nQuedaron unas soguitas (que nunca vimos, jajaj) en rango 1053 a 1121 .",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Repasar parche hombro izquierdo (se nota textura distinta al resto y un shift en track o warp; rango 1177 a final)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v85",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-16T20:55:02+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Ok fix soga y hombro. \nCheck roto en base sillon (rango 1090 - 1120)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -1686,7 +1714,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Borrado de comida + Beauty uña",
-                            "task_status": "corr",
+                            "task_status": "revleg",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
                                 {
@@ -1724,6 +1752,13 @@
                                             "user": "Lega Pugliese"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_20_080_Beauty_Dedo_comp_v07",
+                                    "version_description": "faltaban frames al denoised_v02 x eso salia mal el grano",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-16T22:09:40+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -3543,9 +3578,49 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "ready",
+                            "task_status": "revleg",
                             "task_assigned_to": "Mariel Falco",
-                            "versions": []
+                            "versions": [
+                                {
+                                    "version_number": "VL_06C_010_Sombra_Alicia_comp_v01",
+                                    "version_description": "Bb de bplate, actor y puerta de cplate con retime según edit ref y sombra de aplate. No saqué mic porque no entra en cuadro",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-15T23:38:21+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Repasemos estos puntos :\n1 . Sync vs editref (sobre todo en entrada sombra )",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": null,
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "2. Ajustemos regrain (en algunas zonas se nota un grano mucho más intenso que el original)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06C_010_Sombra_Alicia_comp_v02",
+                                    "version_description": "ajuste sync c y a plates, ajuste regrain",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-16T17:59:04+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Oka sync (tenia corrido en NKS el timming de la compo). Regrain oka.\nAjustemos este detalle :\n1. Interacción de sombra en borde mesa (debería corresponder a plate de ella cuando entra)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06C_010_Sombra_Alicia_comp_v03",
+                                    "version_description": "ajuste sombra mesa",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-16T19:43:45+02:00",
+                                    "comments": []
+                                }
+                            ]
                         }
                     ]
                 },
@@ -3758,9 +3833,22 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Split para acortar pausa.",
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "corr",
+                            "task_assigned_to": "martin villarreal",
+                            "versions": [
+                                {
+                                    "version_number": "VL_09G_010_CutStitch_Galpon_comp_v01",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-16T21:34:22+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Check salto de regrain en 1015 (se suma intensidad)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -4393,7 +4481,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
+                            "task_status": "ready",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
@@ -4419,15 +4507,42 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "progre",
+                            "task_status": "corr",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
                                 {
                                     "version_number": "VL_20_150_Clean_Alpiste_comp_v02",
                                     "version_description": "WIP",
-                                    "version_status": "rev",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-15T01:31:12+02:00",
                                     "comments": []
+                                },
+                                {
+                                    "version_number": "VL_20_150_Clean_Alpiste_comp_v04",
+                                    "version_description": "WIP",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-16T04:09:16+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_20_150_Clean_Alpiste_comp_v06",
+                                    "version_description": "Falta el Split comp que aun no llego el plano B",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-16T20:58:06+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "En gral oka, te paso un par de ajustes.\n1. Borrar alpiste volador en frames 1164-65",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "2. Check roto cola (en algunos frames se filtra aplate)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "3. Check parche de este alpiste (mejorar pintura para repetar degradé de luz por sombras)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -4563,7 +4678,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
+                            "task_status": "ready",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
@@ -4653,7 +4768,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
+                            "task_status": "ready",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
@@ -4692,7 +4807,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
+                            "task_status": "ready",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
@@ -4718,14 +4833,14 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
+                            "task_status": "ready",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
                     ]
                 },
                 {
-                    "shot_name": "VL_09A_009_Clean_Mic",
+                    "shot_name": "VL_09A_009B_Clean_Mic",
                     "sequence": "001-010",
                     "tasks": [
                         {
@@ -4884,8 +4999,8 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
+                            "task_status": "ready",
+                            "task_assigned_to": "Mariel Falco",
                             "versions": []
                         }
                     ]
@@ -4897,7 +5012,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "La toma esta ralentizada, y ademas hay una mascara reemplazando los parpados.",
-                            "task_status": "corr",
+                            "task_status": "revleg",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
                                 {
@@ -4911,6 +5026,25 @@
                                             "user": "Sebas Romano"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_06A_040_Split-retime_Parpados_comp_v02",
+                                    "version_description": "retoque parche ojos, retoque grano",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-15T23:23:51+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Ajustemos sync con editref",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06A_040_Split-retime_Parpados_comp_v03",
+                                    "version_description": "ajuste sync y saltito",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-16T15:23:40+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -4923,7 +5057,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
+                            "task_status": "ready",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
@@ -4936,7 +5070,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
+                            "task_status": "ready",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
@@ -4967,7 +5101,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
+                            "task_status": "ready",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
@@ -4993,8 +5127,43 @@
                                 {
                                     "version_number": "VL_01C_030_Agregar_Rayo-Speed_comp_v09",
                                     "version_description": "WIP",
-                                    "version_status": "rev",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-15T22:04:12+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Devo \n\n1. Roto poste y arbusto",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "2. Fix de puntos verdes (creo que son de las luces del auto)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_01C_030_Agregar_Rayo-Speed_comp_v10",
+                                    "version_description": "WIP",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-15T23:30:01+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_01C_030_Agregar_Rayo-Speed_comp_v13",
+                                    "version_description": "WIP",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-16T20:30:11+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Repasar regrain rayos, stabb (en parte de tilt up de cámara9 y reencuadre (se notan bordes negros )",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_01C_030_Agregar_Rayo-Speed_comp_v14",
+                                    "version_description": null,
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-17T14:08:54+02:00",
                                     "comments": []
                                 }
                             ]

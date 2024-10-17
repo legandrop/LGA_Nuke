@@ -1,6 +1,6 @@
 """
 ____________________________________________________________________________
-  LGA_NKS_Flow_Pull v2.5 - 2024 - Lega Pugliese
+  LGA_NKS_Flow_Pull v2.4 - 2024 - Lega Pugliese
   Compara los estados de las task Comp de los shots del timeline de Hiero 
   con los estados registrados en un archivo JSON basado en Flow PT
   Tambien aplica tags con los colores de los estados en xyplorer 
@@ -32,7 +32,7 @@ def delete_tags_from_clip(clip):
         #print(f"All tags removed from clip: {clip.name()}")
 
 # Variable global para activar o desactivar los prints
-DEBUG = False
+DEBUG = True
 
 def debug_print(*message):
     if DEBUG:
@@ -41,8 +41,7 @@ def debug_print(*message):
 def extract_version_number(version_str):
     """Extrae el número de versión numérico de un string de versión."""
     debug_print(f"Intentando extraer versión de: {version_str}")
-    match = re.search(r'_v(\d+)(?:[-\(][^)]+)?', version_str)
-
+    match = re.search(r'[_v](\d+)(?:[-\(][^)]+)?', version_str)
     if match:
         try:
             version_num = int(match.group(1))

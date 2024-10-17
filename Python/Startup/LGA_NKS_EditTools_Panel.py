@@ -53,7 +53,7 @@ class ReconnectMediaWidget(QWidget):
             ("Reconnect T > N", self.reconnect_t_to_n, "#4a4329"),
             ("Reconnect N > T", self.reconnect_n_to_t, "#4a4329"),
             ("Reconnect Media", self.reconnectMediaFromTimeline, "#4a4329", "Alt+M", "Alt+M"),
-            ("Check Frames", self.check_frames, "#4a4329"),  # Nuevo botón
+            #("Check Frames", self.check_frames, "#4a4329"),  # Nuevo botón
             ]
 
         self.num_columns = 1  # Inicialmente una columna

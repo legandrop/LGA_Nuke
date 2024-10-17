@@ -16,6 +16,12 @@ import os
 import re
 import subprocess
 import traceback
+import hashlib
+import logging
+
+# Configurar el logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 class WorkerThread(QThread):
     update_progress = Signal(int)
@@ -25,6 +31,7 @@ class WorkerThread(QThread):
     def __init__(self, selected_items):
         QThread.__init__(self)
         self.selected_items = selected_items
+        self.exr_cache = {}
 
     def run(self):
         for index, item in enumerate(self.selected_items):
@@ -64,24 +71,45 @@ class WorkerThread(QThread):
                 expected_filename = os.path.join(directory, filename_pattern % frame)
                 if not os.path.exists(expected_filename):
                     missing_frames.append(frame)
+                    logger.warning(f"Frame faltante: {expected_filename}")
                 elif not self.is_exr_valid(expected_filename):
                     corrupt_frames.append(frame)
+                    logger.warning(f"Frame corrupto: {expected_filename}")
         except Exception as e:
-            print(f"Error verificando frames: {str(e)}")
-            print(traceback.format_exc())
+            logger.error(f"Error verificando frames: {str(e)}")
+            logger.error(traceback.format_exc())
         return missing_frames, corrupt_frames
 
     def is_exr_valid(self, file_path):
+        file_hash = hashlib.md5(file_path.encode()).hexdigest()
+        if file_hash in self.exr_cache:
+            return self.exr_cache[file_hash]
+
         exrheader_path = os.path.join(os.path.dirname(__file__), 'OpenEXR', 'exrheader.exe')
         try:
-            result = subprocess.run([exrheader_path, file_path], capture_output=True, text=True, timeout=0.5)
-            return result.returncode == 0 and "ERROR" not in result.stdout
+            result = subprocess.run([exrheader_path, file_path], capture_output=True, text=True, timeout=5)
+            
+            # Registrar la salida completa para depuración
+            logger.debug(f"Salida de exrheader para {file_path}:\n{result.stdout}")
+            
+            # Verificar si hay errores específicos en la salida
+            is_valid = result.returncode == 0 and "ERROR" not in result.stdout and "invalid" not in result.stdout.lower()
+            
+            if not is_valid:
+                logger.warning(f"Archivo potencialmente corrupto: {file_path}")
+                logger.warning(f"Código de retorno: {result.returncode}")
+                logger.warning(f"Salida de error: {result.stderr}")
+            
+            self.exr_cache[file_hash] = is_valid
+            return is_valid
         except subprocess.TimeoutExpired:
-            print(f"Timeout al verificar el archivo: {file_path}")
+            logger.error(f"Timeout al verificar el archivo: {file_path}")
+            self.exr_cache[file_hash] = False
             return False
         except Exception as e:
-            print(f"Error al verificar el archivo {file_path}: {str(e)}")
-            print(traceback.format_exc())
+            logger.error(f"Error al verificar el archivo {file_path}: {str(e)}")
+            logger.error(traceback.format_exc())
+            self.exr_cache[file_hash] = False
             return False
 
 class ClipMediaInfo(QWidget):
