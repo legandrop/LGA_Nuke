@@ -5,7 +5,7 @@ rem Cambiar directorio a la carpeta deseada
 cd /d "C:\Users\leg4-pc\.nuke"
 
 rem Definir la ruta de destino para el archivo zip
-set "DESTINO=C:\Users\leg4-pc\.nuke\LGA_ToolsVA"
+set "DESTINO=C:\Users\leg4-pc\.nuke\_LGA_Release"
 set "ZIPNAME=LGA_ToolPack-Layout"
 
 rem Inicializar el número de versión máximo

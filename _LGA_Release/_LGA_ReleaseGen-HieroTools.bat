@@ -5,8 +5,8 @@ rem Cambiar directorio a la carpeta deseada
 cd /d "C:\Users\leg4-pc\.nuke"
 
 rem Definir la ruta de destino para el archivo zip
-set "DESTINO=C:\Users\leg4-pc\.nuke\LGA_ToolsVA"
-set "ZIPNAME=LGA_ToolPack"
+set "DESTINO=C:\Users\leg4-pc\.nuke\_LGA_Release"
+set "ZIPNAME=LGA_HeiroTools"
 
 rem Inicializar el número de versión máximo
 set "maxver=0"
@@ -39,14 +39,14 @@ if "!version_exists!"=="false" (
 rem Definir el nombre completo del nuevo archivo zip
 set "NEWZIPNAME=%ZIPNAME%_v!newver!.zip"
 
-rem Copiar temporalmente el archivo LGA_ToolPack.pdf a la carpeta actual
-copy "LGA_ToolPack\LGA_ToolPack.pdf" .
+rem Copiar temporalmente el archivo de instalación a la carpeta actual
+copy "_LGA_Release\+Instalacion_HieroTools.txt" .
 
-rem Crear el archivo zip con las exclusiones especificadas y el archivo PDF en la raíz
-"C:\Program Files\7-Zip\7z.exe" a -tzip "%DESTINO%\!NEWZIPNAME!" LGA_ToolPack\* LGA_ToolPack.pdf -xr@LGA_ToolPack\+exclude.lst
+rem Crear el archivo zip con las exclusiones especificadas y el archivo de instalación en la raíz
+"C:\Program Files\7-Zip\7z.exe" a -tzip "%DESTINO%\!NEWZIPNAME!" Python\Startup\* +Instalacion_HieroTools.txt -xr@Python\Startup\+exclude.lst
 
-rem Eliminar el archivo PDF temporal de la carpeta actual
-del LGA_ToolPack.pdf
+rem Eliminar el archivo de instalación temporal de la carpeta actual
+del +Instalacion_HieroTools.txt
 
 echo Se ha creado el archivo !NEWZIPNAME!
 

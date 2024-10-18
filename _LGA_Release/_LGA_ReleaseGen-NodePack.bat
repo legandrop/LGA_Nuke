@@ -5,7 +5,7 @@ rem Cambiar directorio a la carpeta deseada
 cd /d "C:\Users\leg4-pc\.nuke"
 
 rem Definir la ruta de destino para el archivo zip
-set "DESTINO=C:\Users\leg4-pc\.nuke\LGA_ToolsVA"
+set "DESTINO=C:\Users\leg4-pc\.nuke\_LGA_Release"
 set "ZIPNAME=LGA_NodePack"
 
 rem Inicializar el número de versión máximo
@@ -40,7 +40,7 @@ rem Definir el nombre completo del nuevo archivo zip
 set "NEWZIPNAME=%ZIPNAME%_v!newver!.zip"
 
 rem Copiar temporalmente el archivo de instalación a la carpeta actual
-copy "LGA_ToolsVA\+Instalacion_NodePack.txt" .
+copy "_LGA_Release\+Instalacion_NodePack.txt" .
 
 rem Crear el archivo zip con las exclusiones especificadas y el archivo de instalación en la raíz
 "C:\Program Files\7-Zip\7z.exe" a -tzip "%DESTINO%\!NEWZIPNAME!" LGA_NodePack\* +Instalacion_NodePack.txt -xr@LGA_NodePack\+exclude.lst
