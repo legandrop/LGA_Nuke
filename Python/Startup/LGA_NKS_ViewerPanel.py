@@ -40,7 +40,8 @@ class ViewerPanel(QWidget):
             ("&Viewer | Rec709", self.rec709_viewer, "#311840", "Shift+V", "Shift+V"),
             ("Viewer | 2.35:1 ", self.viewer_235, "#311840"),
             ("Refresh Timeline", self.refresh_timeline, "#4c4350"),
-            ("Top Track ", self.top_track, "#4c4350", "Ctrl+Shift+T")            
+            ("Top Track ", self.top_track, "#4c4350", "Ctrl+Shift+T"),
+            ("In Out Editref", self.in_out_editref, "#4d462b", "Ctrl+Shift+U", "Ctrl+Shift+U")  # Añadido atajo de teclado
         ]
 
         self.num_columns = 1  # Inicialmente una columna
@@ -74,8 +75,8 @@ class ViewerPanel(QWidget):
     def adjust_columns_on_resize(self, event=None):
         # Obtener el ancho actual del widget
         panel_width = self.width()
-        button_width = 150  # Ancho aproximado de cada botón
-        min_button_spacing = 10  # Espacio mínimo entre botones
+        button_width = 140  # Reducido el ancho aproximado de cada botón
+        min_button_spacing = 5  # Reducido el espacio mínimo entre botones
 
         # Calcular el número de columnas en función del ancho del widget
         self.num_columns = max(1, (panel_width + min_button_spacing) // (button_width + min_button_spacing))
@@ -178,6 +179,23 @@ class ViewerPanel(QWidget):
             module.main()
         else:
             debug_print(f"Script not found at path: {script_path}")            
+
+    def in_out_editref(self):
+        try:
+            script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS_InOut_Editref.py')
+            if os.path.exists(script_path):
+                import importlib.util
+                spec = importlib.util.spec_from_file_location("LGA_NKS_InOut_Editref", script_path)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+
+                # Llamar a la función principal del script
+                module.set_in_out_from_edit_ref_track()
+                debug_print("Ejecutado LGA_NKS_InOut_Editref script.")
+            else:
+                debug_print(f"Script no encontrado en la ruta: {script_path}")
+        except Exception as e:
+            debug_print(f"Error al ejecutar el script In Out Editref: {e}")
 
 # Crear la instancia del widget y añadirlo al gestor de ventanas de Hiero
 viewerPanel = ViewerPanel()

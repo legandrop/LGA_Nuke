@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
++OLD/
+OLD/
+Building_Blocks/
++Building_Blocks/
++resources/
+Compilar/
++Backup/
++exclude.lst

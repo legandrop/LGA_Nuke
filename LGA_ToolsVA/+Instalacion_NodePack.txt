@@ -1,0 +1,9 @@
+Instalación:
+
+
+1- Copiar el contenido la carpeta LGA_NodePack a %USERPROFILE%/.nuke
+
+
+2- Con un editor de texto, agregar esta línea de código al archivo init.py que está dentro de la carpeta %USERPROFILE%/.nuke
+
+   nuke.pluginAddPath('./LGA_NodePack')

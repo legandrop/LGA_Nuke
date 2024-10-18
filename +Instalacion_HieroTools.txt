@@ -1,7 +1,0 @@
-Instalación:
-
-
-1- Copiar el contenido la carpeta Startup a %USERPROFILE%/.nuke/Python/Startup
-
-
-

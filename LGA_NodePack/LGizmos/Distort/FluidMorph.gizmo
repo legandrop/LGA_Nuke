@@ -1,0 +1,249 @@
+#! /Applications/Nuke13.2v4/Nuke13.2v4.app/Contents/MacOS/libnuke-13.2.4.dylib -nx
+version 13.2 v4
+Gizmo {
+ inputs 2
+ addUserKnob {20 User}
+ addUserKnob {41 which l "Fluid Morph" T Morph_Dissolve.which}
+ addUserKnob {26 Tip l "" +STARTLINE T "\nAnimate your Fluid Morph between 0 and 1 to morph between your Zero and One input."}
+ addUserKnob {26 ""}
+ addUserKnob {4 MorphType l "Morph Type" M {Kronos Oflow}}
+ MorphType Oflow
+ addUserKnob {26 ""}
+ addUserKnob {26 UsingNode l "" +STARTLINE T "Using this Gizmo:\n\n1. Select your Morph Type.\n2. Go to the tab for your selection.\n3. Input the frame range of your plate.\n4. Go back to the user tab and keyframe your Fluid Morph.\n5. Adjust the settings in your Morph Type tab as needed.\n"}
+ addUserKnob {26 ""}
+ addUserKnob {26 FluidMorph l "v1.0 - by Shonda Hunt - 2023" T ""}
+ addUserKnob {20 Kronos}
+ addUserKnob {41 input.first_1 l "Frame Range" T Morph_Kronos.input.first}
+ addUserKnob {41 input.last_1 l "" -STARTLINE T Morph_Kronos.input.last}
+ addUserKnob {26 Inputframe l "" -STARTLINE T "Input the frame range for your plate."}
+ addUserKnob {41 vectorDetailReg l "Vector Detail" T Morph_Kronos.vectorDetailReg}
+ addUserKnob {41 strengthReg l Strength T Morph_Kronos.strengthReg}
+ addUserKnob {41 shutterSamples l "Shutter Samples" T Morph_Kronos.shutterSamples}
+ addUserKnob {41 shutterTime l "Shutter Time" T Morph_Kronos.shutterTime}
+ addUserKnob {20 Oflow}
+ addUserKnob {41 input.first_2 l "Frame Range" T Morph_Oflow.input.first}
+ addUserKnob {41 input.last_2 l "" -STARTLINE T Morph_Oflow.input.last}
+ addUserKnob {26 Outputframe l "" -STARTLINE T "Input the frame range for your plate."}
+ addUserKnob {41 vectorDetailLocal l "Vector Detail" T Morph_Oflow.vectorDetailLocal}
+ addUserKnob {41 smoothnessLocal l Smoothness T Morph_Oflow.smoothnessLocal}
+ addUserKnob {41 shutterSamples_1 l "Shutter Samples" T Morph_Oflow.shutterSamples}
+ addUserKnob {41 shutterTime_1 l "Shutter Time" T Morph_Oflow.shutterTime}
+}
+ BackdropNode {
+  inputs 0
+  name BackdropNode1
+  tile_color 0xa0007dff
+  label "Fluid Morph"
+  note_font "Verdana Bold"
+  note_font_size 42
+  xpos 467
+  ypos -613
+  appearance Border
+  bdwidth 1107
+  bdheight 1069
+  addUserKnob {20 Backdrop}
+  addUserKnob {41 label_link l label T BackdropNode1.label}
+  addUserKnob {41 note_font_link l font T BackdropNode1.note_font}
+  addUserKnob {41 note_font_size_link l "" -STARTLINE T BackdropNode1.note_font_size}
+  addUserKnob {41 x_link l x: +INVISIBLE T BackdropNode1.xpos}
+  addUserKnob {41 y_link l y: -STARTLINE +INVISIBLE T BackdropNode1.ypos}
+  addUserKnob {41 w_link l w: -STARTLINE +INVISIBLE T BackdropNode1.bdwidth}
+  addUserKnob {41 h_link l h: -STARTLINE +INVISIBLE T BackdropNode1.bdheight}
+  addUserKnob {52 Colors l "" +STARTLINE T "backdrop_palette.backdrop_widget.ColorSwatch( nuke.thisNode() )" +STARTLINE}
+ }
+ Input {
+  inputs 0
+  name One
+  xpos 1142
+  ypos -543
+ }
+ NoOp {
+  name MorphInputOne
+  tile_color 0xff6d00ff
+  note_font "Verdana Bold"
+  note_font_size 15
+  xpos 1142
+  ypos -452
+ }
+ Dot {
+  name Dot4
+  xpos 1176
+  ypos -372
+ }
+set Nda137dc0 [stack 0]
+ FrameHold {
+  firstFrame {{trunc(frame*0.5) x2298 2298}}
+  name Clip_one_doubler
+  tile_color 0xff5b05ff
+  xpos 1142
+  ypos -327
+ }
+ Dot {
+  name Dot2
+  xpos 1176
+  ypos -276
+ }
+ Input {
+  inputs 0
+  name Zero
+  xpos 922
+  ypos -549
+  number 1
+ }
+ NoOp {
+  name MorphInputZero
+  tile_color 0x16ffff
+  note_font "Verdana Bold"
+  note_font_size 15
+  xpos 922
+  ypos -452
+ }
+ Dot {
+  name Dot3
+  xpos 956
+  ypos -372
+ }
+set Nda145f70 [stack 0]
+ FrameHold {
+  firstFrame {{trunc((frame*0.5)+0.5) x1149 1149}}
+  name Clip_zero_doubler
+  tile_color 0x16ffff
+  xpos 922
+  ypos -335
+ }
+ Dot {
+  name Dot5
+  xpos 956
+  ypos -276
+ }
+ Switch {
+  inputs 2
+  which {{"frame%2 != 1"}}
+  name Clip_Interleve
+  tile_color 0xd3dce8ff
+  xpos 1032
+  ypos -279
+ }
+ Dot {
+  name Dot11
+  xpos 1066
+  ypos -203
+ }
+set Nda153560 [stack 0]
+ Dot {
+  name Dot7
+  xpos 1208
+  ypos -203
+ }
+ OFlow2 {
+  input.first 0
+  input.last 0
+  timing2 Frame
+  timingFrame2 365
+  vectorDetailLocal 0
+  resampleType Lanczos4
+  Shutter 1
+  Advanced 1
+  Tolerances 1
+  name Morph_Oflow
+  xpos 1174
+  ypos -90
+ }
+ Dot {
+  name Dot13
+  xpos 1208
+  ypos 11
+ }
+push $Nda153560
+ Dot {
+  name Dot9
+  xpos 926
+  ypos -203
+ }
+ Kronos {
+  input.first 0
+  input.last 0
+  retimedChannels all
+  timing2 Frame
+  timingFrame2 {{(frame*2-1)+Morph_Dissolve.which}}
+  motionEstimation Regularized
+  vectorDetailLocal {{parent.vectorDetail}}
+  Shutter 1
+  matteChannel "Matte Alpha"
+  Advanced 1
+  Tolerances 1
+  name Morph_Kronos
+  xpos 892
+  ypos -87
+ }
+ Dot {
+  name Dot15
+  xpos 926
+  ypos 11
+ }
+ Switch {
+  inputs 2
+  which {{parent.MorphType}}
+  name Morph_Type
+  xpos 1032
+  ypos 8
+ }
+ Dot {
+  name Dot16
+  xpos 1066
+  ypos 84
+ }
+set Nd35a1220 [stack 0]
+push $Nda137dc0
+ Dot {
+  name Dot6
+  xpos 1396
+  ypos -372
+ }
+ Switch {
+  inputs 2
+  which {{"Morph_Dissolve.which == 0 ? 0 : 1"}}
+  name B_return
+  tile_color 0xff7006ff
+  xpos 1362
+  ypos 81
+ }
+ Dot {
+  name Dot18
+  xpos 1396
+  ypos 156
+ }
+push $Nd35a1220
+push $Nda145f70
+ Dot {
+  name Dot10
+  xpos 736
+  ypos -372
+ }
+ Switch {
+  inputs 2
+  which {{"Morph_Dissolve.which == 0 ? 0 : 1"}}
+  name A_return
+  tile_color 0xfffff
+  xpos 702
+  ypos 80
+ }
+ Dot {
+  name Dot17
+  xpos 736
+  ypos 156
+ }
+ Dissolve {
+  inputs 2
+  which 1
+  name Morph_Dissolve
+  tile_color 0xcfc9ffff
+  xpos 1032
+  ypos 149
+ }
+ Output {
+  name Output1
+  xpos 1032
+  ypos 272
+ }
+end_group
