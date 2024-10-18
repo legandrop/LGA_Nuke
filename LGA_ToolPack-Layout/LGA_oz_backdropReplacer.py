@@ -105,10 +105,10 @@ def replace_with_oz_backdrop():
         # Eliminar el backdrop original
         nuke.delete(node)
 
-    # Importar y ejecutar LGA_backdropZorder después de reemplazar los backdrops
+    # Importar y ejecutar LGA_backdropZorder despues de reemplazar los backdrops
     try:
         import LGA_backdropZorder
-        LGA_backdropZorder.order_all_backdrops()  # Asumiendo que esta es la función principal
+        LGA_backdropZorder.order_all_backdrops()  # Asumiendo que esta es la funcion principal
     except Exception as e:
         print(f"Error al ejecutar LGA_backdropZorder.py: {e}")
 

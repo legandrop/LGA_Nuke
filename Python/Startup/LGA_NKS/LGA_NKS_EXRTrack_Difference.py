@@ -28,18 +28,18 @@ def main():
         # Itera sobre los tracks de video para encontrar el que se llama "EXR"
         for index, track in enumerate(seq.videoTracks()):
             if track.name() == "EXR":
-                # Verifica si el blend mode ya está activado
+                # Verifica si el blend mode ya esta activado
                 if track.isBlendEnabled():
-                    # Si está activado, lo desactiva
+                    # Si esta activado, lo desactiva
                     track.setBlendEnabled(False)
-                    debug_print(f"Blend mode desactivado para el track 'EXR' en el índice: {index}")
+                    debug_print(f"Blend mode desactivado para el track 'EXR' en el indice: {index}")
                 else:
-                    # Si no está activado, lo activa y cambia el modo a "Difference"
+                    # Si no esta activado, lo activa y cambia el modo a "Difference"
                     track.setBlendEnabled(True)
                     track.setBlendMode("difference")
-                    debug_print(f"Blend mode 'Difference' activado para el track 'EXR' en el índice: {index}")
+                    debug_print(f"Blend mode 'Difference' activado para el track 'EXR' en el indice: {index}")
                 break
         else:
-            debug_print("No se encontró un track llamado 'EXR'.")
+            debug_print("No se encontro un track llamado 'EXR'.")
     except Exception as e:
-        debug_print(f"Error durante la operación: {e}")
+        debug_print(f"Error durante la operacion: {e}")

@@ -23,7 +23,7 @@ import ctypes
 import ctypes.wintypes
 import platform
 
-# Incluir la función delete_tags_from_clip aquí
+# Incluir la funcion delete_tags_from_clip aqui
 def delete_tags_from_clip(clip):
     tags = clip.tags()
     if tags:
@@ -39,17 +39,17 @@ def debug_print(*message):
         print(message)
 
 def extract_version_number(version_str):
-    """Extrae el número de versión numérico de un string de versión."""
-    debug_print(f"Intentando extraer versión de: {version_str}")
+    """Extrae el numero de version numerico de un string de version."""
+    debug_print(f"Intentando extraer version de: {version_str}")
     match = re.search(r'[_v](\d+)(?:[-\(][^)]+)?', version_str)
     if match:
         try:
             version_num = int(match.group(1))
-            debug_print(f"Versión extraída: {version_num}")
+            debug_print(f"Version extraida: {version_num}")
             return version_num
         except ValueError:
             debug_print(f"No se pudo convertir a entero: {match.group(1)}")
-    debug_print(f"No se encontró número de versión en: {version_str}")
+    debug_print(f"No se encontro numero de version en: {version_str}")
     return 0
 
 class ShotGridManager:
@@ -381,7 +381,7 @@ class HieroOperations:
                     exr_name = os.path.basename(file_path)
                     base_name, version_str = self.parse_exr_name(exr_name)
                     version_number = extract_version_number(version_str)  # Use extracted version number
-                    debug_print(f"Versión extraída: {version_number} de {version_str}")
+                    debug_print(f"Version extraida: {version_number} de {version_str}")
                     project_name = base_name.split('_')[0]
                     parts = base_name.split('_')
                     shot_code = '_'.join(parts[:5])
@@ -404,9 +404,9 @@ class HieroOperations:
                             current_status = self.get_status_name_by_color(current_color_hex)
                             highest_version = sg_manager.find_highest_version_for_shot(shot)
                             if highest_version:
-                                debug_print(f"Versión más alta en SG: {highest_version['version_number']}")
+                                debug_print(f"Version mas alta en SG: {highest_version['version_number']}")
                             else:
-                                debug_print("No se encontró versión en SG")
+                                debug_print("No se encontro version en SG")
                             sg_version_str = highest_version['version_number'] if highest_version else "No info"
                             sg_version_number = extract_version_number(sg_version_str)  # Use extracted SG version number
                             sg_status = highest_version['version_status'] if highest_version else "No info"
@@ -454,26 +454,26 @@ class HieroOperations:
             debug_print(f"  - {v.name()}")
         try:
             highest_version = max(versions, key=lambda v: extract_version_number(v.name()))
-            debug_print(f"Versión más alta seleccionada: {highest_version.name()}")
+            debug_print(f"Version mas alta seleccionada: {highest_version.name()}")
             return highest_version
         except Exception as e:
-            debug_print(f"Error al obtener la versión más alta: {e}")
+            debug_print(f"Error al obtener la version mas alta: {e}")
             return None
 
     def change_to_highest_version(self, clip):
         """Cambia el clip a la version mas alta disponible."""
-        debug_print(f"Cambiando a la versión más alta para el clip: {clip.name()}")
+        debug_print(f"Cambiando a la version mas alta para el clip: {clip.name()}")
         binItem = clip.source().binItem()
         activeVersion = binItem.activeVersion()
-        debug_print(f"Versión activa actual: {activeVersion.name()}")
+        debug_print(f"Version activa actual: {activeVersion.name()}")
         vc = hiero.core.VersionScanner()
         vc.doScan(activeVersion)
         highest_version = self.get_highest_version(binItem)
         if highest_version:
-            debug_print(f"Cambiando a la versión: {highest_version.name()}")
+            debug_print(f"Cambiando a la version: {highest_version.name()}")
             binItem.setActiveVersion(highest_version)
         else:
-            debug_print("No se pudo determinar la versión más alta")
+            debug_print("No se pudo determinar la version mas alta")
         return highest_version
 
     def enable_or_disable_clips(self, selected_clips):

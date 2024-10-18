@@ -2,16 +2,16 @@
 
 import hiero.ui
 
-# Obtén el viewer actual
+# Obten el viewer actual
 viewer = hiero.ui.currentViewer()
 
 # Verifica si el viewer fue encontrado
 if viewer is not None:
-    # Aplica un estilo de máscara de superposición
+    # Aplica un estilo de mascara de superposicion
     try:
-        # Establece el estilo de superposición a 'eMaskOverlayFull'
+        # Establece el estilo de superposicion a 'eMaskOverlayFull'
         viewer.setMaskOverlayStyle(hiero.ui.Player.MaskOverlayStyle.eMaskOverlayFull)
-        print("El estilo de máscara de superposición se ha aplicado correctamente.")
+        print("El estilo de mascara de superposicion se ha aplicado correctamente.")
     except AttributeError as e:
         print(f"Error: {e}")
 else:

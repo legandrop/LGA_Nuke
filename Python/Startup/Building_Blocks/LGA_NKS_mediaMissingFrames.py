@@ -21,7 +21,7 @@ class ClipMediaInfo(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle("Información de Clips EXR")
+        self.setWindowTitle("Informacion de Clips EXR")
         layout = QVBoxLayout(self)
 
         self.table = QTableWidget(0, 6, self)
@@ -124,18 +124,18 @@ def showClipMediaInfo():
     clipMediaInfoWindow = ClipMediaInfo()
     clipMediaInfoWindow.show()
 
-# Función para ejecutar el script
+# Funcion para ejecutar el script
 def run_script():
     showClipMediaInfo()
 
-# Registrar la función como una acción en Hiero
-action = hiero.ui.createMenuAction("Mostrar Información de Clips EXR", run_script)
+# Registrar la funcion como una accion en Hiero
+action = hiero.ui.createMenuAction("Mostrar Informacion de Clips EXR", run_script)
 hiero.ui.registerAction(action)
 
-# Agregar la acción al menú de Hiero
+# Agregar la accion al menu de Hiero
 menuBar = hiero.ui.menuBar()
 toolsMenu = menuBar.addMenu("Herramientas")
 toolsMenu.addAction(action)
 
-# Ejecutar el script automáticamente al cargar
+# Ejecutar el script automaticamente al cargar
 run_script()

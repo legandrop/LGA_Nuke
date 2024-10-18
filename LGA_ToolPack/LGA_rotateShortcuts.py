@@ -45,10 +45,10 @@ def increment_rotate(increment):
     # Si no hay nodo seleccionado o el nodo no tiene 'Rotate', busca en los nodos abiertos en el panel de propiedades
     debug_print("Buscando en los nodos del panel de propiedades...")
     for node in nuke.allNodes():
-        if node.shown():  # Verifica si el nodo está en el panel de propiedades
+        if node.shown():  # Verifica si el nodo esta en el panel de propiedades
             if rotate_node(node):
                 return
 
-    debug_print("No se encontró ningún nodo con un knob 'Rotate' abierto en el panel de propiedades.")
+    debug_print("No se encontro ningun nodo con un knob 'Rotate' abierto en el panel de propiedades.")
 
 

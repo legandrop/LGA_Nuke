@@ -2,7 +2,7 @@
 ______________________________________________________________________
 
   LGA_NKS_SelfReplaceClip v1.0 - 2024 - Lega
-  Reemplaza clips seleccionados y los mueve a bins específicos
+  Reemplaza clips seleccionados y los mueve a bins especificos
 ______________________________________________________________________
 
 """
@@ -57,9 +57,9 @@ def move_clip_to_bin(project, clip_name, source_bin_name, target_bin_path, shot)
 
     Args:
     - project (hiero.core.Project): El proyecto actual en Hiero.
-    - clip_name (str): El nombre del clip que se moverá.
+    - clip_name (str): El nombre del clip que se movera.
     - source_bin_name (str): El nombre del bin de origen que contiene el clip.
-    - target_bin_path (str): La ruta del bin de destino donde se moverá el clip.
+    - target_bin_path (str): La ruta del bin de destino donde se movera el clip.
     """
     source_bin = None
     for bin_item in project.clipsBin().items():
@@ -77,24 +77,24 @@ def move_clip_to_bin(project, clip_name, source_bin_name, target_bin_path, shot)
         if clip_to_move:
             target_bin = find_or_create_bin(project, target_bin_path)
             source_bin.removeItem(clip_to_move)
-            # Remover el clip del bin original (no me está funcionando)
+            # Remover el clip del bin original (no me esta funcionando)
             original_bin_item = shot.source().binItem()
             original_bin = original_bin_item.parentBin()
             # original_bin.removeItem(original_bin_item)    
 
             target_bin.addItem(clip_to_move)
-            debug_print(f"Se movió el clip '{clip_name}' del bin '{source_bin_name}' al bin '{target_bin_path}'.")
+            debug_print(f"Se movio el clip '{clip_name}' del bin '{source_bin_name}' al bin '{target_bin_path}'.")
         else:
-            debug_print(f"No se encontró el clip '{clip_name}' en el bin de origen '{source_bin_name}'.")
+            debug_print(f"No se encontro el clip '{clip_name}' en el bin de origen '{source_bin_name}'.")
     else:
-        debug_print(f"No se encontró el bin de origen '{source_bin_name}'.")
+        debug_print(f"No se encontro el bin de origen '{source_bin_name}'.")
 
 def main():
     project = hiero.core.projects()[0] if hiero.core.projects() else None
     try:
         seq = hiero.ui.activeSequence()
         if not seq:
-            debug_print("No se encontró una secuencia activa.")
+            debug_print("No se encontro una secuencia activa.")
             return
 
         te = hiero.ui.getTimelineEditor(seq)
@@ -111,7 +111,7 @@ def main():
                 else:            
                     file_path = shot.source().mediaSource().fileinfos()[0].filename() if shot.source().mediaSource().fileinfos() else None
                     if not file_path:
-                        debug_print("No se encontró el path del archivo del clip.")
+                        debug_print("No se encontro el path del archivo del clip.")
                         continue
                     debug_print("File path:", file_path)
 
@@ -135,4 +135,4 @@ def main():
 
         project.endUndo()
     except Exception as e:
-        debug_print(f"Error durante la operación: {e}")
+        debug_print(f"Error durante la operacion: {e}")

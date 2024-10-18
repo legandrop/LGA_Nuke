@@ -18,14 +18,14 @@ def obtener_limites_scrollbar():
         
         posicion_actual = scrollbar.value()
         
-        debug_print(f"Posición actual del scrollbar: {posicion_actual}")
+        debug_print(f"Posicion actual del scrollbar: {posicion_actual}")
         debug_print(f"Rango del scrollbar: {scrollbar.minimum()} a {scrollbar.maximum()}")
-        debug_print(f"Tamaño de página del scrollbar: {scrollbar.pageStep()}")
+        debug_print(f"Tamano de pagina del scrollbar: {scrollbar.pageStep()}")
         
         return limite_inferior, limite_superior, scrollbar
     
     except Exception as e:
-        debug_print(f"Ocurrió un error al obtener los límites: {e}")
+        debug_print(f"Ocurrio un error al obtener los limites: {e}")
         return None, None, None
 
 def scroll_to_position(scrollbar, position):
@@ -33,27 +33,27 @@ def scroll_to_position(scrollbar, position):
         scrollbar.setValue(position)
         debug_print(f"Scrolled to position {position}.")
     except Exception as e:
-        debug_print(f"Ocurrió un error al mover el scrollbar: {e}")
+        debug_print(f"Ocurrio un error al mover el scrollbar: {e}")
 
 
 def main():
-    # Obtener los límites y el scrollbar
+    # Obtener los limites y el scrollbar
     tiempo_inicio = time.time()
     limite_inferior, limite_superior, scrollbar = obtener_limites_scrollbar()
     tiempo_total = time.time() - tiempo_inicio
 
     if limite_inferior is not None and limite_superior is not None:
-        debug_print(f"Límite inferior del scrollbar: {limite_inferior}")
-        debug_print(f"Límite superior del scrollbar: {limite_superior}")
-        debug_print(f"Tiempo de ejecución: {tiempo_total:.2f} segundos")
+        debug_print(f"Limite inferior del scrollbar: {limite_inferior}")
+        debug_print(f"Limite superior del scrollbar: {limite_superior}")
+        debug_print(f"Tiempo de ejecucion: {tiempo_total:.2f} segundos")
         
-        # Calcular la nueva posición y mover el scrollbar
+        # Calcular la nueva posicion y mover el scrollbar
         nueva_posicion = limite_inferior + 70
         scroll_to_position(scrollbar, nueva_posicion)
         
-        # Verificar la posición final
+        # Verificar la posicion final
         posicion_final = scrollbar.value()
-        debug_print(f"Posición final del scrollbar: {posicion_final}")
+        debug_print(f"Posicion final del scrollbar: {posicion_final}")
 
 if __name__ == "__main__":
     main()

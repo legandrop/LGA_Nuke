@@ -504,46 +504,46 @@ def main():
             return
         else:
             debug_print("El nodo seleccionado no es un Disable_A_B")
-            # Nuevo código para manejar un nodo que no es Disable_A_B
+            # Nuevo codigo para manejar un nodo que no es Disable_A_B
             if 'disable' in single_node.knobs():
                 disable_knob = single_node['disable']
                 debug_print(f"Estado actual del knob 'disable': {disable_knob.value()}")
                 if disable_knob.hasExpression():
                     expression = disable_knob.toScript()
-                    debug_print(f"El knob 'disable' tiene una expresión: {expression}")
-                    # Mejora en la detección de la expresión
+                    debug_print(f"El knob 'disable' tiene una expresion: {expression}")
+                    # Mejora en la deteccion de la expresion
                     if "Disable_A_B" in expression:
-                        debug_print("La expresión hace referencia a un nodo Disable_A_B")
+                        debug_print("La expresion hace referencia a un nodo Disable_A_B")
                         referenced_node_name = expression.split('parent.')[1].split('.')[0]
                         debug_print(f"Nombre del nodo referenciado: {referenced_node_name}")
                         referenced_node = nuke.toNode(referenced_node_name)
                         if not referenced_node:
                             debug_print(f"El nodo referenciado {referenced_node_name} no existe")
-                            # El nodo Disable_A_B referenciado no existe, eliminar automáticamente
-                            nuke.Undo.begin("Eliminar expresión huérfana")
+                            # El nodo Disable_A_B referenciado no existe, eliminar automaticamente
+                            nuke.Undo.begin("Eliminar expresion huerfana")
                             try:
                                 disable_knob.clearAnimated()
                                 disable_knob.setValue(0)  # Establecer en falso por defecto
-                                debug_print(f"Se eliminó automáticamente la expresión huérfana del nodo {single_node.name()}")
+                                debug_print(f"Se elimino automaticamente la expresion huerfana del nodo {single_node.name()}")
                             finally:
                                 nuke.Undo.end()
                         else:
                             debug_print(f"El nodo referenciado {referenced_node_name} existe")
                     else:
-                        debug_print("La expresión no hace referencia a un nodo Disable_A_B")
+                        debug_print("La expresion no hace referencia a un nodo Disable_A_B")
                 else:
-                    debug_print("El knob 'disable' no tiene una expresión")
+                    debug_print("El knob 'disable' no tiene una expresion")
             else:
                 debug_print("El nodo no tiene un knob 'disable'")
-            debug_print("Saliendo después de manejar el nodo único")
-            return  # Salir después de manejar el nodo único
+            debug_print("Saliendo despues de manejar el nodo unico")
+            return  # Salir despues de manejar el nodo unico
     
-    debug_print(f"Número de nodos seleccionados: {len(selected_nodes)}")
-    # Verificar si algún nodo tiene el knob disable linkeado por expresión o animado por keyframes
+    debug_print(f"Numero de nodos seleccionados: {len(selected_nodes)}")
+    # Verificar si algun nodo tiene el knob disable linkeado por expresion o animado por keyframes
     for node in selected_nodes:
         if 'disable' in node.knobs():
             knob = node['disable']
-            debug_print(f"Nodo: {node.name()}, Tiene expresión: {knob.hasExpression()}, Está animado: {knob.isAnimated()}")
+            debug_print(f"Nodo: {node.name()}, Tiene expresion: {knob.hasExpression()}, Esta animado: {knob.isAnimated()}")
 
     # Check if there's already an instance of QApplication
     app = QApplication.instance() or QApplication([])
@@ -551,6 +551,6 @@ def main():
     window.show()
     debug_print("Ventana SelectedNodeInfo mostrada")
 
-# Llamar a main() para iniciar la aplicación
+# Llamar a main() para iniciar la aplicacion
 if __name__ == "__main__":
     main()

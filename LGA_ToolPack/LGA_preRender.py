@@ -248,7 +248,7 @@ def main():
     else:
         nuke.tprint("No se reemplazo el backdrop porque LGA_oz_backdropReplacer no esta disponible.")
 
-    # Si se creó un NoOp temporal, eliminarlo
+    # Si se creo un NoOp temporal, eliminarlo
     if no_op:
         nuke.delete(no_op)
 

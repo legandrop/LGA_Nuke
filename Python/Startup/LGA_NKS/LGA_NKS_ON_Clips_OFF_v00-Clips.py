@@ -39,8 +39,8 @@ def main():
                             item.setEnabled(True)
                             debug_print(f"Clip '{item.name()}' activado.")
             else:
-                debug_print("No hay clips seleccionados en la línea de tiempo.")
+                debug_print("No hay clips seleccionados en la linea de tiempo.")
         else:
-            debug_print("No se encontró una secuencia activa en Hiero.")
+            debug_print("No se encontro una secuencia activa en Hiero.")
     except Exception as e:
-        debug_print(f"Error durante la operación: {e}")
+        debug_print(f"Error durante la operacion: {e}")

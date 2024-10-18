@@ -28,12 +28,12 @@ def is_inside(inner, outer):
     
     inside = (ox <= ix and oy <= iy and ox + ow >= ix + iw and oy + oh >= iy + ih)
     if inside:
-        debug_print(f"{inner.name()} está dentro de {outer.name()}")
+        debug_print(f"{inner.name()} esta dentro de {outer.name()}")
     return inside
 
 def get_area(backdrop):
     area = backdrop['bdwidth'].value() * backdrop['bdheight'].value()
-    debug_print(f"Área de {backdrop.name()}: {area}")
+    debug_print(f"Area de {backdrop.name()}: {area}")
     return area
 
 def group_overlapping_backdrops(backdrops):
@@ -51,7 +51,7 @@ def group_overlapping_backdrops(backdrops):
 
 def order_group(group):
     debug_print(f"\nOrdenando grupo de {len(group)} backdrops")
-    # Ordenar primero por área, de menor a mayor
+    # Ordenar primero por area, de menor a mayor
     group.sort(key=get_area)
     
     ordered = []
@@ -60,19 +60,19 @@ def order_group(group):
         insert_index = len(ordered)  # Por defecto, insertar al final
         for i, ordered_backdrop in enumerate(ordered):
             if is_inside(current, ordered_backdrop):
-                debug_print(f"{current.name()} está dentro de {ordered_backdrop.name()}, insertando después")
+                debug_print(f"{current.name()} esta dentro de {ordered_backdrop.name()}, insertando despues")
                 insert_index = i + 1
             elif is_inside(ordered_backdrop, current):
-                debug_print(f"{ordered_backdrop.name()} está dentro de {current.name()}, insertando antes")
+                debug_print(f"{ordered_backdrop.name()} esta dentro de {current.name()}, insertando antes")
                 insert_index = i
                 break
             elif get_area(current) > get_area(ordered_backdrop):
-                debug_print(f"{current.name()} es más grande que {ordered_backdrop.name()}, insertando antes")
+                debug_print(f"{current.name()} es mas grande que {ordered_backdrop.name()}, insertando antes")
                 insert_index = i
                 break
         
         ordered.insert(insert_index, current)
-        debug_print(f"Insertado {current.name()} en la posición {insert_index}")
+        debug_print(f"Insertado {current.name()} en la posicion {insert_index}")
     
     return ordered
 
@@ -80,14 +80,14 @@ def order_all_backdrops():
     backdrops = get_backdrops()
     groups = group_overlapping_backdrops(backdrops)
     
-    # Ordenar los grupos de manera determinista, por ejemplo, por el área total del grupo
+    # Ordenar los grupos de manera determinista, por ejemplo, por el area total del grupo
     groups.sort(key=lambda g: sum(get_area(b) for b in g), reverse=True)
     
     ordered_groups = [order_group(group) for group in groups]
     
-    # Asignación global de z_order
+    # Asignacion global de z_order
     current_z = 0
-    debug_print("\nNuevo orden de backdrops por grupos (de atrás hacia adelante):")
+    debug_print("\nNuevo orden de backdrops por grupos (de atras hacia adelante):")
     for group_index, group in enumerate(ordered_groups):
         debug_print(f"\nGrupo {group_index + 1}:")
         for i, backdrop in enumerate(group):
@@ -98,6 +98,6 @@ def order_all_backdrops():
     
     return ordered_groups
 
-# Esta parte solo se ejecutará si el script se ejecuta directamente
+# Esta parte solo se ejecutara si el script se ejecuta directamente
 if __name__ == "__main__":
     ordered_groups = order_all_backdrops()

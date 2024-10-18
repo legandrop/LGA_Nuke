@@ -54,7 +54,7 @@ class ReviewPanel(QWidget):
         self.num_columns = 1  # Inicialmente una columna
         self.create_buttons()
 
-        # Conectar la señal de cambio de tamaño del widget al método correspondiente
+        # Conectar la senal de cambio de tamano del widget al metodo correspondiente
         self.adjust_columns_on_resize()
         self.resizeEvent = self.adjust_columns_on_resize
 
@@ -81,10 +81,10 @@ class ReviewPanel(QWidget):
     def adjust_columns_on_resize(self, event=None):
         # Obtener el ancho actual del widget
         panel_width = self.width()
-        button_width = 120  # Ancho aproximado de cada botón
-        min_button_spacing = 10  # Espacio mínimo entre botones
+        button_width = 120  # Ancho aproximado de cada boton
+        min_button_spacing = 10  # Espacio minimo entre botones
 
-        # Calcular el número de columnas en función del ancho del widget
+        # Calcular el numero de columnas en funcion del ancho del widget
         self.num_columns = max(1, (panel_width + min_button_spacing) // (button_width + min_button_spacing))
 
         # Limpiar el layout actual y eliminar widgets solo si existen
@@ -94,17 +94,17 @@ class ReviewPanel(QWidget):
             if widget:
                 widget.deleteLater()
 
-        # Volver a crear los botones con el nuevo número de columnas
+        # Volver a crear los botones con el nuevo numero de columnas
         self.create_buttons()
 
-        # Calcular el número de filas usadas
+        # Calcular el numero de filas usadas
         num_rows = (len(self.buttons) + self.num_columns - 1) // self.num_columns
 
-        # Añadir el espaciador vertical
+        # Anadir el espaciador vertical
         spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacer, num_rows, 0, 1, self.num_columns)
 
-    # Método genérico para ejecutar scripts externos
+    # Metodo generico para ejecutar scripts externos
     def execute_external_script(self, script_name):
         script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', script_name)
         if os.path.exists(script_path):
@@ -118,7 +118,7 @@ class ReviewPanel(QWidget):
         else:
             debug_print(f"Script no encontrado en la ruta: {script_path}")
 
-    # Handlers para cada botón que ejecutan scripts externos
+    # Handlers para cada boton que ejecutan scripts externos
     def execute_SelfReplaceClip(self):
         self.execute_external_script('LGA_NKS_SelfReplaceClip.py')
 
@@ -147,7 +147,7 @@ class ReviewPanel(QWidget):
         self.execute_external_script('LGA_NKS_OpenInNukeX.py')
 
 
-# Crear la instancia del widget y añadirlo al gestor de ventanas de Hiero
+# Crear la instancia del widget y anadirlo al gestor de ventanas de Hiero
 reconnectWidget = ReviewPanel()
 wm = hiero.ui.windowManager()
 wm.addWindow(reconnectWidget)

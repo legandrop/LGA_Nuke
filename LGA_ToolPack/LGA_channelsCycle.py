@@ -18,12 +18,12 @@ def main():
             # Lista de valores permitidos
             channels_values = ['rgb', 'alpha', 'rgba']
 
-            # Determina el siguiente valor en la rotación
+            # Determina el siguiente valor en la rotacion
             if current_value in channels_values:
                 next_value_index = (channels_values.index(current_value) + 1) % len(channels_values)
                 next_value = channels_values[next_value_index]
             else:
-                # Si el valor actual no está en la lista, se resetea a 'rgb'
+                # Si el valor actual no esta en la lista, se resetea a 'rgb'
                 next_value = 'rgb'
 
             # Asigna el siguiente valor
@@ -48,11 +48,11 @@ def main():
     # Si no hay nodo seleccionado o el nodo no tiene 'channels', busca en nodos abiertos en el panel de propiedades
     debug_print("Buscando en los nodos del panel de propiedades...")
     for node in nuke.allNodes():
-        if node.shown():  # Verifica si el nodo está en el panel de propiedades
+        if node.shown():  # Verifica si el nodo esta en el panel de propiedades
             if change_channels_knob(node):
                 return
 
-    debug_print("No se encontró ningún nodo con un knob 'channels' abierto en el panel de propiedades.")
+    debug_print("No se encontro ningun nodo con un knob 'channels' abierto en el panel de propiedades.")
 
-# Ejecuta la función
+# Ejecuta la funcion
 #main()

@@ -3,7 +3,7 @@ __________________________________________________________
 
   LGA_NKS_Viewer_235 v1.0 - 2024 - Lega
   Ajusta el overlay del viewer a 2.35:1 y 
-  alterna los estilos de máscara entre None, Half y Full
+  alterna los estilos de mascara entre None, Half y Full
 __________________________________________________________
 
 
@@ -19,13 +19,13 @@ def rotate_overlay_style(viewer):
         hiero.ui.Player.MaskOverlayStyle.eMaskOverlayFull
     ]
     
-    # Encontrar el índice del estilo actual y rotar al siguiente
+    # Encontrar el indice del estilo actual y rotar al siguiente
     try:
         current_index = style_order.index(current_style)
         next_index = (current_index + 1) % len(style_order)
         new_style = style_order[next_index]
     except ValueError:
-        # Si el estilo actual no está en la lista, comenzar desde el principio
+        # Si el estilo actual no esta en la lista, comenzar desde el principio
         new_style = style_order[0]
     
     return new_style
@@ -33,7 +33,7 @@ def rotate_overlay_style(viewer):
 # Obtener el visor actual
 viewer = hiero.ui.currentViewer()
 
-# Verificar si se encontró el visor
+# Verificar si se encontro el visor
 if viewer is not None:
     try:
         # Obtener y mostrar el estilo actual

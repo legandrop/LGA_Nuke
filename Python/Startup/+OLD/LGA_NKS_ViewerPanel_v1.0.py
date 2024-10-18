@@ -44,7 +44,7 @@ class ViewerPanel(QWidget):
         self.num_columns = 1  # Inicialmente una columna
         self.create_buttons()
 
-        # Conectar la señal de cambio de tamaño del widget al método correspondiente
+        # Conectar la senal de cambio de tamano del widget al metodo correspondiente
         self.adjust_columns_on_resize()
         self.resizeEvent = self.adjust_columns_on_resize
 
@@ -71,10 +71,10 @@ class ViewerPanel(QWidget):
     def adjust_columns_on_resize(self, event=None):
         # Obtener el ancho actual del widget
         panel_width = self.width()
-        button_width = 150  # Ancho aproximado de cada botón
-        min_button_spacing = 10  # Espacio mínimo entre botones
+        button_width = 150  # Ancho aproximado de cada boton
+        min_button_spacing = 10  # Espacio minimo entre botones
 
-        # Calcular el número de columnas en función del ancho del widget
+        # Calcular el numero de columnas en funcion del ancho del widget
         self.num_columns = max(1, (panel_width + min_button_spacing) // (button_width + min_button_spacing))
 
         # Limpiar el layout actual y eliminar widgets solo si existen
@@ -84,13 +84,13 @@ class ViewerPanel(QWidget):
             if widget:
                 widget.deleteLater()
 
-        # Volver a crear los botones con el nuevo número de columnas
+        # Volver a crear los botones con el nuevo numero de columnas
         self.create_buttons()
 
-        # Calcular el número de filas usadas
+        # Calcular el numero de filas usadas
         num_rows = (len(self.buttons) + self.num_columns - 1) // self.num_columns
 
-        # Añadir el espaciador vertical
+        # Anadir el espaciador vertical
         spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.layout.addItem(spacer, num_rows, 0, 1, self.num_columns)
 
@@ -115,7 +115,7 @@ class ViewerPanel(QWidget):
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
-                # Llamar a la función main del script
+                # Llamar a la funcion main del script
                 module.main()
                 debug_print("Executed LGA_NKS_Viewer_235 script.")
             else:
@@ -123,7 +123,7 @@ class ViewerPanel(QWidget):
         except Exception as e:
             debug_print(f"Error during running Viewer 2.35 script: {e}")
 
-# Crear la instancia del widget y añadirlo al gestor de ventanas de Hiero
+# Crear la instancia del widget y anadirlo al gestor de ventanas de Hiero
 viewerPanel = ViewerPanel()
 wm = hiero.ui.windowManager()
 wm.addWindow(viewerPanel)

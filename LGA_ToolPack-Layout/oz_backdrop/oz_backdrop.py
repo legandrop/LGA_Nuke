@@ -251,15 +251,15 @@ def order_overlapping_backdrops(new_backdrop):
                 break
         ordered.insert(insert_index, current)
     
-    debug_print("Orden final de backdrops (de atrás hacia adelante):")
+    debug_print("Orden final de backdrops (de atras hacia adelante):")
     for i, backdrop in enumerate(ordered):
-        debug_print(f"  {i+1}. {backdrop.name()} - Área: {get_area(backdrop)}")
+        debug_print(f"  {i+1}. {backdrop.name()} - Area: {get_area(backdrop)}")
 
     # Asignar nuevos valores Z
     debug_print("\nAsignando nuevos valores Z:")
     for i, backdrop in enumerate(ordered):
         old_z = backdrop['z_order'].value()
-        new_z = i * 1  # Puedes ajustar este valor si necesitas más espacio entre los valores Z
+        new_z = i * 1  # Puedes ajustar este valor si necesitas mas espacio entre los valores Z
         backdrop['z_order'].setValue(new_z)
         debug_print(f"  {backdrop.name()}: Z anterior = {old_z}, Nuevo Z = {new_z}")
 

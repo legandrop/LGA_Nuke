@@ -2,7 +2,7 @@ import hiero.core
 import hiero.ui
 import nuke
 
-# Obtener la secuencia activa y el editor de línea de tiempo
+# Obtener la secuencia activa y el editor de linea de tiempo
 seq = hiero.ui.activeSequence()
 if seq:  # Asegurarse de que hay una secuencia activa
     te = hiero.ui.getTimelineEditor(seq)
@@ -16,7 +16,7 @@ if seq:  # Asegurarse de que hay una secuencia activa
                 # Es un efecto, imprimir su nombre
                 print("Effect name:", clip.name())
 
-                # Obtener información adicional del efecto
+                # Obtener informacion adicional del efecto
                 node = clip.node()
                 if node:
                     print("Effect node:", node.name())
@@ -48,7 +48,7 @@ if seq:  # Asegurarse de que hay una secuencia activa
                         else:
                             print("The 'font' knob is not a text value and cannot be set as a string.")
 
-                # Imprimir una descripción del objeto
+                # Imprimir una descripcion del objeto
                 print("Effect description:", clip.toString())
             else:
                 # Es un clip de video, imprimir el nombre del archivo

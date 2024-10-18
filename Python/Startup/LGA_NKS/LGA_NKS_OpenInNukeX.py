@@ -71,9 +71,9 @@ def get_project_path(file_path):
 def get_script_name(file_path):
     # Extraer el nombre del archivo del path completo
     script_name = os.path.basename(file_path)
-    # Eliminar la extensión y cualquier secuencia de frame como %04d
-    script_name = re.sub(r'_%\d+?d\.exr$', '', script_name)  # Ajusta la expresión regular según necesidad
-    return script_name + '.nk'  # Añadir la extensión correcta de Nuke
+    # Eliminar la extension y cualquier secuencia de frame como %04d
+    script_name = re.sub(r'_%\d+?d\.exr$', '', script_name)  # Ajusta la expresion regular segun necesidad
+    return script_name + '.nk'  # Anadir la extension correcta de Nuke
 
 def open_nuke_script(nk_filepath):
     host = 'localhost'
@@ -86,11 +86,11 @@ def open_nuke_script(nk_filepath):
             s.connect((host, port))
             # Enviar un comando 'ping'
             s.sendall("ping".encode())
-            # Esperar una respuesta para confirmar que NukeX está operativo
+            # Esperar una respuesta para confirmar que NukeX esta operativo
             response = s.recv(1024).decode()
             if "pong" in response:
-                debug_print("NukeX está activo y respondiendo.")
-                # Cerrar el socket anterior y abrir uno nuevo para enviar el comando de ejecución
+                debug_print("NukeX esta activo y respondiendo.")
+                # Cerrar el socket anterior y abrir uno nuevo para enviar el comando de ejecucion
                 s.close()
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as new_socket:
                     new_socket.connect((host, port))
@@ -111,22 +111,22 @@ def open_nuke_script(nk_filepath):
                     return
 
             else:
-                raise Exception("NukeX no está respondiendo como se esperaba.")
+                raise Exception("NukeX no esta respondiendo como se esperaba.")
     except (socket.timeout, ConnectionRefusedError, Exception) as e:
-        # Si no se puede establecer la conexión o no se recibe la respuesta esperada, intentar abrir NukeX directamente
+        # Si no se puede establecer la conexion o no se recibe la respuesta esperada, intentar abrir NukeX directamente
         command = f'"{nuke_path}" --nukex "{nk_filepath}"'
         subprocess.Popen(command, shell=True)
         show_timed_message(
             "Error", 
             (
-                f"<span style='color:white;'><b>Falló la conexión con NukeX</b></span><br><br>"
+                f"<span style='color:white;'><b>Fallo la conexion con NukeX</b></span><br><br>"
                 f"Abriendo una nueva instancia de NukeX<br>"
                 f"<span style='font-style: italic; color: #9f9f9f; font-size: 0.9em;'>{nuke_path}</span>"
             ), 
             5000
         )
     except ConnectionResetError:
-        show_message("Error", "La conexión fue cerrada por el servidor.")
+        show_message("Error", "La conexion fue cerrada por el servidor.")
 
 def main():
     try:
@@ -150,22 +150,22 @@ def main():
             try:
                 file_path = shot.source().mediaSource().fileinfos()[0].filename() if shot.source().mediaSource().fileinfos() else None
                 if not file_path:
-                    debug_print("No se encontró el path del archivo del clip.")
+                    debug_print("No se encontro el path del archivo del clip.")
                     continue
                 project_path = get_project_path(file_path)
                 script_name = get_script_name(file_path)
                 script_full_path = os.path.join(project_path, script_name)
 
-                # Verificar si el archivo existe y abrir en Nuke si es así
+                # Verificar si el archivo existe y abrir en Nuke si es asi
                 if os.path.exists(script_full_path):
                     open_nuke_script(script_full_path)
                 else:
                     formatted_message = "<div style='text-align: left;'><b>Archivo no encontrado</b><br><br>" + script_full_path + "</div>"
                     show_message("Error", formatted_message)
-                return  # Salir después de abrir el script
+                return  # Salir despues de abrir el script
             except AttributeError as e:
-                debug_print(f"El clip no tiene una fuente válida: {e}")
+                debug_print(f"El clip no tiene una fuente valida: {e}")
 
-        show_message("Error", "No se encontró un clip válido.")
+        show_message("Error", "No se encontro un clip valido.")
     except Exception as e:
-        debug_print(f"Error durante la operación: {e}")
+        debug_print(f"Error durante la operacion: {e}")

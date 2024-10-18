@@ -2,7 +2,7 @@ import hiero.core
 import hiero.ui
 import os
 
-# Obtener la secuencia activa y el editor de línea de tiempo
+# Obtener la secuencia activa y el editor de linea de tiempo
 seq = hiero.ui.activeSequence()
 if seq:  # Asegurarse de que hay una secuencia activa
     te = hiero.ui.getTimelineEditor(seq)

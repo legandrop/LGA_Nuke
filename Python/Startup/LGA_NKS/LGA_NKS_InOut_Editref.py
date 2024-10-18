@@ -8,14 +8,14 @@ def set_in_out_from_edit_ref_track():
         print("No hay una secuencia activa.")
         return
 
-    # Obtener la posición del playhead
+    # Obtener la posicion del playhead
     te = hiero.ui.getTimelineEditor(seq)
     current_viewer = hiero.ui.currentViewer()
     player = current_viewer.player() if current_viewer else None
     playhead_frame = player.time() if player else None
 
     if playhead_frame is None:
-        print("No se pudo obtener la posición del playhead.")
+        print("No se pudo obtener la posicion del playhead.")
         return
 
     # Buscar el track llamado "EditRef"
@@ -26,10 +26,10 @@ def set_in_out_from_edit_ref_track():
             break
 
     if not edit_ref_track:
-        print("No se encontró un track llamado 'EditRef'.")
+        print("No se encontro un track llamado 'EditRef'.")
         return
 
-    # Buscar el clip más cercano en el track EditRef
+    # Buscar el clip mas cercano en el track EditRef
     edit_ref_clip = None
     min_distance = float('inf')
     for item in edit_ref_track.items():
@@ -47,7 +47,7 @@ def set_in_out_from_edit_ref_track():
                 edit_ref_clip = item
 
     if not edit_ref_clip:
-        print("No se encontró ningún clip en el track EditRef.")
+        print("No se encontro ningun clip en el track EditRef.")
         return
 
     # Obtener el in y out del clip de referencia
@@ -58,7 +58,7 @@ def set_in_out_from_edit_ref_track():
     seq.setInTime(ref_in)
     seq.setOutTime(ref_out)
 
-    print(f"Se ha establecido el in/out de la secuencia a [{ref_in}, {ref_out}] basado en el clip de EditRef más cercano.")
+    print(f"Se ha establecido el in/out de la secuencia a [{ref_in}, {ref_out}] basado en el clip de EditRef mas cercano.")
 
-# Ejecutar la función
+# Ejecutar la funcion
 set_in_out_from_edit_ref_track()

@@ -89,15 +89,15 @@ class WorkerThread(QThread):
         try:
             result = subprocess.run([exrheader_path, file_path], capture_output=True, text=True, timeout=5)
             
-            # Registrar la salida completa para depuración
+            # Registrar la salida completa para depuracion
             logger.debug(f"Salida de exrheader para {file_path}:\n{result.stdout}")
             
-            # Verificar si hay errores específicos en la salida
+            # Verificar si hay errores especificos en la salida
             is_valid = result.returncode == 0 and "ERROR" not in result.stdout and "invalid" not in result.stdout.lower()
             
             if not is_valid:
                 logger.warning(f"Archivo potencialmente corrupto: {file_path}")
-                logger.warning(f"Código de retorno: {result.returncode}")
+                logger.warning(f"Codigo de retorno: {result.returncode}")
                 logger.warning(f"Salida de error: {result.stderr}")
             
             self.exr_cache[file_hash] = is_valid
@@ -119,7 +119,7 @@ class ClipMediaInfo(QWidget):
 
     def initUI(self):
         try:
-            self.setWindowTitle("Información de Clips EXR")
+            self.setWindowTitle("Informacion de Clips EXR")
             layout = QVBoxLayout(self)
 
             self.table = QTableWidget(0, 7, self)
@@ -198,7 +198,7 @@ class ClipMediaInfo(QWidget):
             self.resize(final_width, final_height)
             self.move((screen_rect.width() - final_width) // 2, (screen_rect.height() - final_height) // 2)
         except Exception as e:
-            print(f"Error ajustando el tamaño de la ventana: {str(e)}")
+            print(f"Error ajustando el tamano de la ventana: {str(e)}")
             print(traceback.format_exc())
 
 def showClipMediaInfo():
@@ -207,7 +207,7 @@ def showClipMediaInfo():
         clipMediaInfoWindow = ClipMediaInfo()
         clipMediaInfoWindow.show()
     except Exception as e:
-        print(f"Error mostrando la ventana de información de clips: {str(e)}")
+        print(f"Error mostrando la ventana de informacion de clips: {str(e)}")
         print(traceback.format_exc())
 
 def run_script():
@@ -217,14 +217,14 @@ def run_script():
         print(f"Error ejecutando el script: {str(e)}")
         print(traceback.format_exc())
 
-# Registrar la función como una acción en Hiero
-action = hiero.ui.createMenuAction("Mostrar Información de Clips EXR", run_script)
+# Registrar la funcion como una accion en Hiero
+action = hiero.ui.createMenuAction("Mostrar Informacion de Clips EXR", run_script)
 hiero.ui.registerAction(action)
 
-# Agregar la acción al menú de Hiero
+# Agregar la accion al menu de Hiero
 menuBar = hiero.ui.menuBar()
 toolsMenu = menuBar.addMenu("Herramientas")
 toolsMenu.addAction(action)
 
-# Ejecutar el script automáticamente al cargar
+# Ejecutar el script automaticamente al cargar
 run_script()

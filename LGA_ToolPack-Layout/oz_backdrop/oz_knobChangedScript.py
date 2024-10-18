@@ -20,7 +20,7 @@ try:
         # Eliminar cualquier etiqueta HTML en el label (por si existen)
         curLabel = curLabel.replace('<p align=center>', '').replace('<p align=right>', '').replace('</p>', '').replace('<center>', '').replace('</center>', '')
         node['text'].setValue(curLabel)
-        # Obtener la alineación actual desde note_font_align
+        # Obtener la alineacion actual desde note_font_align
         alignment = int(node['note_font_align'].value())
         node['alignment'].setValue(alignment)
 
@@ -65,18 +65,18 @@ try:
         # Establece el texto del label sin etiquetas HTML
         node['label'].setValue(text)
 
-        # Establece la alineación del texto usando la propiedad note_font_align
+        # Establece la alineacion del texto usando la propiedad note_font_align
         node['note_font_align'].setValue(alignment)  # 0: izquierda, 1: centro, 2: derecha
 
         # Captura la fuente actual y muestra en consola
         current_font = node['note_font'].value()
         #print(f"Fuente antes de cambiar: {current_font}")
 
-        # Solo proceder si current_font tiene un valor válido
+        # Solo proceder si current_font tiene un valor valido
         if current_font:
             font_family = current_font.replace(" Bold", "").strip()
 
-            # Modifica la fuente según el estado del checkbox de bold
+            # Modifica la fuente segun el estado del checkbox de bold
             if is_bold:
                 new_font = f"{font_family} Bold"
             else:
@@ -84,7 +84,7 @@ try:
 
             # Aplicar el nuevo valor de la fuente
             node['note_font'].setValue(new_font)
-            #print(f"Fuente después de cambiar: {new_font}")
+            #print(f"Fuente despues de cambiar: {new_font}")
 
         # Ya no es necesario actualizar el label nuevamente con newLabel
         # node['label'].setValue(newLabel)

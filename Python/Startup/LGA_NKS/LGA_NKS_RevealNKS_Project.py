@@ -31,7 +31,7 @@ def get_active_project():
     Obtiene el proyecto activo en Hiero.
 
     Returns:
-    - hiero.core.Project o None: El proyecto activo, o None si no se encuentra ningún proyecto activo.
+    - hiero.core.Project o None: El proyecto activo, o None si no se encuentra ningun proyecto activo.
     """
     projects = hiero.core.projects()
     if projects:
@@ -51,6 +51,6 @@ def main():
             debug_print(f"El directorio del proyecto activo es: {project_path}")
             open_file_explorer(project_path)
         else:
-            debug_print("No se encontró un proyecto activo en Hiero.")
+            debug_print("No se encontro un proyecto activo en Hiero.")
     except Exception as e:
         debug_print(f"Error: {e}")

@@ -3,7 +3,7 @@ __________________________________________________________
 
   LGA_NKS_Viewer_235 v1.1 - 2024 - Lega
   Ajusta el overlay del viewer a 2.35:1 y 
-  alterna los estilos de máscara entre None, Half y Full
+  alterna los estilos de mascara entre None, Half y Full
   a la vez que sube en Y al texto Frame del track BurnIn
 __________________________________________________________
 
@@ -25,13 +25,13 @@ def debug_print(*message):
 
 
 # ============================
-# Configuración de Variables
+# Configuracion de Variables
 # ============================
 
-# Configuración para la rotación de estilos de máscara
+# Configuracion para la rotacion de estilos de mascara
 ASPECT_RATIO = "2.35:1"  # Aspecto a aplicar al viewer
 
-# Definición de estilos de máscara en orden de rotación
+# Definicion de estilos de mascara en orden de rotacion
 MASK_STYLE_ORDER = [
     hiero.ui.Player.MaskOverlayStyle.eMaskOverlayNone,
     hiero.ui.Player.MaskOverlayStyle.eMaskOverlayHalf,
@@ -53,7 +53,7 @@ TOGGLE_SECONDARY_VALUE = 0.9  # Valor secundario (e.g., 0.9)
 
 # Propiedad de 'box' y ajustes relacionados
 BOX_PROPERTY = "box"
-BOX_INDEX_TO_MODIFY = 3          # Índice del cuarto valor en la tupla (0-based)
+BOX_INDEX_TO_MODIFY = 3          # Indice del cuarto valor en la tupla (0-based)
 BOX_ADJUSTMENT_INITIAL = 350     # Incremento cuando se cambia a TOGGLE_SECONDARY_VALUE
 BOX_ADJUSTMENT_SECONDARY = -350  # Decremento cuando se cambia a TOGGLE_INITIAL_VALUE
 
@@ -63,7 +63,7 @@ BOX_ADJUSTMENT_SECONDARY = -350  # Decremento cuando se cambia a TOGGLE_INITIAL_
 
 def rotate_overlay_style(viewer):
     """
-    Rota el estilo de máscara del viewer al siguiente en el orden definido.
+    Rota el estilo de mascara del viewer al siguiente en el orden definido.
     """
     current_style = viewer.maskOverlayStyle()
     try:
@@ -71,7 +71,7 @@ def rotate_overlay_style(viewer):
         next_index = (current_index + 1) % len(MASK_STYLE_ORDER)
         new_style = MASK_STYLE_ORDER[next_index]
     except ValueError:
-        # Si el estilo actual no está en la lista, comenzar desde el principio
+        # Si el estilo actual no esta en la lista, comenzar desde el principio
         new_style = MASK_STYLE_ORDER[0]
     
     return new_style
@@ -84,7 +84,7 @@ def print_effects_in_tracks(track_name):
     seq = hiero.ui.activeSequence()
 
     if not seq:
-        debug_print("No se encontró una secuencia activa.")
+        debug_print("No se encontro una secuencia activa.")
         return
 
     # Iterar sobre las pistas de video en la secuencia
@@ -107,7 +107,7 @@ def print_effects_in_tracks(track_name):
 def toggle_opacity_and_adjust_box(effect_item, new_mask_style):
     """
     Realiza un toggle en la propiedad principal del efecto y ajusta la propiedad 'box'
-    según el nuevo estilo de máscara.
+    segun el nuevo estilo de mascara.
     """
     if not isinstance(effect_item, hiero.core.EffectTrackItem):
         debug_print("El item proporcionado no es un efecto.")
@@ -116,7 +116,7 @@ def toggle_opacity_and_adjust_box(effect_item, new_mask_style):
     # Obtener el nodo asociado al efecto
     node = effect_item.node()
     if not node:
-        debug_print("No se encontró un nodo asociado al efecto.")
+        debug_print("No se encontro un nodo asociado al efecto.")
         return
 
     # Verificar si el nodo tiene la propiedad principal para toggle
@@ -132,7 +132,7 @@ def toggle_opacity_and_adjust_box(effect_item, new_mask_style):
         debug_print(f"No se pudo obtener el valor de '{MAIN_TOGGLE_PROPERTY}': {e}")
         return
 
-    # Determinar el nuevo valor de la propiedad principal y el ajuste de 'box' según el nuevo estilo de máscara
+    # Determinar el nuevo valor de la propiedad principal y el ajuste de 'box' segun el nuevo estilo de mascara
     if new_mask_style == hiero.ui.Player.MaskOverlayStyle.eMaskOverlayNone:
         desired_opacity = TOGGLE_INITIAL_VALUE  # 1.0
         if current_toggle_value != desired_opacity:
@@ -140,7 +140,7 @@ def toggle_opacity_and_adjust_box(effect_item, new_mask_style):
             box_adjustment = BOX_ADJUSTMENT_SECONDARY if current_toggle_value == TOGGLE_SECONDARY_VALUE else 0
             toggle_action = f"cambiar '{MAIN_TOGGLE_PROPERTY}' a {new_toggle_value}"
         else:
-            debug_print(f"'{MAIN_TOGGLE_PROPERTY}' ya está en {desired_opacity}. No se realizará ningún cambio.")
+            debug_print(f"'{MAIN_TOGGLE_PROPERTY}' ya esta en {desired_opacity}. No se realizara ningun cambio.")
             return
     elif new_mask_style in [hiero.ui.Player.MaskOverlayStyle.eMaskOverlayHalf, hiero.ui.Player.MaskOverlayStyle.eMaskOverlayFull]:
         desired_opacity = TOGGLE_SECONDARY_VALUE  # 0.9
@@ -149,7 +149,7 @@ def toggle_opacity_and_adjust_box(effect_item, new_mask_style):
             box_adjustment = BOX_ADJUSTMENT_INITIAL
             toggle_action = f"cambiar '{MAIN_TOGGLE_PROPERTY}' a {new_toggle_value} y sumar {BOX_ADJUSTMENT_INITIAL} al cuarto valor de '{BOX_PROPERTY}'"
         elif current_toggle_value == TOGGLE_SECONDARY_VALUE:
-            debug_print(f"'{MAIN_TOGGLE_PROPERTY}' ya está en {desired_opacity}. No se realizará ningún cambio.")
+            debug_print(f"'{MAIN_TOGGLE_PROPERTY}' ya esta en {desired_opacity}. No se realizara ningun cambio.")
             return
         else:
             # Si el valor actual no es ninguno de los esperados, establecer a valor secundario y ajustar
@@ -157,7 +157,7 @@ def toggle_opacity_and_adjust_box(effect_item, new_mask_style):
             box_adjustment = BOX_ADJUSTMENT_INITIAL
             toggle_action = f"cambiar '{MAIN_TOGGLE_PROPERTY}' a {new_toggle_value} y sumar {BOX_ADJUSTMENT_INITIAL} al cuarto valor de '{BOX_PROPERTY}'"
     else:
-        debug_print("Estilo de máscara no reconocido. No se realizará ningún cambio.")
+        debug_print("Estilo de mascara no reconocido. No se realizara ningun cambio.")
         return
 
     # Aplicar el nuevo valor de la propiedad principal
@@ -200,25 +200,25 @@ def toggle_opacity_and_adjust_box(effect_item, new_mask_style):
 
 def main():
     """
-    Función principal que coordina la rotación de estilos de máscara y la modificación del efecto específico.
+    Funcion principal que coordina la rotacion de estilos de mascara y la modificacion del efecto especifico.
     """
-    # Rotar el estilo de máscara del viewer
+    # Rotar el estilo de mascara del viewer
     viewer = hiero.ui.currentViewer()
 
-    # Verificar si se encontró el viewer
+    # Verificar si se encontro el viewer
     if viewer is not None:
         try:
             # Obtener el estilo actual y determinar el nuevo estilo
             current_style = viewer.maskOverlayStyle()
             new_style = rotate_overlay_style(viewer)
             viewer.setMaskOverlayStyle(new_style)
-            debug_print(f"\nEstilo de máscara cambiado de {current_style} a {new_style}")
+            debug_print(f"\nEstilo de mascara cambiado de {current_style} a {new_style}")
 
             # Aplicar siempre el aspecto 2.35:1
             viewer.setMaskOverlayFromRemote(ASPECT_RATIO)
             debug_print(f"Aspecto {ASPECT_RATIO} aplicado al viewer")
 
-            # Determinar el nombre del nuevo estilo para lógica posterior
+            # Determinar el nombre del nuevo estilo para logica posterior
             if new_style == hiero.ui.Player.MaskOverlayStyle.eMaskOverlayNone:
                 new_mask_style = "None"
             elif new_style == hiero.ui.Player.MaskOverlayStyle.eMaskOverlayHalf:
@@ -228,7 +228,7 @@ def main():
             else:
                 new_mask_style = "Unknown"
 
-            debug_print(f"Nuevo estilo de máscara: {new_mask_style}")
+            debug_print(f"Nuevo estilo de mascara: {new_mask_style}")
 
         except AttributeError as e:
             debug_print(f"Error al manipular el viewer: {e}")
@@ -251,7 +251,7 @@ def main():
             break
 
     if not target_track:
-        debug_print(f"No se encontró el track '{TRACK_NAME}'.")
+        debug_print(f"No se encontro el track '{TRACK_NAME}'.")
         return
 
     # Iterar sobre los items del track para encontrar el efecto que contiene la palabra clave
@@ -273,7 +273,7 @@ def main():
         debug_print(f"Nombre del efecto: {target_effect.name()}")
         toggle_opacity_and_adjust_box(target_effect, new_style)
     else:
-        debug_print(f"No se encontró ningún efecto que contenga la palabra '{EFFECT_NAME_SEARCH}' en el nombre.")
+        debug_print(f"No se encontro ningun efecto que contenga la palabra '{EFFECT_NAME_SEARCH}' en el nombre.")
 
 # Ejecutar el script principal
 if __name__ == "__main__":

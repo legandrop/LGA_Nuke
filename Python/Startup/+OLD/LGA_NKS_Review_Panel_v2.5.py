@@ -347,7 +347,7 @@ class ReconnectMediaWidget(QWidget):
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
-                # Llamar a la función main del script
+                # Llamar a la funcion main del script
                 module.main()
             else:
                 debug_print(f"Script not found at path: {script_path}")

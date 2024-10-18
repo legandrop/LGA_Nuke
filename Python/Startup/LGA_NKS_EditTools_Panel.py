@@ -53,7 +53,7 @@ class ReconnectMediaWidget(QWidget):
             ("Reconnect T > N", self.reconnect_t_to_n, "#4a4329"),
             ("Reconnect N > T", self.reconnect_n_to_t, "#4a4329"),
             ("Reconnect Media", self.reconnectMediaFromTimeline, "#4a4329", "Alt+M", "Alt+M"),
-            #("Check Frames", self.check_frames, "#4a4329"),  # Nuevo botón
+            #("Check Frames", self.check_frames, "#4a4329"),  # Nuevo boton
             ]
 
         self.num_columns = 1  # Inicialmente una columna
@@ -317,7 +317,7 @@ class ReconnectMediaWidget(QWidget):
         except Exception as e:
             debug_print(f"Error during project cleaning: {e}")
 
-    # Método para ejecutar scripts externos
+    # Metodo para ejecutar scripts externos
     def execute_external_script(self, script_name):
         script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', script_name)
         if os.path.exists(script_path):
@@ -331,7 +331,7 @@ class ReconnectMediaWidget(QWidget):
         else:
             debug_print(f"Script no encontrado en la ruta: {script_path}")
 
-    # Nuevo método para ejecutar LGA_NKS_mediaMissingFrames.py
+    # Nuevo metodo para ejecutar LGA_NKS_mediaMissingFrames.py
     def check_frames(self):
         self.execute_external_script('LGA_NKS_mediaMissingFrames.py')
 

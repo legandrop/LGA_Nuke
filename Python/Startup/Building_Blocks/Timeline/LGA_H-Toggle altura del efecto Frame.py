@@ -4,7 +4,7 @@ import nuke
 import os
 
 # ============================
-# Configuración de Variables
+# Configuracion de Variables
 # ============================
 
 # Nombre del track a inspeccionar
@@ -22,7 +22,7 @@ TOGGLE_SECONDARY_VALUE = 0.9  # Valor secundario (e.g., 0.9)
 
 # Propiedad de 'box' y ajustes relacionados
 BOX_PROPERTY = "box"
-BOX_INDEX_TO_MODIFY = 3          # Índice del cuarto valor en la tupla (0-based)
+BOX_INDEX_TO_MODIFY = 3          # Indice del cuarto valor en la tupla (0-based)
 BOX_ADJUSTMENT_INITIAL = 350     # Incremento cuando se cambia a TOGGLE_SECONDARY_VALUE
 BOX_ADJUSTMENT_SECONDARY = -350  # Decremento cuando se cambia a TOGGLE_INITIAL_VALUE
 
@@ -38,7 +38,7 @@ def print_effects_in_tracks(track_name):
     seq = hiero.ui.activeSequence()
 
     if not seq:
-        print("No se encontró una secuencia activa.")
+        print("No se encontro una secuencia activa.")
         return
 
     # Iterar sobre las pistas de video en la secuencia
@@ -69,7 +69,7 @@ def toggle_opacity_and_adjust_box(effect_item):
     # Obtener el nodo asociado al efecto
     node = effect_item.node()
     if not node:
-        print("No se encontró un nodo asociado al efecto.")
+        print("No se encontro un nodo asociado al efecto.")
         return
 
     # Verificar si el nodo tiene la propiedad principal para toggle
@@ -138,7 +138,7 @@ def toggle_opacity_and_adjust_box(effect_item):
 
 def main():
     """
-    Función principal que coordina la impresión de efectos y la modificación del efecto específico.
+    Funcion principal que coordina la impresion de efectos y la modificacion del efecto especifico.
     """
     # Imprimir todos los efectos en el track especificado
     print_effects_in_tracks(TRACK_NAME)
@@ -156,7 +156,7 @@ def main():
             break
 
     if not target_track:
-        print(f"No se encontró el track '{TRACK_NAME}'.")
+        print(f"No se encontro el track '{TRACK_NAME}'.")
         return
 
     # Iterar sobre los items del track para encontrar el efecto que contiene la palabra clave
@@ -178,7 +178,7 @@ def main():
         print(f"Nombre del efecto: {target_effect.name()}")
         toggle_opacity_and_adjust_box(target_effect)
     else:
-        print(f"No se encontró ningún efecto que contenga la palabra '{EFFECT_NAME_SEARCH}' en el nombre.")
+        print(f"No se encontro ningun efecto que contenga la palabra '{EFFECT_NAME_SEARCH}' en el nombre.")
 
 # Ejecutar el script principal
 if __name__ == "__main__":
