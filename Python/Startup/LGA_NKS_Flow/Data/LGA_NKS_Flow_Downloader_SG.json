@@ -1000,6 +1000,29 @@
                                     "version_status": "vwd",
                                     "version_date": "2024-10-17T22:32:16+02:00",
                                     "comments": []
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v88",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-18T15:45:56+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v89",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-18T20:09:46+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "El regrain lo veo oka.\nAjustemos estos dos detalles :\n1. Mugre en pintura back",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "2. Check deformación en piso (primeros frames)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -1630,7 +1653,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Borrado de comida, beauty uña y movimiento dedo en uno de los picoteos del pájaro.",
-                            "task_status": "corr",
+                            "task_status": "revleg",
                             "task_assigned_to": "Sebas Romano",
                             "versions": [
                                 {
@@ -1731,6 +1754,13 @@
                                             "user": "Lega Pugliese"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_20_070_Picotea_Pajaro_comp_v10",
+                                    "version_description": "WIP-TEST. Agregado de sangre en pico (parte inferior). Falta refinar detalles (track, moblur, warps)",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-18T22:08:46+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -3230,7 +3260,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
                                 {
@@ -3403,9 +3433,14 @@
                                 {
                                     "version_number": "VL_33_030_Chroma_Sotano_comp_v17",
                                     "version_description": "va con tierrita que se ve!",
-                                    "version_status": "rev",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-14T17:00:57+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "Perfe!",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -3722,7 +3757,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "El acting de Carmen a derecha de plano es reemplazado en la primera parte.",
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
                                 {
@@ -3758,9 +3793,26 @@
                                 {
                                     "version_number": "VL_06A_010_Split_Cena_comp_v07",
                                     "version_description": "Alta confusión con las versiones anteriores. Estaba haciendo la cara de ella y la mano... y solo era la cara y hasta el frame 1070...ahi va ahora split cena",
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-17T18:39:44+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "- Chequear la transicion del frame 1070 al 1071",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06A_010_Split_Cena_comp_v08",
+                                    "version_description": "va con fluid morph  del 1070-1089",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-18T16:45:12+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "perf!",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -3890,6 +3942,30 @@
                                     "comments": [
                                         {
                                             "text": "Check salto de regrain en 1015 (se suma intensidad)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_09G_010_CutStitch_Galpon_comp_v02",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-18T17:25:37+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Ajustar regrain (se perdió resolución y el grano está más grande y presente que original)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_09G_010_CutStitch_Galpon_comp_v03",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-18T21:26:22+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Lo veo oka.\nSolo pintemos este pixel muerto (1033)",
                                             "user": "Sebas Romano"
                                         }
                                     ]
@@ -4125,9 +4201,14 @@
                                 {
                                     "version_number": "VL_04A_005_Stitch_Puerta_comp_v02",
                                     "version_description": null,
-                                    "version_status": "rev",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-15T21:33:04+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "Recheck deformación en ventana de lapuerta en 1203-1215",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -4315,7 +4396,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Agregar reflejo blanco en auto (Hecho en offline). Tiene que dar la sensación de que esta en movimiento.",
-                            "task_status": "revleg",
+                            "task_status": "corr",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": [
                                 {
@@ -4349,9 +4430,14 @@
                                 {
                                     "version_number": "VL_37B_010_Add_Reflejo_comp_v07",
                                     "version_description": null,
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-08T19:55:45+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "- Menos movimiento al vidrio\n- sacarle el \"blur\" \n- sumar más gotitas que lleguen más a la derecha",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -4489,6 +4575,22 @@
                                     "version_status": "unvleg",
                                     "version_date": "2024-10-10T23:25:12+02:00",
                                     "comments": []
+                                },
+                                {
+                                    "version_number": "VL_31_010_Clean_Atizador_comp_v07",
+                                    "version_description": "Saqué el upscale y ajusté grano",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-18T19:48:10+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Veo el mismo tema de pérdida sutil de definición .",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": null,
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -4992,7 +5094,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Ella tiene una rampa de velocidad en slow y una máscara",
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
                                 {
@@ -5037,12 +5139,16 @@
                                 {
                                     "version_number": "VL_09A_003_Retime_Hogar_comp_v05",
                                     "version_description": "reajuste retime",
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-17T21:45:14+02:00",
                                     "comments": [
                                         {
                                             "text": "Paso a Lega. Notamos una sutil pérdida de definición en la cara. Estuvimos probando alternativas y creemos que es la etapa del regrain (Dasgrain) que no consigue devolver el 100% de fidelidad.",
                                             "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Seeee muchísimo mejor!",
+                                            "user": "Lega Pugliese"
                                         }
                                     ]
                                 }
@@ -5118,6 +5224,18 @@
                                     "comments": [
                                         {
                                             "text": "Lo veo en gral bien.\nRepasemos matchmove de bplate (se nota movimiento en zona de cubiertos)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06B_030_Split_Cena_comp_v03",
+                                    "version_description": "ajuste trackeo",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-18T22:05:49+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Ajustemos matchmove de esta parte (tiene cierta oscilación)",
                                             "user": "Sebas Romano"
                                         }
                                     ]
@@ -5209,7 +5327,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "corr",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
                                 {
@@ -5220,6 +5338,18 @@
                                     "comments": [
                                         {
                                             "text": "Estabilizar el aplate o trackearlo y mover el parche",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06A_005_Split_Mano_comp_v02",
+                                    "version_description": "ajuste track",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-18T16:12:30+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "perfe",
                                             "user": "Lega Pugliese"
                                         }
                                     ]
