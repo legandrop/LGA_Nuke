@@ -13,8 +13,12 @@
             331
         ],
         "scripts/0_Reload_Script_copy.py": [
-            82,
-            82
+            83,
+            116
+        ],
+        "scripts/0_Script_Loader.py": [
+            2771,
+            2771
         ],
         "scripts/Assets_in_folder.py": [
             4275,
@@ -121,8 +125,8 @@
             540
         ],
         "scripts/Untitled.py": [
-            1977,
-            1977
+            929,
+            929
         ],
         "scripts/Write_Default.py": [
             704,
@@ -162,12 +166,13 @@
         ]
     },
     "last_folder": "scripts",
-    "last_script": "Untitled.py",
+    "last_script": "0_Script_Loader.py",
     "scroll_pos": {
         "Rotate_Shortcut/Funciona_Con_foco_en_viewer.py": 0,
         "Rotate_Shortcut/Rotate_Shortcut.py": 0,
         "Rotate_Shortcut/Untitled.py": 0,
         "scripts/0_Reload_Script_copy.py": 0,
+        "scripts/0_Script_Loader.py": 63,
         "scripts/Assets_in_folder.py": 73,
         "scripts/LGA_Align.py": 0,
         "scripts/LGA_Hiero_RemoveVersions.py": 62,
@@ -194,7 +199,7 @@
         "scripts/Reload_ozBackdrop.py": 0,
         "scripts/RenamWri_v01.py": 0,
         "scripts/Testea.py": 0,
-        "scripts/Untitled.py": 54,
+        "scripts/Untitled.py": 17,
         "scripts/Write_Default.py": 7,
         "scripts/Write_From_Selected_Read.py": 0,
         "scripts/_Reload_Script.py": 0,
@@ -206,7 +211,7 @@
         "scripts/oz_backdrop_replacer.py": 21
     },
     "splitter_sizes": [
-        284,
-        192
+        394,
+        267
     ]
 }

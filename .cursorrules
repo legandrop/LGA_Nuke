@@ -35,5 +35,8 @@ Key Conventions
 - Leverage Hiero's Python API for working with timelines and shots, ensuring efficient management of sequences.
 - Follow Nuke's and Hiero's documentation for best practices in scripting and plugin development.
 
-Speak to me in Spanish.
+Idioma:
+- Hablame en español.
+- Los comentarios de los scripts deben estar en español, las interfaces de usuario en inglés.
+- Dentro de los scripts, no usar acentos ni ñ en los comentarios.
 

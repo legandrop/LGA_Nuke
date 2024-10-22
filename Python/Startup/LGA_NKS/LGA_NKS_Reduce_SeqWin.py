@@ -2,7 +2,7 @@ import hiero.ui
 from PySide2 import QtWidgets
 
 # Tamaño deseado para el panel lateral (en píxeles)
-PANEL_LATERAL_TAMANO = 200
+PANEL_LATERAL_TAMANO = 2700
 
 def main():
     timeline_editor = hiero.ui.getTimelineEditor(hiero.ui.activeSequence())
@@ -26,3 +26,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

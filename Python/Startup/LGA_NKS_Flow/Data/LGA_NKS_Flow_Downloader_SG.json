@@ -3743,7 +3743,7 @@
                     ]
                 },
                 {
-                    "shot_name": "VL_23F_010_",
+                    "shot_name": "VL_23F_010_Clean_Alicia",
                     "sequence": "021-030",
                     "tasks": [
                         {
@@ -4726,9 +4726,9 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
-                            "task_status": "revleg",
-                            "task_assigned_to": "Silvina Lesa Brown",
+                            "task_description": "Componer el pájaro para simular que Alicia le pega con el atizador y sale volando. Ref: editref. Y escena completa por continuidad.\n\nBorrar alpiste.",
+                            "task_status": "corr",
+                            "task_assigned_to": "martin villarreal",
                             "versions": [
                                 {
                                     "version_number": "VL_20_160_Clean_Alpiste_comp_v01",
@@ -5347,7 +5347,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "rev_su",
+                            "task_status": "corr",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
                                 {
@@ -5377,9 +5377,26 @@
                                 {
                                     "version_number": "VL_06B_030_Split_Cena_comp_v05",
                                     "version_description": "ajuste trackeo en zona de plato",
-                                    "version_status": "rev",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-22T00:05:12+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "Ajustemos deformación zona plato",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Check \"mancha \" negra sobre mesa",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Repasar roto hombro (check feather)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Repasar roto corbata (check feather)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -5448,8 +5465,24 @@
                                 {
                                     "version_number": "VL_06A_030_Split-retime_Cena_comp_v01",
                                     "version_description": "retime",
-                                    "version_status": "rev",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-21T21:10:56+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Check si se puede ajustar o mejorar interacción de dedos sobre vidrio (se deforma por retime)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "Repasar regrain (se nota grano original sobre compo retimeada)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06A_030_Split-retime_Cena_comp_v03",
+                                    "version_description": "acomode mano y grano",
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-22T17:12:57+02:00",
                                     "comments": []
                                 }
                             ]

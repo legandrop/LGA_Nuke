@@ -1,7 +1,7 @@
 """
 ________________________________________________________________
 
-  LGA_ViewerPanel v1.2 - 2024 - Lega Pugliese
+  LGA_ViewerPanel v1.3 - 2024 - Lega Pugliese
   Panel con herramientas para el viewer y el timeline de Hiero
 ________________________________________________________________
 
@@ -143,18 +143,17 @@ class ViewerPanel(QWidget):
         else:
             debug_print(f"Script not found at path: {script_path}")
 
-        # Pausa de 500 milisegundos
+        # Pausa de 100 milisegundos
         timer = QTimer(self)
         timer.setSingleShot(True)  # Asegurarse de que solo se dispare una vez
-        timer.timeout.connect(self.execute_scroll_to_top_track)
-        timer.start(200)  # Esperar 1.5 segundos antes de ejecutar el siguiente script
-                    
-    def execute_scroll_to_top_track(self):
-        # Ruta al script dentro de la subcarpeta LGA_NKS
-        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS-ScrollTo_TopTrack.py')
+        timer.timeout.connect(self.execute_reduce_seq_win)
+        timer.start(100)  # Esperar 100 milisegundos antes de ejecutar el siguiente script
+
+    def execute_reduce_seq_win(self):
+        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS_Reduce_SeqWin.py')
         if os.path.exists(script_path):
             import importlib.util
-            spec = importlib.util.spec_from_file_location("LGA_NKS-ScrollTo_TopTrack", script_path)
+            spec = importlib.util.spec_from_file_location("LGA_NKS_Reduce_SeqWin", script_path)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
 
@@ -163,15 +162,34 @@ class ViewerPanel(QWidget):
         else:
             debug_print(f"Script not found at path: {script_path}")
 
+        # Pausa de 100 milisegundos antes de ejecutar el siguiente script
+        timer = QTimer(self)
+        timer.setSingleShot(True)
+        timer.timeout.connect(self.execute_scroll_to_top_track)
+        timer.start(100)
 
-###### Refresh timeline
+    def execute_scroll_to_top_track(self):
+        # Ruta al script dentro de la subcarpeta LGA_NKS
+        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS_ScrollTo_TopTrack.py')
+        if os.path.exists(script_path):
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("LGA_NKS_ScrollTo_TopTrack", script_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+
+            # Llamar a la funcion principal del script
+            module.main()
+        else:
+            debug_print(f"Script not found at path: {script_path}")
+
+###### Top Track
     def top_track(self):
                     
          # Ruta al script dentro de la subcarpeta LGA_NKS
-        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS-ScrollTo_TopTrack.py')
+        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS_ScrollTo_TopTrack.py')
         if os.path.exists(script_path):
             import importlib.util
-            spec = importlib.util.spec_from_file_location("LGA_NKS-ScrollTo_TopTrack", script_path)
+            spec = importlib.util.spec_from_file_location("LGA_NKS_ScrollTo_TopTrack", script_path)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
 
@@ -180,6 +198,7 @@ class ViewerPanel(QWidget):
         else:
             debug_print(f"Script not found at path: {script_path}")            
 
+###### In Out Editref
     def in_out_editref(self):
         try:
             script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS_InOut_Editref.py')
