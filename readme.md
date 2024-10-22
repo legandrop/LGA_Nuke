@@ -14,7 +14,7 @@ A set of tools for Nuke that are added to a custom menu. This pack includes:
 
 [View PDF Documentation](LGA_ToolPack/LGA_ToolPack.pdf)
 
-$${\color{green}\textsf{\textbf{[Download Latest Version (v2.0)]}}}$$(https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_ToolPack_v2.0)
+[Download Latest Version (v2.0)](https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_ToolPack_v2.0)
 
 &nbsp;
 ---
@@ -26,7 +26,7 @@ A collection of tools focused on improving organization and efficiency in the Nu
 
 [View PDF Documentation](LGA_ToolPack-Layout/LGA_LayoutToolPack.pdf)
 
-$${\color{green}\textsf{\textbf{[Download Latest Version (v2.2)]}}}$$(https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_ToolPack-Layout_v2.2)
+[Download Latest Version (v2.2)](https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_ToolPack-Layout_v2.2)
 
 &nbsp;
 ---
@@ -39,7 +39,7 @@ Custom tools for Hiero / Nuke Studio, including:
 - A panel that integrates with Shotgrid / Flow
 - Tools optimized for the naming conventions and structure used in our studio
 
-$${\color{green}\textsf{\textbf{[Download Latest Version (v1.6)]}}}$$(https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_HeiroTools_v1.6)
+[Download Latest Version (v1.6)](https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_HeiroTools_v1.6)
 
 &nbsp;
 ---
@@ -59,7 +59,7 @@ Structure:
    - **pixelfudger3**: High-quality compositing tools by Simon Bjork. [Download](https://www.nukepedia.com/gizmos/filter/pixelfudger-v3)
    - **spin_tools**: Powerful Nuke tools by Sean Danischevsky. [Download](https://github.com/SpinVFX/spin_nuke_gizmos)
 
-$${\color{green}\textsf{\textbf{[Download Latest Version (v1.4)]}}}$$(https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_NodePack_v1.4)
+[Download Latest Version (v1.4)](https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_NodePack_v1.4)
 
 &nbsp;
 ---
