@@ -14,7 +14,7 @@ A set of tools for Nuke that are added to a custom menu. This pack includes:
 [View PDF Documentation](LGA_ToolPack/LGA_ToolPack.pdf)
 
 [Download Latest Version (v2.0)](https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_ToolPack_v2.0)
-
+<br>
 ---
 
 ### LGA Layout ToolPack
@@ -26,7 +26,7 @@ A collection of tools focused on improving organization and efficiency in the Nu
 [Download Latest Version (v2.2)](https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_ToolPack-Layout_v2.2)
 
 ---
-
+<br>
 ### LGA HeiroTools
 
 Custom tools for Hiero / Nuke Studio, including:
