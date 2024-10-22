@@ -129,8 +129,8 @@
             540
         ],
         "scripts/Untitled.py": [
-            2068,
-            2068
+            3308,
+            3308
         ],
         "scripts/Write_Default.py": [
             704,
@@ -204,7 +204,7 @@
         "scripts/Reload_ozBackdrop.py": 0,
         "scripts/RenamWri_v01.py": 0,
         "scripts/Testea.py": 0,
-        "scripts/Untitled.py": 38,
+        "scripts/Untitled.py": 57,
         "scripts/Write_Default.py": 7,
         "scripts/Write_From_Selected_Read.py": 0,
         "scripts/_Reload_Script.py": 0,
@@ -216,7 +216,7 @@
         "scripts/oz_backdrop_replacer.py": 21
     },
     "splitter_sizes": [
-        283,
-        193
+        743,
+        507
     ]
 }

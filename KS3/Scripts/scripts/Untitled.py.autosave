@@ -1,3 +1,15 @@
+"""
+_________________________________________________________________________________________________
+
+  LGA_DasGrain_Kronos_Comp v1.1 | 2024 | Lega  
+  Herramienta para mejorar los nodos DasGrain sincronizando la intensidad del grano con la interpolación de Kronos.
+  Añade una pestaña 'KroComp' con knobs 'Intensity' y 'KronosFrame', y modifica el knob 'luminance' existente
+  para asegurar una intensidad de grano consistente cuando Kronos interpola frames.
+  Versión 1.1: Ajusta la lógica para considerar frames cercanos a enteros (±0.14) como frames completos.
+_________________________________________________________________________________________________
+
+"""
+
 import nuke
 
 def add_amount_knobs(node, kronos_node):
@@ -33,7 +45,13 @@ def add_amount_knobs(node, kronos_node):
     # Modificar el knob 'luminance' existente
     luminance_knob = node.knob('luminance')
     if luminance_knob:
-        luminance_expression = f'''[expr {{ [value parent.{kronos_node.name()}.timingFrame2] == int([value parent.{kronos_node.name()}.timingFrame2]) ? 1 : (2 - [value this.Intensity]) }}]'''
+        luminance_expression = f'''
+        [expr {{
+            abs(fmod([value parent.{kronos_node.name()}.timingFrame2], 1) - 0.5) >= 0.36 ? 
+            1 : 
+            (2 - [value this.Intensity])
+        }}]
+        '''
         luminance_knob.setExpression(luminance_expression)
         print(f"Se ha modificado la expresión del knob 'luminance' en el nodo {node.name()}.")
     else:
