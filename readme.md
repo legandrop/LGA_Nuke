@@ -68,6 +68,8 @@ Structure:
 
 For easier access to specific tools, please check the [Releases](https://github.com/legandrop/LGA_Nuke/releases) section of this repository. There you'll find organized packages of the tools with installation instructions ready for download and use.
 
+&nbsp;
+
 ## License
 
 This project is open source and available under the GNU General Public License v3.0 or later.
