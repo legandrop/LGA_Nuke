@@ -15,11 +15,11 @@ A set of tools for Nuke that are added to a custom menu. This pack includes:
 
 [Download Latest Version (v2.0)](https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_ToolPack_v2.0)
 
-<span style="font-size:0.5em"><br></span>
+<span style="font-size:0.1em"><br></span>
 
 ---
 
-<span style="font-size:0.5em"><br></span>
+<span style="font-size:0.1em"><br></span>
 
 ### LGA Layout ToolPack
 
@@ -29,11 +29,11 @@ A collection of tools focused on improving organization and efficiency in the Nu
 
 [Download Latest Version (v2.2)](https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_ToolPack-Layout_v2.2)
 
-<span style="font-size:0.5em"><br></span>
+<span style="font-size:0.1em"><br></span>
 
 ---
 
-<span style="font-size:0.5em"><br></span>
+<span style="font-size:0.1em"><br></span>
 
 ### LGA HeiroTools
 
