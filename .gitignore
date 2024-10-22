@@ -44,3 +44,5 @@ __pycache__
 # Cattery porque es muy pesado
 # /Cattery/
 *.cat
+
+@.tmp.driveupload/
