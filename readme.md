@@ -1,0 +1,46 @@
+# LGA Nuke Tools
+
+This repository contains my entire `.nuke` folder, which includes a collection of tools, scripts, and configurations for Nuke, Hiero, and Nuke Studio.
+
+## Available Tools
+
+### LGA ToolPack
+A set of tools for Nuke that are added to a custom menu. This pack includes:
+- Custom Python scripts developed by me
+- Tools downloaded from the internet
+- Modified versions of existing tools
+
+[View PDF Documentation](LGA_ToolPack/LGA_ToolPack.pdf)
+
+### LGA Layout ToolPack
+A collection of tools focused on improving organization and efficiency in the Nuke Node Graph (DAG) layout.
+
+[View PDF Documentation](LGA_ToolPack-Layout/LGA_LayoutToolPack.pdf)
+
+### LGA HeiroTools
+Custom tools for Hiero / Nuke Studio, including:
+- Panels with various function buttons
+- A panel that integrates with Shotgrid / Flow
+- Tools optimized for the naming conventions and structure used in our studio
+
+### LGA_NodePack
+A curated collection of nodes and tools.
+
+Key Features:
+- Automatic import system: A custom script automatically imports all tools from folders and subfolders into the Node Bar
+- Easy integration: Any group or gizmo copied to any folder within the LGA_NodePack directory is automatically loaded by Nuke without editing .py files
+
+Structure:
+1. **LGizmos**: Custom-made, modified, or curated gizmos and tools
+2. **Third-party Tools**:
+   - **pixelfudger3**: High-quality compositing tools by Simon Bjork. [Download](https://www.nukepedia.com/gizmos/filter/pixelfudger-v3)
+   - **spin_tools**: Powerful Nuke tools by Sean Danischevsky. [Download](https://github.com/SpinVFX/spin_nuke_gizmos)
+
+
+## Releases
+
+For easier access to specific tools, please check the [Releases](https://github.com/yourusername/LGA-Nuke-Tools/releases) section of this repository. There you'll find organized packages of the tools with installation instructions ready for download and use.
+
+## License
+
+[Add license information]
