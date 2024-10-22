@@ -46,3 +46,6 @@ __pycache__
 *.cat
 
 @.tmp.driveupload/
+
+# Añadir las siguientes líneas al final del archivo
+.tmp.driveupload/
