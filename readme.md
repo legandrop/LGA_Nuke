@@ -43,4 +43,14 @@ For easier access to specific tools, please check the [Releases](https://github.
 
 ## License
 
-[Add license information]
+This project is open source and available under the GNU General Public License v3.0 or later.
+
+You are free to use, modify, and distribute this code, provided that:
+
+1. You credit the original project and maintain the open source nature of any derivative work.
+2. You indicate significant changes made to the original code.
+3. You make your modifications available under the same license.
+
+For more details, see the [GNU GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.en.html).
+
+Note: Third-party tools included in this repository (such as pixelfudger3 and spin_tools) retain their original licenses. Please refer to their respective documentation for license information.
