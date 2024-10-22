@@ -19,13 +19,21 @@ ________________________________________________________________________________
 """
 
 import os
+import sys
 import re
 import platform
-import shotgun_api3
 import nuke
 import webbrowser
 import threading
 import subprocess
+
+# Agregar la ruta de la carpeta shotgun_api3 al sys.path
+script_dir = os.path.dirname(os.path.abspath(__file__))
+shotgun_api_path = os.path.join(script_dir, 'shotgun_api3')
+sys.path.append(shotgun_api_path)
+
+# Ahora importamos shotgun_api3
+import shotgun_api3
 
 # Verificacion del sistema operativo y configuracion de la ruta del navegador
 if platform.system() == "Windows":

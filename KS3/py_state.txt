@@ -36,6 +36,10 @@
             1217,
             0
         ],
+        "scripts/LGA_ImprimirTodosLosKnobsDelNodo.py": [
+            0,
+            0
+        ],
         "scripts/LGA_NKS_Colors.py": [
             2029,
             0
@@ -125,8 +129,8 @@
             540
         ],
         "scripts/Untitled.py": [
-            929,
-            929
+            2068,
+            2068
         ],
         "scripts/Write_Default.py": [
             704,
@@ -166,17 +170,18 @@
         ]
     },
     "last_folder": "scripts",
-    "last_script": "0_Script_Loader.py",
+    "last_script": "Untitled.py",
     "scroll_pos": {
         "Rotate_Shortcut/Funciona_Con_foco_en_viewer.py": 0,
         "Rotate_Shortcut/Rotate_Shortcut.py": 0,
         "Rotate_Shortcut/Untitled.py": 0,
         "scripts/0_Reload_Script_copy.py": 0,
-        "scripts/0_Script_Loader.py": 63,
+        "scripts/0_Script_Loader.py": 66,
         "scripts/Assets_in_folder.py": 73,
         "scripts/LGA_Align.py": 0,
         "scripts/LGA_Hiero_RemoveVersions.py": 62,
         "scripts/LGA_Hiero_ReplaceClip.py": 26,
+        "scripts/LGA_ImprimirTodosLosKnobsDelNodo.py": 0,
         "scripts/LGA_NKS_Colors.py": 28,
         "scripts/LGA_Node_Position.py": 0,
         "scripts/LGA_Propiedades_Nodo.py": 0,
@@ -199,7 +204,7 @@
         "scripts/Reload_ozBackdrop.py": 0,
         "scripts/RenamWri_v01.py": 0,
         "scripts/Testea.py": 0,
-        "scripts/Untitled.py": 17,
+        "scripts/Untitled.py": 38,
         "scripts/Write_Default.py": 7,
         "scripts/Write_From_Selected_Read.py": 0,
         "scripts/_Reload_Script.py": 0,
@@ -211,7 +216,7 @@
         "scripts/oz_backdrop_replacer.py": 21
     },
     "splitter_sizes": [
-        394,
-        267
+        283,
+        193
     ]
 }

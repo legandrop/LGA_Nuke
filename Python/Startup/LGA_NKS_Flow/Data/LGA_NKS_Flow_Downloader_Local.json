@@ -4446,7 +4446,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Agregar reflejo blanco en auto (Hecho en offline). Tiene que dar la sensación de que esta en movimiento.",
-                            "task_status": "corr",
+                            "task_status": "rev_su",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": [
                                 {
@@ -4516,6 +4516,39 @@
                                             "user": "Lega Pugliese"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_37B_010_Add_Reflejo_comp_v13",
+                                    "version_description": "Correccion Lega: que el fade del reflejo comience desde abajo.",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-22T18:31:04+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Check que se corta imagen",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_37B_010_Add_Reflejo_comp_v14",
+                                    "version_description": "DESCARTAR ESTA SUBIDA",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-22T20:32:50+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_37B_010_Add_Reflejo_comp_v14",
+                                    "version_description": null,
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-22T20:56:18+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_37B_010_Add_Reflejo_comp_v15",
+                                    "version_description": "Correccion: hacer que el reflejo salga antes.",
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-22T22:45:59+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -5397,6 +5430,18 @@
                                             "user": "Sebas Romano"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_06B_030_Split_Cena_comp_v06",
+                                    "version_description": "Replanteo del shot",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-22T20:45:00+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Reajustar track de aplate vs bplate, o viceversa (tiene sutiles diferencias)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -5459,7 +5504,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "rev_su",
+                            "task_status": "corr",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
                                 {
@@ -5481,9 +5526,30 @@
                                 {
                                     "version_number": "VL_06A_030_Split-retime_Cena_comp_v03",
                                     "version_description": "acomode mano y grano",
-                                    "version_status": "rev",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-22T17:12:57+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "Veamos si se puede ajustar un poco más la pasada de la mano sobre copa .\nAjustemos regrain modificando tipo de filtro de los \"Kronos\" (usar Lanczos6)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06A_030_Split-retime_Cena_comp_v04",
+                                    "version_description": "mano en copa + Lanczos6 en kronos",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-22T20:24:27+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Ajustar deformación (propia de retime) en dedos y respaldo silla (rango 1057-1067)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": null,
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -5621,6 +5687,13 @@
                                             "user": "Sebas Romano"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_01C_030_Agregar_Rayo-Speed_comp_v19",
+                                    "version_description": "WIP",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-22T21:27:34+02:00",
+                                    "comments": []
                                 }
                             ]
                         }

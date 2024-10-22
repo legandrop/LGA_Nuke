@@ -1,7 +1,7 @@
 """
 ___________________________________
 
-  LGA_ToolPack v1.8 | 2024 | Lega  
+  LGA_ToolPack v1.9 | 2024 | Lega  
 ___________________________________
 
 """
@@ -224,6 +224,10 @@ n.addCommand("  Create Grade + High", "LGA_grade.gradeHI()", "ctrl+shift+G", sho
 import LGA_disable_A_B
 n.addCommand ("  Disable A-B", "LGA_disable_A_B.main()", "Shift+D", shortcutContext=2, icon=icon_Knobs)
 
+
+# Importar el LGA_DasGrain_Kronos_Comp  
+import LGA_DasGrain_Kronos_Comp
+n.addCommand ("  DasGrain Kronos Comp", "LGA_DasGrain_Kronos_Comp.main()", icon=icon_Knobs)
 
 # Importar el animation maker
 import AnimationMaker

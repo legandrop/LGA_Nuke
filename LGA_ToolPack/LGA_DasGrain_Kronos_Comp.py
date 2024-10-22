@@ -1,3 +1,14 @@
+"""
+_________________________________________________________________________________________________
+
+  LGA_DasGrain_Kronos_Comp v1.0 | 2024 | Lega  
+  Tool for enhancing DasGrain nodes by synchronizing grain intensity with Kronos interpolation.
+  Adds a 'KroComp' tab with 'Intensity' and 'KronosFrame' knobs, and modifies the existing 
+  'luminance' knob to ensure consistent grain intensity when Kronos interpolates frames.
+_________________________________________________________________________________________________
+
+"""
+
 import nuke
 
 def add_amount_knobs(node, kronos_node):
