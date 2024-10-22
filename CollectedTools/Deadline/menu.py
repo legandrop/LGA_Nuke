@@ -1,7 +1,7 @@
 # Importar el deadline
 import DeadlineNukeClient
 menubar = nuke.menu("Nuke")
-tbmenu = menubar.addMenu("&Thinkbox")
+tbmenu = menubar.addMenu("Thinkbox")
 tbmenu.addCommand("Submit Nuke To Deadline", DeadlineNukeClient.main, "ctr+alt+shift+d")
 try:
     if nuke.env[ 'studio' ] or nuke.env[ 'NukeVersionMajor' ] >= 11:

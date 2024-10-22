@@ -1023,6 +1023,30 @@
                                             "user": "Sebas Romano"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v92",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-21T16:28:10+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Ajustemos (via CC quizás) las sogas que quedaron expuestas",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v93",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-21T21:11:48+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "- Recuperar un poco más de detalle de la v17.\n- Y después ya creo que solo quedará agregar polvo. \n\nEl resto lo veo barbaro",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -2566,7 +2590,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Agregar cartel iluminado de HOTEL. hotel, pero entre hoy y mañana te paso referencias, estaría bueno que le faltara alguna letra, algo como \"H O - E L\".",
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": [
                                 {
@@ -2597,6 +2621,13 @@
                                     "version_description": null,
                                     "version_status": "unvleg",
                                     "version_date": "2024-10-10T18:35:10+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_010_010_Add_Hotel_comp_v13",
+                                    "version_description": "Cambié la vibracion de la O. No me andaba la tipografía, tuve que usar Arial y la ajusté para que se vea lo más parecida posible a la anterior.",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-19T10:29:04+02:00",
                                     "comments": []
                                 }
                             ]
@@ -3731,7 +3762,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "ready",
+                            "task_status": "noread",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
@@ -3931,7 +3962,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Split para acortar pausa.",
-                            "task_status": "corr",
+                            "task_status": "revleg",
                             "task_assigned_to": "martin villarreal",
                             "versions": [
                                 {
@@ -3969,6 +4000,13 @@
                                             "user": "Sebas Romano"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_09G_010_CutStitch_Galpon_comp_v04",
+                                    "version_description": null,
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-21T20:01:39+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -4162,7 +4200,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "MAQUILLAJE DE MONSTRUOS + RAMPA DE VELOCIDADES",
-                            "task_status": "ready",
+                            "task_status": "progre",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": []
                         }
@@ -4207,6 +4245,18 @@
                                         {
                                             "text": "Recheck deformación en ventana de lapuerta en 1203-1215",
                                             "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_04A_005_Stitch_Puerta_comp_v04",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-21T19:10:16+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "- Hay que hacer un \"morph\" a mano entre la silueta de un plate y el otro así no hay un fundido visible",
+                                            "user": "Lega Pugliese"
                                         }
                                     ]
                                 }
@@ -4438,6 +4488,34 @@
                                             "user": "Lega Pugliese"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_37B_010_Add_Reflejo_comp_v11",
+                                    "version_description": "Correcciones Lega: estabilizar reflejo y sumar gotas a la derecha de cuadro",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-21T16:39:24+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Ajustaría transición de la luz. Más duración y que quede remanente de particulas sobre vidrio. \nTambien devolveria algo de movimiento del auto (al reflejo de gotas)",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": null,
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_37B_010_Add_Reflejo_comp_v12",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-21T18:48:57+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Probar que se vayan ultimo las gotas de más arriba",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -4463,7 +4541,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "ready",
+                            "task_status": "noread",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
@@ -4502,7 +4580,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "martin villarreal",
                             "versions": [
                                 {
@@ -4591,6 +4669,13 @@
                                             "user": "Sebas Romano"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_31_010_Clean_Atizador_comp_v08",
+                                    "version_description": null,
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-21T23:44:05+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -4642,9 +4727,38 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "revleg",
+                            "task_assigned_to": "Silvina Lesa Brown",
+                            "versions": [
+                                {
+                                    "version_number": "VL_20_160_Clean_Alpiste_comp_v01",
+                                    "version_description": "Clean up alpistes",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-21T17:45:28+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Borremos estas partículas.",
+                                            "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": null,
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_20_160_Clean_Alpiste_comp_v02",
+                                    "version_description": "va sin particulitas",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-21T21:31:55+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Paso a Lega . Oka clean alpistes.",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -4655,7 +4769,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "corr",
+                            "task_status": "revleg",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
                                 {
@@ -4703,6 +4817,13 @@
                                             "user": "Sebas Romano"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_20_150_Clean_Alpiste_comp_v09",
+                                    "version_description": "Split comp",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-20T04:21:32+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -4874,7 +4995,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "ready",
+                            "task_status": "progre",
                             "task_assigned_to": "No asignado",
                             "versions": [
                                 {
@@ -4912,9 +5033,22 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "progre",
+                            "task_status": "corr",
                             "task_assigned_to": "Sebas Romano",
-                            "versions": []
+                            "versions": [
+                                {
+                                    "version_number": "VL_14A_020_Rampa_Puerta_comp_v03",
+                                    "version_description": "WIP. No estoy convencido de que el warpeado del bplate (mujer que se asoma) pueda quedar integrado; se deforma mucho porque tiene perspectiva distinta a aplate. Queda pendiente ajustar retime, track , rotos e integración en bordes y cortina.",
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-21T23:59:15+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "- Ver si se puede mejorar el pasaje por la primera ventana.\n\n- Se me ocurre ahora que deberíamos pedir más handle para este plano. Tal vez haya algo que nos pueda servir. O incluso en otra toma tal vez haya un plano más parecido al nuestro. Ahora lo pido",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -4924,8 +5058,8 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
-                            "task_status": "ready",
+                            "task_description": "La estabilizacion se resuelve en color. NRTS.",
+                            "task_status": "noread",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
@@ -4951,7 +5085,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "noread",
+                            "task_status": "ready",
                             "task_assigned_to": "No asignado",
                             "versions": []
                         }
@@ -5213,7 +5347,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "corr",
+                            "task_status": "rev_su",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
                                 {
@@ -5239,6 +5373,13 @@
                                             "user": "Sebas Romano"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_06B_030_Split_Cena_comp_v05",
+                                    "version_description": "ajuste trackeo en zona de plato",
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-22T00:05:12+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -5301,9 +5442,17 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_status": "rev_su",
+                            "task_assigned_to": "Silvina Lesa Brown",
+                            "versions": [
+                                {
+                                    "version_number": "VL_06A_030_Split-retime_Cena_comp_v01",
+                                    "version_description": "retime",
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-21T21:10:56+02:00",
+                                    "comments": []
+                                }
+                            ]
                         }
                     ]
                 },
