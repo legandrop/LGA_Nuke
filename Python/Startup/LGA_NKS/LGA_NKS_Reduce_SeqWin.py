@@ -1,3 +1,12 @@
+"""
+______________________________________________________________________
+
+  LGA_NKS_Reduce_SeqWin v1.0 - 2024 - Lega
+  Reduce el tamaño del panel lateral del timeline editor de Hiero
+______________________________________________________________________
+
+"""
+
 import hiero.ui
 from PySide2 import QtWidgets
 
@@ -26,4 +35,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
