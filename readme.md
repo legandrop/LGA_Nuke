@@ -12,16 +12,22 @@ A set of tools for Nuke that are added to a custom menu. This pack includes:
 
 [View PDF Documentation](LGA_ToolPack/LGA_ToolPack.pdf)
 
+[Download Latest Version (v2.0)](https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_ToolPack_v2.0)
+
 ### LGA Layout ToolPack
 A collection of tools focused on improving organization and efficiency in the Nuke Node Graph (DAG) layout.
 
 [View PDF Documentation](LGA_ToolPack-Layout/LGA_LayoutToolPack.pdf)
+
+[Download Latest Version (v2.2)](https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_ToolPack-Layout_v2.2)
 
 ### LGA HeiroTools
 Custom tools for Hiero / Nuke Studio, including:
 - Panels with various function buttons
 - A panel that integrates with Shotgrid / Flow
 - Tools optimized for the naming conventions and structure used in our studio
+
+[Download Latest Version (v1.6)](https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_HeiroTools_v1.6)
 
 ### LGA_NodePack
 A curated collection of nodes and tools.
@@ -36,10 +42,11 @@ Structure:
    - **pixelfudger3**: High-quality compositing tools by Simon Bjork. [Download](https://www.nukepedia.com/gizmos/filter/pixelfudger-v3)
    - **spin_tools**: Powerful Nuke tools by Sean Danischevsky. [Download](https://github.com/SpinVFX/spin_nuke_gizmos)
 
+[Download Latest Version (v1.4)](https://github.com/legandrop/LGA_Nuke/releases/tag/LGA_NodePack_v1.4)
 
 ## Releases
 
-For easier access to specific tools, please check the [Releases](https://github.com/yourusername/LGA-Nuke-Tools/releases) section of this repository. There you'll find organized packages of the tools with installation instructions ready for download and use.
+For easier access to specific tools, please check the [Releases](https://github.com/legandrop/LGA_Nuke/releases) section of this repository. There you'll find organized packages of the tools with installation instructions ready for download and use.
 
 ## License
 

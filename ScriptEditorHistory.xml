@@ -10986,188 +10986,154 @@ def set_in_out_from_edit_ref_track():
     print(f&quot;Se ha establecido el in/out de la secuencia a [{ref_in}, {ref_out}] basado en el clip de EditRef más cercano.&quot;)
 
 # Ejecutar la función
-set_in_out_from_edit_ref_track()import nuke
+set_in_out_from_edit_ref_track()import sys
+import os
+import hiero.core
+import importlib
 
-def add_amount_knob(node):
-    &quot;&quot;&quot;Añade un custom knob llamado 'amount' con un valor de 0.8 en el tab correcto si no existe&quot;&quot;&quot;
-    if 'amount' not in node.knobs():
-        # Crear el tab DasGrain_tab si no existe
-        if 'DasGrain_tab' not in node.knobs():
-            tab_knob = nuke.Tab_Knob('DasGrain_tab', 'DasGrain')
-            node.addKnob(tab_knob)
+# Variable global para activar o desactivar los prints de depuración
+DEBUG = False
 
-        # Crear el knob de tipo Double
-        amount_knob = nuke.Double_Knob('amount', 'amount')
-        amount_knob.setValue(0.8)
-        
-        # Añadir el knob al nodo, en el tab adecuado
-        node.addKnob(amount_knob)
-        
-        print(f&quot;Se ha añadido el knob 'amount' con valor 0.8 al nodo {node.name()} en el tab 'DasGrain_tab'.&quot;)
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+# Definir la ruta del script que quieres ejecutar
+ScriptPath = &quot;Python/Startup/LGA_NKS/LGA_Reduce_SeqWin.py&quot;
+
+def ejecutar_script(script_path):
+    # Obtener la ruta del directorio de plugins de Hiero
+    hiero_plugin_paths = hiero.core.pluginPath()
+
+    # Asumimos que el primer path en la tupla es el que necesitamos
+    if isinstance(hiero_plugin_paths, tuple) and len(hiero_plugin_paths) &gt; 0:
+        hiero_plugin_path = hiero_plugin_paths[0]
     else:
-        print(f&quot;El nodo {node.name()} ya tiene un knob llamado 'amount'.&quot;)
+        hiero_plugin_path = hiero_plugin_paths  # En caso de que sea una cadena
 
-def main():
-    # Verificar si hay nodos seleccionados
-    selected_nodes = nuke.selectedNodes()
-    if not selected_nodes:
-        print(&quot;No hay nodos seleccionados.&quot;)
-        return
-
-    # Tomar el nodo seleccionado
-    node = selected_nodes[0]
-
-    # Verificar si el nodo seleccionado es un DasGrain o variante
-    if node.Class() == 'Group' and node.name().startswith('DasGrain'):
-        add_amount_knob(node)
-    else:
-        print(f&quot;El nodo seleccionado no es un DasGrain. Nodo seleccionado: {node.name()}&quot;)
-
-# Ejecutar la función principal
-main()
-import nuke
-
-def add_amount_knobs(node, kronos_node):
-    &quot;&quot;&quot;Añade un tab 'KroComp' con knobs 'Intensity' y 'KronosFrame', y modifica el knob 'luminance' existente&quot;&quot;&quot;
-    if 'Intensity' not in node.knobs():
-        # Crear el nuevo tab
-        tab = nuke.Tab_Knob('KroComp', 'KroComp')
-        node.addKnob(tab)
-        
-        # Crear el knob Intensity
-        intensity_knob = nuke.Double_Knob('Intensity', 'Intensity')
-        intensity_knob.setRange(0.5, 1.5)
-        intensity_knob.setValue(1.2)  # Valor inicial 1.2
-        node.addKnob(intensity_knob)
-        
-        # Añadir un divider después del knob Intensity
-        divider = nuke.Text_Knob('divider', '')
-        node.addKnob(divider)
-        
-        # Crear el knob KronosFrame
-        kronos_frame_knob = nuke.Double_Knob('KronosFrame', 'Kronos Frame')
-        kronos_frame_knob.setExpression(f'parent.{kronos_node.name()}.timingFrame2')
-        node.addKnob(kronos_frame_knob)
-        
-        # Añadir flags para mejorar la apariencia
-        node.knob('Intensity').setFlag(nuke.STARTLINE)
-        node.knob('KronosFrame').setFlag(nuke.STARTLINE)
-        
-        print(f&quot;Se ha añadido el tab 'KroComp' con los knobs 'Intensity' y 'KronosFrame' al nodo {node.name()}.&quot;)
-    else:
-        print(f&quot;El nodo {node.name()} ya tiene un knob llamado 'Intensity'.&quot;)
+    # Construir la ruta al directorio que contiene nuestro script
+    script_parts = script_path.split('/')
+    script_dir = os.path.join(os.path.dirname(hiero_plugin_path), *script_parts[:-1])
     
-    # Modificar el knob 'luminance' existente
-    luminance_knob = node.knob('luminance')
-    if luminance_knob:
-        luminance_expression = f'''[expr {{ [value parent.{kronos_node.name()}.timingFrame2] == int([value parent.{kronos_node.name()}.timingFrame2]) ? 1 : (2 - [value this.Intensity]) }}]'''
-        luminance_knob.setExpression(luminance_expression)
-        print(f&quot;Se ha modificado la expresión del knob 'luminance' en el nodo {node.name()}.&quot;)
+    # Añadir el directorio al path de Python si no está ya
+    if script_dir not in sys.path:
+        sys.path.insert(0, script_dir)
+
+    debug_print(&quot;Python path:&quot;, sys.path)
+    debug_print(&quot;Script directory:&quot;, script_dir)
+    debug_print(&quot;&quot;)
+
+    # Obtener el nombre del módulo del script
+    module_name = os.path.splitext(script_parts[-1])[0]
+    package_name = script_parts[-2]
+
+    try:
+        # Importar el módulo
+        debug_print(f&quot;Intentando importar el módulo: {package_name}.{module_name}&quot;)
+        module = importlib.import_module(f&quot;{package_name}.{module_name}&quot;)
+        
+        # Recargar el módulo
+        debug_print(f&quot;Recargando el módulo: {package_name}.{module_name}&quot;)
+        module = importlib.reload(module)
+        
+        debug_print(f&quot;Módulo importado y recargado: {module}&quot;)
+        
+        # Si el módulo tiene una función main(), ejecutarla
+        if hasattr(module, 'main') and callable(module.main):
+            debug_print(&quot;Función main() encontrada. Ejecutando...&quot;)
+            module.main()
+        else:
+            debug_print(f&quot;El módulo {module_name} no tiene una función main() ejecutable.&quot;)
+            debug_print(&quot;Contenido del módulo:&quot;)
+            for attr in dir(module):
+                debug_print(f&quot;  {attr}&quot;)
+    except Exception as e:
+        debug_print(f&quot;Error al importar o ejecutar el módulo: {e}&quot;)
+        import traceback
+        traceback.print_exc()
+        
+        debug_print(f&quot;Asegúrate de que el archivo {script_parts[-1]} está en {script_dir}&quot;)
+        
+        # Listar los contenidos del directorio para depuración
+        debug_print(&quot;Contenidos del directorio:&quot;)
+        for root, dirs, files in os.walk(script_dir):
+            for file in files:
+                debug_print(os.path.join(root, file))
+
+# Ejecutar el script
+ejecutar_script(ScriptPath)import sys
+import os
+import hiero.core
+import importlib
+
+# Variable global para activar o desactivar los prints de depuración
+DEBUG = False
+
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+# Definir la ruta del script que quieres ejecutar
+ScriptPath = &quot;Python/Startup/LGA_NKS/LGA_NKS_Reduce_SeqWin.py&quot;
+
+def ejecutar_script(script_path):
+    # Obtener la ruta del directorio de plugins de Hiero
+    hiero_plugin_paths = hiero.core.pluginPath()
+
+    # Asumimos que el primer path en la tupla es el que necesitamos
+    if isinstance(hiero_plugin_paths, tuple) and len(hiero_plugin_paths) &gt; 0:
+        hiero_plugin_path = hiero_plugin_paths[0]
     else:
-        print(f&quot;No se encontró el knob 'luminance' en el nodo {node.name()}.&quot;)
+        hiero_plugin_path = hiero_plugin_paths  # En caso de que sea una cadena
 
-def main():
-    selected_nodes = nuke.selectedNodes()
-    if len(selected_nodes) &lt; 2:
-        print(&quot;Por favor, selecciona al menos un nodo DasGrain y un nodo Kronos.&quot;)
-        return
-
-    dasgrain_node = None
-    kronos_node = None
-
-    for node in selected_nodes:
-        if node.Class() == 'Group' and node.name().startswith('DasGrain'):
-            dasgrain_node = node
-        elif node.Class() == 'Kronos' or node.name().startswith('Kronos'):
-            kronos_node = node
-
-    if not dasgrain_node or not kronos_node:
-        print(&quot;Por favor, asegúrate de seleccionar un nodo DasGrain y un nodo Kronos.&quot;)
-        return
-
-    add_amount_knobs(dasgrain_node, kronos_node)
-
-# Ejecutar la función principal
-main()&quot;&quot;&quot;
-_________________________________________________________________________________________________
-
-  LGA_DasGrain_Kronos_Comp v1.1 | 2024 | Lega  
-  Herramienta para mejorar los nodos DasGrain sincronizando la intensidad del grano con la interpolación de Kronos.
-  Añade una pestaña 'KroComp' con knobs 'Intensity' y 'KronosFrame', y modifica el knob 'luminance' existente
-  para asegurar una intensidad de grano consistente cuando Kronos interpola frames.
-  Versión 1.1: Ajusta la lógica para considerar frames cercanos a enteros (±0.14) como frames completos.
-_________________________________________________________________________________________________
-
-&quot;&quot;&quot;
-
-import nuke
-
-def add_amount_knobs(node, kronos_node):
-    &quot;&quot;&quot;Añade un tab 'KroComp' con knobs 'Intensity' y 'KronosFrame', y modifica el knob 'luminance' existente&quot;&quot;&quot;
-    if 'Intensity' not in node.knobs():
-        # Crear el nuevo tab
-        tab = nuke.Tab_Knob('KroComp', 'KroComp')
-        node.addKnob(tab)
-        
-        # Crear el knob Intensity
-        intensity_knob = nuke.Double_Knob('Intensity', 'Intensity')
-        intensity_knob.setRange(0.5, 1.5)
-        intensity_knob.setValue(1.2)  # Valor inicial 1.2
-        node.addKnob(intensity_knob)
-        
-        # Añadir un divider después del knob Intensity
-        divider = nuke.Text_Knob('divider', '')
-        node.addKnob(divider)
-        
-        # Crear el knob KronosFrame
-        kronos_frame_knob = nuke.Double_Knob('KronosFrame', 'Kronos Frame')
-        kronos_frame_knob.setExpression(f'parent.{kronos_node.name()}.timingFrame2')
-        node.addKnob(kronos_frame_knob)
-        
-        # Añadir flags para mejorar la apariencia
-        node.knob('Intensity').setFlag(nuke.STARTLINE)
-        node.knob('KronosFrame').setFlag(nuke.STARTLINE)
-        
-        print(f&quot;Se ha añadido el tab 'KroComp' con los knobs 'Intensity' y 'KronosFrame' al nodo {node.name()}.&quot;)
-    else:
-        print(f&quot;El nodo {node.name()} ya tiene un knob llamado 'Intensity'.&quot;)
+    # Construir la ruta al directorio que contiene nuestro script
+    script_parts = script_path.split('/')
+    script_dir = os.path.join(os.path.dirname(hiero_plugin_path), *script_parts[:-1])
     
-    # Modificar el knob 'luminance' existente
-    luminance_knob = node.knob('luminance')
-    if luminance_knob:
-        luminance_expression = f'''
-        [expr {{
-            abs(fmod([value parent.{kronos_node.name()}.timingFrame2], 1) - 0.5) &gt;= 0.36 ? 
-            1 : 
-            (2 - [value this.Intensity])
-        }}]
-        '''
-        luminance_knob.setExpression(luminance_expression)
-        print(f&quot;Se ha modificado la expresión del knob 'luminance' en el nodo {node.name()}.&quot;)
-    else:
-        print(f&quot;No se encontró el knob 'luminance' en el nodo {node.name()}.&quot;)
+    # Añadir el directorio al path de Python si no está ya
+    if script_dir not in sys.path:
+        sys.path.insert(0, script_dir)
 
-def main():
-    selected_nodes = nuke.selectedNodes()
-    if len(selected_nodes) &lt; 2:
-        print(&quot;Por favor, selecciona al menos un nodo DasGrain y un nodo Kronos.&quot;)
-        return
+    debug_print(&quot;Python path:&quot;, sys.path)
+    debug_print(&quot;Script directory:&quot;, script_dir)
+    debug_print(&quot;&quot;)
 
-    dasgrain_node = None
-    kronos_node = None
+    # Obtener el nombre del módulo del script
+    module_name = os.path.splitext(script_parts[-1])[0]
+    package_name = script_parts[-2]
 
-    for node in selected_nodes:
-        if node.Class() == 'Group' and node.name().startswith('DasGrain'):
-            dasgrain_node = node
-        elif node.Class() == 'Kronos' or node.name().startswith('Kronos'):
-            kronos_node = node
+    try:
+        # Importar el módulo
+        debug_print(f&quot;Intentando importar el módulo: {package_name}.{module_name}&quot;)
+        module = importlib.import_module(f&quot;{package_name}.{module_name}&quot;)
+        
+        # Recargar el módulo
+        debug_print(f&quot;Recargando el módulo: {package_name}.{module_name}&quot;)
+        module = importlib.reload(module)
+        
+        debug_print(f&quot;Módulo importado y recargado: {module}&quot;)
+        
+        # Si el módulo tiene una función main(), ejecutarla
+        if hasattr(module, 'main') and callable(module.main):
+            debug_print(&quot;Función main() encontrada. Ejecutando...&quot;)
+            module.main()
+        else:
+            debug_print(f&quot;El módulo {module_name} no tiene una función main() ejecutable.&quot;)
+            debug_print(&quot;Contenido del módulo:&quot;)
+            for attr in dir(module):
+                debug_print(f&quot;  {attr}&quot;)
+    except Exception as e:
+        debug_print(f&quot;Error al importar o ejecutar el módulo: {e}&quot;)
+        import traceback
+        traceback.print_exc()
+        
+        debug_print(f&quot;Asegúrate de que el archivo {script_parts[-1]} está en {script_dir}&quot;)
+        
+        # Listar los contenidos del directorio para depuración
+        debug_print(&quot;Contenidos del directorio:&quot;)
+        for root, dirs, files in os.walk(script_dir):
+            for file in files:
+                debug_print(os.path.join(root, file))
 
-    if not dasgrain_node or not kronos_node:
-        print(&quot;Por favor, asegúrate de seleccionar un nodo DasGrain y un nodo Kronos.&quot;)
-        return
-
-    add_amount_knobs(dasgrain_node, kronos_node)
-
-# Ejecutar la función principal
-main()
-</script>
+# Ejecutar el script
+ejecutar_script(ScriptPath)</script>
