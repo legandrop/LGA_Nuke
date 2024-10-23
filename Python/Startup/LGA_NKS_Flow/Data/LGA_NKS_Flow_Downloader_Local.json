@@ -4237,7 +4237,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Stitch entre aPlate y bPlate para acortar el tiempo hasta que el personaje abre la puerta.",
-                            "task_status": "corr",
+                            "task_status": "rev_su",
                             "task_assigned_to": "martin villarreal",
                             "versions": [
                                 {
@@ -4283,6 +4283,13 @@
                                             "user": "Lega Pugliese"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_04A_005_Stitch_Puerta_comp_v05",
+                                    "version_description": null,
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-23T22:32:39+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -5422,7 +5429,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Split entre el aPlate con el acting de él y el bPlate con el acting de ella.",
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
                                 {
@@ -5488,9 +5495,14 @@
                                 {
                                     "version_number": "VL_06B_030_Split_Cena_comp_v08",
                                     "version_description": "Stitch brazo de bplate por escote y articulación de movimiento del hombro con aplate",
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-23T16:23:23+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "impecable",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }

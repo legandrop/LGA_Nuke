@@ -1,46 +1,63 @@
 """
-LGA_NKS_ExploreTimelineWidgets.py
-imprime información sobre los widgets del timeline de Nuke Studio
-para poder identificar los widgets y trabajar con ellos (ej: reducir el panel lateral)
+__________________________________________________________
+
+  LGA_NKS_ExploreTimelineWidgets v1.0 - 2024 - Lega
+  
+  Explora y muestra la estructura completa de widgets del timeline
+  activo en Hiero. Útil para desarrollo y debugging de scripts
+  que necesitan acceder a widgets específicos del timeline.
+  
+  Muestra:
+  - Jerarquía completa de widgets
+  - Tipo de cada widget
+  - Nombre del objeto (si tiene)
+  - Clase del widget (si es QWidget)
+  
+  Ejemplo de uso:
+  Para encontrar la ruta correcta a un widget específico,
+  como scrollbars, sliders o contenedores del timeline.
+__________________________________________________________
+
 """
 
+import hiero.core
 import hiero.ui
-from PySide2 import QtWidgets, QtCore
+from PySide2 import QtWidgets
 
-def explore_widget(widget, indent=0):
-    """Explora recursivamente un widget y sus hijos, imprimiendo información sobre cada uno."""
-    if widget is None:
+def explore_timeline_widgets():
+    """
+    Explora la estructura completa de widgets del timeline.
+    """
+    t = hiero.ui.getTimelineEditor(hiero.ui.activeSequence())
+    if not t:
+        print("No se encontró un timeline activo.")
         return
-
-    # Imprimir información sobre el widget actual
-    print("  " * indent + f"Tipo: {type(widget).__name__}")
     
-    # Si es un QSplitter, imprimir información adicional
-    if isinstance(widget, QtWidgets.QSplitter):
-        print("  " * indent + f"Orientación: {'Horizontal' if widget.orientation() == QtCore.Qt.Horizontal else 'Vertical'}")
-        print("  " * indent + f"Tamaños: {widget.sizes()}")
+    print("\nExplorando estructura completa de widgets:")
+    def explore_widget(widget, depth=0):
+        indent = "  " * depth
+        print(f"{indent}Type: {type(widget).__name__}")
+        if hasattr(widget, 'objectName') and widget.objectName():
+            print(f"{indent}Name: {widget.objectName()}")
+        if isinstance(widget, QtWidgets.QWidget):
+            print(f"{indent}Class: {widget.metaObject().className()}")
+        
+        if hasattr(widget, 'children'):
+            for child in widget.children():
+                explore_widget(child, depth + 1)
     
-    # Si es un QTabWidget, imprimir información sobre las pestañas
-    if isinstance(widget, QtWidgets.QTabWidget):
-        print("  " * indent + f"Número de pestañas: {widget.count()}")
-        for i in range(widget.count()):
-            print("  " * (indent + 1) + f"Pestaña {i}: {widget.tabText(i)}")
-    
-    # Explorar los hijos del widget actual
-    for child in widget.children():
-        if isinstance(child, QtWidgets.QWidget):
-            explore_widget(child, indent + 1)
+    explore_widget(t.window())
 
 def main():
-    # Obtener el editor de línea de tiempo activo
-    timeline_editor = hiero.ui.getTimelineEditor(hiero.ui.activeSequence())
-    
-    if timeline_editor:
-        print("Explorando widgets del editor de línea de tiempo:")
-        window = timeline_editor.window()
-        explore_widget(window)
-    else:
-        print("No se pudo obtener el editor de línea de tiempo activo.")
+    """
+    Función principal que ejecuta la exploración de widgets.
+    """
+    try:
+        explore_timeline_widgets()
+    except Exception as e:
+        print(f"Error durante la exploración: {e}")
+        import traceback
+        print(traceback.format_exc())
 
 if __name__ == "__main__":
     main()

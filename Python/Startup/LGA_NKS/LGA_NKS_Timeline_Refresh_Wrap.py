@@ -1,18 +1,17 @@
 """
-__________________________________________________________
+____________________________________________________________________________________________________________________
 
-  LGA_NKS_Timeline_Refresh_Wrap v1.0 - 2024 - Lega
+  LGA_NKS_Timeline_Refresh_Wrap v1.2 - 2024 - Lega
   
-  Wrapper que ejecuta una secuencia de scripts para refrescar
-  el timeline manteniendo el nivel de zoom original:
+  Wrapper que ejecuta una secuencia de scripts para refrescar el timeline manteniendo el nivel de zoom original:
   
   1. Captura el estado actual del timeline (zoom y scroll)
-  2. Refresca el timeline
-  3. Ajusta el tamaño de la ventana
-  4. Scrollea al track superior
-  5. Restaura el estado original usando los valores exactos
-     del slider y scrollbar
-__________________________________________________________
+  2. Limpia el cache de reproducción
+  3. Refresca el timeline
+  4. Ajusta el tamaño de la ventana
+  5. Scrollea al track superior
+  6. Restaura el estado original (dos intentos) usando los valores exactos del slider y scrollbar
+____________________________________________________________________________________________________________________
 """
 
 import hiero.core
@@ -23,7 +22,7 @@ from PySide2 import QtWidgets, QtCore
 import time
 
 # Variable global para activar o desactivar los prints
-DEBUG = True
+DEBUG = False
 
 def debug_print(*message):
     if DEBUG:
@@ -38,10 +37,47 @@ def get_timeline_state():
         if not t:
             return None
             
-        # Obtener los widgets necesarios
-        timeline_view = t.window().children()[3].children()[0].children()[0]
-        viewport = timeline_view.children()[0]  # qt_scrollarea_viewport
-        h_container = timeline_view.children()[6]  # qt_scrollarea_hcontainer
+        # Buscar el QSplitter primero
+        splitter = None
+        for child in t.window().children():
+            if isinstance(child, QtWidgets.QSplitter):
+                splitter = child
+                break
+                
+        if not splitter:
+            debug_print("No se pudo encontrar el QSplitter")
+            return None
+            
+        # Buscar el TimelineView dentro del primer widget del QSplitter
+        timeline_view = None
+        for child in splitter.children():
+            if isinstance(child, QtWidgets.QWidget):
+                for subchild in child.children():
+                    if isinstance(subchild, QtWidgets.QAbstractScrollArea):
+                        timeline_view = subchild
+                        break
+                if timeline_view:
+                    break
+                    
+        if not timeline_view:
+            debug_print("No se pudo encontrar el TimelineView")
+            return None
+            
+        # Buscar viewport y h_container por nombre
+        viewport = None
+        h_container = None
+        for child in timeline_view.children():
+            if hasattr(child, 'objectName'):
+                if child.objectName() == "qt_scrollarea_viewport":
+                    viewport = child
+                elif child.objectName() == "qt_scrollarea_hcontainer":
+                    h_container = child
+        
+        if not all([viewport, h_container]):
+            debug_print("No se pudieron encontrar todos los widgets necesarios")
+            return None
+            
+        # Obtener scrollbar y slider
         h_scrollbar = h_container.children()[0]  # QScrollBar
         h_slider = h_container.children()[2]     # QSlider
         
@@ -63,7 +99,11 @@ def get_timeline_state():
             
     except Exception as e:
         debug_print(f"Error al obtener el estado del timeline: {e}")
-        return None
+        if DEBUG:
+            import traceback
+            debug_print(traceback.format_exc())
+        
+    return None
 
 def restore_timeline_state(state):
     """
@@ -73,9 +113,48 @@ def restore_timeline_state(state):
         t = hiero.ui.getTimelineEditor(hiero.ui.activeSequence())
         if not t:
             return False
+            
+        # Buscar el QSplitter primero
+        splitter = None
+        for child in t.window().children():
+            if isinstance(child, QtWidgets.QSplitter):
+                splitter = child
+                break
+                
+        if not splitter:
+            debug_print("No se pudo encontrar el QSplitter")
+            return False
+            
+        # Buscar el TimelineView dentro del primer widget del QSplitter
+        timeline_view = None
+        for child in splitter.children():
+            if isinstance(child, QtWidgets.QWidget):
+                for subchild in child.children():
+                    if isinstance(subchild, QtWidgets.QAbstractScrollArea):
+                        timeline_view = subchild
+                        break
+                if timeline_view:
+                    break
+                    
+        if not timeline_view:
+            debug_print("No se pudo encontrar el TimelineView")
+            return False
+            
+        # Buscar viewport y h_container por nombre
+        viewport = None
+        h_container = None
+        for child in timeline_view.children():
+            if hasattr(child, 'objectName'):
+                if child.objectName() == "qt_scrollarea_viewport":
+                    viewport = child
+                elif child.objectName() == "qt_scrollarea_hcontainer":
+                    h_container = child
         
-        # Acceder directamente a los widgets
-        h_container = t.window().children()[3].children()[0].children()[0].children()[6]
+        if not all([viewport, h_container]):
+            debug_print("No se pudieron encontrar todos los widgets necesarios")
+            return False
+            
+        # Obtener scrollbar y slider
         h_scrollbar = h_container.children()[0]  # QScrollBar
         h_slider = h_container.children()[2]     # QSlider
         

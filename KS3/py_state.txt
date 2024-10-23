@@ -17,8 +17,8 @@
             116
         ],
         "scripts/0_Script_Loader.py": [
-            354,
-            354
+            320,
+            320
         ],
         "scripts/Assets_in_folder.py": [
             4275,
@@ -125,8 +125,8 @@
             540
         ],
         "scripts/Untitled.py": [
-            1748,
-            1748
+            1856,
+            1856
         ],
         "scripts/Write_Default.py": [
             704,
@@ -166,7 +166,7 @@
         ]
     },
     "last_folder": "scripts",
-    "last_script": "0_Script_Loader.py",
+    "last_script": "Untitled.py",
     "scroll_pos": {
         "Rotate_Shortcut/Funciona_Con_foco_en_viewer.py": 0,
         "Rotate_Shortcut/Rotate_Shortcut.py": 0,
@@ -199,7 +199,7 @@
         "scripts/Reload_ozBackdrop.py": 0,
         "scripts/RenamWri_v01.py": 0,
         "scripts/Testea.py": 0,
-        "scripts/Untitled.py": 39,
+        "scripts/Untitled.py": 52,
         "scripts/Write_Default.py": 7,
         "scripts/Write_From_Selected_Read.py": 0,
         "scripts/_Reload_Script.py": 0,
@@ -211,7 +211,7 @@
         "scripts/oz_backdrop_replacer.py": 21
     },
     "splitter_sizes": [
-        647,
-        185
+        343,
+        133
     ]
 }
