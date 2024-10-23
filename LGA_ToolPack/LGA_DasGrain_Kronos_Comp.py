@@ -2,10 +2,8 @@
 _____________________________________________________________________________________________________________________
 
   LGA_DasGrain_Kronos_Comp v1.1 | 2024 | Lega  
-  Herramienta para mejorar los nodos DasGrain sincronizando la intensidad del grano con la interpolación de Kronos.
-  Añade una pestaña 'KroComp' con knobs 'Intensity' y 'KronosFrame', y modifica el knob 'luminance' existente
-  para asegurar una intensidad de grano consistente cuando Kronos interpola frames.
-  Versión 1.1: Ajusta la lógica para considerar frames cercanos a enteros (±0.14) como frames completos.
+  Herramienta  para sincronizar la intensidad del grano de un nodo Dasgrain con los valores de interpolación de Kronos. 
+  Esto mantiene una apariencia consistente del grano incluso cuando Kronos interpola frames.
 _____________________________________________________________________________________________________________________
 
 """
