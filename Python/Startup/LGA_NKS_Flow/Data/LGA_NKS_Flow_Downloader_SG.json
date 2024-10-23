@@ -2640,7 +2640,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Split entre el aPlate con el acting de él y el bPlate con el acting de ella.",
                             "task_status": "rev_di",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": [
@@ -2694,7 +2694,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Split entre un aPlate de la nena con un bPlate de la madre.",
                             "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
@@ -2948,7 +2948,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Composición entre plano de ella y plano con la barrera baja.",
                             "task_status": "rev_di",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
@@ -3006,7 +3006,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Composición entre plano de ella y plano con la barrera baja.",
                             "task_status": "rev_di",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": [
@@ -3509,7 +3509,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Clean micrófono y microfonista.",
                             "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
@@ -3613,7 +3613,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Clean micrófono.",
                             "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
@@ -3682,7 +3682,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Split para que la sombra de Alicia entre antes a cuadro según editref.",
                             "task_status": "revleg",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
@@ -3735,7 +3735,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Split entre el aPlate con el acting de él y el bPlate con las piernas de ella.",
                             "task_status": "rev_su",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": []
@@ -3961,7 +3961,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": "Split para acortar pausa.",
+                            "task_description": "Split con mismo plate para acortar los tiemos entre cada uno de los objetos que caen y matchearlo con el editref.",
                             "task_status": "revleg",
                             "task_assigned_to": "martin villarreal",
                             "versions": [
@@ -4212,7 +4212,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": "Acortar el tiempo hasta que abre la puerta",
+                            "task_description": "Stitch entre aPlate y bPlate para acortar el tiempo hasta que el personaje abre la puerta.",
                             "task_status": "corr",
                             "task_assigned_to": "martin villarreal",
                             "versions": [
@@ -4446,7 +4446,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Agregar reflejo blanco en auto (Hecho en offline). Tiene que dar la sensación de que esta en movimiento.",
-                            "task_status": "rev_su",
+                            "task_status": "revleg",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": [
                                 {
@@ -4546,7 +4546,7 @@
                                 {
                                     "version_number": "VL_37B_010_Add_Reflejo_comp_v15",
                                     "version_description": "Correccion: hacer que el reflejo salga antes.",
-                                    "version_status": "rev",
+                                    "version_status": "unvleg",
                                     "version_date": "2024-10-22T22:45:59+02:00",
                                     "comments": []
                                 }
@@ -4746,9 +4746,9 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
+                            "task_description": "Reemplazar el reflejo del espejo usando el bPlate. El editref sirve de referencia.",
+                            "task_status": "progre",
+                            "task_assigned_to": "Silvina Lesa Brown",
                             "versions": []
                         }
                     ]
@@ -4801,7 +4801,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Clean comida pájaro.",
                             "task_status": "revleg",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
@@ -4868,7 +4868,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Clean comida pájaro.",
                             "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
@@ -5065,7 +5065,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Rampa de velocidad",
                             "task_status": "corr",
                             "task_assigned_to": "Sebas Romano",
                             "versions": [
@@ -5182,7 +5182,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Borrado de caña y micrófono.",
                             "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
@@ -5342,7 +5342,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Retiming del momento del golpe.\n130% de velocidad del frame 18 al 36.",
                             "task_status": "rev_di",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": [
@@ -5379,8 +5379,8 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
-                            "task_status": "corr",
+                            "task_description": "Split entre el aPlate con el acting de él y el bPlate con el acting de ella.",
+                            "task_status": "revleg",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
                                 {
@@ -5442,6 +5442,13 @@
                                             "user": "Sebas Romano"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_06B_030_Split_Cena_comp_v08",
+                                    "version_description": "Stitch brazo de bplate por escote y articulación de movimiento del hombro con aplate",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-23T16:23:23+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -5503,8 +5510,8 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
-                            "task_status": "rev_su",
+                            "task_description": "Hasta el frame 75 del editref sin cambios. A partir de ahí hay rampas de velocidad diferentes en la actuación de él y en la de ella.",
+                            "task_status": "corr",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
                                 {
@@ -5554,7 +5561,7 @@
                                 {
                                     "version_number": "VL_06A_030_Split-retime_Cena_comp_v04",
                                     "version_description": "va el mov macheado",
-                                    "version_status": "rev",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-23T03:52:24+02:00",
                                     "comments": []
                                 }
@@ -5568,7 +5575,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Hasta el frame 300 del editref sin cambios. A partir de ahí hay rampas de velocidad diferentes en la actuación de él y en la de ella.",
                             "task_status": "ready",
                             "task_assigned_to": "No asignado",
                             "versions": []
@@ -5581,7 +5588,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Borrado de la mano de Hendler.",
                             "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
@@ -5742,7 +5749,7 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Borrado de la mano de Hendler.",
                             "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
