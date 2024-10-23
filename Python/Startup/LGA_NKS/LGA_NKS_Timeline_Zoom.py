@@ -2,14 +2,14 @@
 __________________________________________________________
 
   LGA_NKS_Timeline_Zoom v1.0 - 2024 - Lega
-  
+
   Hace un zoom temporal en el timeline activo de Hiero:
   1. Captura el estado actual del timeline
   2. Incrementa el zoom usando la rueda del mouse
   3. Espera 1 segundo
-  4. Restaura el estado original
+  4. Restaura el estado original usando el valor exacto
+     del slider y scrollbar
 __________________________________________________________
-
 """
 
 import hiero.core
@@ -26,20 +26,24 @@ def debug_print(*message):
 
 def get_timeline_widgets():
     """
-    Obtiene los widgets necesarios del timeline.
+    Obtiene los widgets necesarios del timeline usando la ruta directa.
     """
-    timeline_editor = hiero.ui.getTimelineEditor(hiero.ui.activeSequence())
-    if not timeline_editor:
-        return None, None, None
-        
     try:
-        window = timeline_editor.window()
-        timeline_view = window.children()[3].children()[0].children()[0]
-        viewport = timeline_view.viewport()
-        h_scrollbar = timeline_view.horizontalScrollBar()
+        # Obtener el editor de la secuencia activa
+        t = hiero.ui.getTimelineEditor(hiero.ui.activeSequence())
+        if not t:
+            return None, None, None
+        
+        # Obtener los widgets necesarios
+        timeline_view = t.window().children()[3].children()[0].children()[0]
+        viewport = timeline_view.children()[0]  # qt_scrollarea_viewport
+        h_container = timeline_view.children()[6]  # qt_scrollarea_hcontainer
+        h_scrollbar = h_container.children()[0]  # QScrollBar
         
         return timeline_view, viewport, h_scrollbar
-    except:
+            
+    except Exception as e:
+        debug_print(f"Error al obtener los widgets: {e}")
         return None, None, None
 
 def get_timeline_state():
@@ -52,18 +56,26 @@ def get_timeline_state():
         return None
         
     try:
+        # Obtener el slider
+        h_container = timeline_view.children()[6]  # qt_scrollarea_hcontainer
+        h_slider = h_container.children()[2]     # QSlider
+        
         viewport_width = viewport.width()
         scrollbar_range = h_scrollbar.maximum() - h_scrollbar.minimum() + h_scrollbar.pageStep()
         zoom_factor = viewport_width / scrollbar_range
         
-        return {
+        # Agregar el valor del slider al estado
+        state = {
             'scroll_value': h_scrollbar.value(),
             'scroll_min': h_scrollbar.minimum(),
             'scroll_max': h_scrollbar.maximum(),
             'page_step': h_scrollbar.pageStep(),
             'viewport_width': viewport_width,
-            'zoom_factor': zoom_factor
+            'zoom_factor': zoom_factor,
+            'slider_value': h_slider.value() if hasattr(h_slider, 'value') else None
         }
+        
+        return state
             
     except Exception as e:
         debug_print(f"Error al obtener el estado del timeline: {e}")
@@ -99,42 +111,68 @@ def apply_wheel_zoom(viewport, zoom_in=True):
         debug_print(f"Error al aplicar zoom: {e}")
         return False
 
+def apply_zoom_steps(viewport, steps=1, zoom_in=True):
+    """
+    Aplica múltiples pasos de zoom.
+    """
+    for _ in range(steps):
+        success = apply_wheel_zoom(viewport, zoom_in)
+        if not success:
+            debug_print("Fallo al aplicar un paso de zoom.")
+        time.sleep(0.05)  # Pequeña pausa para permitir que el zoom se aplique
+
 def restore_timeline_state(state):
     """
-    Restaura el estado del timeline usando los métodos documentados del scrollbar.
+    Restaura el estado del timeline usando acceso directo al scrollbar y slider.
     """
-    timeline_view, viewport, h_scrollbar = get_timeline_widgets()
-    if not all([timeline_view, viewport, h_scrollbar]):
-        return False
-            
     try:
-        # Obtener valores actuales antes de cambiarlos
-        current_page_step = h_scrollbar.pageStep()
-        current_min = h_scrollbar.minimum()
-        current_max = h_scrollbar.maximum()
-        current_value = h_scrollbar.value()
+        # Obtener el editor de la secuencia activa
+        t = hiero.ui.getTimelineEditor(hiero.ui.activeSequence())
+        if not t:
+            return False
         
-        # 1. Primero establecer el page_step
-        print(f"\nCambiando page_step de {current_page_step} a {state['page_step']}")
+        # Acceder directamente a los widgets usando la ruta específica
+        h_container = t.window().children()[3].children()[0].children()[0].children()[6]
+        h_scrollbar = h_container.children()[0]  # QScrollBar
+        h_slider = h_container.children()[2]     # QSlider
+        
+        print("\nRestaurando estado del timeline...")
+        print(f"Usando scrollbar y slider para restaurar zoom_factor: {state['zoom_factor']}")
+        
+        # 1. Primero restaurar el valor del slider y esperar
+        if state['slider_value'] is not None:
+            print(f"Restaurando valor del slider: {state['slider_value']}")
+            h_slider.setValue(state['slider_value'])
+            QtCore.QCoreApplication.processEvents()
+            time.sleep(0.1)  # Dar tiempo a que el slider afecte el zoom
+            
+            # Verificar estado intermedio después del slider
+            intermediate_state = get_timeline_state()
+            print("\nEstado después de restaurar slider:")
+            print(intermediate_state)
+        
+        # 2. Luego restaurar valores del scrollbar
+        print("\nRestaurando valores del scrollbar...")
         h_scrollbar.setPageStep(state['page_step'])
-        
-        # 2. Establecer el rango completo de una vez
-        print(f"Cambiando scroll_min de {current_min} a {state['scroll_min']}")
-        print(f"Cambiando scroll_max de {current_max} a {state['scroll_max']}")
-        h_scrollbar.setRange(state['scroll_min'], state['scroll_max'])
-        
-        # 3. Finalmente establecer el valor
-        print(f"Cambiando scroll_value de {current_value} a {state['scroll_value']}")
-        h_scrollbar.setValue(state['scroll_value'])
-        
-        # Verificar los cambios
-        print("\nValores después de los cambios:")
-        print(f"page_step: {h_scrollbar.pageStep()} (esperado: {state['page_step']})")
-        print(f"scroll_min: {h_scrollbar.minimum()} (esperado: {state['scroll_min']})")
-        print(f"scroll_max: {h_scrollbar.maximum()} (esperado: {state['scroll_max']})")
-        print(f"scroll_value: {h_scrollbar.value()} (esperado: {state['scroll_value']})")
-        
         QtCore.QCoreApplication.processEvents()
+        time.sleep(0.1)
+        
+        h_scrollbar.setMaximum(state['scroll_max'])
+        QtCore.QCoreApplication.processEvents()
+        time.sleep(0.1)
+        
+        h_scrollbar.setMinimum(state['scroll_min'])
+        QtCore.QCoreApplication.processEvents()
+        time.sleep(0.1)
+        
+        h_scrollbar.setValue(state['scroll_value'])
+        QtCore.QCoreApplication.processEvents()
+        
+        # Verificar el estado final
+        final_state = get_timeline_state()
+        print("\nEstado FINAL después de restaurar:")
+        print(final_state)
+        
         return True
             
     except Exception as e:
@@ -157,21 +195,19 @@ def main():
         print("\nEstado INICIAL:")
         print(original_state)
             
-        # 2. Hacer zoom in y capturar estado
-        if apply_wheel_zoom(viewport, zoom_in=True):
-            apply_wheel_zoom(viewport, zoom_in=True)
-            apply_wheel_zoom(viewport, zoom_in=True)
-            zoom_state = get_timeline_state()
-            print("\nEstado después de ZOOM IN:")
-            print(zoom_state)
-            
-            time.sleep(1.0)
-            
-            # 3. Restaurar y mostrar estado final
-            if restore_timeline_state(original_state):
-                final_state = get_timeline_state()
-                print("\nEstado FINAL después de restaurar:")
-                print(final_state)
+        # 2. Hacer zoom in usando la rueda del mouse
+        zoom_steps = 8  # Número fijo de pasos para un zoom in más notorio
+        print(f"\nAplicando {zoom_steps} pasos de zoom in...")
+        apply_zoom_steps(viewport, steps=zoom_steps, zoom_in=True)
+        zoom_state = get_timeline_state()
+        print("\nEstado después de ZOOM IN:")
+        print(zoom_state)
+        
+        # 3. Esperar 1 segundo
+        time.sleep(1.0)
+        
+        # 4. Restaurar el estado original directamente
+        restore_timeline_state(original_state)
         
     except Exception as e:
         debug_print(f"Error en la operación de zoom: {e}")

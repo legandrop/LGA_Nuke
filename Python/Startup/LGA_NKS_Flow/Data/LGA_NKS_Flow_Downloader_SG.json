@@ -1047,6 +1047,25 @@
                                             "user": "Lega Pugliese"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v96",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-23T20:57:00+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "- Más polvo. \n- Que caiga polvo por detrás de él también.\n- Que no se vaya por fundido.\n- Que siga cayendo algo de polvo cuando la cámara se acerca.\n- Cuando la cámara se acerca también puede caer algo.\n\nEn la carpeta de assets hay polvo cayendo.\nFijate en AVFX que te sirve, yo tengo las librerías Falling Dust y Falling Debris.\n\nPor ahí probar algun Dast Wave abajo del sillón cuando choca contra el piso?\n\n- Probar que tal queda poner polvo más blanco arriba. Si no funciona también podemos probar llevar el blanco del plano anterior a algo más parecido a este.",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_33H_030_Add_Polvo_comp_v96",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-23T20:58:28+02:00",
+                                    "comments": []
                                 }
                             ]
                         }
@@ -3962,7 +3981,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Split con mismo plate para acortar los tiemos entre cada uno de los objetos que caen y matchearlo con el editref.",
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "martin villarreal",
                             "versions": [
                                 {
@@ -4004,9 +4023,14 @@
                                 {
                                     "version_number": "VL_09G_010_CutStitch_Galpon_comp_v04",
                                     "version_description": null,
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-21T20:01:39+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "Perf!",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -4446,7 +4470,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Agregar reflejo blanco en auto (Hecho en offline). Tiene que dar la sensación de que esta en movimiento.",
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Patricio Barreiro",
                             "versions": [
                                 {
@@ -4546,9 +4570,14 @@
                                 {
                                     "version_number": "VL_37B_010_Add_Reflejo_comp_v15",
                                     "version_description": "Correccion: hacer que el reflejo salga antes.",
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-22T22:45:59+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "Sale!",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -4586,9 +4615,9 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
+                            "task_description": "Combinar acting cada personaje de momentos distintos",
                             "task_status": "ready",
-                            "task_assigned_to": "No asignado",
+                            "task_assigned_to": "Silvina Lesa Brown",
                             "versions": []
                         }
                     ]
@@ -4600,8 +4629,8 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
+                            "task_status": "progre",
+                            "task_assigned_to": "Silvina Lesa Brown",
                             "versions": []
                         }
                     ]
@@ -4747,9 +4776,22 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Reemplazar el reflejo del espejo usando el bPlate. El editref sirve de referencia.",
-                            "task_status": "progre",
+                            "task_status": "revleg",
                             "task_assigned_to": "Silvina Lesa Brown",
-                            "versions": []
+                            "versions": [
+                                {
+                                    "version_number": "VL_24_020_Split_Espejo_comp_v02",
+                                    "version_description": "Split reflejo dentro del espejo.",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-23T18:22:28+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Paso a Lega . En editref, el espejo está un poco más a la izquierda.",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 },
@@ -5511,7 +5553,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Hasta el frame 75 del editref sin cambios. A partir de ahí hay rampas de velocidad diferentes en la actuación de él y en la de ella.",
-                            "task_status": "corr",
+                            "task_status": "revleg",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
                                 {
@@ -5563,6 +5605,13 @@
                                     "version_description": "va el mov macheado",
                                     "version_status": "vwd",
                                     "version_date": "2024-10-23T03:52:24+02:00",
+                                    "comments": []
+                                },
+                                {
+                                    "version_number": "VL_06A_030_Split-retime_Cena_comp_v05",
+                                    "version_description": "acomode dedo y copa",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-23T19:12:59+02:00",
                                     "comments": []
                                 }
                             ]
