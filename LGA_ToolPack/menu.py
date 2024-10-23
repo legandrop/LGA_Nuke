@@ -217,8 +217,8 @@ n.addCommand("  Create Merge | Switch ops", "LGA_merge.main()", "shift+m", short
 
 # Importar el LGA_grade
 import LGA_grade
-n.addCommand("  Create Grade + Mask", "LGA_grade.gradeMask()", "shift+G", shortcutContext=2, icon=icon_Knobs)
-n.addCommand("  Create Grade + High", "LGA_grade.gradeHI()", "ctrl+shift+G", shortcutContext=2, icon=icon_Knobs)
+n.addCommand("  Create Grade | Mask", "LGA_grade.gradeMask()", "shift+G", shortcutContext=2, icon=icon_Knobs)
+n.addCommand("  Create Grade | Highlights", "LGA_grade.gradeHI()", "ctrl+shift+G", shortcutContext=2, icon=icon_Knobs)
 
 
 # Importar el LGA_disable_A_B
