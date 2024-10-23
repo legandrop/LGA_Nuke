@@ -1,8 +1,9 @@
 """
-___________________________________
+_____________________________________
 
   LGA_ToolPack v2.0 | 2024 | Lega  
-___________________________________
+  Colección de herramientas de Nuke
+_____________________________________
 
 """
 
@@ -328,6 +329,6 @@ import nuke
 TP_script_dir = os.path.dirname(os.path.realpath(__file__))
 TP_pdf_path = os.path.join(TP_script_dir, "LGA_ToolPack.pdf")
 
-n.addCommand("v1.8", lambda: webbrowser.open('file://' + TP_pdf_path))
+n.addCommand("v2.0", lambda: webbrowser.open('file://' + TP_pdf_path))
 
 
