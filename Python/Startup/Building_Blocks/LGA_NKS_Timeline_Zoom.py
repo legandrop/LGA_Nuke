@@ -1,7 +1,7 @@
 """
 __________________________________________________________
 
-  LGA_NKS_Timeline_Zoom v1.0 - 2024 - Lega
+  LGA_NKS_Timeline_Zoom v1.1 - 2024 - Lega
 
   Hace un zoom temporal en el timeline activo de Hiero:
   1. Captura el estado actual del timeline
@@ -9,6 +9,10 @@ __________________________________________________________
   3. Espera 1 segundo
   4. Restaura el estado original usando el valor exacto
      del slider y scrollbar
+     
+  IndexVsName: Define el método para acceder a los widgets
+  - "index": Usa índices directos (método original)
+  - "name": Busca widgets por nombre (método robusto)
 __________________________________________________________
 """
 
@@ -20,25 +24,72 @@ import time
 # Variable global para activar o desactivar los prints
 DEBUG = True
 
+# Variable para definir el método de acceso a widgets
+IndexVsName = "name"
+
 def debug_print(*message):
     if DEBUG:
         print(*message)
 
 def get_timeline_widgets():
     """
-    Obtiene los widgets necesarios del timeline usando la ruta directa.
+    Obtiene los widgets necesarios del timeline.
     """
     try:
-        # Obtener el editor de la secuencia activa
         t = hiero.ui.getTimelineEditor(hiero.ui.activeSequence())
         if not t:
             return None, None, None
-        
-        # Obtener los widgets necesarios
-        timeline_view = t.window().children()[3].children()[0].children()[0]
-        viewport = timeline_view.children()[0]  # qt_scrollarea_viewport
-        h_container = timeline_view.children()[6]  # qt_scrollarea_hcontainer
-        h_scrollbar = h_container.children()[0]  # QScrollBar
+            
+        if IndexVsName == "index":
+            # Método original usando índices
+            timeline_view = t.window().children()[3].children()[0].children()[0]
+            viewport = timeline_view.children()[0]  # qt_scrollarea_viewport
+            h_container = timeline_view.children()[6]  # qt_scrollarea_hcontainer
+            h_scrollbar = h_container.children()[0]  # QScrollBar
+            
+        else:
+            # Método nuevo usando nombres
+            # Buscar el QSplitter primero
+            splitter = None
+            for child in t.window().children():
+                if isinstance(child, QtWidgets.QSplitter):
+                    splitter = child
+                    break
+                    
+            if not splitter:
+                debug_print("No se pudo encontrar el QSplitter")
+                return None, None, None
+                
+            # Buscar el TimelineView dentro del primer widget del QSplitter
+            timeline_view = None
+            for child in splitter.children():
+                if isinstance(child, QtWidgets.QWidget):
+                    for subchild in child.children():
+                        if isinstance(subchild, QtWidgets.QAbstractScrollArea):
+                            timeline_view = subchild
+                            break
+                    if timeline_view:
+                        break
+                        
+            if not timeline_view:
+                debug_print("No se pudo encontrar el TimelineView")
+                return None, None, None
+                
+            # Buscar viewport y h_container por nombre
+            viewport = None
+            h_container = None
+            for child in timeline_view.children():
+                if hasattr(child, 'objectName'):
+                    if child.objectName() == "qt_scrollarea_viewport":
+                        viewport = child
+                    elif child.objectName() == "qt_scrollarea_hcontainer":
+                        h_container = child
+            
+            if not all([viewport, h_container]):
+                debug_print("No se pudieron encontrar todos los widgets necesarios")
+                return None, None, None
+                
+            h_scrollbar = h_container.children()[0]  # QScrollBar
         
         return timeline_view, viewport, h_scrollbar
             

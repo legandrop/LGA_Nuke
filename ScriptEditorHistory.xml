@@ -11136,67 +11136,79 @@ def ejecutar_script(script_path):
                 debug_print(os.path.join(root, file))
 
 # Ejecutar el script
-ejecutar_script(ScriptPath)&quot;&quot;&quot;
-__________________________________________________________
-
-  LGA_NKS_ExploreTimelineWidgets v1.0 - 2024 - Lega
-  
-  Explora y muestra la estructura completa de widgets del timeline
-  activo en Hiero. Útil para desarrollo y debugging de scripts
-  que necesitan acceder a widgets específicos del timeline.
-  
-  Muestra:
-  - Jerarquía completa de widgets
-  - Tipo de cada widget
-  - Nombre del objeto (si tiene)
-  - Clase del widget (si es QWidget)
-  
-  Ejemplo de uso:
-  Para encontrar la ruta correcta a un widget específico,
-  como scrollbars, sliders o contenedores del timeline.
-__________________________________________________________
-
-&quot;&quot;&quot;
-
+ejecutar_script(ScriptPath)import sys
+import os
 import hiero.core
-import hiero.ui
-from PySide2 import QtWidgets
+import importlib
 
-def explore_timeline_widgets():
-    &quot;&quot;&quot;
-    Explora la estructura completa de widgets del timeline.
-    &quot;&quot;&quot;
-    t = hiero.ui.getTimelineEditor(hiero.ui.activeSequence())
-    if not t:
-        print(&quot;No se encontró un timeline activo.&quot;)
-        return
-    
-    print(&quot;\nExplorando estructura completa de widgets:&quot;)
-    def explore_widget(widget, depth=0):
-        indent = &quot;  &quot; * depth
-        print(f&quot;{indent}Type: {type(widget).__name__}&quot;)
-        if hasattr(widget, 'objectName') and widget.objectName():
-            print(f&quot;{indent}Name: {widget.objectName()}&quot;)
-        if isinstance(widget, QtWidgets.QWidget):
-            print(f&quot;{indent}Class: {widget.metaObject().className()}&quot;)
-        
-        if hasattr(widget, 'children'):
-            for child in widget.children():
-                explore_widget(child, depth + 1)
-    
-    explore_widget(t.window())
+# Variable global para activar o desactivar los prints de depuración
+DEBUG = False
 
-def main():
-    &quot;&quot;&quot;
-    Función principal que ejecuta la exploración de widgets.
-    &quot;&quot;&quot;
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+# Definir la ruta del script que quieres ejecutar
+ScriptPath = &quot;Python/Startup/LGA_NKS/LGA_NKS_Timeline_Zoom.py&quot;
+
+def ejecutar_script(script_path):
+    # Obtener la ruta del directorio de plugins de Hiero
+    hiero_plugin_paths = hiero.core.pluginPath()
+
+    # Asumimos que el primer path en la tupla es el que necesitamos
+    if isinstance(hiero_plugin_paths, tuple) and len(hiero_plugin_paths) &gt; 0:
+        hiero_plugin_path = hiero_plugin_paths[0]
+    else:
+        hiero_plugin_path = hiero_plugin_paths  # En caso de que sea una cadena
+
+    # Construir la ruta al directorio que contiene nuestro script
+    script_parts = script_path.split('/')
+    script_dir = os.path.join(os.path.dirname(hiero_plugin_path), *script_parts[:-1])
+    
+    # Añadir el directorio al path de Python si no está ya
+    if script_dir not in sys.path:
+        sys.path.insert(0, script_dir)
+
+    debug_print(&quot;Python path:&quot;, sys.path)
+    debug_print(&quot;Script directory:&quot;, script_dir)
+    debug_print(&quot;&quot;)
+
+    # Obtener el nombre del módulo del script
+    module_name = os.path.splitext(script_parts[-1])[0]
+    package_name = script_parts[-2]
+
     try:
-        explore_timeline_widgets()
+        # Importar el módulo
+        debug_print(f&quot;Intentando importar el módulo: {package_name}.{module_name}&quot;)
+        module = importlib.import_module(f&quot;{package_name}.{module_name}&quot;)
+        
+        # Recargar el módulo
+        debug_print(f&quot;Recargando el módulo: {package_name}.{module_name}&quot;)
+        module = importlib.reload(module)
+        
+        debug_print(f&quot;Módulo importado y recargado: {module}&quot;)
+        
+        # Si el módulo tiene una función main(), ejecutarla
+        if hasattr(module, 'main') and callable(module.main):
+            debug_print(&quot;Función main() encontrada. Ejecutando...&quot;)
+            module.main()
+        else:
+            debug_print(f&quot;El módulo {module_name} no tiene una función main() ejecutable.&quot;)
+            debug_print(&quot;Contenido del módulo:&quot;)
+            for attr in dir(module):
+                debug_print(f&quot;  {attr}&quot;)
     except Exception as e:
-        print(f&quot;Error durante la exploración: {e}&quot;)
+        debug_print(f&quot;Error al importar o ejecutar el módulo: {e}&quot;)
         import traceback
-        print(traceback.format_exc())
+        traceback.print_exc()
+        
+        debug_print(f&quot;Asegúrate de que el archivo {script_parts[-1]} está en {script_dir}&quot;)
+        
+        # Listar los contenidos del directorio para depuración
+        debug_print(&quot;Contenidos del directorio:&quot;)
+        for root, dirs, files in os.walk(script_dir):
+            for file in files:
+                debug_print(os.path.join(root, file))
 
-if __name__ == &quot;__main__&quot;:
-    main()
-</script>
+# Ejecutar el script
+ejecutar_script(ScriptPath)</script>
