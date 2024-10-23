@@ -5504,7 +5504,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": null,
-                            "task_status": "corr",
+                            "task_status": "rev_su",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
                                 {
@@ -5550,6 +5550,13 @@
                                             "user": "Sebas Romano"
                                         }
                                     ]
+                                },
+                                {
+                                    "version_number": "VL_06A_030_Split-retime_Cena_comp_v04",
+                                    "version_description": "va el mov macheado",
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-23T03:52:24+02:00",
+                                    "comments": []
                                 }
                             ]
                         }

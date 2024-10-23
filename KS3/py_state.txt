@@ -17,8 +17,8 @@
             116
         ],
         "scripts/0_Script_Loader.py": [
-            2771,
-            2771
+            667,
+            667
         ],
         "scripts/Assets_in_folder.py": [
             4275,
@@ -166,13 +166,13 @@
         ]
     },
     "last_folder": "scripts",
-    "last_script": "Untitled.py",
+    "last_script": "0_Script_Loader.py",
     "scroll_pos": {
         "Rotate_Shortcut/Funciona_Con_foco_en_viewer.py": 0,
         "Rotate_Shortcut/Rotate_Shortcut.py": 0,
         "Rotate_Shortcut/Untitled.py": 0,
         "scripts/0_Reload_Script_copy.py": 0,
-        "scripts/0_Script_Loader.py": 66,
+        "scripts/0_Script_Loader.py": 12,
         "scripts/Assets_in_folder.py": 73,
         "scripts/LGA_Align.py": 0,
         "scripts/LGA_Hiero_RemoveVersions.py": 62,

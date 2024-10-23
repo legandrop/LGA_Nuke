@@ -1,5 +1,11 @@
-# channelCycle v1.1
+"""
+_____________________________________________________________________________________________________
 
+  LGA_channelsCycle v1.1 - 2024 - Lega
+  Cambia el valor del knob 'channels' de un nodo seleccionado rotando entre 'rgb', 'alpha' y 'rgba'
+_____________________________________________________________________________________________________
+
+"""
 import nuke
 
 # Variable global para activar o desactivar los prints
