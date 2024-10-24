@@ -3696,13 +3696,13 @@
                     ]
                 },
                 {
-                    "shot_name": "VL_06C_010_SombraAlicia",
+                    "shot_name": "VL_06C_010_Sombra_Alicia",
                     "sequence": "001-010",
                     "tasks": [
                         {
                             "task_type": "Comp",
                             "task_description": "Split para que la sombra de Alicia entre antes a cuadro según editref.",
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Mariel Falco",
                             "versions": [
                                 {
@@ -3742,7 +3742,12 @@
                                     "version_description": "ajuste sombra mesa",
                                     "version_status": "unvleg",
                                     "version_date": "2024-10-16T19:43:45+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "perfe",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -4237,7 +4242,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Stitch entre aPlate y bPlate para acortar el tiempo hasta que el personaje abre la puerta.",
-                            "task_status": "corr",
+                            "task_status": "rev_di",
                             "task_assigned_to": "martin villarreal",
                             "versions": [
                                 {
@@ -4293,6 +4298,18 @@
                                         {
                                             "text": "Check salto en transición  (frame 1215)",
                                             "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_04A_005_Stitch_Puerta_comp_v06",
+                                    "version_description": null,
+                                    "version_status": "vwd",
+                                    "version_date": "2024-10-24T15:49:03+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Impecable",
+                                            "user": "Lega Pugliese"
                                         }
                                     ]
                                 }
@@ -4628,15 +4645,20 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Combinar acting cada personaje de momentos distintos",
-                            "task_status": "rev_su",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
                                 {
                                     "version_number": "VL_33AB_020_Split_Pedro_comp_v04",
                                     "version_description": "Split comp",
-                                    "version_status": "rev",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-24T04:39:26+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "Perfec",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -4796,18 +4818,22 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Reemplazar el reflejo del espejo usando el bPlate. El editref sirve de referencia.",
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
                                 {
                                     "version_number": "VL_24_020_Split_Espejo_comp_v02",
                                     "version_description": "Split reflejo dentro del espejo.",
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-23T18:22:28+02:00",
                                     "comments": [
                                         {
                                             "text": "Paso a Lega . En editref, el espejo está un poco más a la izquierda.",
                                             "user": "Sebas Romano"
+                                        },
+                                        {
+                                            "text": "perfe",
+                                            "user": "Lega Pugliese"
                                         }
                                     ]
                                 }
@@ -4858,13 +4884,13 @@
                     ]
                 },
                 {
-                    "shot_name": "VL_20_150_Clean _Alpiste",
+                    "shot_name": "VL_20_150_Clean_Alpiste",
                     "sequence": "011-020",
                     "tasks": [
                         {
                             "task_type": "Comp",
                             "task_description": "Clean comida pájaro.",
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
                                 {
@@ -4918,7 +4944,12 @@
                                     "version_description": "Split comp",
                                     "version_status": "unvleg",
                                     "version_date": "2024-10-20T04:21:32+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "perfec!",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -5166,10 +5197,18 @@
                     "tasks": [
                         {
                             "task_type": "Comp",
-                            "task_description": null,
-                            "task_status": "ready",
-                            "task_assigned_to": "No asignado",
-                            "versions": []
+                            "task_description": "Rampa de velocidad.\nEn el medio del plano hay un speed del 140% y vuelve a 100",
+                            "task_status": "rev_su",
+                            "task_assigned_to": "Mariel Falco",
+                            "versions": [
+                                {
+                                    "version_number": "VL_09EF_005_Rampa_Pedro_comp_v01",
+                                    "version_description": "rampa de velocidad según edit ref",
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-24T16:51:08+02:00",
+                                    "comments": []
+                                }
+                            ]
                         }
                     ]
                 },
@@ -5578,7 +5617,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Hasta el frame 75 del editref sin cambios. A partir de ahí hay rampas de velocidad diferentes en la actuación de él y en la de ella.",
-                            "task_status": "revleg",
+                            "task_status": "rev_di",
                             "task_assigned_to": "Silvina Lesa Brown",
                             "versions": [
                                 {
@@ -5635,9 +5674,26 @@
                                 {
                                     "version_number": "VL_06A_030_Split-retime_Cena_comp_v05",
                                     "version_description": "acomode dedo y copa",
-                                    "version_status": "unvleg",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-23T19:12:59+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "Paso a Lega. Hicimos nueva versión con Dasgrain adaptado a retime con interpolación de frames.",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "version_number": "VL_06A_030_Split-retime_Cena_comp_v07",
+                                    "version_description": "v con Dasgrain adaptado a retime. Check pixeles muertos de origen",
+                                    "version_status": "unvleg",
+                                    "version_date": "2024-10-24T14:46:46+02:00",
+                                    "comments": [
+                                        {
+                                            "text": "Vamos con la v06 EXR. El mov v05 está ok porque solo ajusté un poco el grano y nadie por Flow lo va a notar",
+                                            "user": "Lega Pugliese"
+                                        }
+                                    ]
                                 }
                             ]
                         }

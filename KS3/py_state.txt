@@ -17,8 +17,8 @@
             116
         ],
         "scripts/0_Script_Loader.py": [
-            296,
-            296
+            326,
+            326
         ],
         "scripts/Assets_in_folder.py": [
             4275,
@@ -172,7 +172,7 @@
         "Rotate_Shortcut/Rotate_Shortcut.py": 0,
         "Rotate_Shortcut/Untitled.py": 0,
         "scripts/0_Reload_Script_copy.py": 0,
-        "scripts/0_Script_Loader.py": 8,
+        "scripts/0_Script_Loader.py": 9,
         "scripts/Assets_in_folder.py": 73,
         "scripts/LGA_Align.py": 0,
         "scripts/LGA_Hiero_RemoveVersions.py": 62,
@@ -211,7 +211,7 @@
         "scripts/oz_backdrop_replacer.py": 21
     },
     "splitter_sizes": [
-        381,
-        148
+        385,
+        149
     ]
 }
