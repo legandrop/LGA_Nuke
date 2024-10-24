@@ -4237,7 +4237,7 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Stitch entre aPlate y bPlate para acortar el tiempo hasta que el personaje abre la puerta.",
-                            "task_status": "rev_su",
+                            "task_status": "corr",
                             "task_assigned_to": "martin villarreal",
                             "versions": [
                                 {
@@ -4287,9 +4287,14 @@
                                 {
                                     "version_number": "VL_04A_005_Stitch_Puerta_comp_v05",
                                     "version_description": null,
-                                    "version_status": "rev",
+                                    "version_status": "vwd",
                                     "version_date": "2024-10-23T22:32:39+02:00",
-                                    "comments": []
+                                    "comments": [
+                                        {
+                                            "text": "Check salto en transición  (frame 1215)",
+                                            "user": "Sebas Romano"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -4623,9 +4628,17 @@
                         {
                             "task_type": "Comp",
                             "task_description": "Combinar acting cada personaje de momentos distintos",
-                            "task_status": "ready",
+                            "task_status": "rev_su",
                             "task_assigned_to": "Silvina Lesa Brown",
-                            "versions": []
+                            "versions": [
+                                {
+                                    "version_number": "VL_33AB_020_Split_Pedro_comp_v04",
+                                    "version_description": "Split comp",
+                                    "version_status": "rev",
+                                    "version_date": "2024-10-24T04:39:26+02:00",
+                                    "comments": []
+                                }
+                            ]
                         }
                     ]
                 },

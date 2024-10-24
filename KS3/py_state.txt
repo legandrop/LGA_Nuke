@@ -17,8 +17,8 @@
             116
         ],
         "scripts/0_Script_Loader.py": [
-            320,
-            320
+            296,
+            296
         ],
         "scripts/Assets_in_folder.py": [
             4275,
@@ -166,7 +166,7 @@
         ]
     },
     "last_folder": "scripts",
-    "last_script": "Untitled.py",
+    "last_script": "0_Script_Loader.py",
     "scroll_pos": {
         "Rotate_Shortcut/Funciona_Con_foco_en_viewer.py": 0,
         "Rotate_Shortcut/Rotate_Shortcut.py": 0,
@@ -211,7 +211,7 @@
         "scripts/oz_backdrop_replacer.py": 21
     },
     "splitter_sizes": [
-        378,
-        147
+        381,
+        148
     ]
 }
