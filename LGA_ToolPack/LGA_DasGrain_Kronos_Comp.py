@@ -76,5 +76,6 @@ def main():
 
     add_amount_knobs(dasgrain_node, kronos_node)
 
-# Ejecutar la función principal
-main()
+# Llamar a main() para iniciar la aplicacion
+if __name__ == "__main__":
+    main()

@@ -7,7 +7,7 @@
                 <split size="702"/>
                 <splitter orientation="2">
                     <split size="827"/>
-                    <dock id="" activePageId="uk.co.thefoundry.project.2">
+                    <dock id="" activePageId="uk.co.thefoundry.project.2" focus="true">
                         <page id="uk.co.thefoundry.project.2" layout="splitter(240,436)"/>
                     </dock>
                     <split size="67"/>
@@ -19,17 +19,19 @@
                         <page id="com.lega.toolPanel"/>
                     </dock>
                 </splitter>
-                <split size="1953"/>
-                <dock id="" activePageId="uk.co.thefoundry.sequenceviewer.8" focus="true">
+                <split size="2003"/>
+                <dock id="" activePageId="uk.co.thefoundry.sequenceviewer.25">
                     <page id="uk.co.thefoundry.exportqueue.1"/>
                     <page id="Viewer.1"/>
-                    <page id="uk.co.thefoundry.sequenceviewer.2"/>
+                    <page id="uk.co.thefoundry.sequenceviewer.28"/>
                     <page id="uk.co.thefoundry.sequenceviewer.4"/>
                     <page id="uk.co.thefoundry.sequenceviewer.6"/>
-                    <page id="uk.co.thefoundry.sequenceviewer.8"/>
                     <page id="uk.co.thefoundry.sequenceviewer.9"/>
+                    <page id="uk.co.thefoundry.sequenceviewer.22"/>
+                    <page id="uk.co.thefoundry.sequenceviewer.24"/>
+                    <page id="uk.co.thefoundry.sequenceviewer.25"/>
                 </dock>
-                <split size="774"/>
+                <split size="724"/>
                 <splitter orientation="2">
                     <split size="612"/>
                     <dock id="" activePageId="Properties.1">
@@ -39,11 +41,8 @@
                         <page id="com.adrianpueyo.KnobScripterPane"/>
                     </dock>
                     <split size="283"/>
-                    <dock id="" activePageId="uk.co.thefoundry.spreadsheetview.4">
-                        <page id="uk.co.thefoundry.spreadsheetview.1"/>
-                        <page id="uk.co.thefoundry.spreadsheetview.2"/>
-                        <page id="uk.co.thefoundry.spreadsheetview.3"/>
-                        <page id="uk.co.thefoundry.spreadsheetview.4"/>
+                    <dock id="" activePageId="uk.co.thefoundry.spreadsheetview.20">
+                        <page id="uk.co.thefoundry.spreadsheetview.20"/>
                     </dock>
                     <split size="96"/>
                     <dock id="" activePageId="com.lega.ViewerPanel">
@@ -65,12 +64,16 @@
                     <page id="com.lega.FPTPanel"/>
                 </dock>
                 <split size="3113"/>
-                <dock id="" activePageId="uk.co.thefoundry.timeline.11">
+                <dock id="" activePageId="uk.co.thefoundry.timeline.29">
                     <page id="DAG.1"/>
-                    <page id="uk.co.thefoundry.timeline.2" layout="splitter(403,2706)"/>
+                    <page id="uk.co.thefoundry.timeline.2" layout="splitter(82,554)"/>
                     <page id="uk.co.thefoundry.timeline.11" layout="splitter(406,2703)"/>
-                    <page id="uk.co.thefoundry.timeline.10" layout="splitter(425,2684)"/>
-                    <page id="uk.co.thefoundry.timeline.8" layout="splitter(914,2195)"/>
+                    <page id="uk.co.thefoundry.timeline.10" layout="splitter(87,549)"/>
+                    <page id="uk.co.thefoundry.timeline.8" layout="splitter(187,449)"/>
+                    <page id="uk.co.thefoundry.timeline.36" layout="splitter(340,2769)"/>
+                    <page id="uk.co.thefoundry.timeline.26" layout="splitter(379,2730)"/>
+                    <page id="uk.co.thefoundry.timeline.28" layout="splitter(379,2730)"/>
+                    <page id="uk.co.thefoundry.timeline.29" layout="splitter(379,2730)"/>
                 </dock>
             </splitter>
         </splitter>
