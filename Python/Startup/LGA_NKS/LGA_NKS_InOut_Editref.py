@@ -1,7 +1,7 @@
 """
 __________________________________________________________
 
-  LGA_NKS_InOut_Editref v1.3 - 2024 - Lega
+  LGA_NKS_InOut_Editref v1.4 - 2024 - Lega
 
   Establece los puntos In y Out de la secuencia activa
   basándose en el clip más cercano del track "EditRef".
@@ -15,6 +15,7 @@ __________________________________________________________
 
 import hiero.core
 import hiero.ui
+from PySide2.QtCore import QTimer
 
 DEBUG = False
 
@@ -105,17 +106,18 @@ def seleccionar_y_ajustar_clip(clip):
             if viewer:
                 new_time = clip.timelineIn()
                 debug_print(f"Moviendo playhead al inicio del clip: {new_time}")
-                viewer.setTime(new_time)  # Usar setTime() en lugar de modificar la propiedad time
+                viewer.setTime(new_time)
             else:
                 debug_print("No se pudo obtener el viewer")
 
-            # Ejecutar el comando Zoom to Fit
-            action = hiero.ui.findMenuAction("Zoom to Fit")
-            if action:
-                debug_print("Ejecutando comando Zoom to Fit")
-                action.trigger()
-            else:
-                debug_print("No se encontró el comando Zoom to Fit")
+            # Obtener y activar la ventana del timeline
+            window = timeline_editor.window()
+            window.activateWindow()
+            window.setFocus()
+
+            # Ejecutar el comando Zoom to Fit después de que la UI se actualice
+            QTimer.singleShot(0, lambda: hiero.ui.findMenuAction('Zoom to Fit').trigger())
+            debug_print("Ejecutando comando Zoom to Fit")
         else:
             debug_print("No se pudo obtener el timeline editor.")
     except Exception as e:

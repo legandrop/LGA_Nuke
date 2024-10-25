@@ -18,6 +18,7 @@ ________________________________________________________________________________
 import hiero.core
 import hiero.ui
 from PySide2.QtGui import QColor
+from PySide2.QtCore import QTimer
 
 DEBUG = False
 
@@ -173,14 +174,17 @@ def move_playhead_to_position(position):
 def ajustar_vista_al_clip():
     """
     Ajusta la vista para que se ajuste al clip seleccionado usando el comando de menú.
+    Primero activa la ventana del timeline y luego ejecuta el comando con un timer.
     """
     try:
-        action = hiero.ui.findMenuAction("Zoom to Fit")
-        if action:
-            debug_print("Ejecutando comando Zoom to Fit")
-            action.trigger()
-        else:
-            debug_print("No se encontró el comando Zoom to Fit")
+        # Obtener y activar la ventana del timeline
+        window = hiero.ui.getTimelineEditor(hiero.ui.activeSequence()).window()
+        window.activateWindow()
+        window.setFocus()
+
+        # Ejecutar el comando Zoom to Fit después de que la UI se actualice
+        QTimer.singleShot(0, lambda: hiero.ui.findMenuAction('Zoom to Fit').trigger())
+        debug_print("Ejecutando comando Zoom to Fit")
     except Exception as e:
         debug_print(f"Error al ajustar la vista: {e}")
 
