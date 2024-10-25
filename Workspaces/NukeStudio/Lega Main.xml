@@ -20,7 +20,7 @@
                     </dock>
                 </splitter>
                 <split size="1953"/>
-                <dock id="" activePageId="uk.co.thefoundry.sequenceviewer.9">
+                <dock id="" activePageId="uk.co.thefoundry.sequenceviewer.8" focus="true">
                     <page id="uk.co.thefoundry.exportqueue.1"/>
                     <page id="Viewer.1"/>
                     <page id="uk.co.thefoundry.sequenceviewer.2"/>
@@ -32,20 +32,20 @@
                 <split size="774"/>
                 <splitter orientation="2">
                     <split size="612"/>
-                    <dock id="" activePageId="Properties.1" focus="true">
+                    <dock id="" activePageId="Properties.1">
                         <page id="Properties.1"/>
                         <page id="uk.co.thefoundry.metadata.1"/>
                         <page id="uk.co.thefoundry.backgroundrenderview.1"/>
                         <page id="com.adrianpueyo.KnobScripterPane"/>
                     </dock>
-                    <split size="315"/>
+                    <split size="283"/>
                     <dock id="" activePageId="uk.co.thefoundry.spreadsheetview.4">
                         <page id="uk.co.thefoundry.spreadsheetview.1"/>
                         <page id="uk.co.thefoundry.spreadsheetview.2"/>
                         <page id="uk.co.thefoundry.spreadsheetview.3"/>
                         <page id="uk.co.thefoundry.spreadsheetview.4"/>
                     </dock>
-                    <split size="64"/>
+                    <split size="96"/>
                     <dock id="" activePageId="com.lega.ViewerPanel">
                         <page id="com.lega.ViewerPanel"/>
                     </dock>

@@ -1,7 +1,7 @@
 """
 ________________________________________________________________
 
-  LGA_ViewerPanel v1.3 - 2024 - Lega Pugliese
+  LGA_ViewerPanel v1.4 - 2024 - Lega Pugliese
   Panel con herramientas para el viewer y el timeline de Hiero
 ________________________________________________________________
 
@@ -41,7 +41,11 @@ class ViewerPanel(QWidget):
             ("Viewer | 2.35:1 ", self.viewer_235, "#311840"),
             ("Refresh Timeline", self.refresh_timeline, "#4c4350"),
             ("Top Track ", self.top_track, "#4c4350", "Ctrl+Shift+T"),
-            ("In Out Editref", self.in_out_editref, "#4d462b", "Ctrl+Shift+U", "Ctrl+Shift+U")
+            ("In Out Editref", self.in_out_editref, "#4d462b", "Ctrl+Shift+U", "Ctrl+Shift+U"),
+            ("Prev Rev_Sup", self.prev_rev_sup, "#a3557e", "Ctrl+Shift+,", "Ctrl+Shift+,"),
+            ("Next Rev_Sup", self.next_rev_sup, "#a3557e", "Ctrl+Shift+.", "Ctrl+Shift+."),
+            ("Prev Rev_Lega", self.prev_rev_lega, "#69135e", "Ctrl+Alt+Shift+,", "Ctrl+Alt+Shift+,"),
+            ("Next Rev_Lega", self.next_rev_lega, "#69135e", "Ctrl+Alt+Shift+.", "Ctrl+Alt+Shift+.")
         ]
 
         self.num_columns = 1  # Inicialmente una columna
@@ -176,6 +180,33 @@ class ViewerPanel(QWidget):
                 debug_print(f"Script no encontrado en la ruta: {script_path}")
         except Exception as e:
             debug_print(f"Error al ejecutar el script In Out Editref: {e}")
+
+    def prev_rev_sup(self):
+        self.execute_prevnext_rev("prev", "sup")
+
+    def next_rev_sup(self):
+        self.execute_prevnext_rev("next", "sup")
+
+    def prev_rev_lega(self):
+        self.execute_prevnext_rev("prev", "lega")
+
+    def next_rev_lega(self):
+        self.execute_prevnext_rev("next", "lega")
+
+    def execute_prevnext_rev(self, direction, rev_type):
+        try:
+            script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS_PrevNext_Rev.py')
+            if os.path.exists(script_path):
+                import importlib.util
+                spec = importlib.util.spec_from_file_location("LGA_NKS_PrevNext_Rev", script_path)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                module.main(direction, rev_type)
+                debug_print(f"Ejecutado LGA_NKS_PrevNext_Rev script con dirección {direction} y tipo {rev_type}.")
+            else:
+                debug_print(f"Script no encontrado en la ruta: {script_path}")
+        except Exception as e:
+            debug_print(f"Error al ejecutar el script PrevNext Rev: {e}")
 
 # Crear la instancia del widget y anadirlo al gestor de ventanas de Hiero
 viewerPanel = ViewerPanel()
