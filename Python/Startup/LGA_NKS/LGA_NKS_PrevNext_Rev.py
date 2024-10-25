@@ -1,18 +1,18 @@
 """
-__________________________________________________________
+______________________________________________________________________________________________
 
-  LGA_NKS_PrevNext_Rev v1.1 - 2024 - Lega
+  LGA_NKS_PrevNext_Rev v1.2 - 2024 - Lega
 
   Busca el clip anterior o siguiente con estado Rev_Lega o Rev_Sup
   y ajusta la vista:
   1. Obtiene la posición actual del playhead.
-  2. Encuentra el clip más cercano con el color especificado
-     en la dirección indicada.
-  3. Establece los puntos In/Out basados en el clip EditRef
-     correspondiente a esa posición.
-  4. Mueve el playhead a la posición del In.
-  5. Ajusta el zoom para que se ajuste al clip seleccionado.
-__________________________________________________________
+  2. Encuentra el clip más cercano con el color especificado en la dirección indicada.
+  3. Establece los puntos In/Out basados en el clip EditRef correspondiente a esa posición.
+  4. Selecciona el clip EditRef.
+  5. Mueve el playhead a la posición del In.
+  6. Ajusta el zoom para que se ajuste al clip seleccionado.
+  7. Deselecciona todos los clips.
+______________________________________________________________________________________________
 """
 
 import hiero.core
@@ -210,11 +210,22 @@ def main(direction, rev_type):
         debug_print("No se pudieron establecer los puntos In/Out.")
         return
 
-    # 5. Mover el playhead a la posición del In
+    # 5. Seleccionar el clip EditRef
+    timeline_editor = hiero.ui.getTimelineEditor(hiero.ui.activeSequence())
+    if timeline_editor:
+        timeline_editor.setSelection([edit_ref_clip])
+        debug_print(f"Clip seleccionado: {edit_ref_clip.name()}")
+
+    # 6. Mover el playhead a la posición del In
     move_playhead_to_position(in_point)
 
-    # 6. Ajustar el zoom para que se ajuste al clip
+    # 7. Ajustar el zoom para que se ajuste al clip
     ajustar_vista_al_clip()
+
+    # 8. Deseleccionar todos los clips
+    if timeline_editor:
+        timeline_editor.selectNone()
+        debug_print("Clips deseleccionados")
 
 if __name__ == "__main__":
     # Si se ejecuta directamente, usar valores por defecto
