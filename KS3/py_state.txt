@@ -17,8 +17,8 @@
             116
         ],
         "scripts/0_Script_Loader.py": [
-            456,
-            456
+            514,
+            514
         ],
         "scripts/Assets_in_folder.py": [
             4275,
@@ -211,7 +211,7 @@
         "scripts/oz_backdrop_replacer.py": 21
     },
     "splitter_sizes": [
-        343,
-        133
+        385,
+        149
     ]
 }
