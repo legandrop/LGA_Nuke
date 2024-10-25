@@ -170,7 +170,7 @@ class ViewerPanel(QWidget):
                 spec.loader.exec_module(module)
 
                 # Llamar a la funcion principal del script
-                module.set_in_out_from_edit_ref_track()
+                module.main()
                 debug_print("Ejecutado LGA_NKS_InOut_Editref script.")
             else:
                 debug_print(f"Script no encontrado en la ruta: {script_path}")

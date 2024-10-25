@@ -17,8 +17,8 @@
             116
         ],
         "scripts/0_Script_Loader.py": [
-            326,
-            326
+            315,
+            315
         ],
         "scripts/Assets_in_folder.py": [
             4275,

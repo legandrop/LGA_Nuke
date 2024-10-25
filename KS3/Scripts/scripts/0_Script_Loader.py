@@ -11,7 +11,7 @@ def debug_print(*message):
         print(*message)
 
 # Definir la ruta del script que quieres ejecutar
-ScriptPath = "Python/Startup/LGA_NKS/LGA_Reduce_SeqWin.py"
+ScriptPath = "Python/Startup/LGA_NKS/LGA_NKS_InOut_Editref.py"
 
 def ejecutar_script(script_path):
     # Obtener la ruta del directorio de plugins de Hiero

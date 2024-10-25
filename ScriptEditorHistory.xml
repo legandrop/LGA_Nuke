@@ -11299,7 +11299,7 @@ def debug_print(*message):
         print(*message)
 
 # Definir la ruta del script que quieres ejecutar
-ScriptPath = &quot;Python/Startup/LGA_NKS/LGA_NKS_Timeline_InOutFitv2.py&quot;
+ScriptPath = &quot;Python/Startup/LGA_NKS/LGA_NKS_InOut_Editref.py&quot;
 
 def ejecutar_script(script_path):
     # Obtener la ruta del directorio de plugins de Hiero
