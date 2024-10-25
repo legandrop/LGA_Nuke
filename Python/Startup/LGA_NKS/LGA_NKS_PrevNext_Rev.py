@@ -1,7 +1,7 @@
 """
 __________________________________________________________
 
-  LGA_NKS_PrevNext_Rev v1.0 - 2024 - Lega
+  LGA_NKS_PrevNext_Rev v1.1 - 2024 - Lega
 
   Busca el clip anterior o siguiente con estado Rev_Lega o Rev_Sup
   y ajusta la vista:
@@ -19,7 +19,7 @@ import hiero.core
 import hiero.ui
 from PySide2.QtGui import QColor
 
-DEBUG = True
+DEBUG = False
 
 def debug_print(*message):
     if DEBUG:
@@ -47,6 +47,7 @@ def get_current_playhead_position():
 def find_clip_with_color(direction, rev_type):
     """
     Encuentra el clip con el color especificado en la dirección indicada.
+    Ignora el clip actual si el playhead está sobre él.
     """
     seq = hiero.ui.activeSequence()
     if not seq:
@@ -72,20 +73,33 @@ def find_clip_with_color(direction, rev_type):
             bin_item = item.source().binItem()
             if bin_item.color() == target_color:
                 clip_start = item.timelineIn()
-                
+                clip_end = item.timelineOut()
+
+                # Ignorar el clip si el playhead está sobre él
+                if clip_start <= playhead_pos < clip_end:
+                    debug_print(f"Ignorando clip actual: {item.name()}")
+                    continue
+
                 # Para dirección "next", buscar clips después del playhead
                 if direction == "next" and clip_start > playhead_pos:
                     distance = clip_start - playhead_pos
                     if distance < min_distance:
                         min_distance = distance
                         target_clip = item
-                
+                        debug_print(f"Encontrado clip siguiente: {item.name()} a distancia {distance}")
+
                 # Para dirección "prev", buscar clips antes del playhead
-                elif direction == "prev" and clip_start < playhead_pos:
-                    distance = playhead_pos - clip_start
+                elif direction == "prev" and clip_end < playhead_pos:
+                    distance = playhead_pos - clip_end
                     if distance < min_distance:
                         min_distance = distance
                         target_clip = item
+                        debug_print(f"Encontrado clip anterior: {item.name()} a distancia {distance}")
+
+    if target_clip:
+        debug_print(f"Clip seleccionado: {target_clip.name()}")
+    else:
+        debug_print(f"No se encontraron más clips {rev_type} en dirección {direction}")
 
     return target_clip
 
