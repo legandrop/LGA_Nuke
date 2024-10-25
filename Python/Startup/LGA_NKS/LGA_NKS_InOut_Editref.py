@@ -16,7 +16,7 @@ __________________________________________________________
 import hiero.core
 import hiero.ui
 
-DEBUG = True
+DEBUG = False
 
 def debug_print(*message):
     if DEBUG:
@@ -125,7 +125,6 @@ def main():
     """
     Función principal que establece los puntos In/Out y ajusta la vista.
     """
-    print("LGA_NKS_InOut_Editref v1.3 - 2024 - Lega")
     clip = set_in_out_from_edit_ref_track()
     if clip:
         seleccionar_y_ajustar_clip(clip)
