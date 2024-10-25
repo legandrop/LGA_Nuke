@@ -4,7 +4,8 @@ sequence = hiero.ui.activeSequence()
 if sequence:
     timeline_editor = hiero.ui.getTimelineEditor(sequence)
     if timeline_editor:
-        hiero.ui.setWorkspace("Editing")  # Cambiar al espacio de trabajo que contiene el timeline
+        # Intentar seleccionar todos los elementos del timeline para darle foco
+        timeline_editor.selectAll()
         action = hiero.ui.findMenuAction("Zoom to Fit")
         if action:
             action.trigger()
