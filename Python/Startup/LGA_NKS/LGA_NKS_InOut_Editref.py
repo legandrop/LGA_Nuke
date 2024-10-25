@@ -1,15 +1,15 @@
 """
 __________________________________________________________
 
-  LGA_NKS_InOut_Editref v1.2 - 2024 - Lega
+  LGA_NKS_InOut_Editref v1.3 - 2024 - Lega
 
   Establece los puntos In y Out de la secuencia activa
   basándose en el clip más cercano del track "EditRef".
-  1. Obtiene la secuencia activa y la posición del playhead.
-  2. Encuentra el clip más cercano en el track "EditRef".
-  3. Establece los puntos In y Out basados en ese clip.
-  4. Selecciona el clip y ajusta la vista para que se ajuste
-     al clip seleccionado en el timeline.
+   1. Obtiene la secuencia activa y la posición del playhead.
+   2. Encuentra el clip más cercano en el track "EditRef".
+   3. Establece los puntos In y Out basados en ese clip.
+   4. Selecciona el clip, mueve el playhead al inicio y ajusta
+      la vista para que se ajuste al clip seleccionado.
 __________________________________________________________
 """
 
@@ -100,6 +100,15 @@ def seleccionar_y_ajustar_clip(clip):
             timeline_editor.setSelection([clip])
             debug_print(f"Clip seleccionado: {clip.name()}")
 
+            # Mover el playhead al inicio del clip
+            viewer = hiero.ui.currentViewer()
+            if viewer:
+                new_time = clip.timelineIn()
+                debug_print(f"Moviendo playhead al inicio del clip: {new_time}")
+                viewer.setTime(new_time)  # Usar setTime() en lugar de modificar la propiedad time
+            else:
+                debug_print("No se pudo obtener el viewer")
+
             # Ejecutar el comando Zoom to Fit
             action = hiero.ui.findMenuAction("Zoom to Fit")
             if action:
@@ -116,7 +125,7 @@ def main():
     """
     Función principal que establece los puntos In/Out y ajusta la vista.
     """
-    print("LGA_NKS_InOut_Editref v1.1 - 2024 - Lega")
+    print("LGA_NKS_InOut_Editref v1.3 - 2024 - Lega")
     clip = set_in_out_from_edit_ref_track()
     if clip:
         seleccionar_y_ajustar_clip(clip)

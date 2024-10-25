@@ -11361,4 +11361,15 @@ def ejecutar_script(script_path):
                 debug_print(os.path.join(root, file))
 
 # Ejecutar el script
-ejecutar_script(ScriptPath)</script>
+ejecutar_script(ScriptPath)import hiero.ui
+
+sequence = hiero.ui.activeSequence()
+if sequence:
+    timeline_editor = hiero.ui.getTimelineEditor(sequence)
+    if timeline_editor:
+        # Intentar seleccionar todos los elementos del timeline para darle foco
+        timeline_editor.selectAll()
+        action = hiero.ui.findMenuAction(&quot;Zoom to Fit&quot;)
+        if action:
+            action.trigger()
+</script>
