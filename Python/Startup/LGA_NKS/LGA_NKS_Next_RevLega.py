@@ -1,7 +1,7 @@
 """
 __________________________________________________________
 
-  LGA_NKS_Next_RevLega v1.1 - 2024 - Lega
+  LGA_NKS_Next_RevLega v1.2 - 2024 - Lega
 
   Busca el siguiente clip con estado Rev_Lega y ajusta la vista:
   1. Obtiene la posición actual del playhead.
@@ -9,6 +9,7 @@ __________________________________________________________
   3. Establece los puntos In/Out basados en el clip EditRef
      correspondiente a esa posición.
   4. Mueve el playhead a la posición del In.
+  5. Ajusta el zoom para que se ajuste al clip seleccionado.
 __________________________________________________________
 """
 
@@ -141,6 +142,21 @@ def move_playhead_to_position(position):
         debug_print(f"Moviendo playhead a la posición: {position}")
         viewer.setTime(position)
 
+def ajustar_vista_al_clip():
+    """
+    Ajusta la vista para que se ajuste al clip seleccionado usando el comando de menú.
+    """
+    try:
+        # Buscar y ejecutar el comando "Zoom to Fit"
+        action = hiero.ui.findMenuAction("Zoom to Fit")
+        if action:
+            debug_print("Ejecutando comando Zoom to Fit")
+            action.trigger()
+        else:
+            debug_print("No se encontró el comando Zoom to Fit")
+    except Exception as e:
+        debug_print(f"Error al ajustar la vista: {e}")
+
 def main():
     """
     Función principal que ejecuta la secuencia completa de operaciones.
@@ -169,6 +185,9 @@ def main():
 
     # 5. Mover el playhead a la posición del In
     move_playhead_to_position(in_point)
+
+    # 6. Ajustar el zoom para que se ajuste al clip
+    ajustar_vista_al_clip()
 
 if __name__ == "__main__":
     main()
