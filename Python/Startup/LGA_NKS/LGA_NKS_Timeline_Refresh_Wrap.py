@@ -1,12 +1,12 @@
 """
 ____________________________________________________________________________________________________________________
 
-  LGA_NKS_Timeline_Refresh_Wrap v1.2 - 2024 - Lega
+  LGA_NKS_Timeline_Refresh_Wrap v1.3 - 2024 - Lega
   
   Wrapper que ejecuta una secuencia de scripts para refrescar el timeline manteniendo el nivel de zoom original:
   
   1. Captura el estado actual del timeline (zoom y scroll)
-  2. Limpia el cache de reproducción
+  2. Limpia el cache de reproducción (deshabiliado por el momento)
   3. Refresca el timeline
   4. Ajusta el tamaño de la ventana
   5. Scrollea al track superior
@@ -224,6 +224,7 @@ def main():
         debug_print(f"Tiempo capturando estado inicial: {time.time() - start_time:.3f} segundos")
 
         # 2. Ejecutar Clear Cache Playback
+        """
         start_time = time.time()
         cache_module = import_script('LGA_NKS_ClearCachePlayback')
         if cache_module:
@@ -231,10 +232,11 @@ def main():
             QtCore.QThread.msleep(10)
             QtCore.QCoreApplication.processEvents()
         debug_print(f"Tiempo ejecutando clear cache: {time.time() - start_time:.3f} segundos")
+        """
 
         # 3. Ejecutar los scripts
         start_time = time.time()
-        refresh_module = import_script('LGA_NKS_Refresh_Timeline')
+        refresh_module = import_script('LGA_NKS_Timeline_Refresh')
         if refresh_module:
             refresh_module.main()
             QtCore.QThread.msleep(10)
