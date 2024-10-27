@@ -1,11 +1,202 @@
-import hiero.ui
+"""
+____________________________________
 
-sequence = hiero.ui.activeSequence()
-if sequence:
-    timeline_editor = hiero.ui.getTimelineEditor(sequence)
-    if timeline_editor:
-        # Intentar seleccionar todos los elementos del timeline para darle foco
-        timeline_editor.selectAll()
-        action = hiero.ui.findMenuAction("Zoom to Fit")
-        if action:
-            action.trigger()
+  LGA_preRender v2.0 | 2024 | Lega  
+____________________________________
+
+"""
+
+from PySide2.QtWidgets import QApplication, QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QPushButton, QHBoxLayout
+from PySide2.QtCore import Qt
+from PySide2.QtGui import QCursor, QPalette, QColor
+import nuke
+import os
+
+class SelectedNodeInfo(QWidget):
+    def __init__(self, parent=None):
+        super(SelectedNodeInfo, self).__init__(parent)
+        self.options = self.get_fixed_options()  # Lista fija de opciones
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowFlags(Qt.FramelessWindowHint)  # Quitar la barra de título estándar
+
+        # Establecer el título de la ventana
+        self.setWindowTitle("Render type")
+
+        layout = QVBoxLayout(self)
+
+        # Crear una barra de título personalizada con el título y el botón de cierre en la misma línea
+        title_bar = QWidget(self)
+        title_bar.setFixedHeight(20)  # Ajustar el alto de la barra de título
+        title_bar.setAutoFillBackground(True)  # Asegurar que el fondo se llene con el color especificado
+        title_bar.setStyleSheet("background-color: #323232;")  # Establecer el color de fondo gris claro
+
+        title_bar_layout = QHBoxLayout(title_bar)
+        title_bar_layout.setContentsMargins(0, 0, 0, 0)  # Ajustar los márgenes a cero
+
+        # Añadir un expansor para centrar el título
+        title_bar_layout.addStretch(1)
+
+        # Crear el título de la ventana con un gris claro
+        title_label = QPushButton(self.windowTitle(), self)
+        title_label.setStyleSheet("background-color: none; color: #B0B0B0; border: none; font-weight: bold;")
+        title_label.setEnabled(False)  # Hacer que el botón no sea clickeable
+        title_bar_layout.addWidget(title_label)
+
+        # Añadir otro expansor para centrar el título
+        title_bar_layout.addStretch(1)
+
+        # Agregar el botón de cierre personalizado al final con un gris claro
+        close_button = QPushButton('X', self)
+        close_button.setFixedSize(20, 20)  # Ajustar el tamaño de la X para que sea consistente con la altura de la barra
+        close_button.setStyleSheet("background-color: none; color: #B0B0B0; border: none;")
+        close_button.clicked.connect(self.close)
+        title_bar_layout.addWidget(close_button)
+
+        # Mover el botón de cierre al final con espaciado
+        title_bar_layout.setSpacing(0)
+
+        layout.addWidget(title_bar)
+
+        # Crear la tabla sin el encabezado horizontal
+        self.table = QTableWidget(len(self.options), 1, self)
+        self.table.horizontalHeader().setVisible(False)  # Ocultar el encabezado horizontal
+
+        # Eliminar números de las filas
+        self.table.verticalHeader().setVisible(False)
+
+        # Configurar la paleta de la tabla para cambiar el color de selección a gris claro
+        palette = self.table.palette()
+        palette.setColor(QPalette.Highlight, QColor(230, 230, 230))  # Gris claro
+        palette.setColor(QPalette.HighlightedText, QColor(Qt.black))
+        self.table.setPalette(palette)
+
+        # Configurar el estilo de la tabla
+        self.table.setStyleSheet("""
+            QTableView::item:selected {
+                background-color: rgb(230, 230, 230);  # Gris claro
+                color: black;
+            }
+        """)
+
+        # Configurar el comportamiento de selección para seleccionar filas enteras
+        self.table.setSelectionBehavior(QTableWidget.SelectRows)
+
+        # Cargar datos en la tabla
+        self.load_data()
+
+        # Conectar el evento de clic de la celda para cambiar la opción seleccionada
+        self.table.cellClicked.connect(self.change_option)
+
+        layout.addWidget(self.table)
+        self.setLayout(layout)
+
+        # Ajustar el tamaño de la ventana y posicionarla en el centro
+        self.adjust_window_size()
+
+    def get_fixed_options(self):
+        """Retorna una lista fija de opciones para mostrar en la tabla."""
+        return [
+            "EXR preRender",
+            "EXR Comp",
+            "TIFF Matte cct",
+            "TIFF Matte Rec709",
+            "MOV Review"
+        ]
+
+    def load_data(self):
+        """Carga las opciones fijas en la tabla."""
+        for row, name in enumerate(self.options):
+            node_item = QTableWidgetItem(name)
+            self.table.setItem(row, 0, node_item)
+
+        self.table.resizeColumnsToContents()
+
+    def adjust_window_size(self):
+        """Ajusta el tamaño de la ventana basado en el contenido de la tabla y la posición del cursor."""
+        # Desactivar temporalmente el estiramiento de la última columna
+        self.table.horizontalHeader().setStretchLastSection(False)
+
+        # Ajustar las columnas al contenido
+        self.table.resizeColumnsToContents()
+
+        # Calcular el ancho de la ventana basado en el ancho de las columnas y el texto más ancho
+        width = self.table.verticalHeader().width()  # Un poco de relleno para estética
+        for i in range(self.table.columnCount()):
+            width += self.table.columnWidth(i) + 50  # Un poco más de relleno entre columnas
+
+        # Ajustar el ancho adicional basado en el texto más ancho
+        longest_text = max(self.options, key=len)
+        font_metrics = self.table.fontMetrics()
+        text_width = font_metrics.horizontalAdvance(longest_text) + 50  # Un poco de relleno adicional
+        width = max(width, text_width)
+
+        # Asegurarse de que el ancho no supera el 80% del ancho de pantalla
+        screen = QApplication.primaryScreen()
+        screen_rect = screen.availableGeometry()
+        max_width = screen_rect.width() * 0.8
+        final_width = min(width, max_width)
+
+        # Calcular la altura basada en la altura de los headers y las filas
+        height = self.table.horizontalHeader().height() + 20  # Altura del encabezado + espacio adicional
+        for i in range(self.table.rowCount()):
+            height += self.table.rowHeight(i)
+
+        # Agregar un relleno total de 10 píxeles
+        height += 10
+
+        # Incluir la altura de la barra de título personalizada
+        title_bar_height = 20
+        height += title_bar_height
+
+        # Asegurarse de que la altura no supera el 80% del alto de pantalla
+        max_height = screen_rect.height() * 0.8
+        final_height = min(height, max_height)
+
+        # Reactivar el estiramiento de la última columna
+        self.table.horizontalHeader().setStretchLastSection(True)
+
+        # Ajustar el tamaño de la ventana
+        self.resize(final_width, final_height)
+
+        # Obtener la posición actual del puntero del mouse
+        cursor_pos = QCursor.pos()
+
+        # Mover la ventana para que se centre en la posición actual del puntero del mouse
+        self.move(cursor_pos.x() - final_width // 2, cursor_pos.y() - final_height // 2)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.close()
+        elif event.key() in (Qt.Key_Return, Qt.Key_Enter):
+            current_row = self.table.currentRow()
+            if current_row >= 0:
+                self.change_option(current_row, 0)
+        else:
+            super(SelectedNodeInfo, self).keyPressEvent(event)
+
+    def change_option(self, row, column):
+        selected_option = self.options[row]
+        
+        # Aquí puedes agregar la lógica para manejar la opción seleccionada
+        # Por ejemplo, aplicar alguna transformación basada en la opción
+
+        print(f"Opción seleccionada: {selected_option}")  # Depuración
+
+        # Cerrar la ventana después de aplicar la opción
+        self.close()
+
+app = None
+window = None
+
+def main():
+    global app, window
+    print("Abriendo ventana de opciones...")  # Mensaje de depuración
+    # Verificar si ya hay una instancia de QApplication
+    app = QApplication.instance() or QApplication([])
+    window = SelectedNodeInfo()
+    window.show()
+
+# Llamar a main() para iniciar la aplicación
+main()
