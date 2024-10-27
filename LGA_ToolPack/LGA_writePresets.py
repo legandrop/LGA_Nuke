@@ -1,8 +1,12 @@
 """
-____________________________________
+_____________________________________________________________________________
 
-  LGA_preRender v2.0 | 2024 | Lega  
-____________________________________
+  LGA_writePresets v1.0 | 2024 | Lega  
+  
+  Creates Write nodes with predefined settings for different purposes.
+  Includes presets for preRenders, publish, denoise and other common tasks.
+  Supports both script-based and Read node-based path generation.  
+_____________________________________________________________________________
 
 """
 
