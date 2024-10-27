@@ -11523,7 +11523,7 @@ def debug_print(*message):
         print(*message)
 
 # Definir la ruta del script que quieres ejecutar
-ScriptPath = &quot;LGA_preRender2.py&quot;
+ScriptPath = &quot;LGA_writePresets.py&quot;
 
 def obtener_plugin_path(script_path):
     &quot;&quot;&quot;

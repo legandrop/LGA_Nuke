@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_writePresets v1.0 | 2024 | Lega  
+  LGA_writePresets v1.1 | 2024 | Lega  
   
   Creates Write nodes with predefined settings for different purposes.
   Includes presets for preRenders, publish, denoise and other common tasks.
@@ -12,9 +12,10 @@ _____________________________________________________________________________
 
 from PySide2.QtWidgets import (QApplication, QWidget, QVBoxLayout, QTableWidget, 
                               QTableWidgetItem, QPushButton, QHBoxLayout, QDialog, 
-                              QLabel, QLineEdit, QDesktopWidget, QFrame)
+                              QLabel, QLineEdit, QDesktopWidget, QFrame, QStyledItemDelegate,
+                              QStyle)  # Añadido QStyle aquí
 from PySide2.QtCore import Qt
-from PySide2.QtGui import QCursor, QPalette, QColor, QKeyEvent
+from PySide2.QtGui import QCursor, QPalette, QColor, QKeyEvent, QBrush
 import nuke
 import sys
 import os
@@ -592,6 +593,10 @@ class SelectedNodeInfo(QWidget):
         # Ajustar el tamaño de la ventana y posicionarla en el centro
         self.adjust_window_size()
 
+        # Seleccionar la primera fila y establecer el foco
+        self.table.selectRow(0)
+        self.table.setFocus()  # Añadir esta línea
+
     def get_render_options(self):
         """Retorna la lista de opciones de render disponibles."""
         return [
@@ -607,37 +612,24 @@ class SelectedNodeInfo(QWidget):
 
     def load_render_options(self):
         """Carga las opciones de render en la tabla."""
+        # Establecer el delegado personalizado
+        self.table.setItemDelegate(ColoredItemDelegate())
+        
         for row, name in enumerate(self.options):
-            # Crear un QLabel para cada fila
-            label = QLabel()
-            label.setTextFormat(Qt.RichText)  # Habilitar formato HTML
-            
-            if name.startswith("[Script]"):
-                colored_text = f'<span style="color: #ed2464;">[Script]</span>{name[8:]}'
-            elif name.startswith("[Read]"):
-                colored_text = f'<span style="color: #66e2ff;">[Read]</span>{name[6:]}'
-            else:
-                colored_text = name
-                
-            label.setText(colored_text)
-            label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-            
-            # Establecer el QLabel en la celda
-            self.table.setCellWidget(row, 0, label)
+            item = QTableWidgetItem(name)
+            item.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            self.table.setItem(row, 0, item)
 
         self.table.resizeColumnsToContents()
-
-        # Permitir HTML en los items de la tabla
         self.table.setStyleSheet("""
+            QTableView {
+                background-color: #282828;
+            }
             QTableView::item {
                 padding: 5px;
             }
             QTableView::item:selected {
                 background-color: rgb(230, 230, 230);
-                color: black;
-            }
-            QTableWidget::item {
-                border: none;
             }
         """)
 
@@ -731,6 +723,40 @@ class SelectedNodeInfo(QWidget):
                 self.handle_render_option(current_row, 0)
         else:
             super(SelectedNodeInfo, self).keyPressEvent(event)
+
+# Agregar esta clase después de las importaciones
+class ColoredItemDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        text = index.data()
+        if text:
+            painter.save()
+            
+            if option.state & QStyle.State_Selected:
+                painter.fillRect(option.rect, QColor("#212121"))
+            
+            if text.startswith("[Script]"):
+                painter.setPen(QColor("#ed2464"))
+                prefix = "[Script]"
+                painter.drawText(option.rect, Qt.AlignLeft | Qt.AlignVCenter, prefix)
+                painter.setPen(QColor("white"))
+                # Ajustar el offset basado en el ancho real del texto "[Script]"
+                text_width = painter.fontMetrics().horizontalAdvance(prefix)
+                painter.drawText(option.rect.adjusted(text_width, 0, 0, 0), 
+                               Qt.AlignLeft | Qt.AlignVCenter, text[len(prefix):])
+            elif text.startswith("[Read]"):
+                painter.setPen(QColor("#66e2ff"))
+                prefix = "[Read]"
+                painter.drawText(option.rect, Qt.AlignLeft | Qt.AlignVCenter, prefix)
+                painter.setPen(QColor("white"))
+                # Ajustar el offset basado en el ancho real del texto "[Read]"
+                text_width = painter.fontMetrics().horizontalAdvance(prefix)
+                painter.drawText(option.rect.adjusted(text_width, 0, 0, 0), 
+                               Qt.AlignLeft | Qt.AlignVCenter, text[len(prefix):])
+            else:
+                painter.setPen(QColor("white"))
+                painter.drawText(option.rect, Qt.AlignLeft | Qt.AlignVCenter, text)
+            
+            painter.restore()
 
 # El resto del código se mantiene igual
 app = None
