@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_writePresets v1.1 | 2024 | Lega  
+  LGA_writePresets v1.2 | 2024 | Lega  
   
   Creates Write nodes with predefined settings for different purposes.
   Includes presets for preRenders, publish, denoise and other common tasks.
@@ -65,13 +65,13 @@ def create_name_input_dialog(initial_text=''):
     line_edit.setFixedHeight(25)
     line_edit.setFrame(False)
     line_edit.setStyleSheet("""
-        background-color: #242527;  # Fondo de la caja de texto gris
-        color: #FFFFFF;  # Texto blanco
+        background-color: #242527;
+        color: #FFFFFF;
     """)
     line_edit.setText(initial_text)
     layout.addWidget(line_edit)
 
-    help_label = QLabel('<span style="font-size:7pt; color:#AAAAAA;">Enter para confirmar</span>', dialog)
+    help_label = QLabel('<span style="font-size:7pt; color:#AAAAAA;">Ctrl+Enter para confirmar</span>', dialog)
     help_label.setAlignment(Qt.AlignCenter)
     layout.addWidget(help_label)
 
@@ -82,8 +82,9 @@ def create_name_input_dialog(initial_text=''):
     def event_filter(widget, event):
         if isinstance(event, QKeyEvent):
             if event.key() in [Qt.Key_Return, Qt.Key_Enter]:
-                dialog.accept()
-                return True
+                if event.modifiers() == Qt.ControlModifier:  # Solo aceptar con Ctrl
+                    dialog.accept()
+                return True  # Consumir el evento Enter sin Ctrl
             elif event.key() == Qt.Key_Escape:
                 dialog.esc_exit = True
                 dialog.reject()
@@ -517,85 +518,63 @@ class SelectedNodeInfo(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setWindowFlags(Qt.FramelessWindowHint)  # Quitar la barra de título estándar
-
-        # Establecer el título de la ventana
+        self.setWindowFlags(Qt.FramelessWindowHint)
         self.setWindowTitle("Render type")
-
         layout = QVBoxLayout(self)
 
-        # Crear una barra de título personalizada con el título y el botón de cierre en la misma línea
+        # Crear la barra de título
         title_bar = QWidget(self)
-        title_bar.setFixedHeight(20)  # Ajustar el alto de la barra de título
-        title_bar.setAutoFillBackground(True)  # Asegurar que el fondo se llene con el color especificado
-        title_bar.setStyleSheet("background-color: #323232;")  # Establecer el color de fondo gris claro
+        title_bar.setFixedHeight(20)
+        title_bar.setAutoFillBackground(True)
+        title_bar.setStyleSheet("background-color: #323232;")
 
         title_bar_layout = QHBoxLayout(title_bar)
-        title_bar_layout.setContentsMargins(0, 0, 0, 0)  # Ajustar los márgenes a cero
-
-        # Añadir un expansor para centrar el título
+        title_bar_layout.setContentsMargins(0, 0, 0, 0)
         title_bar_layout.addStretch(1)
 
-        # Crear el título de la ventana con un gris claro
         title_label = QPushButton(self.windowTitle(), self)
         title_label.setStyleSheet("background-color: none; color: #B0B0B0; border: none; font-weight: bold;")
-        title_label.setEnabled(False)  # Hacer que el botón no sea clickeable
+        title_label.setEnabled(False)
         title_bar_layout.addWidget(title_label)
 
-        # Añadir otro expansor para centrar el título
         title_bar_layout.addStretch(1)
 
-        # Agregar el botón de cierre personalizado al final con un gris claro
         close_button = QPushButton('X', self)
-        close_button.setFixedSize(20, 20)  # Ajustar el tamaño de la X para que sea consistente con la altura de la barra
+        close_button.setFixedSize(20, 20)
         close_button.setStyleSheet("background-color: none; color: #B0B0B0; border: none;")
         close_button.clicked.connect(self.close)
         title_bar_layout.addWidget(close_button)
-
-        # Mover el botón de cierre al final con espaciado
         title_bar_layout.setSpacing(0)
 
         layout.addWidget(title_bar)
 
-        # Crear la tabla sin el encabezado horizontal
+        # Crear y configurar la tabla (una sola vez)
         self.table = QTableWidget(len(self.options), 1, self)
-        self.table.horizontalHeader().setVisible(False)  # Ocultar el encabezado horizontal
-
-        # Eliminar números de las filas
+        self.table.horizontalHeader().setVisible(False)
         self.table.verticalHeader().setVisible(False)
-
-        # Configurar la paleta de la tabla para cambiar el color de selección a gris claro
-        palette = self.table.palette()
-        palette.setColor(QPalette.Highlight, QColor(230, 230, 230))  # Gris claro
-        palette.setColor(QPalette.HighlightedText, QColor(Qt.black))
-        self.table.setPalette(palette)
-
-        # Configurar el estilo de la tabla
-        self.table.setStyleSheet("""
-            QTableView::item:selected {
-                background-color: rgb(230, 230, 230);  # Gris claro
-                color: black;
-            }
-        """)
-
-        # Configurar el comportamiento de selección para seleccionar filas enteras
+        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.table.setFocusPolicy(Qt.StrongFocus)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
+        self.table.setSelectionMode(QTableWidget.SingleSelection)
 
         # Cargar datos en la tabla
         self.load_render_options()
 
-        # Conectar el evento de clic de la celda para cambiar la opción seleccionada
-        self.table.cellClicked.connect(self.handle_render_option)
+        # Conectar el evento de clic
+        self.table.cellClicked.connect(self.on_cell_clicked)
 
         layout.addWidget(self.table)
         self.setLayout(layout)
 
-        # Ajustar el tamaño de la ventana y posicionarla en el centro
+        # Ajustar el tamaño de la ventana y posicionarla
         self.adjust_window_size()
 
         # Seleccionar la primera fila y establecer el foco
         self.table.selectRow(0)
-        self.table.setFocus()  # Añadir esta línea
+        self.table.setFocus()
+
+        # Instalar el filtro de eventos en la tabla
+        self.table.installEventFilter(self)
 
     def get_render_options(self):
         """Retorna la lista de opciones de render disponibles."""
@@ -686,7 +665,12 @@ class SelectedNodeInfo(QWidget):
         # Mover la ventana para que se centre en la posición actual del puntero del mouse
         self.move(cursor_pos.x() - final_width // 2, cursor_pos.y() - final_height // 2)
 
-    def handle_render_option(self, row, column):
+    def on_cell_clicked(self, row, column):
+        """Maneja el evento de clic en la tabla"""
+        self.execute_selected_option(row)
+
+    def execute_selected_option(self, row):
+        """Ejecuta la opción seleccionada"""
         selected_option = self.options[row]
         
         if selected_option == "[Script] EXR preRender":
@@ -715,14 +699,31 @@ class SelectedNodeInfo(QWidget):
             self.close()
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Escape:
+        key = event.key()
+        if key == Qt.Key_Escape:
+            event.accept()
             self.close()
-        elif event.key() in (Qt.Key_Return, Qt.Key_Enter):
+        elif key in (Qt.Key_Return, Qt.Key_Enter):  # Quitamos el modificador Ctrl
+            event.accept()
             current_row = self.table.currentRow()
             if current_row >= 0:
-                self.handle_render_option(current_row, 0)
-        else:
+                self.execute_selected_option(current_row)
+        elif key in (Qt.Key_Up, Qt.Key_Down):
             super(SelectedNodeInfo, self).keyPressEvent(event)
+        else:
+            event.ignore()
+
+    def eventFilter(self, obj, event):
+        if obj == self.table and event.type() == event.KeyPress:
+            if event.key() in (Qt.Key_Return, Qt.Key_Enter) and event.modifiers() == Qt.ControlModifier:
+                current_row = self.table.currentRow()
+                if current_row >= 0:
+                    self.execute_selected_option(current_row)
+                return True  # Consumir el evento
+            elif event.key() == Qt.Key_Escape:
+                self.close()
+                return True  # Consumir el evento
+        return super(SelectedNodeInfo, self).eventFilter(obj, event)
 
 # Agregar esta clase después de las importaciones
 class ColoredItemDelegate(QStyledItemDelegate):
