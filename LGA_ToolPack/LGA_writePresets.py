@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_writePresets v1.4 | 2024 | Lega  
+  LGA_writePresets v1.5 | 2024 | Lega  
   
   Creates Write nodes with predefined settings for different purposes.
   Supports both script-based and Read node-based path generation.  
@@ -51,12 +51,16 @@ class NameInputDialog(QDialog):
     def __init__(self, initial_text=''):
         super().__init__()
         self.esc_exit = False
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Popup)
-        self.setStyleSheet("QDialog { background-color: #242527; }")
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
         
-        layout = QVBoxLayout(self)
+        # Widget contenedor principal
+        main_widget = QWidget(self)
+        main_widget.setStyleSheet("background-color: #222222; border: none;")
         
-        title = QLabel("Render Name")  # Cambiado de "preRender Name" a "Render Name"
+        layout = QVBoxLayout(main_widget)
+        layout.setContentsMargins(10, 10, 10, 10)
+        
+        title = QLabel("Render Name")
         title.setAlignment(Qt.AlignCenter)
         title.setStyleSheet("color: #AAAAAA; font-family: Verdana; font-weight: bold; font-size: 10pt;")
         layout.addWidget(title)
@@ -68,15 +72,16 @@ class NameInputDialog(QDialog):
         self.line_edit.setFixedHeight(25)
         self.line_edit.setFrame(False)
         self.line_edit.setStyleSheet("""
-            background-color: #242527;  # Restaurado el color original
+            background-color: #3e3e3e;
             color: #FFFFFF;
         """)
         self.line_edit.setText(initial_text)
+        self.line_edit.setCursorPosition(len(initial_text))
         input_layout.addWidget(self.line_edit)
         
         # Agregar botón OK
         ok_button = QPushButton("OK", self)
-        ok_button.setFixedSize(40, 25)  # Aumentado el ancho de 30 a 40
+        ok_button.setFixedSize(40, 25)
         ok_button.setStyleSheet("""
             QPushButton {
                 background-color: #323232;
@@ -96,17 +101,27 @@ class NameInputDialog(QDialog):
         
         layout.addLayout(input_layout)
         
-        help_label = QLabel('<span style="font-size:7pt; color:#AAAAAA;">Ctrl+Enter para confirmar</span>', self)
+        help_label = QLabel('<span style="font-size:7pt; color:#AAAAAA;">Ctrl+Enter to confirm</span>', self)
         help_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(help_label)
         
-        self.setLayout(layout)
+        # Layout principal del diálogo
+        dialog_layout = QVBoxLayout(self)
+        dialog_layout.setContentsMargins(0, 0, 0, 0)
+        dialog_layout.addWidget(main_widget)
+        
         self.resize(200, 100)
-        self.line_edit.setCursorPosition(len(initial_text))
         
         self.line_edit.installEventFilter(self)
-        self.line_edit.setFocus()
-    
+        self.line_edit.setFocus()  # Asegurar que el line_edit tenga el foco
+
+    def showEvent(self, event):
+        """Se llama cuando el diálogo se muestra"""
+        super().showEvent(event)
+        self.activateWindow()  # Activar la ventana
+        self.raise_()  # Traer al frente
+        self.line_edit.setFocus()  # Dar foco al line_edit
+
     def eventFilter(self, widget, event):
         if isinstance(event, QKeyEvent):
             if event.key() in [Qt.Key_Return, Qt.Key_Enter]:
@@ -339,7 +354,7 @@ class ColoredItemDelegate(QStyledItemDelegate):
             painter.save()
             
             if option.state & QStyle.State_Selected:
-                painter.fillRect(option.rect, QColor("#3e3e3e"))
+                painter.fillRect(option.rect, QColor("#424242"))
             
             if text.startswith("[Script]"):
                 painter.setPen(QColor("#ed2464"))
@@ -389,14 +404,15 @@ class SelectedNodeInfo(QWidget):
 
     def initUI(self):
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setWindowTitle("Render type")
+        self.setWindowTitle("RENDER TYPE")
+        self.setStyleSheet("background-color: #282828;")  # Ventana principal
         layout = QVBoxLayout(self)
 
         # Crear la barra de título
         title_bar = QWidget(self)
         title_bar.setFixedHeight(20)
         title_bar.setAutoFillBackground(True)
-        title_bar.setStyleSheet("background-color: #323232;")
+        title_bar.setStyleSheet("background-color: #282828;")
 
         title_bar_layout = QHBoxLayout(title_bar)
         title_bar_layout.setContentsMargins(0, 0, 0, 0)
@@ -455,7 +471,8 @@ class SelectedNodeInfo(QWidget):
         self.table.resizeColumnsToContents()
         self.table.setStyleSheet("""
             QTableView {
-                background-color: #282828;
+                background-color: #222222; 
+                border: none;  /* Eliminar el borde para una mejor integración */
             }
             QTableView::item {
                 padding: 5px;

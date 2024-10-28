@@ -53,7 +53,7 @@ n.addCommand("  Media Path Replacer", "LGA_mediaPathReplacer.show_search_replace
 
 # Importar el LGA_mediaMissingFrames
 import LGA_mediaMissingFrames 
-n.addCommand("  Media Missing Frames", "LGA_mediaMissingFrames.main()", "ctrl+alt+shift+m", shortcutContext=2, icon=icon_RnW)
+n2.addCommand("  Media Missing Frames", "LGA_mediaMissingFrames.main()", "ctrl+alt+shift+m", shortcutContext=2, icon=icon_RnW)
 
 
 
@@ -62,7 +62,7 @@ import readFromWrite
 n.addCommand ("  Read from Write", "readFromWrite.ReadFromWrite()", "shift+r", shortcutContext=2, icon=icon_RnW)
 
 
-# Importar el LGA_preRender
+# Importar el LGA_writePresets
 import LGA_writePresets
 n.addCommand ("  Write Presets", "LGA_writePresets.main()", "shift+w", shortcutContext=2, icon=icon_RnW)
 
@@ -73,13 +73,13 @@ import LGA_Render_Complete
 import LGA_Write_SendMail
 def add_send_mail_to_all_writes():
     LGA_Write_SendMail.add_send_mail_checkbox()
-n.addCommand("  Write Send Mail", "add_send_mail_to_all_writes()", "ctrl+shift+w", shortcutContext=2, icon=icon_RnW)
+n2.addCommand("  Write Send Mail", "add_send_mail_to_all_writes()", "ctrl+shift+w", shortcutContext=2, icon=icon_RnW)
 
 
 
 # Importar el LGA_reloadAllReads
 import LGA_reloadAllReads
-n.addCommand ("  Reload all Reads", "LGA_reloadAllReads.main()", "ctrl+alt+shift+r", shortcutContext=2, icon=icon_RnW)
+n2.addCommand ("  Reload all Reads", "LGA_reloadAllReads.main()", "ctrl+alt+shift+r", shortcutContext=2, icon=icon_RnW)
 
 
 
@@ -97,11 +97,11 @@ n.addCommand("  Show in Flow", "LGA_showInlFlow.main()", "ctrl+shift+e", shortcu
 
 # Importar el LGA_renameWritesFromReads
 import LGA_renameWritesFromReads
-n.addCommand("  Rename Writes from Reads", "LGA_renameWritesFromReads.renameWrite()", "F2", shortcutContext=2, icon=icon_RnW)
+n2.addCommand("  Rename Writes from Reads", "LGA_renameWritesFromReads.renameWrite()", "F2", shortcutContext=2, icon=icon_RnW)
 
 
 
-# Importar el LGA_ocio_RnW
+# Importar el LGA_RnW_ColorSpace_Favs
 import LGA_RnW_ColorSpace_Favs 
 n.addCommand("  Color Space Favs", "LGA_RnW_ColorSpace_Favs.main()", "shift+c", shortcutContext=2, icon=icon_RnW)
 
@@ -115,7 +115,9 @@ n.addCommand("  Color Space Favs", "LGA_RnW_ColorSpace_Favs.main()", "shift+c", 
 # -----------------------------------------------------------------------------
 # Crear separador
 n.addSeparator()
+n2.addSeparator()
 n.addCommand("FRAME RANGE", lambda: None)
+n2.addCommand("FRAME RANGE", lambda: None)
 # Define el icono para los items de Frame Range
 icon_FR = _get_icon("TP_FR")
 
@@ -123,13 +125,13 @@ icon_FR = _get_icon("TP_FR")
 
 # Importar el LGA_fr_Read_to_FrameRange
 import LGA_fr_Read_to_FrameRange
-n.addCommand("  Read -> FrameRange", "LGA_fr_Read_to_FrameRange.set_frame_range_from_read()", "ctrl+alt+f", shortcutContext=2, icon=icon_FR)
+n2.addCommand("  Read -> FrameRange", "LGA_fr_Read_to_FrameRange.set_frame_range_from_read()", "ctrl+alt+f", shortcutContext=2, icon=icon_FR)
 
 
 
 # Importar el LGA_fr_Read_to_Write
 import LGA_fr_Read_to_Write
-n.addCommand("  Read -> Write", "LGA_fr_Read_to_Write.Writes_FrameRange()", shortcutContext=2, icon=icon_FR)
+n2.addCommand("  Read -> Write", "LGA_fr_Read_to_Write.Writes_FrameRange()", shortcutContext=2, icon=icon_FR)
 
 
 
@@ -147,7 +149,7 @@ n.addCommand("  Read -> Project (+Res)", "LGA_fr_Read_to_Project_Res.main()", "c
 
 # Importar el LGA_fr_TimeClip_to_Write
 import LGA_fr_TimeClip_to_Write
-n.addCommand("  TimeClip -> Write", "LGA_fr_TimeClip_to_Write.set_write_from_timeclip()", "ctrl+t", shortcutContext=2, icon=icon_FR)
+n2.addCommand("  TimeClip -> Write", "LGA_fr_TimeClip_to_Write.set_write_from_timeclip()", "ctrl+t", shortcutContext=2, icon=icon_FR)
 
 
 
@@ -210,7 +212,9 @@ n.addCommand("  Duplicate with inputs", "duplicateWithInputs.duplicateWithInputs
 # -----------------------------------------------------------------------------
 # Crea separador y titulo
 n.addSeparator()
+n2.addSeparator()
 n.addCommand("KNOBS", lambda: None)
+n2.addCommand("KNOBS", lambda: None)
 # Define el icono para los items de Frame Range
 icon_Knobs = _get_icon("TP_Knobs")
 
@@ -238,7 +242,7 @@ n.addCommand ("  Disable A-B", "LGA_disable_A_B.main()", "Shift+D", shortcutCont
 
 # Importar el LGA_DasGrain_Kronos_Comp  
 import LGA_DasGrain_Kronos_Comp
-n.addCommand ("  DasGrain Kronos Comp", "LGA_DasGrain_Kronos_Comp.main()", icon=icon_Knobs)
+n2.addCommand ("  DasGrain Kronos Comp", "LGA_DasGrain_Kronos_Comp.main()", icon=icon_Knobs)
 
 # Importar el animation maker
 import AnimationMaker
@@ -248,7 +252,7 @@ n.addCommand("  Animation Maker", lambda: nuke.message("Right click on any knob 
 
 # Importar el MultiKnobTool con shortcut F12 
 import wbMultiKnobEdit
-n.addCommand("  Multi Knob Edit", "wbMultiKnobEdit.multiEditExec()", "F12", icon=icon_Knobs)
+n2.addCommand("  Multi Knob Edit", "wbMultiKnobEdit.multiEditExec()", "F12", icon=icon_Knobs)
 
 
 
@@ -256,7 +260,7 @@ n.addCommand("  Multi Knob Edit", "wbMultiKnobEdit.multiEditExec()", "F12", icon
 from default.default import default_main
 from default.default import helper
 from default.default import about
-n.addCommand("  Edit Default Knobs Values", default_main.show_defaults_window, icon=icon_Knobs)
+n2.addCommand("  Edit Default Knobs Values", default_main.show_defaults_window, icon=icon_Knobs)
 # Add commands to animation menu.
 nuke.menu("Animation").addCommand("default/set as new knobDefault", "default_main.create_default()")
 nuke.menu("Animation").addCommand("default/show knob list", "default_main.show_knob_list()")
@@ -276,7 +280,9 @@ n.addCommand("  Channel &HotBox", "channel_hotbox.start()", "shift+H", icon=icon
 # -----------------------------------------------------------------------------
 # Crea separador y titulo
 n.addSeparator()
+n2.addSeparator()
 n.addCommand("VA", lambda: None)
+n2.addCommand("VA", lambda: None)
 # Define el icono para los items de Frame Range
 icon_VA = _get_icon("TP_VA")
 
@@ -290,7 +296,7 @@ n.addCommand("  Viewer Rec709", "LGA_viewerRec709.main()", "shift+v", shortcutCo
 
 # Importar el LGA_CDL_CC_IP
 import LGA_CDL_CC_IP 
-n.addCommand("  CDL -> CC Input Process", "LGA_CDL_CC_IP.main()", "ctrl+alt+shift+i", shortcutContext=2, icon=icon_VA)
+n2.addCommand("  CDL -> CC Input Process", "LGA_CDL_CC_IP.main()", "ctrl+alt+shift+i", shortcutContext=2, icon=icon_VA)
 
 
 
@@ -301,7 +307,7 @@ n.addCommand("  Reset Workspace", "import hiero; hiero.ui.resetCurrentWorkspace(
 
 # Importar Performance timers en el menu TP y como un Panel 
 import perf_time
-n.addCommand("  Performance Timers", "perf_time.show_panel()", icon=icon_VA)
+n2.addCommand("  Performance Timers", "perf_time.show_panel()", icon=icon_VA)
 pane_m = nuke.menu("Pane")
 pane_m.addCommand("Performance Timers", perf_time.add_perf_time_panel)
 nukescripts.registerPanel("com.lega.perfTime", perf_time.add_perf_time_panel)
@@ -316,7 +322,7 @@ except Exception:
     import traceback
     traceback.print_exc()
 from shortcuteditor import gui
-n.addCommand("  Edit Keyboard Shortcuts", gui, icon=icon_VA)
+n2.addCommand("  Edit Keyboard Shortcuts", gui, icon=icon_VA)
 
 
 # Importar el LGA_restartNukeX
@@ -332,7 +338,7 @@ n.addCommand("  Restart NukeX", "LGA_restartNukeX.check_and_exit(1)", "ctrl+alt+
 # -----------------------------------------------------------------------------
 # Crea separador y titulo
 n.addSeparator()
-
+n2.addSeparator()
 import webbrowser
 import nuke
 
@@ -340,5 +346,5 @@ TP_script_dir = os.path.dirname(os.path.realpath(__file__))
 TP_pdf_path = os.path.join(TP_script_dir, "LGA_ToolPack.pdf")
 
 n.addCommand("v2.2", lambda: webbrowser.open('file://' + TP_pdf_path))
-
+n2.addCommand("v2.2", lambda: webbrowser.open('file://' + TP_pdf_path))
 
