@@ -1,7 +1,7 @@
 """
 _____________________________________
 
-  LGA_ToolPack v2.0 | 2024 | Lega  
+  LGA_ToolPack v2.1 | 2024 | Lega  
   Colección de herramientas de Nuke
 _____________________________________
 
@@ -59,8 +59,8 @@ n.addCommand ("  Read from Write", "readFromWrite.ReadFromWrite()", "shift+r", s
 
 
 # Importar el LGA_preRender
-import LGA_preRender
-n.addCommand ("  preRender", "LGA_preRender.main()", "shift+p", shortcutContext=2, icon=icon_RnW)
+import LGA_writePresets
+n.addCommand ("  Write Presets", "LGA_writePresets.main()", "shift+w", shortcutContext=2, icon=icon_RnW)
 
 
 
@@ -69,7 +69,7 @@ import LGA_Render_Complete
 import LGA_Write_SendMail
 def add_send_mail_to_all_writes():
     LGA_Write_SendMail.add_send_mail_checkbox()
-n.addCommand("  Write Send Mail", "add_send_mail_to_all_writes()", "shift+w", shortcutContext=2, icon=icon_RnW)
+n.addCommand("  Write Send Mail", "add_send_mail_to_all_writes()", "ctrl+shift+w", shortcutContext=2, icon=icon_RnW)
 
 
 
