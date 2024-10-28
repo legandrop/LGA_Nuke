@@ -363,27 +363,29 @@ class ColoredItemDelegate(QStyledItemDelegate):
             if option.state & QStyle.State_Selected:
                 painter.fillRect(option.rect, QColor("#424242"))
             
+            # Agregar un espacio extra al inicio del rect para todos los textos
+            padding_left = 5  # Píxeles de espacio extra
+            adjusted_rect = option.rect.adjusted(padding_left, 0, 0, 0)
+            
             if text.startswith("[Script]"):
                 painter.setPen(QColor("#ed2464"))
                 prefix = "[Script]"
-                painter.drawText(option.rect, Qt.AlignLeft | Qt.AlignVCenter, prefix)
+                painter.drawText(adjusted_rect, Qt.AlignLeft | Qt.AlignVCenter, prefix)
                 painter.setPen(QColor("white"))
-                # Ajustar el offset basado en el ancho real del texto "[Script]"
                 text_width = painter.fontMetrics().horizontalAdvance(prefix)
-                painter.drawText(option.rect.adjusted(text_width, 0, 0, 0), 
+                painter.drawText(adjusted_rect.adjusted(text_width, 0, 0, 0), 
                                Qt.AlignLeft | Qt.AlignVCenter, text[len(prefix):])
             elif text.startswith("[Read]"):
                 painter.setPen(QColor("#66e2ff"))
                 prefix = "[Read]"
-                painter.drawText(option.rect, Qt.AlignLeft | Qt.AlignVCenter, prefix)
+                painter.drawText(adjusted_rect, Qt.AlignLeft | Qt.AlignVCenter, prefix)
                 painter.setPen(QColor("white"))
-                # Ajustar el offset basado en el ancho real del texto "[Read]"
                 text_width = painter.fontMetrics().horizontalAdvance(prefix)
-                painter.drawText(option.rect.adjusted(text_width, 0, 0, 0), 
+                painter.drawText(adjusted_rect.adjusted(text_width, 0, 0, 0), 
                                Qt.AlignLeft | Qt.AlignVCenter, text[len(prefix):])
             else:
                 painter.setPen(QColor("white"))
-                painter.drawText(option.rect, Qt.AlignLeft | Qt.AlignVCenter, text)
+                painter.drawText(adjusted_rect, Qt.AlignLeft | Qt.AlignVCenter, text)
             
             painter.restore()
 
@@ -425,7 +427,7 @@ class SelectedNodeInfo(QWidget):
         
         # Layout principal
         main_layout = QVBoxLayout(main_container)
-        main_layout.setContentsMargins(10, 6, 10, 6)
+        main_layout.setContentsMargins(10, 6, 10, 8)
 
         # Crear la barra de título
         title_bar = QWidget(self)
@@ -502,11 +504,14 @@ class SelectedNodeInfo(QWidget):
             QTableView {
                 background-color: #222222;
                 border: none;
-                border-bottom-left-radius: 8px;  /* Solo redondear esquinas inferiores */
-                border-bottom-right-radius: 8px;
+                border-bottom-left-radius: 4px;
+                border-bottom-right-radius: 4px;
             }
             QTableView::item {
-                padding: 5px;
+                padding-left: 0px;    /* Aumentado el padding izquierdo */
+                padding-right: 0px;   /* Aumentado el padding derecho */
+                padding-top: 5px;      /* Mantener padding vertical */
+                padding-bottom: 5px;
             }
             QTableView::item:selected {
                 background-color: #212121;
@@ -562,9 +567,27 @@ class SelectedNodeInfo(QWidget):
 
         # Obtener la posición actual del puntero del mouse
         cursor_pos = QCursor.pos()
+        screen = QApplication.primaryScreen()
+        screen_rect = screen.availableGeometry()
 
-        # Mover la ventana para que se centre en la posición actual del puntero del mouse
-        self.move(cursor_pos.x() - final_width // 2, cursor_pos.y() - final_height // 2)
+        # Calcular la posición inicial centrada en el cursor
+        posx = cursor_pos.x() - final_width // 2
+        posy = cursor_pos.y() - final_height // 2
+
+        # Ajustar la posición si la ventana se sale de la pantalla
+        if posx + final_width > screen_rect.right():
+            posx = screen_rect.right() - final_width
+        if posx < screen_rect.left():
+            posx = screen_rect.left()
+        
+        if posy + final_height > screen_rect.bottom():
+            posy = screen_rect.bottom() - final_height
+        if posy < screen_rect.top():
+            posy = screen_rect.top()
+
+        # Ajustar el tamaño de la ventana y moverla a la posición calculada
+        self.resize(final_width, final_height)
+        self.move(posx, posy)
 
     def handle_render_option(self, row, column):
         selected_option = self.options[row]
