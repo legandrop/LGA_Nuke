@@ -1,10 +1,9 @@
 """
 _____________________________________________________________________________
 
-  LGA_writePresets v1.3 | 2024 | Lega  
+  LGA_writePresets v1.4 | 2024 | Lega  
   
   Creates Write nodes with predefined settings for different purposes.
-  Includes presets for preRenders, publish, denoise and other common tasks.
   Supports both script-based and Read node-based path generation.  
 _____________________________________________________________________________
 
@@ -187,7 +186,6 @@ def create_write_from_preset(preset, user_text=None):
     # Convertir strings a booleanos
     switch_enabled = preset['switch_node'].lower() == 'true'
     create_directories = preset['create_directories'].lower() == 'true'
-    check_hash = preset['checkhashonread'].lower() == 'true'  # Cambiado a minúsculas
     backdrop_enabled = preset['backdrop'].lower() == 'true'
 
     # Crear nodos según el preset
@@ -239,11 +237,32 @@ def create_write_from_preset(preset, user_text=None):
     # Configurar Write node
     write_node['file_type'].setValue(preset['file_type'])
     write_node['channels'].setValue(preset['channels'])
-    write_node['compression'].setValue(preset['compression'])
-    write_node['dw_compression_level'].setValue(int(preset['compression_level']))
+    
+    # Configurar parámetros específicos según el tipo de archivo
+    if preset['file_type'] == 'tiff':
+        write_node['datatype'].setValue(preset['datatype'])
+        write_node['colorspace'].setValue(preset['colorspace'])
+    elif preset['file_type'] == 'mov':
+        write_node['mov64_format'].setValue(preset['mov64_format'])
+        write_node['mov64_codec'].setValue(preset['mov64_codec'])
+        write_node['mov_prores_codec_profile'].setValue(preset['mov_prores_codec_profile'])
+        write_node['mov64_pixel_format'].setValue(int(preset['mov64_pixel_format']))
+        write_node['mov64_quality'].setValue(preset['mov64_quality'])
+        write_node['mov64_fast_start'].setValue(preset['mov64_fast_start'].lower() == 'true')
+        write_node['mov64_write_timecode'].setValue(preset['mov64_write_timecode'].lower() == 'true')
+        write_node['mov64_gop_size'].setValue(int(preset['mov64_gop_size']))
+        write_node['mov64_b_frames'].setValue(int(preset['mov64_b_frames']))
+        write_node['mov64_bitrate'].setValue(int(preset['mov64_bitrate']))
+        write_node['mov64_bitrate_tolerance'].setValue(int(preset['mov64_bitrate_tolerance']))
+        write_node['mov64_quality_min'].setValue(int(preset['mov64_quality_min']))
+        write_node['mov64_quality_max'].setValue(int(preset['mov64_quality_max']))
+        write_node['colorspace'].setValue(preset['colorspace'])
+    else:
+        write_node['compression'].setValue(preset['compression'])
+        write_node['dw_compression_level'].setValue(int(preset['compression_level']))
+        write_node['colorspace'].setValue(preset['colorspace'])
+
     write_node['create_directories'].setValue(create_directories)
-    write_node['checkHashOnRead'].setValue(check_hash)
-    write_node['colorspace'].setValue(preset['colorspace'])
 
     # Configurar el patrón de archivo
     if user_text and '****' in preset['file_pattern']:
