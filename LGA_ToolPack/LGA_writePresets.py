@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_writePresets v1.5 | 2024 | Lega  
+  LGA_writePresets v1.6 | 2024 | Lega  
   
   Creates Write nodes with predefined settings for different purposes.
   Supports both script-based and Read node-based path generation.  
@@ -53,12 +53,18 @@ class NameInputDialog(QDialog):
         self.esc_exit = False
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
         
-        # Widget contenedor principal
+        # Widget contenedor principal con esquinas redondeadas
         main_widget = QWidget(self)
-        main_widget.setStyleSheet("background-color: #222222; border: none;")
+        main_widget.setStyleSheet("""
+            QWidget {
+                background-color: #222222;
+                border: none;
+                border-radius: 8px;  /* Esquinas redondeadas */
+            }
+        """)
         
         layout = QVBoxLayout(main_widget)
-        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setContentsMargins(15, 6, 15, 6)
         
         title = QLabel("Render Name")
         title.setAlignment(Qt.AlignCenter)
@@ -69,11 +75,12 @@ class NameInputDialog(QDialog):
         input_layout = QHBoxLayout()
         
         self.line_edit = QLineEdit(self)
-        self.line_edit.setFixedHeight(25)
+        self.line_edit.setFixedHeight(24)
         self.line_edit.setFrame(False)
         self.line_edit.setStyleSheet("""
             background-color: #3e3e3e;
             color: #FFFFFF;
+            border-radius: 3px;  /* Reducido de 8px a 3px */
         """)
         self.line_edit.setText(initial_text)
         self.line_edit.setCursorPosition(len(initial_text))
@@ -81,13 +88,13 @@ class NameInputDialog(QDialog):
         
         # Agregar botón OK
         ok_button = QPushButton("OK", self)
-        ok_button.setFixedSize(40, 25)
+        ok_button.setFixedSize(50, 24)
         ok_button.setStyleSheet("""
             QPushButton {
                 background-color: #323232;
                 color: #B0B0B0;
                 border: none;
-                border-radius: 3px;
+                border-radius: 4px;
             }
             QPushButton:hover {
                 background-color: #282828;
@@ -110,7 +117,7 @@ class NameInputDialog(QDialog):
         dialog_layout.setContentsMargins(0, 0, 0, 0)
         dialog_layout.addWidget(main_widget)
         
-        self.resize(200, 100)
+        self.resize(220, 90)
         
         self.line_edit.installEventFilter(self)
         self.line_edit.setFocus()  # Asegurar que el line_edit tenga el foco
@@ -405,14 +412,32 @@ class SelectedNodeInfo(QWidget):
     def initUI(self):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setWindowTitle("RENDER TYPE")
-        self.setStyleSheet("background-color: #282828;")  # Ventana principal
-        layout = QVBoxLayout(self)
+        
+        # Crear un widget contenedor principal
+        main_container = QWidget(self)
+        main_container.setObjectName("mainContainer")
+        main_container.setStyleSheet("""
+            QWidget#mainContainer {
+                background-color: #282828;
+                border-radius: 8px;
+            }
+        """)
+        
+        # Layout principal
+        main_layout = QVBoxLayout(main_container)
+        main_layout.setContentsMargins(10, 6, 10, 6)
 
         # Crear la barra de título
         title_bar = QWidget(self)
         title_bar.setFixedHeight(20)
         title_bar.setAutoFillBackground(True)
-        title_bar.setStyleSheet("background-color: #282828;")
+        title_bar.setStyleSheet("""
+            QWidget {
+                background-color: #282828;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+            }
+        """)
 
         title_bar_layout = QHBoxLayout(title_bar)
         title_bar_layout.setContentsMargins(0, 0, 0, 0)
@@ -432,7 +457,7 @@ class SelectedNodeInfo(QWidget):
         title_bar_layout.addWidget(close_button)
         title_bar_layout.setSpacing(0)
 
-        layout.addWidget(title_bar)
+        main_layout.addWidget(title_bar)
 
         # Crear y configurar la tabla (una sola vez)
         self.table = QTableWidget(len(self.options), 1, self)
@@ -449,8 +474,12 @@ class SelectedNodeInfo(QWidget):
         # Conectar solo el evento de clic
         self.table.cellClicked.connect(self.handle_render_option)
 
-        layout.addWidget(self.table)
-        self.setLayout(layout)
+        main_layout.addWidget(self.table)
+
+        # Layout de la ventana principal
+        window_layout = QVBoxLayout(self)
+        window_layout.setContentsMargins(0, 0, 0, 0)
+        window_layout.addWidget(main_container)
 
         # Ajustar el tamaño de la ventana y posicionarla
         self.adjust_window_size()
@@ -471,8 +500,10 @@ class SelectedNodeInfo(QWidget):
         self.table.resizeColumnsToContents()
         self.table.setStyleSheet("""
             QTableView {
-                background-color: #222222; 
-                border: none;  /* Eliminar el borde para una mejor integración */
+                background-color: #222222;
+                border: none;
+                border-bottom-left-radius: 8px;  /* Solo redondear esquinas inferiores */
+                border-bottom-right-radius: 8px;
             }
             QTableView::item {
                 padding: 5px;
@@ -513,7 +544,7 @@ class SelectedNodeInfo(QWidget):
             height += self.table.rowHeight(i)
 
         # Agregar un relleno total de 10 píxeles
-        height += 10
+        height += 0
 
         # Incluir la altura de la barra de título personalizada
         title_bar_height = 20
