@@ -1,11 +1,10 @@
 """
-____________________________________________
+________________________________________________________________________________
 
   LGA_fr_Read_to_Project_Res v1.0 | 2024 | Lega    
-____________________________________________
+  Copia el frame range y la resolucion del nodo Read seleccionado al proyecto.
+________________________________________________________________________________
 
-Copia el frame range y la resolucion de un nodo Read 
-seleccionado al proyecto.
 """
 import nuke
 
@@ -44,4 +43,4 @@ def main():
         nuke.message("Por favor, selecciona un nodo Read.")
 
 # Ejecutar la funcion
-main()
+#main()

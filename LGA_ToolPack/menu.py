@@ -1,7 +1,7 @@
 """
 _____________________________________
 
-  LGA_ToolPack v2.1 | 2024 | Lega  
+  LGA_ToolPack v2.2 | 2024 | Lega  
   Colección de herramientas de Nuke
 _____________________________________
 
@@ -22,14 +22,18 @@ def _get_icon(name):
 # Crea el menu "TP" (ToolPack)
 n = nuke.menu("Nuke").addMenu("TP", icon=_get_icon("LGA"))
 
+# Crea el menu "TP2" (ToolPack)
+n2 = nuke.menu("Nuke").addMenu("TP2", icon=_get_icon("LGA"))
+
 
 
 
 # -----------------------------------------------------------------------------
 #                              READ n WRITE TOOLS
 # -----------------------------------------------------------------------------
-# Agrega el comando "NODE GRAPH" al menu "TP"
+# Agrega el comando "READ n WRITE" al menu "TP" y "TP2"
 n.addCommand("READ n WRITE", lambda: None)
+n2.addCommand("READ n WRITE", lambda: None)
 # Define el icono para los items de Read n Write
 icon_RnW = _get_icon("TP_RnW")
 
@@ -132,6 +136,12 @@ n.addCommand("  Read -> Write", "LGA_fr_Read_to_Write.Writes_FrameRange()", shor
 # Importar el LGA_fr_Read_to_Project
 import LGA_fr_Read_to_Project
 n.addCommand("  Read -> Project", "LGA_fr_Read_to_Project.main()", "shift+f", shortcutContext=2, icon=icon_FR)
+
+
+
+# Importar el LGA_fr_Read_to_Project_Res
+import LGA_fr_Read_to_Project_Res
+n.addCommand("  Read -> Project (+Res)", "LGA_fr_Read_to_Project_Res.main()", "ctrl+shift+f", shortcutContext=2, icon=icon_FR)
 
 
 
@@ -329,6 +339,6 @@ import nuke
 TP_script_dir = os.path.dirname(os.path.realpath(__file__))
 TP_pdf_path = os.path.join(TP_script_dir, "LGA_ToolPack.pdf")
 
-n.addCommand("v2.0", lambda: webbrowser.open('file://' + TP_pdf_path))
+n.addCommand("v2.2", lambda: webbrowser.open('file://' + TP_pdf_path))
 
 
