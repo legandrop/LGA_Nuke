@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_writePresets v1.6 | 2024 | Lega  
+  LGA_writePresets v1.7 | 2024 | Lega  
   
   Creates Write nodes with predefined settings for different purposes.
   Supports both script-based and Read node-based path generation.  
@@ -59,12 +59,12 @@ class NameInputDialog(QDialog):
             QWidget {
                 background-color: #222222;
                 border: none;
-                border-radius: 8px;  /* Esquinas redondeadas */
+                border-radius: 9px;  /* Esquinas redondeadas */
             }
         """)
         
         layout = QVBoxLayout(main_widget)
-        layout.setContentsMargins(15, 6, 15, 6)
+        layout.setContentsMargins(12, 6, 12, 6)
         
         title = QLabel("Render Name")
         title.setAlignment(Qt.AlignCenter)
@@ -73,6 +73,7 @@ class NameInputDialog(QDialog):
         
         # Crear layout horizontal para el line_edit y el botón OK
         input_layout = QHBoxLayout()
+        input_layout.setSpacing(8)  # Agregar espacio entre los widgets
         
         self.line_edit = QLineEdit(self)
         self.line_edit.setFixedHeight(24)
@@ -80,7 +81,7 @@ class NameInputDialog(QDialog):
         self.line_edit.setStyleSheet("""
             background-color: #3e3e3e;
             color: #FFFFFF;
-            border-radius: 3px;  /* Reducido de 8px a 3px */
+            border-radius: 3px;
         """)
         self.line_edit.setText(initial_text)
         self.line_edit.setCursorPosition(len(initial_text))
@@ -421,7 +422,7 @@ class SelectedNodeInfo(QWidget):
         main_container.setStyleSheet("""
             QWidget#mainContainer {
                 background-color: #282828;
-                border-radius: 8px;
+                border-radius: 9px;
             }
         """)
         
@@ -612,7 +613,6 @@ window = None
 
 def main():
     global app, window
-    print("Abriendo ventana de opciones...")
     app = QApplication.instance() or QApplication([])
     window = SelectedNodeInfo()
     window.show()
