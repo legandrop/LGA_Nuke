@@ -1,7 +1,7 @@
 """
 ____________________________________________________________________________________
 
-  LGA_NKS_Flow_Panel v2.3 - 2024 - Lega Pugliese
+  LGA_NKS_Flow_Panel v2.4 - 2024 - Lega Pugliese
   Panel con herramientas que interactuan con las tasks de Flow Production Tracking 
   que fueron descargadas previamente con la app LGA_NKS_Flow_Downloader
 ____________________________________________________________________________________
@@ -13,6 +13,7 @@ import sys
 import os
 from PySide2.QtWidgets import QWidget, QPushButton, QGridLayout, QSpacerItem, QSizePolicy, QMessageBox
 from PySide2.QtGui import QColor, QKeySequence
+from PySide2.QtCore import Qt
 
 
 # Variable global para activar o desactivar los prints
@@ -21,6 +22,30 @@ DEBUG = True
 def debug_print(*message):
     if DEBUG:
         print(*message)
+
+
+# Clase de botón personalizada que maneja el Shift+Click
+class CustomButton(QPushButton):
+    def __init__(self, text):
+        super(CustomButton, self).__init__(text)
+        self._custom_click_handler = None
+        self._shift_click_handler = None
+
+    def setCustomClickHandler(self, handler):
+        self._custom_click_handler = handler
+
+    def setShiftClickHandler(self, handler):
+        self._shift_click_handler = handler
+
+    def mousePressEvent(self, event):
+        if self._custom_click_handler and self._shift_click_handler:
+            modifiers = event.modifiers()
+            if modifiers & Qt.ShiftModifier:
+                self._shift_click_handler()
+            else:
+                self._custom_click_handler()
+        else:
+            super(CustomButton, self).mousePressEvent(event)
 
 
 class ColorChangeWidget(QWidget):
@@ -63,12 +88,14 @@ class ColorChangeWidget(QWidget):
             style = button_info["style"]
             action = button_info["action"]
 
-            button = QPushButton(name)
+            # Crear un botón personalizado que maneje el Shift+Click
+            button = CustomButton(name)
             button.setStyleSheet(f"background-color: {style}")
             if action == "color":
                 button.clicked.connect(self.handle_color_button_click(color, name))
             elif action == "fpt_pull":
-                button.clicked.connect(self.run_FPT_pull)
+                button.setCustomClickHandler(self.run_FPT_pull)
+                button.setShiftClickHandler(self.run_FPT_pull_with_deselect)
             elif action == "clear_tag":
                 button.clicked.connect(self.run_clear_tag_script)
             elif action == "shot_info":
@@ -79,6 +106,31 @@ class ColorChangeWidget(QWidget):
             row = index // self.num_columns
             column = index % self.num_columns
             self.layout.addWidget(button, row, column)
+
+    def run_FPT_pull_with_deselect(self):
+        """Version del FPT Pull que procesa todos los clips"""
+        debug_print("Ejecutando Flow Pull forzando procesamiento de todos los clips...")
+        
+        # Obtener el proyecto actual
+        project = hiero.core.projects()[0] if hiero.core.projects() else None
+        if project:
+            project.beginUndo("Run External Script")
+            try:
+                script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS_Flow', 'LGA_NKS_Flow_Pull.py')
+                if os.path.exists(script_path):
+                    try:
+                        import importlib.util
+                        spec = importlib.util.spec_from_file_location("LGA_NKS_Flow_Pull", script_path)
+                        module = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(module)
+                        # Llamar a FPT_Hiero con force_all_clips=True
+                        module.FPT_Hiero(force_all_clips=True)
+                    except Exception as e:
+                        debug_print(f"Error al ejecutar el script: {e}")
+                else:
+                    debug_print(f"Script no encontrado en la ruta: {script_path}")
+            finally:
+                project.endUndo()
 
 
 #### Pull

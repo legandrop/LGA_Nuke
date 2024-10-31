@@ -1,6 +1,6 @@
 """
 ____________________________________________________________________________
-  LGA_NKS_Flow_Pull v2.6 - 2024 - Lega Pugliese
+  LGA_NKS_Flow_Pull v2.7 - 2024 - Lega Pugliese
   Compara los estados de las task Comp de los shots del timeline de Hiero 
   con los estados registrados en un archivo JSON basado en Flow PT
   Tambien aplica tags con los colores de los estados en xyplorer 
@@ -368,8 +368,15 @@ class HieroOperations:
             te = hiero.ui.getTimelineEditor(seq)
             selected_clips = te.selection()
             
-            # Si no hay clips seleccionados, obtener todos los clips del timeline
-            if not selected_clips:
+            # Modificar la lógica de selección basada en force_all_clips
+            if hasattr(self.gui_table, 'force_all_clips') and self.gui_table.force_all_clips:
+                # Si force_all_clips es True, obtener todos los clips directamente
+                all_tracks = seq.videoTracks()
+                selected_clips = []
+                for track in all_tracks:
+                    selected_clips.extend(track.items())
+            elif not selected_clips:
+                # Comportamiento original cuando no hay selección
                 all_tracks = seq.videoTracks()
                 selected_clips = []
                 for track in all_tracks:
@@ -578,9 +585,16 @@ def tag_shot_folder(shot_base_path, tag):
 app = None
 window = None
 
-def FPT_Hiero():
+def FPT_Hiero(force_all_clips=False):
+    """
+    Procesa los clips del timeline.
+    
+    Args:
+        force_all_clips (bool): Si es True, procesa todos los clips independientemente 
+                               de la selección actual.
+    """
     global app, window, hiero_ops
-    # Obten el path del script actual
+    # Obtén el path del script actual
     script_path = os.path.dirname(__file__)
     # Genera la ruta relativa para el archivo JSON
     json_path = os.path.join(script_path, 'Data', 'LGA_NKS_Flow_Downloader_Local.json')
@@ -593,6 +607,8 @@ def FPT_Hiero():
     app = QApplication.instance() if QApplication.instance() else QApplication(sys.argv)
     window = GUI_Table(sg_manager)
     hiero_ops = HieroOperations(sg_manager, window)
+    # Pasar el parámetro force_all_clips al objeto window
+    window.force_all_clips = force_all_clips
     window.set_hiero_ops(hiero_ops)
 
 """
