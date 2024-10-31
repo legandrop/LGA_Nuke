@@ -1,7 +1,7 @@
 """
 _______________________________________
 
-  LGA_ReviewPanel v2.6 - 2024 - Lega
+  LGA_ReviewPanel v2.7 - 2024 - Lega
   Tools panel for Hiero / Nuke Studio
 _______________________________________
 
@@ -41,7 +41,8 @@ class ReviewPanel(QWidget):
         # Crear botones y agregarlos al layout
         self.buttons = [
             ("Self ReplaceClip", self.execute_SelfReplaceClip, "#0e1f3a"),
-            ("ON Clips | OFF v00", self.execute_EnableOrDisableClips, "#0e1f3a"), 
+            ("ON Clips | OFF v00", self.execute_EnableOrDisableClips, "#0e1f3a"),
+            ("ON OFF EXR", self.execute_DisableEXR, "#0e1f3a", "Shift+D", "Shift+D"),
             ("EXR Track Difference", self.execute_ToggleBlendModeForEXRTrack, "#283526"),
             ("Compare Versions", self.execute_CompareVersions, "#273c24"),
             ("Compare OFF", self.execute_CompareVersionsOff, "#273c24"),
@@ -145,6 +146,9 @@ class ReviewPanel(QWidget):
 
     def execute_OpenInNukeX(self):
         self.execute_external_script('LGA_NKS_OpenInNukeX.py')
+
+    def execute_DisableEXR(self):
+        self.execute_external_script('LGA_NKS_Clip_DisableEXR.py')
 
 
 # Crear la instancia del widget y anadirlo al gestor de ventanas de Hiero
