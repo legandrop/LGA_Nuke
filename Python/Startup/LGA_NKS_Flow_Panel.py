@@ -17,7 +17,7 @@ from PySide2.QtCore import Qt
 
 
 # Variable global para activar o desactivar los prints
-DEBUG = True
+DEBUG = False
 
 def debug_print(*message):
     if DEBUG:
