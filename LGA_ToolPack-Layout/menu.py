@@ -148,11 +148,18 @@ n.addCommand("  Arrange Nodes Beta", "LGA_arrangeNodes_NU.main()", "Meta+5", sho
 import scale_widget
 n.addCommand("  Scale Nodes", "scale_widget.scale_tree()", "ctrl++", shortcutContext=2, icon=icon_LTPD)
 
+
+# Importar LGA_zoom
+import LGA_zoom
+n.addCommand("  Toggle Zoom", "LGA_zoom.main()", "h", shortcutContext=2, icon=icon_LTPD)
+
 """
 # Importar el LGA_nodePosition
 import LGA_nodePosition
 n.addCommand("  Node Position", "LGA_nodePosition.nodePosition()", "Meta+5", shortcutContext=2, icon=icon_LTPD)
 """
+
+
 
 
 # -----------------------------------------------------------------------------

@@ -12761,4 +12761,10 @@ def deselect_all():
         return False
 
 if __name__ == &quot;__main__&quot;:
-    deselect_all() </script>
+    deselect_all() import nuke
+undo = nuke.Undo()
+undo.end()
+
+import importlib
+import LGA_zoom
+importlib.reload(LGA_zoom)</script>
