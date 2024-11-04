@@ -224,15 +224,15 @@ import LGA_channelsCycle
 n.addCommand("  Channels Cycle", "LGA_channelsCycle.main()", "ctrl+alt+shift+a", shortcutContext=2, icon=icon_Knobs)
 
 
-# Importar el LGA_merge
-import LGA_merge
-n.addCommand("  Create Merge | Switch ops", "LGA_merge.main()", "shift+m", shortcutContext=2, icon=icon_Knobs)
+# Importar el LGA_generate_Merge
+import LGA_generate_Merge
+n.addCommand("  Create Merge | Switch ops", "LGA_generate_Merge.main()", "shift+m", shortcutContext=2, icon=icon_Knobs)
 
 
-# Importar el LGA_grade
-import LGA_grade
-n.addCommand("  Create Grade | Mask", "LGA_grade.gradeMask()", "shift+G", shortcutContext=2, icon=icon_Knobs)
-n.addCommand("  Create Grade | Highlights", "LGA_grade.gradeHI()", "ctrl+shift+G", shortcutContext=2, icon=icon_Knobs)
+# Importar el LGA_generate_Grade
+import LGA_generate_Grade
+n.addCommand("  Create Grade | Mask", "LGA_generate_Grade.gradeMask()", "shift+G", shortcutContext=2, icon=icon_Knobs)
+n.addCommand("  Create Grade | Highlights", "LGA_generate_Grade.gradeHI()", "ctrl+shift+G", shortcutContext=2, icon=icon_Knobs)
 
 
 # Importar el LGA_disable_A_B

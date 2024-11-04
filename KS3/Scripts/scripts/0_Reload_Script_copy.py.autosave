@@ -3,5 +3,5 @@ undo = nuke.Undo()
 undo.end()
 
 import importlib
-import LGA_zoom
-importlib.reload(LGA_zoom)
+import LGA_grade
+importlib.reload(LGA_merge)
