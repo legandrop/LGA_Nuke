@@ -25,7 +25,7 @@ _zoom_state = {
 }
 
 # Tiempo máximo entre H's (en segundos)
-MAX_TIME_BETWEEN_H = 5
+MAX_TIME_BETWEEN_H = 9
 
 # Variables globales para mantener referencias
 app = QApplication.instance()
