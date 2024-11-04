@@ -1,7 +1,7 @@
 """
 _______________________________________
 
-  LGA_mediaManager v1.5 | 2024 | Lega  
+  LGA_mediaManager v1.51 | 2024 | Lega  
 _______________________________________
 
 """
@@ -649,20 +649,19 @@ class SettingsWindow(QWidget):
 class FileScanner(QWidget):
     def __init__(self, parent=None):
         super(FileScanner, self).__init__(parent)  # Inicializar la clase base primero
+        
+        # Comprobar si el script de Nuke está guardado
+        if not nuke.root().name() or nuke.root().name() == 'Root':
+            self.initialization_successful = False
+            return  # Finalizar la inicialización aquí sin crear ninguna ventana
+            
         self.settings_data = None  # Crear un atributo para guardar los settings en memoria
         self.load_settings()  # Cargar settings del archivo .ini
         
-        # Asumimos que la inicializacion es exitosa hasta que se demuestre lo contrario
+        # Asumimos que la inicialización es exitosa
         self.initialization_successful = True
-
-        # Comprobar si el script de Nuke esta guardado
-        if not nuke.root().name() or nuke.root().name() == 'Root':
-            QMessageBox.warning(self, "Warning", "Please save the Nuke script before running this tool.")
-            self.initialization_successful = False
-            self.close()  # Cierra la ventana si el script no esta guardado
-            return  # Finalizar la inicializacion aqui
-
-        # Continuar con la inicializacion solo si el script esta guardado
+        
+        # Continuar con la inicialización solo si el script está guardado
         self.matched_reads = []
         self.font_size = 10
         self.sequence_extensions = ['.exr', '.tif', '.png', '.jpg']
@@ -2744,14 +2743,17 @@ def main():
     logger = configure_logger()
     logger.debug("\n--------Se ejecuta media Manager--------\n")    
 
-    # Crear y mostrar la ventana de inicio
+    # Verificar si el script está guardado antes de mostrar cualquier ventana
+    if not nuke.root().name() or nuke.root().name() == 'Root':
+        QMessageBox.warning(None, "Warning", "Please save the Nuke script before running this tool.")
+        return
+
+    # Solo mostrar la ventana de inicio si el script está guardado
     startup_window = StartupWindow("Scanning, please wait...")
     startup_window.show()
 
     # Procesar eventos para asegurar que el mensaje se muestre antes de continuar
     app.processEvents()
-
-
 
     window = FileScanner()
     if window.initialization_successful:
@@ -2761,7 +2763,7 @@ def main():
 
 
 
-#if __name__ == "__main__":
-#    app = QApplication.instance() or QApplication([])
-#    window = FileScanner()
-#    window.show()
+if __name__ == "__main__":
+    app = QApplication.instance() or QApplication([])
+    window = FileScanner()
+    window.show()
