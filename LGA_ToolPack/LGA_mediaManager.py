@@ -1,7 +1,7 @@
 """
 _______________________________________
 
-  LGA_mediaManager v1.51 | 2024 | Lega  
+  LGA_mediaManager v1.52 | 2024 | Lega  
 _______________________________________
 
 """
@@ -10,7 +10,7 @@ _______________________________________
 from PySide2.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QPushButton, QToolButton, QSizePolicy, QFileDialog
 from PySide2.QtWidgets import QItemDelegate, QStyle, QMessageBox, QCheckBox, QLabel, QHBoxLayout, QSpinBox, QFrame, QMenu, QAction, QProgressBar, QLineEdit
 from PySide2.QtGui import QBrush, QColor, QPalette, QMovie, QScreen, QIcon
-from PySide2.QtCore import Qt, QTimer, QThread, Signal
+from PySide2.QtCore import Qt, QTimer, QThread, Signal, QObject, QRunnable, Slot
 import nuke
 import os
 import re
@@ -20,6 +20,7 @@ import shutil
 import sys
 import configparser
 import logging
+from PySide2.QtCore import QThreadPool
 
 
 
@@ -58,7 +59,7 @@ def configure_logger():
 
 
 # Variable global para activar o desactivar los prints
-DEBUG = True
+DEBUG = False
 
 def debug_print(*message):
     if DEBUG:
@@ -1520,19 +1521,16 @@ class FileScanner(QWidget):
 
         end_time = time.time()
         #logging.info("unmatched_reads execution time end: ", end_time - start_time, "seconds")
-        self.add_file_to_table(to_add)
+        return to_add  # En lugar de llamar a add_file_to_table, devuelve los datos
         self.adjust_window_size()
 
     def get_read_files(self):
-        # Inicializa un diccionario para almacenar los archivos y sus nodos correspondientes
         read_files = {}
-
-        # Lista de tipos de nodos a buscar
         node_types = ['Read', 'AudioRead', 'ReadGeo', 'DeepRead']
 
-        # Itera sobre cada tipo de nodo y recopila los archivos
         for node_type in node_types:
-            for node in nuke.allNodes(node_type):
+            nodes = nuke.executeInMainThreadWithResult(lambda: nuke.allNodes(node_type))
+            for node in nodes:
                 file_path = node['file'].getValue().replace('\\', '/')
                 if file_path not in read_files:
                     read_files[file_path] = []
@@ -1541,28 +1539,37 @@ class FileScanner(QWidget):
         return read_files
 
     def scan_project(self):
-        # Escanea el proyecto para encontrar los archivos y luego busca los Read nodes no coincidentes
+        # Esta función ahora solo configura el worker y lo inicia
         project_path = nuke.root().name()
         if not project_path:
             nuke.message("Por favor guarda el script antes de ejecutar este script.")
             return
 
         project_folder = project_path
-        for _ in range(self.project_folder_depth):  # Usar el valor de project_folder_depth
+        for _ in range(self.project_folder_depth):
             project_folder = os.path.dirname(project_folder)
-        self.project_folder = project_folder  # Guardo la variable para obtenerla desde cualquier lado (add file to table)
-        self.find_files(project_folder)
-        self.table.resizeColumnsToContents()
-        self.adjust_window_size()
+        self.project_folder = project_folder  # Guardo la variable para obtenerla desde cualquier lado
 
-        # Una vez completado el llenado de la tabla, realiza la busqueda de Read nodes no coincidentes.
-        self.search_unmatched_reads()
+        # El escaneo real se realizará en el worker
+        scanner_worker = ScannerWorker(self)  # Solo pasamos la instancia de FileScanner
+        
+        # Conectar señales
+        scanner_worker.signals.files_found.connect(self.on_files_found)
+        scanner_worker.signals.finished.connect(lambda: [
+            self.table.resizeColumnsToContents(),
+            self.adjust_window_size(),
+            self.change_footage_text_color(True),
+            self.reorder_by_status()
+        ])
 
-        # Aplicar el color del checkbox inicial despues de poblar la tabla
-        self.change_footage_text_color(True)      
+        # Iniciar el escaneo en segundo plano
+        QThreadPool.globalInstance().start(scanner_worker)
 
-        # Llama a la funcion para reordenar por estado despues de que se complete el escaneo inicial
-        self.reorder_by_status()
+    
+    def on_files_found(self, data):
+        files_data, unmatched_reads_data = data
+        self.add_file_to_table(files_data)
+        self.add_file_to_table(unmatched_reads_data)
 
     def find_files(self, folder):
         # Encuentra los archivos en la carpeta del proyecto y determina si son secuencias
@@ -1587,7 +1594,9 @@ class FileScanner(QWidget):
                 #logging.info(f"Comparing: {file1} and {file2}")  
 
                 # Solo procesar archivos de secuencia para comparar diferencias
-                if file1.lower().endswith(tuple(self.sequence_extensions)) and file2.lower().endswith(tuple(self.sequence_extensions)):
+                if (file1.lower().endswith(tuple(self.sequence_extensions)) and 
+                    file2.lower().endswith(tuple(self.sequence_extensions))):
+
                     difference = [char1 != char2 for char1, char2 in zip(file1, file2)]
                     #logging.info(f"Differences: {difference}") 
                     diff_indices = [i for i, x in enumerate(difference) if x]
@@ -1596,9 +1605,12 @@ class FileScanner(QWidget):
                     if 1 <= len(diff_indices) <= 2:
                         index = diff_indices[0]
                         try:
-                            # Extraer los numeros de frame considerando los digitos adicionales a la izquierda
-                            left_part_file1, frame_num1, right_part_file1 = re.match(r"(.*?)(\d+)(\D*)$", file1[:index] + file1[index:]).groups()
-                            left_part_file2, frame_num2, right_part_file2 = re.match(r"(.*?)(\d+)(\D*)$", file2[:index] + file2[index:]).groups()
+                            match1 = re.match(r"(.*?)(\d+)(\D*)$", file1)
+                            match2 = re.match(r"(.*?)(\d+)(\D*)$", file2)
+
+                            if match1 and match2:
+                                left_part_file1, frame_num1, right_part_file1 = match1.groups()
+                                left_part_file2, frame_num2, right_part_file2 = match2.groups()
 
                             #logging.info(f"Frame numbers extracted: {frame_num1} and {frame_num2}")
 
@@ -1719,7 +1731,7 @@ class FileScanner(QWidget):
         #end_time = time.time()
         #logging.info("find_files execution time end: ", end_time - start_time, "seconds")
         
-        self.add_file_to_table(to_add)  # Asegurate de que esta funcion exista en tu clase
+        return to_add  # En lugar de llamar a add_file_to_table, devuelve los datos
 
     def add_file_to_table(self, files_data):
         # Agrega los archivos a la tabla y determina su estado en relacion con los nodos Read
@@ -1733,14 +1745,14 @@ class FileScanner(QWidget):
             read_node_name = next(iter(read_files.values()))[0]
             row_position = self.table.rowCount()
 
-            #print("")
-            #print(f"File path: {file_path}")
-            #print(f"read_files: {read_files}")
-            #print(f"Is sequence: {is_sequence}")
-            #print(f"Frame range: {frame_range}")
-            #print(f"Is unmatched read: {is_unmatched_read}")
-            #print(f"Is folder deletable: {is_folder_deletable}")
-            #print(f"sequence_state: {sequence_state}")
+            debug_print("")
+            debug_print(f"File path: {file_path}")
+            debug_print(f"read_files: {read_files}")
+            debug_print(f"Is sequence: {is_sequence}")
+            debug_print(f"Frame range: {frame_range}")
+            debug_print(f"Is unmatched read: {is_unmatched_read}")
+            debug_print(f"Is folder deletable: {is_folder_deletable}")
+            debug_print(f"sequence_state: {sequence_state}")
     
             # Encuentra el patron de digitos en el nombre del archivo y reemplazalo con '#'
             if is_unmatched_read:
@@ -1900,7 +1912,6 @@ class FileScanner(QWidget):
                     #print(f"is_offline: {is_offline}")
                     pass
  
-
 
 
             # Agregar el valor de is_folder_deletable a la cuarta columna
@@ -2652,7 +2663,6 @@ class DeleteThread(QThread):
         if not found:
             print(f"File path not found in the table: {normalized_file_path}")
 
-
 class TransparentTextDelegate(QItemDelegate):
 # Clase para crear la interfaz de usuario
     def paint(self, painter, option, index):
@@ -2713,53 +2723,95 @@ class StartupWindow(QWidget):
         layout.addWidget(self.label)
         
         self.progressBar = QProgressBar(self)
-        self.progressBar.setRange(0, 100)  # Rango definido para el ejemplo
+        self.progressBar.setRange(0, 100)
+        self.progressBar.setStyleSheet("""
+            QProgressBar {
+                border: 1px solid #444;
+                border-radius: 2px;
+                text-align: center;
+                background-color: #222;
+            }
+            QProgressBar::chunk {
+                background-color: #666;
+                width: 1px;
+            }
+        """)
         layout.addWidget(self.progressBar)
 
         self.setLayout(layout)
 
-        # Configurar un temporizador para actualizar la barra de progreso
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.updateProgressBar)
-        self.timer.start(100)  # Actualizar cada 100 milisegundos
-
-    def updateProgressBar(self):
-        current_value = self.progressBar.value()
-        if current_value < 100:
-            self.progressBar.setValue(current_value + 1)
-        else:
-            self.stop()  # Llama a stop para detener el temporizador y cerrar la ventana
-
+    def updateProgress(self, value):  # Cambiado de updateProgressBar a updateProgress
+        self.progressBar.setValue(value)
 
     def stop(self):
-        self.timer.stop()  # Detener el temporizador cuando se detenga la ventana
         self.close()
+
+class ScannerSignals(QObject):
+    progress = Signal(int)  # Para actualizar la barra de progreso
+    finished = Signal()     # Para indicar que terminó el escaneo
+    files_found = Signal(list)  # Para enviar los archivos encontrados
+
+class ScannerWorker(QRunnable):
+    def __init__(self, file_scanner):
+        super(ScannerWorker, self).__init__()
+        self.file_scanner = file_scanner
+        self.signals = ScannerSignals()
+        self.signals.moveToThread(QApplication.instance().thread())  # Asegurar que las señales se manejen en el hilo principal
+
+    @Slot()
+    def run(self):
+        try:
+            # Primera fase: find_files
+            self.signals.progress.emit(25)
+            files_data = self.file_scanner.find_files(self.file_scanner.project_folder)
+
+            # Segunda fase: search_unmatched_reads
+            self.signals.progress.emit(75)
+            unmatched_reads_data = self.file_scanner.search_unmatched_reads()
+
+            self.signals.progress.emit(100)
+
+            # Emitir señal con los datos recopilados
+            self.signals.files_found.emit((files_data, unmatched_reads_data))
+            self.signals.finished.emit()
+
+        except Exception as e:
+            debug_print(f"Error en el escaneo: {e}")
+            self.signals.finished.emit()
 
 
 def main():
     app = QApplication.instance() or QApplication(sys.argv)
-
-    # Configura el logger cuando realmente lo necesitas
+    
+    # Configurar logger
     logger = configure_logger()
     logger.debug("\n--------Se ejecuta media Manager--------\n")    
 
-    # Verificar si el script está guardado antes de mostrar cualquier ventana
+    # Verificar si el script está guardado
     if not nuke.root().name() or nuke.root().name() == 'Root':
         QMessageBox.warning(None, "Warning", "Please save the Nuke script before running this tool.")
         return
 
-    # Solo mostrar la ventana de inicio si el script está guardado
+    # Mostrar ventana de inicio primero
     startup_window = StartupWindow("Scanning, please wait...")
     startup_window.show()
-
-    # Procesar eventos para asegurar que el mensaje se muestre antes de continuar
     app.processEvents()
 
+    # Crear la ventana principal
     window = FileScanner()
     if window.initialization_successful:
-        # Cerrar la ventana de inicio
-        startup_window.close()
-        window.show()
+        # Configurar el worker
+        scanner_worker = ScannerWorker(window)  # Solo pasamos la instancia de FileScanner
+        
+        # Conectar señales
+        scanner_worker.signals.progress.connect(startup_window.updateProgress)
+        scanner_worker.signals.finished.connect(lambda: [
+            startup_window.close(),
+            window.show()
+        ])
+        
+        # Iniciar el escaneo en segundo plano
+        QThreadPool.globalInstance().start(scanner_worker)
 
 
 
