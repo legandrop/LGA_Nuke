@@ -1,12 +1,22 @@
 """
-_______________________________________________
+_____________________________________________________________________________
 
-  LGA_merge v1.3 | 2024 | Lega  
-_______________________________________________
+  LGA_merge v1.5 | 2024 | Lega  
+  
+  Crea nodos Merge con configuración de máscara predefinida.
+  Soporta creación desde un nodo seleccionado o desde la posición del cursor.
+  Incluye un Roto y un Blur conectados como máscara al Merge.
+  
+  Si hay nodos Merge seleccionados, rota sus operaciones entre:
+  over -> mask -> stencil -> over
+_____________________________________________________________________________
 
 """
 
 import nuke
+from PySide2.QtGui import QCursor, QMouseEvent
+from PySide2.QtWidgets import QApplication
+from PySide2.QtCore import Qt, QEvent, QPoint
 
 def get_common_variables():
     distanciaY = 30  # Espacio libre entre nodos en la columna derecha
@@ -20,6 +30,29 @@ def get_selected_node():
         return selected_node
     except ValueError:
         return None
+
+def simulate_dag_click():
+    """Simula un click en el DAG en la posición actual del cursor"""
+    widget = QApplication.widgetAt(QCursor.pos())
+    if widget:
+        cursor_pos = QCursor.pos()
+        local_pos = widget.mapFromGlobal(cursor_pos)
+        
+        # Mouse press
+        press_event = QMouseEvent(QEvent.MouseButtonPress, 
+                                local_pos,
+                                Qt.LeftButton, 
+                                Qt.LeftButton, 
+                                Qt.NoModifier)
+        QApplication.sendEvent(widget, press_event)
+        
+        # Mouse release
+        release_event = QMouseEvent(QEvent.MouseButtonRelease, 
+                                  local_pos,
+                                  Qt.LeftButton, 
+                                  Qt.LeftButton, 
+                                  Qt.NoModifier)
+        QApplication.sendEvent(widget, release_event)
 
 def find_next_node_in_column(current_node, tolerance_x=120):
     current_node_center_x = current_node.xpos() + (current_node.screenWidth() / 2)
@@ -48,7 +81,10 @@ def createMerge():
     # Obtener el nodo seleccionado
     selected_node = get_selected_node()
     
-
+    # Si no hay nodo seleccionado, simular click en el DAG antes de crear el NoOp
+    if selected_node is None:
+        simulate_dag_click()
+        
     # Obtener el nodo seleccionado o crear un NoOp si no hay nodo seleccionado    
     if selected_node:
         current_node = selected_node
