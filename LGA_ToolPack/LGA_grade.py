@@ -1,13 +1,19 @@
 """
-________________________________
+_____________________________________________________________________________
 
-  LGA_grade v1.4 | 2024 | Lega  
-________________________________
+  LGA_grade v1.5 | 2024 | Lega  
+  
+  Crea nodos Grade con diferentes configuraciones de máscaras.
+  Soporta creación desde un nodo seleccionado o desde la posición del cursor.
+  Incluye dos modos: Grade con máscara de luminancia y Grade con Roto.
+_____________________________________________________________________________
 
 """
 
 import nuke
-
+from PySide2.QtGui import QCursor, QMouseEvent
+from PySide2.QtWidgets import QApplication
+from PySide2.QtCore import Qt, QEvent, QPoint
 
 # Variables comunes
 def get_common_variables():
@@ -16,17 +22,39 @@ def get_common_variables():
     dot_width = int(nuke.toNode("preferences")['dot_node_scale'].value() * 12)
     return distanciaX, distanciaY, dot_width
 
+def simulate_dag_click():
+    """Simula un click en el DAG en la posición actual del cursor"""
+    widget = QApplication.widgetAt(QCursor.pos())
+    if widget:
+        cursor_pos = QCursor.pos()
+        local_pos = widget.mapFromGlobal(cursor_pos)
+        
+        # Mouse press
+        press_event = QMouseEvent(QEvent.MouseButtonPress, 
+                                local_pos,
+                                Qt.LeftButton, 
+                                Qt.LeftButton, 
+                                Qt.NoModifier)
+        QApplication.sendEvent(widget, press_event)
+        
+        # Mouse release
+        release_event = QMouseEvent(QEvent.MouseButtonRelease, 
+                                  local_pos,
+                                  Qt.LeftButton, 
+                                  Qt.LeftButton, 
+                                  Qt.NoModifier)
+        QApplication.sendEvent(widget, release_event)
+
 # Funcion para obtener el nodo seleccionado
 def get_selected_node():
     try:
         selected_node = nuke.selectedNode()
         return selected_node, None
     except ValueError:
+        # Simular click en el DAG antes de crear el NoOp
+        simulate_dag_click()
         no_op = nuke.createNode("NoOp")
         return no_op, no_op
-
-
-    
 
 # Funcion para encontrar el nodo siguiente en la columna
 def find_next_node_in_column(current_node, tolerance_x=120):
