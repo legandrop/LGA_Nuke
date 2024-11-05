@@ -1,7 +1,7 @@
 """
 _____________________________________
 
-  LGA_ToolPack v2.2 | 2024 | Lega  
+  LGA_ToolPack v2.3 | 2024 | Lega  
   Colección de herramientas de Nuke
 _____________________________________
 
@@ -23,7 +23,7 @@ def _get_icon(name):
 n = nuke.menu("Nuke").addMenu("TP", icon=_get_icon("LGA"))
 
 # Crea el menu "TP2" (ToolPack)
-n2 = nuke.menu("Nuke").addMenu("TP2", icon=_get_icon("LGA"))
+n2 = nuke.menu("Nuke").addMenu("TP2", icon=_get_icon("LGA2"))
 
 
 
@@ -246,7 +246,7 @@ n2.addCommand ("  DasGrain Kronos Comp", "LGA_DasGrain_Kronos_Comp.main()", icon
 
 # Importar el animation maker
 import AnimationMaker
-n.addCommand("  Animation Maker", lambda: nuke.message("Right click on any knob and select Animation Maker"), icon=icon_Knobs)
+n2.addCommand("  Animation Maker", lambda: nuke.message("Right click on any knob and select Animation Maker"), icon=icon_Knobs)
 
 
 
@@ -345,6 +345,6 @@ import nuke
 TP_script_dir = os.path.dirname(os.path.realpath(__file__))
 TP_pdf_path = os.path.join(TP_script_dir, "LGA_ToolPack.pdf")
 
-n.addCommand("v2.2", lambda: webbrowser.open('file://' + TP_pdf_path))
-n2.addCommand("v2.2", lambda: webbrowser.open('file://' + TP_pdf_path))
+n.addCommand("v2.3", lambda: webbrowser.open('file://' + TP_pdf_path))
+n2.addCommand("v2.3", lambda: webbrowser.open('file://' + TP_pdf_path))
 
