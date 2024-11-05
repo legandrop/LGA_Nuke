@@ -1571,7 +1571,7 @@ class FileScanner(QWidget):
         self.add_file_to_table(files_data)
         self.add_file_to_table(unmatched_reads_data)
 
-    def find_files(self, folder):
+    def find_files(self, folder, progress_callback=None):
         # Encuentra los archivos en la carpeta del proyecto y determina si son secuencias
         end_time = time.time()
         #logging.info(f"Scanning folder: {folder}")
@@ -1579,8 +1579,8 @@ class FileScanner(QWidget):
         #logging.info("find_files execution time start: ", end_time - start_time, "seconds")
     
         sequences = {}
-        all_read_files = self.get_read_files()  # Asegurate de que esta funcion exista en tu clase
-        to_add = []  # Inicializa la lista para acumular la informacion
+        all_read_files = self.get_read_files()
+        to_add = []
 
         for root, dirs, files in os.walk(folder):
             #logging.info(f"Analyzing folder: {root}")
@@ -1589,6 +1589,11 @@ class FileScanner(QWidget):
             filtered_files = [f for f in files if f.lower().endswith(tuple(self.sequence_extensions + self.non_sequence_extensions))]
             filtered_files.sort(key=lambda x: x.lower())
 
+            # Actualizar progreso para cada archivo que procesamos
+            for file in filtered_files:
+                if progress_callback:
+                    progress_callback(f"Escaneando {os.path.join(os.path.basename(root), file)}")
+
             for i in range(len(filtered_files) - 1):
                 file1, file2 = filtered_files[i], filtered_files[i + 1]
                 #logging.info(f"Comparing: {file1} and {file2}")  
@@ -1596,6 +1601,10 @@ class FileScanner(QWidget):
                 # Solo procesar archivos de secuencia para comparar diferencias
                 if (file1.lower().endswith(tuple(self.sequence_extensions)) and 
                     file2.lower().endswith(tuple(self.sequence_extensions))):
+                    
+                    # Actualizar progreso mientras procesamos cada par de archivos
+                    if progress_callback:
+                        progress_callback(f"Comparando {file1} y {file2}")
 
                     difference = [char1 != char2 for char1, char2 in zip(file1, file2)]
                     #logging.info(f"Differences: {difference}") 
@@ -2713,7 +2722,7 @@ class StartupWindow(QWidget):
         self.setFixedSize(300, 100)
         self.setWindowTitle("Starting...")
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
-
+        
         # Configura la hoja de estilos para la ventana y el texto
         self.setStyleSheet("background-color: #282828; color: white; font-weight: bold;")        
         
@@ -2737,13 +2746,26 @@ class StartupWindow(QWidget):
             }
         """)
         layout.addWidget(self.progressBar)
-
+        
         self.setLayout(layout)
+        
+        # Configurar un temporizador para actualizar la barra de progreso
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.updateProgressBar)
+        self.timer.start(100)  # Actualizar cada 100 milisegundos
 
-    def updateProgress(self, value):  # Cambiado de updateProgressBar a updateProgress
+    def updateProgressBar(self):
+        current_value = self.progressBar.value()
+        if current_value < 100:
+            self.progressBar.setValue(current_value + 1)
+        else:
+            self.timer.stop()  # Detener el temporizador cuando llegue a 100
+
+    def updateProgress(self, value):
         self.progressBar.setValue(value)
 
     def stop(self):
+        self.timer.stop()  # Asegurarse de detener el temporizador
         self.close()
 
 class ScannerSignals(QObject):
@@ -2756,20 +2778,112 @@ class ScannerWorker(QRunnable):
         super(ScannerWorker, self).__init__()
         self.file_scanner = file_scanner
         self.signals = ScannerSignals()
-        self.signals.moveToThread(QApplication.instance().thread())  # Asegurar que las señales se manejen en el hilo principal
+        self.signals.moveToThread(QApplication.instance().thread())
+        self.items_log = []
+        self.start_time = time.time()
+
+    def get_timestamp(self):
+        elapsed = time.time() - self.start_time
+        return f"[{elapsed:.3f}s]"
 
     @Slot()
     def run(self):
         try:
-            # Primera fase: find_files
-            self.signals.progress.emit(25)
+            self.start_time = time.time()
+            total_items = 0
+            processed_items = 0
+            
+            self.items_log.append(f"\n{self.get_timestamp()} Items en carpeta principal:")
+            
+            root_items = os.listdir(self.file_scanner.project_folder)
+            for item in root_items:
+                item_path = os.path.join(self.file_scanner.project_folder, item)
+                if os.path.isfile(item_path):
+                    total_items += 1
+                    self.items_log.append(f"{self.get_timestamp()}   Archivo: {item}")
+                elif os.path.isdir(item_path):
+                    self.items_log.append(f"\n{self.get_timestamp()} Contenido de carpeta {item}:")
+                    try:
+                        subdir_items = os.listdir(item_path)
+                        for subitem in subdir_items:
+                            total_items += 1
+                            self.items_log.append(f"{self.get_timestamp()}   - {subitem}")
+                    except Exception:
+                        self.items_log.append(f"{self.get_timestamp()}   (No se pudo acceder)")
+                        continue
+
+            # Contar nodos Read para el cálculo del progreso
+            read_nodes = nuke.allNodes('Read')
+            total_reads = len(read_nodes)
+            
+            # Calcular incrementos
+            items_increment = 30.0 / total_items if total_items > 0 else 0
+            reads_increment = 70.0 / total_reads if total_reads > 0 else 0
+
+            self.items_log.append(f"\n{self.get_timestamp()} Total de items encontrados: {total_items}")
+            self.items_log.append(f"{self.get_timestamp()} Total de nodos Read: {total_reads}")
+            self.items_log.append(f"\n{self.get_timestamp()} --- Inicio del procesamiento ---")
+
+            def update_progress(increment, description=""):
+                nonlocal processed_items
+                processed_items += increment
+                progress = min(int(processed_items), 100)
+                if description:
+                    self.items_log.append(f"{self.get_timestamp()} Progreso {progress}%: {description}")
+                self.signals.progress.emit(progress)
+                # Forzar el procesamiento de eventos de la UI
+                QApplication.processEvents()
+                # Pequeña pausa para permitir que la UI se actualice
+                time.sleep(0.001)
+
+            # Primera fase: find_files (30% del progreso)
+            self.items_log.append(f"\n{self.get_timestamp()} Primera fase (0-30%):")
+            
+            # Marcar inicio de find_files
+            find_files_start = time.time()
+            
+            for item in root_items:
+                item_path = os.path.join(self.file_scanner.project_folder, item)
+                if os.path.isdir(item_path):
+                    try:
+                        subdir_items = os.listdir(item_path)
+                        for subitem in subdir_items:
+                            update_progress(items_increment, f"Procesando {item}/{subitem}")
+                    except Exception:
+                        continue
+                else:
+                    update_progress(items_increment, f"Procesando {item}")
+
             files_data = self.file_scanner.find_files(self.file_scanner.project_folder)
+            
+            # Marcar tiempo de find_files
+            find_files_time = time.time() - find_files_start
+            self.items_log.append(f"\n{self.get_timestamp()} Tiempo total de find_files: {find_files_time:.3f}s")
 
-            # Segunda fase: search_unmatched_reads
-            self.signals.progress.emit(75)
+            # Segunda fase: search_unmatched_reads (70% del progreso restante)
+            self.items_log.append(f"\n{self.get_timestamp()} Segunda fase (30-100%):")
+            
+            # Marcar inicio de search_unmatched_reads
+            reads_start = time.time()
+            
+            for node in read_nodes:
+                update_progress(reads_increment, f"Procesando nodo Read: {node.name()}")
+
             unmatched_reads_data = self.file_scanner.search_unmatched_reads()
+            
+            # Marcar tiempo de search_unmatched_reads
+            reads_time = time.time() - reads_start
+            self.items_log.append(f"\n{self.get_timestamp()} Tiempo total de search_unmatched_reads: {reads_time:.3f}s")
 
+            # Asegurar que llegamos al 100%
             self.signals.progress.emit(100)
+            self.items_log.append(f"\n{self.get_timestamp()} --- Fin del procesamiento ---")
+            self.items_log.append(f"{self.get_timestamp()} Tiempo total de ejecución: {time.time() - self.start_time:.3f}s")
+
+            # Guardar la información en un archivo
+            log_path = os.path.join(os.path.dirname(__file__), 'LGA_borrame.txt')
+            with open(log_path, 'w') as f:
+                f.write("\n".join(self.items_log))
 
             # Emitir señal con los datos recopilados
             self.signals.files_found.emit((files_data, unmatched_reads_data))
@@ -2792,23 +2906,40 @@ def main():
         QMessageBox.warning(None, "Warning", "Please save the Nuke script before running this tool.")
         return
 
-    # Mostrar ventana de inicio primero
+    # Crear y mostrar la ventana de inicio
     startup_window = StartupWindow("Scanning, please wait...")
+    # Centrar la ventana de inicio
+    screen = QApplication.primaryScreen().geometry()
+    startup_window.move(
+        screen.center().x() - startup_window.width() // 2,
+        screen.center().y() - startup_window.height() // 2
+    )
     startup_window.show()
     app.processEvents()
 
-    # Crear la ventana principal
+    # Crear la ventana principal y realizar el escaneo inicial
     window = FileScanner()
     if window.initialization_successful:
         # Configurar el worker
-        scanner_worker = ScannerWorker(window)  # Solo pasamos la instancia de FileScanner
+        scanner_worker = ScannerWorker(window)
+        
+        def delayed_show():
+            window.adjust_window_size()
+            # Centrar la ventana principal
+            window.move(
+                screen.center().x() - window.width() // 2,
+                screen.center().y() - window.height() // 2
+            )
+            window.show()
+            
+        def on_scan_complete():
+            startup_window.stop()
+            # Usar QTimer para retrasar la visualización
+            QTimer.singleShot(100, delayed_show)  # 100ms de retraso
         
         # Conectar señales
         scanner_worker.signals.progress.connect(startup_window.updateProgress)
-        scanner_worker.signals.finished.connect(lambda: [
-            startup_window.close(),
-            window.show()
-        ])
+        scanner_worker.signals.finished.connect(on_scan_complete)
         
         # Iniciar el escaneo en segundo plano
         QThreadPool.globalInstance().start(scanner_worker)

@@ -1,0 +1,123 @@
+
+[0.000s] Items en carpeta principal:
+
+[0.000s] Contenido de carpeta Comp:
+[0.000s]   - 0_assets
+[0.000s]   - 1_projects
+[0.000s]   - 2_prerenders
+[0.000s]   - 3_review
+[0.000s]   - 4_publish
+
+[0.000s] Contenido de carpeta _input:
+[0.000s]   - VL_33H_030_Add_Polvo_aPlate_v01
+[0.000s]   - VL_33H_030_Add_Polvo_aPlate_v04
+[0.000s]   - VL_33H_030_Add_Polvo_bPlate_v01
+[0.000s]   - VL_33H_030_Add_Polvo_CleanPlate_denoised_v01
+[0.000s]   - VL_33H_030_Add_Polvo_CleanPlate_v01
+[0.000s]   - VL_33H_030_Add_Polvo_dPlate_v01
+[0.000s]   - VL_33H_030_Add_Polvo_EditRefComp_v01.mov
+[0.000s]   - VL_33H_030_Add_Polvo_ePlate_v01
+
+[0.000s] Total de items encontrados: 13
+[0.000s] Total de nodos Read: 75
+
+[0.000s] --- Inicio del procesamiento ---
+
+[0.000s] Primera fase (0-30%):
+[0.001s] Progreso 2%: Procesando Comp/0_assets
+[0.003s] Progreso 4%: Procesando Comp/1_projects
+[0.006s] Progreso 6%: Procesando Comp/2_prerenders
+[0.008s] Progreso 9%: Procesando Comp/3_review
+[0.010s] Progreso 11%: Procesando Comp/4_publish
+[0.012s] Progreso 13%: Procesando _input/VL_33H_030_Add_Polvo_aPlate_v01
+[0.013s] Progreso 16%: Procesando _input/VL_33H_030_Add_Polvo_aPlate_v04
+[0.015s] Progreso 18%: Procesando _input/VL_33H_030_Add_Polvo_bPlate_v01
+[0.017s] Progreso 20%: Procesando _input/VL_33H_030_Add_Polvo_CleanPlate_denoised_v01
+[0.019s] Progreso 23%: Procesando _input/VL_33H_030_Add_Polvo_CleanPlate_v01
+[0.021s] Progreso 25%: Procesando _input/VL_33H_030_Add_Polvo_dPlate_v01
+[0.023s] Progreso 27%: Procesando _input/VL_33H_030_Add_Polvo_EditRefComp_v01.mov
+[0.026s] Progreso 29%: Procesando _input/VL_33H_030_Add_Polvo_ePlate_v01
+
+[1.971s] Tiempo total de find_files: 1.971s
+
+[1.971s] Segunda fase (30-100%):
+[1.971s] Progreso 30%: Procesando nodo Read: Read28
+[1.973s] Progreso 31%: Procesando nodo Read: Read57
+[1.975s] Progreso 32%: Procesando nodo Read: Read67
+[1.977s] Progreso 33%: Procesando nodo Read: Read68
+[1.979s] Progreso 34%: Procesando nodo Read: Read58
+[1.981s] Progreso 35%: Procesando nodo Read: Read65
+[1.983s] Progreso 36%: Procesando nodo Read: Read75
+[1.985s] Progreso 37%: Procesando nodo Read: Read50
+[1.987s] Progreso 38%: Procesando nodo Read: Read76
+[1.989s] Progreso 39%: Procesando nodo Read: Read63
+[1.991s] Progreso 40%: Procesando nodo Read: Read62
+[1.993s] Progreso 41%: Procesando nodo Read: Read60
+[1.995s] Progreso 42%: Procesando nodo Read: Read51
+[1.997s] Progreso 43%: Procesando nodo Read: Read64
+[1.999s] Progreso 43%: Procesando nodo Read: Read73
+[2.001s] Progreso 44%: Procesando nodo Read: Read72
+[2.003s] Progreso 45%: Procesando nodo Read: Read70
+[2.005s] Progreso 46%: Procesando nodo Read: Read69
+[2.007s] Progreso 47%: Procesando nodo Read: Read74
+[2.009s] Progreso 48%: Procesando nodo Read: Read1
+[2.011s] Progreso 49%: Procesando nodo Read: Read66
+[2.013s] Progreso 50%: Procesando nodo Read: Read13
+[2.015s] Progreso 51%: Procesando nodo Read: Read12
+[2.017s] Progreso 52%: Procesando nodo Read: Read53
+[2.019s] Progreso 53%: Procesando nodo Read: Read61
+[2.021s] Progreso 54%: Procesando nodo Read: Read45
+[2.023s] Progreso 55%: Procesando nodo Read: Read23
+[2.026s] Progreso 56%: Procesando nodo Read: Read52
+[2.028s] Progreso 57%: Procesando nodo Read: Read48
+[2.030s] Progreso 57%: Procesando nodo Read: Read59
+[2.032s] Progreso 58%: Procesando nodo Read: Read56
+[2.034s] Progreso 59%: Procesando nodo Read: Read40
+[2.035s] Progreso 60%: Procesando nodo Read: Read4
+[2.037s] Progreso 61%: Procesando nodo Read: Read18
+[2.039s] Progreso 62%: Procesando nodo Read: Read20
+[2.041s] Progreso 63%: Procesando nodo Read: Read55
+[2.043s] Progreso 64%: Procesando nodo Read: Read54
+[2.045s] Progreso 65%: Procesando nodo Read: Read43
+[2.047s] Progreso 66%: Procesando nodo Read: Read19
+[2.049s] Progreso 67%: Procesando nodo Read: Read24
+[2.051s] Progreso 68%: Procesando nodo Read: Read25
+[2.054s] Progreso 69%: Procesando nodo Read: Read42
+[2.056s] Progreso 70%: Procesando nodo Read: Read46
+[2.058s] Progreso 71%: Procesando nodo Read: Read41
+[2.060s] Progreso 71%: Procesando nodo Read: Read22
+[2.062s] Progreso 72%: Procesando nodo Read: Read9
+[2.063s] Progreso 73%: Procesando nodo Read: Read14
+[2.065s] Progreso 74%: Procesando nodo Read: Read3
+[2.067s] Progreso 75%: Procesando nodo Read: Read15
+[2.069s] Progreso 76%: Procesando nodo Read: Read10
+[2.071s] Progreso 77%: Procesando nodo Read: Read27
+[2.073s] Progreso 78%: Procesando nodo Read: Read39
+[2.075s] Progreso 79%: Procesando nodo Read: Read16
+[2.077s] Progreso 80%: Procesando nodo Read: Read26
+[2.079s] Progreso 81%: Procesando nodo Read: Read17
+[2.089s] Progreso 82%: Procesando nodo Read: Read21
+[2.092s] Progreso 83%: Procesando nodo Read: Read7
+[2.094s] Progreso 84%: Procesando nodo Read: Read5
+[2.096s] Progreso 85%: Procesando nodo Read: Read29
+[2.098s] Progreso 85%: Procesando nodo Read: Read44
+[2.100s] Progreso 86%: Procesando nodo Read: Read38
+[2.102s] Progreso 87%: Procesando nodo Read: Read37
+[2.103s] Progreso 88%: Procesando nodo Read: Read6
+[2.106s] Progreso 89%: Procesando nodo Read: Read47
+[2.108s] Progreso 90%: Procesando nodo Read: Read36
+[2.110s] Progreso 91%: Procesando nodo Read: Read35
+[2.112s] Progreso 92%: Procesando nodo Read: Read33
+[2.114s] Progreso 93%: Procesando nodo Read: Read32
+[2.116s] Progreso 94%: Procesando nodo Read: Read11
+[2.118s] Progreso 95%: Procesando nodo Read: Read31
+[2.120s] Progreso 96%: Procesando nodo Read: Read30
+[2.122s] Progreso 97%: Procesando nodo Read: Read34
+[2.123s] Progreso 98%: Procesando nodo Read: Read8
+[2.126s] Progreso 99%: Procesando nodo Read: Read49
+[2.128s] Progreso 100%: Procesando nodo Read: Read2
+
+[2.145s] Tiempo total de search_unmatched_reads: 0.174s
+
+[2.145s] --- Fin del procesamiento ---
+[2.145s] Tiempo total de ejecución: 2.145s
