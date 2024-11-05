@@ -28,6 +28,9 @@ start_time = time.time()
 
 
 def configure_logger():
+    if hasattr(configure_logger, 'logger'):
+        return configure_logger.logger
+        
     log_file_path = os.path.join(os.path.dirname(__file__), 'LGA_mediaManager.log')
 
     # Abrir el archivo de log en modo 'w' para limpiarlo cada vez que se ejecuta el script
@@ -52,6 +55,7 @@ def configure_logger():
     # Anadir el manejador al logger
     logger.addHandler(file_handler)
 
+    configure_logger.logger = logger
     return logger
 
 # Variable global para activar o desactivar los prints
@@ -652,17 +656,23 @@ class FileScanner(QWidget):
             self.initialization_successful = False
             return  # Finalizar la inicialización aquí sin crear ninguna ventana
             
-        self.settings_data = None  # Crear un atributo para guardar los settings en memoria
-        self.load_settings()  # Cargar settings del archivo .ini
-        
-        # Asumimos que la inicialización es exitosa
-        self.initialization_successful = True
-        
-        # Continuar con la inicialización solo si el script está guardado
+        # Inicializar atributos básicos primero
         self.matched_reads = []
         self.font_size = 10
         self.sequence_extensions = ['.exr', '.tif', '.png', '.jpg']
         self.non_sequence_extensions = ['.mov', '.psd', '.avi', '.mp4']
+        
+        # Cargar configuración
+        self.settings_data = None  # Crear un atributo para guardar los settings en memoria
+        self.load_settings()  # Cargar settings del archivo .ini
+        
+        # Crear el scanner_worker después de que los atributos estén inicializados
+        self.scanner_worker = ScannerWorker(self)
+        
+        # Asumimos que la inicialización es exitosa
+        self.initialization_successful = True
+        
+        # Inicializar la UI
         self.initUI()
 
     def initUI(self):
@@ -2610,7 +2620,6 @@ class ScannerWorker(QRunnable):
         self.file_scanner = file_scanner
         self.signals = ScannerSignals()
         self.signals.moveToThread(QApplication.instance().thread())
-        self.items_log = []
         self.start_time = time.time()
         
         # Definir los rangos de progreso para cada etapa
@@ -2624,7 +2633,9 @@ class ScannerWorker(QRunnable):
         # Copiar propiedades necesarias desde file_scanner
         self.sequence_extensions = self.file_scanner.sequence_extensions
         self.non_sequence_extensions = self.file_scanner.non_sequence_extensions
-
+        
+        # Obtener el logger configurado
+        self.logger = logging.getLogger('LGA_MediaManager')
 
     def get_timestamp(self):
         elapsed = time.time() - self.start_time
@@ -2637,23 +2648,24 @@ class ScannerWorker(QRunnable):
             total_items = 0
             processed_items = 0
             
-            self.items_log.append(f"\n{self.get_timestamp()} Items en carpeta principal:")
+            # Cambiar self.items_log.append por self.logger.debug
+            self.logger.debug(f"\n{self.get_timestamp()} Items en carpeta principal:")
             
             root_items = os.listdir(self.file_scanner.project_folder)
             for item in root_items:
                 item_path = os.path.join(self.file_scanner.project_folder, item)
                 if os.path.isfile(item_path):
                     total_items += 1
-                    self.items_log.append(f"{self.get_timestamp()}   Archivo: {item}")
+                    self.logger.debug(f"{self.get_timestamp()}   Archivo: {item}")
                 elif os.path.isdir(item_path):
-                    self.items_log.append(f"\n{self.get_timestamp()} Contenido de carpeta {item}:")
+                    self.logger.debug(f"\n{self.get_timestamp()} Contenido de carpeta {item}:")
                     try:
                         subdir_items = os.listdir(item_path)
                         for subitem in subdir_items:
                             total_items += 1
-                            self.items_log.append(f"{self.get_timestamp()}   - {subitem}")
+                            self.logger.debug(f"{self.get_timestamp()}   - {subitem}")
                     except Exception:
-                        self.items_log.append(f"{self.get_timestamp()}   (No se pudo acceder)")
+                        self.logger.debug(f"{self.get_timestamp()}   (No se pudo acceder)")
                         continue
 
             # Contar nodos Read para el cálculo del progreso
@@ -2664,9 +2676,9 @@ class ScannerWorker(QRunnable):
             items_increment = 1.0 / total_items if total_items > 0 else 0
             reads_increment = 1.0 / total_reads if total_reads > 0 else 0
 
-            self.items_log.append(f"\n{self.get_timestamp()} Total de items encontrados: {total_items}")
-            self.items_log.append(f"{self.get_timestamp()} Total de nodos Read: {total_reads}")
-            self.items_log.append(f"\n{self.get_timestamp()} --- Inicio del procesamiento ---")
+            self.logger.debug(f"\n{self.get_timestamp()} Total de items encontrados: {total_items}")
+            self.logger.debug(f"{self.get_timestamp()} Total de nodos Read: {total_reads}")
+            self.logger.debug(f"\n{self.get_timestamp()} --- Inicio del procesamiento ---")
 
             def update_progress(increment, description="", is_second_phase=False):
                 nonlocal processed_items
@@ -2685,7 +2697,7 @@ class ScannerWorker(QRunnable):
                 progress = min(int(progress), 100)
                 
                 if description:
-                    self.items_log.append(f"{self.get_timestamp()} Progreso {progress}%: {description}")
+                    self.logger.debug(f"{self.get_timestamp()} Progreso {progress}%: {description}")
                 self.signals.progress.emit(progress)
                 # Forzar el procesamiento de eventos de la UI
                 QApplication.processEvents()
@@ -2693,7 +2705,7 @@ class ScannerWorker(QRunnable):
                 time.sleep(0.001)
 
             # Primera fase
-            self.items_log.append(f"\n{self.get_timestamp()} Primera fase ({self.Etapa1_inicio}-{self.Etapa1_fin}%):")
+            self.logger.debug(f"\n{self.get_timestamp()} Primera fase ({self.Etapa1_inicio}-{self.Etapa1_fin}%):")
             processed_items = 0  # Reiniciar contador para la primera fase
             
             for item in root_items:
@@ -2714,7 +2726,7 @@ class ScannerWorker(QRunnable):
             find_files_time = time.time() - find_files_start
             
             # Segunda fase
-            self.items_log.append(f"\n{self.get_timestamp()} Segunda fase ({self.Etapa3_inicio}-{self.Etapa3_fin}%):")
+            self.logger.debug(f"\n{self.get_timestamp()} Segunda fase ({self.Etapa3_inicio}-{self.Etapa3_fin}%):")
             processed_items = 0  # Reiniciar contador para la segunda fase
             
             # Marcar inicio de search_unmatched_reads
@@ -2727,15 +2739,10 @@ class ScannerWorker(QRunnable):
             reads_time = time.time() - reads_start
 
             # Logging de tiempos
-            self.items_log.append(f"\n{self.get_timestamp()} Tiempo total de find_files: {find_files_time:.3f}s")
-            self.items_log.append(f"\n{self.get_timestamp()} Tiempo total de search_unmatched_reads: {reads_time:.3f}s")
-            self.items_log.append(f"\n{self.get_timestamp()} --- Fin del procesamiento ---")
-            self.items_log.append(f"{self.get_timestamp()} Tiempo total de ejecución: {time.time() - self.start_time:.3f}s")
-
-            # Guardar log
-            log_path = os.path.join(os.path.dirname(__file__), 'LGA_borrame.txt')
-            with open(log_path, 'w') as f:
-                f.write("\n".join(self.items_log))
+            self.logger.debug(f"\n{self.get_timestamp()} Tiempo total de find_files: {find_files_time:.3f}s")
+            self.logger.debug(f"\n{self.get_timestamp()} Tiempo total de search_unmatched_reads: {reads_time:.3f}s")
+            self.logger.debug(f"\n{self.get_timestamp()} --- Fin del procesamiento ---")
+            self.logger.debug(f"{self.get_timestamp()} Tiempo total de ejecución: {time.time() - self.start_time:.3f}s")
 
             # Emitir resultados
             self.signals.files_found.emit((files_data, unmatched_reads_data))
@@ -2776,12 +2783,12 @@ class ScannerWorker(QRunnable):
                 base_progress = (processed_items / max(1, total_files)) * 100
                 progress = self.Etapa2_inicio + (base_progress * (self.Etapa2_fin - self.Etapa2_inicio) / 100)
                 progress = min(int(progress), self.Etapa2_fin)
-                self.items_log.append(f"{self.get_timestamp()} Progreso {progress}%: {description}")
+                self.logger.debug(f"{self.get_timestamp()} Progreso {progress}%: {description}")
                 self.signals.progress.emit(progress)
                 QApplication.processEvents()
         
         # Log del inicio de la etapa 2
-        self.items_log.append(f"\n{self.get_timestamp()} Segunda fase ({self.Etapa2_inicio}-{self.Etapa2_fin}%):")
+        self.logger.debug(f"\n{self.get_timestamp()} Segunda fase ({self.Etapa2_inicio}-{self.Etapa2_fin}%):")
         
         for root, dirs, files in os.walk(folder):
             #logging.info(f"Analyzing folder: {root}")
@@ -2949,10 +2956,6 @@ class ScannerWorker(QRunnable):
 def main():
     app = QApplication.instance() or QApplication(sys.argv)
     
-    # Configurar logger
-    logger = configure_logger()
-    logger.debug("\n--------Se ejecuta media Manager--------\n")    
-
     # Verificar si el script está guardado
     if not nuke.root().name() or nuke.root().name() == 'Root':
         QMessageBox.warning(None, "Warning", "Please save the Nuke script before running this tool.")
@@ -2972,9 +2975,6 @@ def main():
     # Crear la ventana principal y realizar el escaneo inicial
     window = FileScanner()
     if window.initialization_successful:
-        # Configurar el worker
-        scanner_worker = ScannerWorker(window)
-        
         def delayed_show():
             window.adjust_window_size()
             # Centrar la ventana principal
@@ -2988,13 +2988,13 @@ def main():
             startup_window.stop()
             # Usar QTimer para retrasar la visualización
             QTimer.singleShot(100, delayed_show)  # 100ms de retraso
+
+        # Usar el scanner_worker de window.scan_project()
+        window.scanner_worker.signals.progress.connect(startup_window.updateProgress)
+        window.scanner_worker.signals.finished.connect(on_scan_complete)
         
-        # Conectar señales
-        scanner_worker.signals.progress.connect(startup_window.updateProgress)
-        scanner_worker.signals.finished.connect(on_scan_complete)
-        
-        # Iniciar el escaneo en segundo plano
-        QThreadPool.globalInstance().start(scanner_worker)
+        # Iniciar el escaneo en segundo plano usando el worker existente
+        QThreadPool.globalInstance().start(window.scanner_worker)
 
 
 
