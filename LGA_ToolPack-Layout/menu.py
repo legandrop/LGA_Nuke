@@ -149,9 +149,6 @@ import scale_widget
 n.addCommand("  Scale Nodes", "scale_widget.scale_tree()", "ctrl++", shortcutContext=2, icon=icon_LTPD)
 
 
-# Importar LGA_zoom
-import LGA_zoom
-n.addCommand("  Toggle Zoom", "LGA_zoom.main()", "h", shortcutContext=2, icon=icon_LTPD)
 
 """
 # Importar el LGA_nodePosition
@@ -215,6 +212,10 @@ n.addCommand("  Easy Navigate/Survive (Reset Bookmarks)", "Km_NodeGraph_Easy_Nav
 
 
 
+# Importar LGA_zoom
+import LGA_zoom
+n.addCommand("  Toggle Zoom", "LGA_zoom.main()", "h", shortcutContext=2, icon=icon_LTPF)
+
 # -----------------------------------------------------------------------------
 #                                 Version
 # -----------------------------------------------------------------------------
@@ -227,4 +228,4 @@ import nuke
 LTP_script_dir = os.path.dirname(os.path.realpath(__file__))
 LTP_pdf_path = os.path.join(LTP_script_dir, "LGA_LayoutToolPack.pdf")
 
-n.addCommand("v2.2", lambda: webbrowser.open('file://' + LTP_pdf_path))
+n.addCommand("v2.3", lambda: webbrowser.open('file://' + LTP_pdf_path))
