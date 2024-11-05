@@ -54,10 +54,6 @@ def configure_logger():
 
     return logger
 
-
-
-
-
 # Variable global para activar o desactivar los prints
 DEBUG = False
 
@@ -1579,9 +1575,12 @@ class FileScanner(QWidget):
         #logging.info("find_files execution time start: ", end_time - start_time, "seconds")
     
         sequences = {}
-        all_read_files = self.get_read_files()
-        to_add = []
+        all_read_files = self.get_read_files()  # Asegurate de que esta funcion exista en tu clase
+        to_add = []  # Inicializa la lista para acumular la informacion
 
+        # Contador para el progreso
+        total_processed = 0
+        
         for root, dirs, files in os.walk(folder):
             #logging.info(f"Analyzing folder: {root}")
 
@@ -1589,22 +1588,18 @@ class FileScanner(QWidget):
             filtered_files = [f for f in files if f.lower().endswith(tuple(self.sequence_extensions + self.non_sequence_extensions))]
             filtered_files.sort(key=lambda x: x.lower())
 
-            # Actualizar progreso para cada archivo que procesamos
-            for file in filtered_files:
-                if progress_callback:
-                    progress_callback(f"Escaneando {os.path.join(os.path.basename(root), file)}")
-
             for i in range(len(filtered_files) - 1):
                 file1, file2 = filtered_files[i], filtered_files[i + 1]
                 #logging.info(f"Comparing: {file1} and {file2}")  
 
+                # Actualizar progreso mientras procesamos
+                total_processed += 1
+                if progress_callback:
+                    progress_callback(f"Analizando {file1}")
+
                 # Solo procesar archivos de secuencia para comparar diferencias
                 if (file1.lower().endswith(tuple(self.sequence_extensions)) and 
                     file2.lower().endswith(tuple(self.sequence_extensions))):
-                    
-                    # Actualizar progreso mientras procesamos cada par de archivos
-                    if progress_callback:
-                        progress_callback(f"Comparando {file1} y {file2}")
 
                     difference = [char1 != char2 for char1, char2 in zip(file1, file2)]
                     #logging.info(f"Differences: {difference}") 
@@ -1616,7 +1611,9 @@ class FileScanner(QWidget):
                         try:
                             match1 = re.match(r"(.*?)(\d+)(\D*)$", file1)
                             match2 = re.match(r"(.*?)(\d+)(\D*)$", file2)
-
+                            if progress_callback:
+                                progress_callback(f"Procesando secuencia {file1}")
+                                
                             if match1 and match2:
                                 left_part_file1, frame_num1, right_part_file1 = match1.groups()
                                 left_part_file2, frame_num2, right_part_file2 = match2.groups()
@@ -2781,6 +2778,12 @@ class ScannerWorker(QRunnable):
         self.signals.moveToThread(QApplication.instance().thread())
         self.items_log = []
         self.start_time = time.time()
+        
+        # Definir los rangos de progreso para cada etapa
+        self.Etapa1_inicio = 0
+        self.Etapa1_fin = 10
+        self.Etapa2_inicio = 90
+        self.Etapa2_fin = 100
 
     def get_timestamp(self):
         elapsed = time.time() - self.start_time
@@ -2816,18 +2819,30 @@ class ScannerWorker(QRunnable):
             read_nodes = nuke.allNodes('Read')
             total_reads = len(read_nodes)
             
-            # Calcular incrementos
-            items_increment = 30.0 / total_items if total_items > 0 else 0
-            reads_increment = 70.0 / total_reads if total_reads > 0 else 0
+            # Calcular incrementos usando los rangos definidos
+            items_increment = 1.0 / total_items if total_items > 0 else 0
+            reads_increment = 1.0 / total_reads if total_reads > 0 else 0
 
             self.items_log.append(f"\n{self.get_timestamp()} Total de items encontrados: {total_items}")
             self.items_log.append(f"{self.get_timestamp()} Total de nodos Read: {total_reads}")
             self.items_log.append(f"\n{self.get_timestamp()} --- Inicio del procesamiento ---")
 
-            def update_progress(increment, description=""):
+            def update_progress(increment, description="", is_second_phase=False):
                 nonlocal processed_items
                 processed_items += increment
-                progress = min(int(processed_items), 100)
+                
+                # Calcular el progreso según la etapa
+                if not is_second_phase:
+                    base_progress = processed_items * 100  # Convertir a porcentaje
+                    # Mapear al rango de la Etapa1
+                    progress = self.Etapa1_inicio + (base_progress * (self.Etapa1_fin - self.Etapa1_inicio) / 100)
+                else:
+                    base_progress = processed_items * 100  # Convertir a porcentaje
+                    # Mapear al rango de la Etapa2
+                    progress = self.Etapa2_inicio + (base_progress * (self.Etapa2_fin - self.Etapa2_inicio) / 100)
+                
+                progress = min(int(progress), 100)
+                
                 if description:
                     self.items_log.append(f"{self.get_timestamp()} Progreso {progress}%: {description}")
                 self.signals.progress.emit(progress)
@@ -2836,11 +2851,9 @@ class ScannerWorker(QRunnable):
                 # Pequeña pausa para permitir que la UI se actualice
                 time.sleep(0.001)
 
-            # Primera fase: find_files (30% del progreso)
-            self.items_log.append(f"\n{self.get_timestamp()} Primera fase (0-30%):")
-            
-            # Marcar inicio de find_files
-            find_files_start = time.time()
+            # Primera fase
+            self.items_log.append(f"\n{self.get_timestamp()} Primera fase ({self.Etapa1_inicio}-{self.Etapa1_fin}%):")
+            processed_items = 0  # Reiniciar contador para la primera fase
             
             for item in root_items:
                 item_path = os.path.join(self.file_scanner.project_folder, item)
@@ -2854,38 +2867,36 @@ class ScannerWorker(QRunnable):
                 else:
                     update_progress(items_increment, f"Procesando {item}")
 
+            # Marcar inicio de find_files
+            find_files_start = time.time()
             files_data = self.file_scanner.find_files(self.file_scanner.project_folder)
-            
-            # Marcar tiempo de find_files
             find_files_time = time.time() - find_files_start
-            self.items_log.append(f"\n{self.get_timestamp()} Tiempo total de find_files: {find_files_time:.3f}s")
-
-            # Segunda fase: search_unmatched_reads (70% del progreso restante)
-            self.items_log.append(f"\n{self.get_timestamp()} Segunda fase (30-100%):")
+            
+            # Segunda fase
+            self.items_log.append(f"\n{self.get_timestamp()} Segunda fase ({self.Etapa2_inicio}-{self.Etapa2_fin}%):")
+            processed_items = 0  # Reiniciar contador para la segunda fase
             
             # Marcar inicio de search_unmatched_reads
             reads_start = time.time()
-            
-            for node in read_nodes:
-                update_progress(reads_increment, f"Procesando nodo Read: {node.name()}")
-
             unmatched_reads_data = self.file_scanner.search_unmatched_reads()
             
-            # Marcar tiempo de search_unmatched_reads
+            for node in read_nodes:
+                update_progress(reads_increment, f"Procesando nodo Read: {node.name()}", is_second_phase=True)
+            
             reads_time = time.time() - reads_start
-            self.items_log.append(f"\n{self.get_timestamp()} Tiempo total de search_unmatched_reads: {reads_time:.3f}s")
 
-            # Asegurar que llegamos al 100%
-            self.signals.progress.emit(100)
+            # Logging de tiempos
+            self.items_log.append(f"\n{self.get_timestamp()} Tiempo total de find_files: {find_files_time:.3f}s")
+            self.items_log.append(f"\n{self.get_timestamp()} Tiempo total de search_unmatched_reads: {reads_time:.3f}s")
             self.items_log.append(f"\n{self.get_timestamp()} --- Fin del procesamiento ---")
             self.items_log.append(f"{self.get_timestamp()} Tiempo total de ejecución: {time.time() - self.start_time:.3f}s")
 
-            # Guardar la información en un archivo
+            # Guardar log
             log_path = os.path.join(os.path.dirname(__file__), 'LGA_borrame.txt')
             with open(log_path, 'w') as f:
                 f.write("\n".join(self.items_log))
 
-            # Emitir señal con los datos recopilados
+            # Emitir resultados
             self.signals.files_found.emit((files_data, unmatched_reads_data))
             self.signals.finished.emit()
 
