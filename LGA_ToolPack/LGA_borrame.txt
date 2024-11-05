@@ -9,115 +9,739 @@
 [0.000s]   - 4_publish
 
 [0.000s] Contenido de carpeta _input:
-[0.000s]   - VL_33H_030_Add_Polvo_aPlate_v01
-[0.000s]   - VL_33H_030_Add_Polvo_aPlate_v04
-[0.000s]   - VL_33H_030_Add_Polvo_bPlate_v01
-[0.000s]   - VL_33H_030_Add_Polvo_CleanPlate_denoised_v01
-[0.000s]   - VL_33H_030_Add_Polvo_CleanPlate_v01
-[0.000s]   - VL_33H_030_Add_Polvo_dPlate_v01
-[0.000s]   - VL_33H_030_Add_Polvo_EditRefComp_v01.mov
-[0.000s]   - VL_33H_030_Add_Polvo_ePlate_v01
+[0.000s]   - VL_01C_030_Agregar_Rayo-Speed_aPlate_v01
+[0.000s]   - VL_01C_030_Agregar_Rayo-Speed_aPlate_v02
+[0.000s]   - VL_01C_030_Agregar_Rayo-Speed_EditRef_v01.mov
 
-[0.000s] Total de items encontrados: 13
-[0.000s] Total de nodos Read: 75
+[0.000s] Total de items encontrados: 8
+[0.000s] Total de nodos Read: 16
 
 [0.000s] --- Inicio del procesamiento ---
 
 [0.000s] Primera fase (0-10%):
-[0.000s] Progreso 0%: Procesando Comp/0_assets
-[0.002s] Progreso 1%: Procesando Comp/1_projects
-[0.004s] Progreso 2%: Procesando Comp/2_prerenders
-[0.005s] Progreso 3%: Procesando Comp/3_review
-[0.007s] Progreso 3%: Procesando Comp/4_publish
-[0.009s] Progreso 4%: Procesando _input/VL_33H_030_Add_Polvo_aPlate_v01
-[0.012s] Progreso 5%: Procesando _input/VL_33H_030_Add_Polvo_aPlate_v04
-[0.014s] Progreso 6%: Procesando _input/VL_33H_030_Add_Polvo_bPlate_v01
-[0.016s] Progreso 6%: Procesando _input/VL_33H_030_Add_Polvo_CleanPlate_denoised_v01
-[0.018s] Progreso 7%: Procesando _input/VL_33H_030_Add_Polvo_CleanPlate_v01
-[0.020s] Progreso 8%: Procesando _input/VL_33H_030_Add_Polvo_dPlate_v01
-[0.022s] Progreso 9%: Procesando _input/VL_33H_030_Add_Polvo_EditRefComp_v01.mov
-[0.024s] Progreso 9%: Procesando _input/VL_33H_030_Add_Polvo_ePlate_v01
+[0.000s] Progreso 1%: Procesando Comp/0_assets
+[0.003s] Progreso 2%: Procesando Comp/1_projects
+[0.005s] Progreso 3%: Procesando Comp/2_prerenders
+[0.006s] Progreso 5%: Procesando Comp/3_review
+[0.008s] Progreso 6%: Procesando Comp/4_publish
+[0.010s] Progreso 7%: Procesando _input/VL_01C_030_Agregar_Rayo-Speed_aPlate_v01
+[0.012s] Progreso 8%: Procesando _input/VL_01C_030_Agregar_Rayo-Speed_aPlate_v02
+[0.014s] Progreso 10%: Procesando _input/VL_01C_030_Agregar_Rayo-Speed_EditRef_v01.mov
 
-[1.932s] Segunda fase (90-100%):
-[1.948s] Progreso 90%: Procesando nodo Read: Read28
-[1.950s] Progreso 90%: Procesando nodo Read: Read57
-[1.952s] Progreso 90%: Procesando nodo Read: Read67
-[1.954s] Progreso 90%: Procesando nodo Read: Read68
-[1.956s] Progreso 90%: Procesando nodo Read: Read58
-[1.958s] Progreso 90%: Procesando nodo Read: Read65
-[1.960s] Progreso 90%: Procesando nodo Read: Read75
-[1.962s] Progreso 91%: Procesando nodo Read: Read50
-[1.963s] Progreso 91%: Procesando nodo Read: Read76
-[1.965s] Progreso 91%: Procesando nodo Read: Read63
-[1.967s] Progreso 91%: Procesando nodo Read: Read62
-[1.969s] Progreso 91%: Procesando nodo Read: Read60
-[1.972s] Progreso 91%: Procesando nodo Read: Read51
-[1.974s] Progreso 91%: Procesando nodo Read: Read64
-[1.976s] Progreso 92%: Procesando nodo Read: Read73
-[1.978s] Progreso 92%: Procesando nodo Read: Read72
-[1.980s] Progreso 92%: Procesando nodo Read: Read70
-[1.982s] Progreso 92%: Procesando nodo Read: Read69
-[1.984s] Progreso 92%: Procesando nodo Read: Read74
-[1.986s] Progreso 92%: Procesando nodo Read: Read1
-[1.988s] Progreso 92%: Procesando nodo Read: Read66
-[1.990s] Progreso 92%: Procesando nodo Read: Read13
-[1.992s] Progreso 93%: Procesando nodo Read: Read12
-[1.994s] Progreso 93%: Procesando nodo Read: Read53
-[1.996s] Progreso 93%: Procesando nodo Read: Read61
-[1.998s] Progreso 93%: Procesando nodo Read: Read45
-[2.000s] Progreso 93%: Procesando nodo Read: Read23
-[2.002s] Progreso 93%: Procesando nodo Read: Read52
-[2.003s] Progreso 93%: Procesando nodo Read: Read48
-[2.005s] Progreso 94%: Procesando nodo Read: Read59
-[2.007s] Progreso 94%: Procesando nodo Read: Read56
-[2.009s] Progreso 94%: Procesando nodo Read: Read40
-[2.012s] Progreso 94%: Procesando nodo Read: Read4
-[2.014s] Progreso 94%: Procesando nodo Read: Read18
-[2.016s] Progreso 94%: Procesando nodo Read: Read20
-[2.018s] Progreso 94%: Procesando nodo Read: Read55
-[2.020s] Progreso 94%: Procesando nodo Read: Read54
-[2.022s] Progreso 95%: Procesando nodo Read: Read43
-[2.024s] Progreso 95%: Procesando nodo Read: Read19
-[2.026s] Progreso 95%: Procesando nodo Read: Read24
-[2.028s] Progreso 95%: Procesando nodo Read: Read25
-[2.030s] Progreso 95%: Procesando nodo Read: Read42
-[2.032s] Progreso 95%: Procesando nodo Read: Read46
-[2.033s] Progreso 95%: Procesando nodo Read: Read41
-[2.034s] Progreso 96%: Procesando nodo Read: Read22
-[2.036s] Progreso 96%: Procesando nodo Read: Read9
-[2.038s] Progreso 96%: Procesando nodo Read: Read14
-[2.040s] Progreso 96%: Procesando nodo Read: Read3
-[2.042s] Progreso 96%: Procesando nodo Read: Read15
-[2.044s] Progreso 96%: Procesando nodo Read: Read10
-[2.046s] Progreso 96%: Procesando nodo Read: Read27
-[2.048s] Progreso 96%: Procesando nodo Read: Read39
-[2.050s] Progreso 97%: Procesando nodo Read: Read16
-[2.052s] Progreso 97%: Procesando nodo Read: Read26
-[2.054s] Progreso 97%: Procesando nodo Read: Read17
-[2.056s] Progreso 97%: Procesando nodo Read: Read21
-[2.058s] Progreso 97%: Procesando nodo Read: Read7
-[2.060s] Progreso 97%: Procesando nodo Read: Read5
-[2.062s] Progreso 97%: Procesando nodo Read: Read29
-[2.064s] Progreso 97%: Procesando nodo Read: Read44
-[2.066s] Progreso 98%: Procesando nodo Read: Read38
-[2.068s] Progreso 98%: Procesando nodo Read: Read37
-[2.070s] Progreso 98%: Procesando nodo Read: Read6
-[2.072s] Progreso 98%: Procesando nodo Read: Read47
-[2.073s] Progreso 98%: Procesando nodo Read: Read36
-[2.074s] Progreso 98%: Procesando nodo Read: Read35
-[2.076s] Progreso 98%: Procesando nodo Read: Read33
-[2.078s] Progreso 99%: Procesando nodo Read: Read32
-[2.080s] Progreso 99%: Procesando nodo Read: Read11
-[2.082s] Progreso 99%: Procesando nodo Read: Read31
-[2.084s] Progreso 99%: Procesando nodo Read: Read30
-[2.086s] Progreso 99%: Procesando nodo Read: Read34
-[2.088s] Progreso 99%: Procesando nodo Read: Read8
-[2.090s] Progreso 99%: Procesando nodo Read: Read49
-[2.092s] Progreso 99%: Procesando nodo Read: Read2
+[0.032s] Segunda fase (10-70%):
+[0.035s] Progreso 10%: Analizando RAYO_00002.tif
+[0.035s] Progreso 10%: Analizando RAYO_00022.tif
+[0.036s] Progreso 10%: Analizando RELAMPAGOS_CIELO_00008.tif
+[0.036s] Progreso 10%: Analizando RELAMPAGOS_CIELO_00028.tif
+[0.037s] Progreso 10%: Analizando RELAMPAGOS_CIELO_00048.tif
+[0.038s] Progreso 11%: Analizando RELAMPAGOS_CIELO_00068.tif
+[0.039s] Progreso 11%: Analizando RELAMPAGOS_CIELO_00088.tif
+[0.039s] Progreso 11%: Analizando RELAMPAGOS_CIELO_V02_00011.tif
+[0.040s] Progreso 11%: Analizando RELAMPAGOS_CIELO_V02_00031.tif
+[0.041s] Progreso 11%: Analizando RELAMPAGOS_CIELO_V02_00051.tif
+[0.041s] Progreso 11%: Analizando RELAMPAGOS_CIELO_V02_00071.tif
+[0.042s] Progreso 12%: Analizando RELAMPAGOS_CIELO_V02_00091.tif
+[0.042s] Progreso 12%: Procesando RAYO_00016.tif
+[0.042s] Progreso 12%: Procesando RELAMPAGOS_CIELO_00002.tif
+[0.043s] Progreso 12%: Procesando RELAMPAGOS_CIELO_00022.tif
+[0.043s] Progreso 12%: Procesando RELAMPAGOS_CIELO_00042.tif
+[0.043s] Progreso 12%: Procesando RELAMPAGOS_CIELO_00062.tif
+[0.043s] Progreso 13%: Procesando RELAMPAGOS_CIELO_00082.tif
+[0.043s] Progreso 13%: Procesando RELAMPAGOS_CIELO_V02_00005.tif
+[0.043s] Progreso 13%: Procesando RELAMPAGOS_CIELO_V02_00025.tif
+[0.044s] Progreso 13%: Procesando RELAMPAGOS_CIELO_V02_00045.tif
+[0.044s] Progreso 13%: Procesando RELAMPAGOS_CIELO_V02_00065.tif
+[0.044s] Progreso 13%: Procesando RELAMPAGOS_CIELO_V02_00085.tif
+[0.046s] Progreso 14%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1009.exr
+[0.047s] Progreso 14%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1029.exr
+[0.048s] Progreso 14%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1049.exr
+[0.049s] Progreso 14%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1069.exr
+[0.050s] Progreso 14%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1089.exr
+[0.051s] Progreso 15%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1109.exr
+[0.052s] Progreso 15%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1129.exr
+[0.053s] Progreso 15%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1149.exr
+[0.053s] Progreso 15%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1169.exr
+[0.054s] Progreso 15%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1189.exr
+[0.054s] Progreso 15%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1209.exr
+[0.055s] Progreso 16%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1229.exr
+[0.055s] Progreso 16%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1249.exr
+[0.056s] Progreso 16%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1269.exr
+[0.057s] Progreso 16%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1289.exr
+[0.057s] Progreso 16%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1309.exr
+[0.058s] Progreso 16%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1329.exr
+[0.058s] Progreso 17%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1349.exr
+[0.058s] Progreso 17%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1369.exr
+[0.059s] Progreso 17%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1389.exr
+[0.059s] Progreso 17%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1008.exr
+[0.059s] Progreso 17%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1028.exr
+[0.059s] Progreso 17%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1048.exr
+[0.059s] Progreso 18%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1068.exr
+[0.059s] Progreso 18%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1088.exr
+[0.059s] Progreso 18%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1108.exr
+[0.059s] Progreso 18%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1128.exr
+[0.060s] Progreso 18%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1148.exr
+[0.060s] Progreso 19%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1168.exr
+[0.060s] Progreso 19%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1188.exr
+[0.060s] Progreso 19%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1208.exr
+[0.060s] Progreso 19%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1228.exr
+[0.060s] Progreso 19%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1248.exr
+[0.060s] Progreso 19%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1268.exr
+[0.060s] Progreso 20%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1288.exr
+[0.061s] Progreso 20%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1308.exr
+[0.061s] Progreso 20%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1328.exr
+[0.061s] Progreso 20%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1348.exr
+[0.061s] Progreso 20%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1368.exr
+[0.061s] Progreso 20%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_1388.exr
+[0.066s] Progreso 21%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01006.exr
+[0.067s] Progreso 21%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01026.exr
+[0.068s] Progreso 21%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01046.exr
+[0.069s] Progreso 21%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01066.exr
+[0.070s] Progreso 21%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01086.exr
+[0.070s] Progreso 21%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01106.exr
+[0.070s] Progreso 22%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01126.exr
+[0.071s] Progreso 22%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01146.exr
+[0.072s] Progreso 22%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01166.exr
+[0.072s] Progreso 22%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01186.exr
+[0.072s] Progreso 22%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01206.exr
+[0.073s] Progreso 22%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01226.exr
+[0.073s] Progreso 23%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01246.exr
+[0.074s] Progreso 23%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01266.exr
+[0.074s] Progreso 23%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01286.exr
+[0.074s] Progreso 23%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01306.exr
+[0.075s] Progreso 23%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01326.exr
+[0.075s] Progreso 24%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01346.exr
+[0.075s] Progreso 24%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01366.exr
+[0.076s] Progreso 24%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01386.exr
+[0.076s] Progreso 24%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01005.exr
+[0.076s] Progreso 24%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01025.exr
+[0.076s] Progreso 24%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01045.exr
+[0.076s] Progreso 25%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01065.exr
+[0.076s] Progreso 25%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01085.exr
+[0.077s] Progreso 25%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01105.exr
+[0.077s] Progreso 25%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01125.exr
+[0.077s] Progreso 25%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01145.exr
+[0.077s] Progreso 25%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01165.exr
+[0.077s] Progreso 26%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01185.exr
+[0.077s] Progreso 26%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01205.exr
+[0.077s] Progreso 26%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01225.exr
+[0.077s] Progreso 26%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01245.exr
+[0.077s] Progreso 26%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01265.exr
+[0.077s] Progreso 26%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01285.exr
+[0.078s] Progreso 27%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01305.exr
+[0.078s] Progreso 27%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01325.exr
+[0.078s] Progreso 27%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01345.exr
+[0.078s] Progreso 27%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01365.exr
+[0.078s] Progreso 27%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_Denoised_v02_01385.exr
+[0.079s] Progreso 28%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01003.exr
+[0.080s] Progreso 28%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01023.exr
+[0.080s] Progreso 28%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01043.exr
+[0.081s] Progreso 28%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01063.exr
+[0.082s] Progreso 28%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01083.exr
+[0.083s] Progreso 28%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01103.exr
+[0.084s] Progreso 29%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01123.exr
+[0.085s] Progreso 29%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01143.exr
+[0.086s] Progreso 29%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01163.exr
+[0.087s] Progreso 29%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01183.exr
+[0.088s] Progreso 29%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01203.exr
+[0.089s] Progreso 29%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01223.exr
+[0.090s] Progreso 30%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01243.exr
+[0.090s] Progreso 30%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01263.exr
+[0.091s] Progreso 30%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01283.exr
+[0.092s] Progreso 30%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01303.exr
+[0.093s] Progreso 30%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01323.exr
+[0.094s] Progreso 30%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01343.exr
+[0.094s] Progreso 31%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01363.exr
+[0.095s] Progreso 31%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01383.exr
+[0.096s] Progreso 31%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01002.exr
+[0.096s] Progreso 31%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01022.exr
+[0.097s] Progreso 31%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01042.exr
+[0.097s] Progreso 31%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01062.exr
+[0.098s] Progreso 32%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01082.exr
+[0.099s] Progreso 32%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01102.exr
+[0.100s] Progreso 32%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01122.exr
+[0.100s] Progreso 32%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01142.exr
+[0.101s] Progreso 32%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01162.exr
+[0.101s] Progreso 33%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01182.exr
+[0.102s] Progreso 33%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01202.exr
+[0.102s] Progreso 33%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01222.exr
+[0.102s] Progreso 33%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01242.exr
+[0.102s] Progreso 33%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01262.exr
+[0.103s] Progreso 33%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01282.exr
+[0.103s] Progreso 34%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01302.exr
+[0.103s] Progreso 34%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01322.exr
+[0.103s] Progreso 34%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01342.exr
+[0.104s] Progreso 34%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01362.exr
+[0.104s] Progreso 34%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01382.exr
+[0.104s] Progreso 34%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_PARA_MOCHA_01402.exr
+[0.110s] Progreso 35%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01020.exr
+[0.110s] Progreso 35%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01040.exr
+[0.111s] Progreso 35%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01060.exr
+[0.111s] Progreso 35%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01080.exr
+[0.112s] Progreso 35%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01100.exr
+[0.113s] Progreso 35%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01120.exr
+[0.114s] Progreso 36%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01140.exr
+[0.115s] Progreso 36%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01160.exr
+[0.116s] Progreso 36%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01003.exr
+[0.117s] Progreso 36%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01023.exr
+[0.117s] Progreso 36%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01043.exr
+[0.118s] Progreso 37%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01063.exr
+[0.119s] Progreso 37%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01083.exr
+[0.120s] Progreso 37%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01103.exr
+[0.121s] Progreso 37%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01123.exr
+[0.121s] Progreso 37%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01143.exr
+[0.122s] Progreso 37%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01163.exr
+[0.123s] Progreso 38%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01006.exr
+[0.124s] Progreso 38%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01026.exr
+[0.124s] Progreso 38%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01046.exr
+[0.124s] Progreso 38%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01066.exr
+[0.126s] Progreso 38%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01086.exr
+[0.127s] Progreso 38%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01106.exr
+[0.127s] Progreso 39%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01126.exr
+[0.128s] Progreso 39%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01146.exr
+[0.129s] Progreso 39%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01166.exr
+[0.129s] Progreso 39%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01186.exr
+[0.130s] Progreso 39%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01206.exr
+[0.130s] Progreso 39%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01226.exr
+[0.131s] Progreso 40%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01246.exr
+[0.131s] Progreso 40%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01266.exr
+[0.131s] Progreso 40%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01286.exr
+[0.132s] Progreso 40%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01306.exr
+[0.132s] Progreso 40%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01326.exr
+[0.133s] Progreso 40%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01346.exr
+[0.134s] Progreso 41%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01366.exr
+[0.135s] Progreso 41%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01386.exr
+[0.135s] Progreso 41%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01004.exr
+[0.136s] Progreso 41%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01024.exr
+[0.136s] Progreso 41%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01044.exr
+[0.136s] Progreso 42%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01064.exr
+[0.136s] Progreso 42%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01084.exr
+[0.137s] Progreso 42%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01104.exr
+[0.137s] Progreso 42%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01124.exr
+[0.137s] Progreso 42%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01144.exr
+[0.138s] Progreso 42%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01164.exr
+[0.138s] Progreso 43%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01007.exr
+[0.138s] Progreso 43%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01027.exr
+[0.139s] Progreso 43%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01047.exr
+[0.139s] Progreso 43%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01067.exr
+[0.139s] Progreso 43%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01087.exr
+[0.139s] Progreso 43%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01107.exr
+[0.140s] Progreso 44%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01127.exr
+[0.140s] Progreso 44%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01147.exr
+[0.140s] Progreso 44%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01167.exr
+[0.141s] Progreso 44%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01011.exr
+[0.141s] Progreso 44%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01031.exr
+[0.141s] Progreso 44%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01051.exr
+[0.141s] Progreso 45%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01071.exr
+[0.141s] Progreso 45%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01091.exr
+[0.142s] Progreso 45%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01111.exr
+[0.142s] Progreso 45%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01131.exr
+[0.143s] Progreso 45%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01151.exr
+[0.143s] Progreso 46%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB2_01171.exr
+[0.144s] Progreso 46%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01014.exr
+[0.144s] Progreso 46%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01034.exr
+[0.146s] Progreso 46%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01054.exr
+[0.146s] Progreso 46%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01074.exr
+[0.147s] Progreso 46%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01094.exr
+[0.148s] Progreso 47%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01114.exr
+[0.148s] Progreso 47%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01134.exr
+[0.149s] Progreso 47%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01154.exr
+[0.149s] Progreso 47%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01174.exr
+[0.150s] Progreso 47%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01017.exr
+[0.150s] Progreso 47%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01037.exr
+[0.150s] Progreso 48%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01057.exr
+[0.151s] Progreso 48%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01077.exr
+[0.151s] Progreso 48%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01097.exr
+[0.151s] Progreso 48%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01117.exr
+[0.151s] Progreso 48%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01137.exr
+[0.151s] Progreso 48%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01157.exr
+[0.152s] Progreso 49%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01177.exr
+[0.152s] Progreso 49%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01197.exr
+[0.152s] Progreso 49%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01217.exr
+[0.152s] Progreso 49%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01237.exr
+[0.153s] Progreso 49%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01257.exr
+[0.153s] Progreso 49%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01277.exr
+[0.153s] Progreso 50%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01297.exr
+[0.153s] Progreso 50%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01317.exr
+[0.153s] Progreso 50%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01337.exr
+[0.154s] Progreso 50%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01357.exr
+[0.154s] Progreso 50%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01377.exr
+[0.154s] Progreso 51%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB4_01397.exr
+[0.154s] Progreso 51%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01015.exr
+[0.154s] Progreso 51%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01035.exr
+[0.154s] Progreso 51%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01055.exr
+[0.155s] Progreso 51%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01075.exr
+[0.155s] Progreso 51%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01095.exr
+[0.156s] Progreso 52%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01115.exr
+[0.156s] Progreso 52%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01135.exr
+[0.157s] Progreso 52%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01155.exr
+[0.157s] Progreso 52%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_01175.exr
+[0.157s] Progreso 52%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01018.exr
+[0.158s] Progreso 52%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01038.exr
+[0.158s] Progreso 53%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01058.exr
+[0.158s] Progreso 53%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01078.exr
+[0.159s] Progreso 53%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01098.exr
+[0.159s] Progreso 53%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01118.exr
+[0.159s] Progreso 53%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01138.exr
+[0.159s] Progreso 53%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB_3_01158.exr
+[0.164s] Progreso 54%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01001.exr
+[0.164s] Progreso 54%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01021.exr
+[0.166s] Progreso 54%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01041.exr
+[0.167s] Progreso 54%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01061.exr
+[0.168s] Progreso 54%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01081.exr
+[0.169s] Progreso 55%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01101.exr
+[0.169s] Progreso 55%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01121.exr
+[0.170s] Progreso 55%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01141.exr
+[0.170s] Progreso 55%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01161.exr
+[0.171s] Progreso 55%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1004.exr
+[0.171s] Progreso 55%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1024.exr
+[0.171s] Progreso 56%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1044.exr
+[0.172s] Progreso 56%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1064.exr
+[0.172s] Progreso 56%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1084.exr
+[0.173s] Progreso 56%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1104.exr
+[0.173s] Progreso 56%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1124.exr
+[0.174s] Progreso 56%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1144.exr
+[0.175s] Progreso 57%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1164.exr
+[0.175s] Progreso 57%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1184.exr
+[0.176s] Progreso 57%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1204.exr
+[0.176s] Progreso 57%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1224.exr
+[0.177s] Progreso 57%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1244.exr
+[0.177s] Progreso 57%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1264.exr
+[0.178s] Progreso 58%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1284.exr
+[0.179s] Progreso 58%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1304.exr
+[0.179s] Progreso 58%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1324.exr
+[0.179s] Progreso 58%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1344.exr
+[0.180s] Progreso 58%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1364.exr
+[0.180s] Progreso 58%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1384.exr
+[0.180s] Progreso 59%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01003.exr
+[0.180s] Progreso 59%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01023.exr
+[0.181s] Progreso 59%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01043.exr
+[0.181s] Progreso 59%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01063.exr
+[0.181s] Progreso 59%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01083.exr
+[0.181s] Progreso 60%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01103.exr
+[0.183s] Progreso 60%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01123.exr
+[0.184s] Progreso 60%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01143.exr
+[0.184s] Progreso 60%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_RETIMEySTAB3_01163.exr
+[0.184s] Progreso 60%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1006.exr
+[0.185s] Progreso 60%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1026.exr
+[0.185s] Progreso 61%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1046.exr
+[0.186s] Progreso 61%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1066.exr
+[0.186s] Progreso 61%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1086.exr
+[0.186s] Progreso 61%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1106.exr
+[0.186s] Progreso 61%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1126.exr
+[0.186s] Progreso 61%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1146.exr
+[0.186s] Progreso 62%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1166.exr
+[0.186s] Progreso 62%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1186.exr
+[0.187s] Progreso 62%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1206.exr
+[0.187s] Progreso 62%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1226.exr
+[0.187s] Progreso 62%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1246.exr
+[0.187s] Progreso 62%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1266.exr
+[0.187s] Progreso 63%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1286.exr
+[0.187s] Progreso 63%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1306.exr
+[0.187s] Progreso 63%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1326.exr
+[0.188s] Progreso 63%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1346.exr
+[0.188s] Progreso 63%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1366.exr
+[0.188s] Progreso 64%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_Denoised_1386.exr
+[0.191s] Progreso 64%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v03_Denoised_1004.exr
+[0.192s] Progreso 64%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v03_Denoised_1024.exr
+[0.192s] Progreso 64%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v03_Denoised_1044.exr
+[0.193s] Progreso 64%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v03_Denoised_1064.exr
+[0.193s] Progreso 64%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v03_Denoised_1084.exr
+[0.193s] Progreso 65%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v03_Denoised_1104.exr
+[0.194s] Progreso 65%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v03_Denoised_1010.exr
+[0.194s] Progreso 65%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v03_Denoised_1030.exr
+[0.194s] Progreso 65%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v03_Denoised_1050.exr
+[0.194s] Progreso 65%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v03_Denoised_1070.exr
+[0.194s] Progreso 65%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v03_Denoised_1090.exr
+[0.195s] Progreso 66%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v03_Denoised_1110.exr
+[0.200s] Progreso 66%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1015.exr
+[0.201s] Progreso 66%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1035.exr
+[0.202s] Progreso 66%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1055.exr
+[0.202s] Progreso 66%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1075.exr
+[0.203s] Progreso 66%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1095.exr
+[0.204s] Progreso 67%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1115.exr
+[0.204s] Progreso 67%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1135.exr
+[0.205s] Progreso 67%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1155.exr
+[0.205s] Progreso 67%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1175.exr
+[0.205s] Progreso 67%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1195.exr
+[0.206s] Progreso 67%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1215.exr
+[0.206s] Progreso 68%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1235.exr
+[0.206s] Progreso 68%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1255.exr
+[0.206s] Progreso 68%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1275.exr
+[0.207s] Progreso 68%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1295.exr
+[0.207s] Progreso 68%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1315.exr
+[0.208s] Progreso 69%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1335.exr
+[0.209s] Progreso 69%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1355.exr
+[0.210s] Progreso 69%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1375.exr
+[0.210s] Progreso 69%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1395.exr
+[0.211s] Progreso 69%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1014.exr
+[0.212s] Progreso 69%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1034.exr
+[0.212s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1054.exr
+[0.213s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1074.exr
+[0.213s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1094.exr
+[0.213s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1114.exr
+[0.213s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1134.exr
+[0.213s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1154.exr
+[0.214s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1174.exr
+[0.214s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1194.exr
+[0.214s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1214.exr
+[0.214s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1234.exr
+[0.215s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1254.exr
+[0.215s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1274.exr
+[0.215s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1294.exr
+[0.215s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1314.exr
+[0.215s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1334.exr
+[0.215s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1354.exr
+[0.215s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1374.exr
+[0.217s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v00_1394.exr
+[0.220s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1012.exr
+[0.220s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1032.exr
+[0.221s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1052.exr
+[0.221s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1072.exr
+[0.221s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1092.exr
+[0.222s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1112.exr
+[0.222s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1132.exr
+[0.223s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1152.exr
+[0.224s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1172.exr
+[0.224s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1016.exr
+[0.225s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1036.exr
+[0.225s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1056.exr
+[0.226s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1076.exr
+[0.226s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1096.exr
+[0.227s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1116.exr
+[0.227s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1136.exr
+[0.227s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1156.exr
+[0.227s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v09_1176.exr
+[0.229s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1019.exr
+[0.230s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1039.exr
+[0.231s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1059.exr
+[0.231s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1079.exr
+[0.232s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1099.exr
+[0.232s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1119.exr
+[0.233s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1139.exr
+[0.233s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1159.exr
+[0.233s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1003.exr
+[0.233s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1023.exr
+[0.233s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1043.exr
+[0.233s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1063.exr
+[0.234s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1083.exr
+[0.235s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1103.exr
+[0.235s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1123.exr
+[0.236s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1143.exr
+[0.236s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v10_1163.exr
+[0.238s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1006.exr
+[0.238s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1026.exr
+[0.239s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1046.exr
+[0.239s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1066.exr
+[0.239s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1086.exr
+[0.239s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1106.exr
+[0.240s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1126.exr
+[0.240s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1146.exr
+[0.241s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1166.exr
+[0.242s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1010.exr
+[0.243s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1030.exr
+[0.243s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1050.exr
+[0.244s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1070.exr
+[0.244s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1090.exr
+[0.245s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1110.exr
+[0.245s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1130.exr
+[0.245s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1150.exr
+[0.245s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v13_1170.exr
+[0.246s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1013.exr
+[0.246s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1033.exr
+[0.246s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1053.exr
+[0.246s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1073.exr
+[0.247s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1093.exr
+[0.247s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1113.exr
+[0.247s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1133.exr
+[0.247s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1153.exr
+[0.248s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1173.exr
+[0.248s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1017.exr
+[0.249s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1037.exr
+[0.249s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1057.exr
+[0.250s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1077.exr
+[0.250s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1097.exr
+[0.251s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1117.exr
+[0.251s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1137.exr
+[0.252s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1157.exr
+[0.252s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v14_1177.exr
+[0.257s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1020.exr
+[0.258s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1040.exr
+[0.258s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1060.exr
+[0.258s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1080.exr
+[0.258s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1100.exr
+[0.259s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1120.exr
+[0.259s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1140.exr
+[0.259s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1160.exr
+[0.260s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1004.exr
+[0.260s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1024.exr
+[0.260s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1044.exr
+[0.260s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1064.exr
+[0.260s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1084.exr
+[0.260s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1104.exr
+[0.261s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1124.exr
+[0.261s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1144.exr
+[0.261s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v19_1164.exr
+[0.265s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1007.exr
+[0.265s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1027.exr
+[0.266s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1047.exr
+[0.266s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1067.exr
+[0.267s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1087.exr
+[0.268s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1107.exr
+[0.269s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1127.exr
+[0.269s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1147.exr
+[0.269s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1167.exr
+[0.270s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1011.exr
+[0.271s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1031.exr
+[0.271s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1051.exr
+[0.271s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1071.exr
+[0.272s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1091.exr
+[0.273s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1111.exr
+[0.274s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1131.exr
+[0.274s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1151.exr
+[0.274s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v22_1171.exr
+[0.277s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1014.exr
+[0.278s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1034.exr
+[0.278s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1054.exr
+[0.278s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1074.exr
+[0.278s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1094.exr
+[0.281s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1114.exr
+[0.281s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1134.exr
+[0.281s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1154.exr
+[0.281s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1174.exr
+[0.281s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1018.exr
+[0.281s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1038.exr
+[0.281s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1058.exr
+[0.281s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1078.exr
+[0.282s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1098.exr
+[0.282s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1118.exr
+[0.282s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1138.exr
+[0.282s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v25_1158.exr
+[0.302s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1001.exr
+[0.303s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1021.exr
+[0.303s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1041.exr
+[0.303s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1061.exr
+[0.304s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1081.exr
+[0.304s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1101.exr
+[0.304s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1121.exr
+[0.304s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1141.exr
+[0.316s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1161.exr
+[0.322s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1005.exr
+[0.325s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1025.exr
+[0.325s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1045.exr
+[0.325s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1065.exr
+[0.326s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1085.exr
+[0.326s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1105.exr
+[0.326s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1125.exr
+[0.326s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1145.exr
+[0.326s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v27_1165.exr
+[0.327s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1008.exr
+[0.345s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1028.exr
+[0.347s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1048.exr
+[0.347s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1068.exr
+[0.348s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1088.exr
+[0.348s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1108.exr
+[0.348s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1128.exr
+[0.348s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1148.exr
+[0.349s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1168.exr
+[0.349s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1012.exr
+[0.349s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1032.exr
+[0.349s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1052.exr
+[0.349s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1072.exr
+[0.349s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1092.exr
+[0.350s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1112.exr
+[0.350s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1132.exr
+[0.350s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1152.exr
+[0.350s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v28_1172.exr
+[0.351s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1015.exr
+[0.351s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1035.exr
+[0.351s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1055.exr
+[0.351s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1075.exr
+[0.352s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1095.exr
+[0.352s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1115.exr
+[0.352s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1135.exr
+[0.352s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1155.exr
+[0.353s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1175.exr
+[0.353s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1019.exr
+[0.353s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1039.exr
+[0.353s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1059.exr
+[0.354s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1079.exr
+[0.354s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1099.exr
+[0.354s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1119.exr
+[0.359s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1139.exr
+[0.359s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v31_1159.exr
+[0.359s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1002.exr
+[0.360s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1022.exr
+[0.360s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1042.exr
+[0.360s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1062.exr
+[0.360s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1082.exr
+[0.361s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1102.exr
+[0.361s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1122.exr
+[0.361s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1142.exr
+[0.362s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1162.exr
+[0.362s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1006.exr
+[0.367s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1026.exr
+[0.368s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1046.exr
+[0.368s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1066.exr
+[0.368s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1086.exr
+[0.368s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1106.exr
+[0.368s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1126.exr
+[0.369s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1146.exr
+[0.369s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v33_1166.exr
+[0.369s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1009.exr
+[0.370s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1029.exr
+[0.370s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1049.exr
+[0.370s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1069.exr
+[0.370s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1089.exr
+[0.371s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1109.exr
+[0.371s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1129.exr
+[0.371s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1149.exr
+[0.371s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1169.exr
+[0.372s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1013.exr
+[0.372s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1033.exr
+[0.372s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1053.exr
+[0.372s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1073.exr
+[0.372s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1093.exr
+[0.373s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1113.exr
+[0.373s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1133.exr
+[0.373s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1153.exr
+[0.373s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v38_1173.exr
+[0.394s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1016.exr
+[0.395s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1036.exr
+[0.395s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1056.exr
+[0.395s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1076.exr
+[0.396s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1096.exr
+[0.396s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1116.exr
+[0.396s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1136.exr
+[0.396s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1156.exr
+[0.397s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1176.exr
+[0.397s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1020.exr
+[0.397s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1040.exr
+[0.397s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1060.exr
+[0.397s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1080.exr
+[0.397s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1100.exr
+[0.398s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1120.exr
+[0.398s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1140.exr
+[0.398s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v41_1160.exr
+[0.399s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1003.exr
+[0.404s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1023.exr
+[0.404s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1043.exr
+[0.404s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1063.exr
+[0.405s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1083.exr
+[0.405s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1103.exr
+[0.405s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1123.exr
+[0.405s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1143.exr
+[0.406s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1163.exr
+[0.406s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1007.exr
+[0.406s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1027.exr
+[0.406s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1047.exr
+[0.406s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1067.exr
+[0.407s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1087.exr
+[0.407s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1107.exr
+[0.407s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1127.exr
+[0.407s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1147.exr
+[0.407s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_comp_v42_1167.exr
+[0.414s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1009.exr
+[0.414s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1029.exr
+[0.414s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1049.exr
+[0.415s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1069.exr
+[0.415s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1089.exr
+[0.415s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1109.exr
+[0.415s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1129.exr
+[0.416s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1149.exr
+[0.416s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1169.exr
+[0.416s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1189.exr
+[0.421s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1209.exr
+[0.422s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1229.exr
+[0.422s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1249.exr
+[0.422s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1269.exr
+[0.422s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1289.exr
+[0.423s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1309.exr
+[0.423s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1329.exr
+[0.423s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1349.exr
+[0.424s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1369.exr
+[0.430s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1389.exr
+[0.443s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1008.exr
+[0.443s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1028.exr
+[0.444s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1048.exr
+[0.444s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1068.exr
+[0.444s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1088.exr
+[0.447s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1108.exr
+[0.447s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1128.exr
+[0.447s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1148.exr
+[0.448s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1168.exr
+[0.448s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1188.exr
+[0.448s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1208.exr
+[0.448s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1228.exr
+[0.448s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1248.exr
+[0.449s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1268.exr
+[0.449s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1288.exr
+[0.449s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1308.exr
+[0.449s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1328.exr
+[0.449s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1348.exr
+[0.450s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1368.exr
+[0.450s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v01_1388.exr
+[0.474s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1006.exr
+[0.479s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1026.exr
+[0.479s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1046.exr
+[0.479s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1066.exr
+[0.480s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1086.exr
+[0.480s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1106.exr
+[0.486s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1126.exr
+[0.486s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1146.exr
+[0.491s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1166.exr
+[0.491s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1186.exr
+[0.492s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1206.exr
+[0.497s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1226.exr
+[0.497s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1246.exr
+[0.498s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1266.exr
+[0.498s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1286.exr
+[0.498s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1306.exr
+[0.498s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1326.exr
+[0.499s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1346.exr
+[0.499s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1366.exr
+[0.499s] Progreso 70%: Analizando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1386.exr
+[0.499s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1005.exr
+[0.499s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1025.exr
+[0.504s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1045.exr
+[0.505s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1065.exr
+[0.505s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1085.exr
+[0.505s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1105.exr
+[0.505s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1125.exr
+[0.505s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1145.exr
+[0.506s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1165.exr
+[0.506s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1185.exr
+[0.506s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1205.exr
+[0.506s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1225.exr
+[0.511s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1245.exr
+[0.511s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1265.exr
+[0.511s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1285.exr
+[0.511s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1305.exr
+[0.516s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1325.exr
+[0.516s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1345.exr
+[0.517s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1365.exr
+[0.522s] Progreso 70%: Procesando VL_01C_030_Agregar_Rayo-Speed_aPlate_v02_1385.exr
 
-[2.094s] Tiempo total de find_files: 1.906s
+[0.874s] Segunda fase (70-100%):
+[1.077s] Progreso 71%: Procesando nodo Read: Read32
+[1.079s] Progreso 73%: Procesando nodo Read: Read3
+[1.081s] Progreso 75%: Procesando nodo Read: Read1
+[1.083s] Progreso 77%: Procesando nodo Read: Read27
+[1.084s] Progreso 79%: Procesando nodo Read: Read26
+[1.086s] Progreso 81%: Procesando nodo Read: Read25
+[1.088s] Progreso 83%: Procesando nodo Read: Read24
+[1.092s] Progreso 85%: Procesando nodo Read: Read2
+[1.095s] Progreso 86%: Procesando nodo Read: Read23
+[1.097s] Progreso 88%: Procesando nodo Read: Read22
+[1.099s] Progreso 90%: Procesando nodo Read: Read21
+[1.101s] Progreso 92%: Procesando nodo Read: Read17
+[1.103s] Progreso 94%: Procesando nodo Read: Read16
+[1.105s] Progreso 96%: Procesando nodo Read: Read11
+[1.107s] Progreso 98%: Procesando nodo Read: Read9
+[1.109s] Progreso 100%: Procesando nodo Read: Read8
 
-[2.094s] Tiempo total de search_unmatched_reads: 0.162s
+[1.111s] Tiempo total de find_files: 0.859s
 
-[2.094s] --- Fin del procesamiento ---
-[2.094s] Tiempo total de ejecución: 2.094s
+[1.111s] Tiempo total de search_unmatched_reads: 0.237s
+
+[1.111s] --- Fin del procesamiento ---
+[1.111s] Tiempo total de ejecución: 1.111s

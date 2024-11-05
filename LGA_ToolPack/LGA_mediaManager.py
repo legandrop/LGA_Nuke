@@ -1,7 +1,7 @@
 """
 _______________________________________
 
-  LGA_mediaManager v1.52 | 2024 | Lega  
+  LGA_mediaManager v1.6 | 2024 | Lega  
 _______________________________________
 
 """
@@ -881,7 +881,7 @@ class FileScanner(QWidget):
 
 
         # Crear y configurar el QLabel para el texto de la version
-        version_label = QLabel("v1.5  ")
+        version_label = QLabel("v1.6  ")
         version_label.setToolTip("Lega | 2024")
         version_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)  # Alineacion a la derecha y verticalmente centrado
 
@@ -1071,7 +1071,9 @@ class FileScanner(QWidget):
             project_folder = os.path.dirname(project_folder)
 
         self.project_folder = project_folder  # Guardo la variable para obtenerla desde cualquier lado (add file to table)
-        self.find_files(project_folder)
+        #self.find_files(project_folder)
+        temp_worker = ScannerWorker(self)
+        files_data = temp_worker.find_files(project_folder)
         self.search_unmatched_reads()
         self.adjust_window_size()
 
@@ -1131,7 +1133,9 @@ class FileScanner(QWidget):
         self.project_folder = project_folder # Guardo la variable para obtenerla desde cualquier lado (add file to table)
 
         # Realiza las busquedas con el nivel ajustado
-        self.find_files(project_folder)
+        #self.find_files(project_folder)
+        temp_worker = ScannerWorker(self)
+        files_data = temp_worker.find_files(project_folder)
         self.search_unmatched_reads()
         self.adjust_window_size()
 
@@ -1567,177 +1571,7 @@ class FileScanner(QWidget):
         self.add_file_to_table(files_data)
         self.add_file_to_table(unmatched_reads_data)
 
-    def find_files(self, folder, progress_callback=None):
-        # Encuentra los archivos en la carpeta del proyecto y determina si son secuencias
-        end_time = time.time()
-        #logging.info(f"Scanning folder: {folder}")
-        #logging.info("")
-        #logging.info("find_files execution time start: ", end_time - start_time, "seconds")
-    
-        sequences = {}
-        all_read_files = self.get_read_files()  # Asegurate de que esta funcion exista en tu clase
-        to_add = []  # Inicializa la lista para acumular la informacion
 
-        # Contador para el progreso
-        total_processed = 0
-        
-        for root, dirs, files in os.walk(folder):
-            #logging.info(f"Analyzing folder: {root}")
-
-            # Filtrar archivos segun las extensiones definidas
-            filtered_files = [f for f in files if f.lower().endswith(tuple(self.sequence_extensions + self.non_sequence_extensions))]
-            filtered_files.sort(key=lambda x: x.lower())
-
-            for i in range(len(filtered_files) - 1):
-                file1, file2 = filtered_files[i], filtered_files[i + 1]
-                #logging.info(f"Comparing: {file1} and {file2}")  
-
-                # Actualizar progreso mientras procesamos
-                total_processed += 1
-                if progress_callback:
-                    progress_callback(f"Analizando {file1}")
-
-                # Solo procesar archivos de secuencia para comparar diferencias
-                if (file1.lower().endswith(tuple(self.sequence_extensions)) and 
-                    file2.lower().endswith(tuple(self.sequence_extensions))):
-
-                    difference = [char1 != char2 for char1, char2 in zip(file1, file2)]
-                    #logging.info(f"Differences: {difference}") 
-                    diff_indices = [i for i, x in enumerate(difference) if x]
-                    #logging.info(f"diff_indices: {difference}") 
-
-                    if 1 <= len(diff_indices) <= 2:
-                        index = diff_indices[0]
-                        try:
-                            match1 = re.match(r"(.*?)(\d+)(\D*)$", file1)
-                            match2 = re.match(r"(.*?)(\d+)(\D*)$", file2)
-                            if progress_callback:
-                                progress_callback(f"Procesando secuencia {file1}")
-                                
-                            if match1 and match2:
-                                left_part_file1, frame_num1, right_part_file1 = match1.groups()
-                                left_part_file2, frame_num2, right_part_file2 = match2.groups()
-
-                            #logging.info(f"Frame numbers extracted: {frame_num1} and {frame_num2}")
-
-                            # Verifica si los numeros de frame son consecutivos
-                            if int(frame_num1) + 1 == int(frame_num2):
-                                #logging.info(f"Frames {frame_num1} and {frame_num2} are consecutive")
-                                sequence_base = os.path.join(root, left_part_file1 + '#' * len(frame_num1) + right_part_file1)
-                                if sequence_base not in sequences:
-                                    sequences[sequence_base] = []
-                                sequences[sequence_base].extend([frame_num1, frame_num2])
-                            else:
-                                #logging.info(f"Frames {frame_num1} and {frame_num2} are not consecutive")
-
-                                left_part = file1[:index]
-                                right_part = file1[index + len(frame_num1):]
-
-                                # Separar la extension de right_part
-                                right_part, extension = os.path.splitext(right_part)
-
-                                # Buscar numeros al final de left_part
-                                left_part_match = re.search(r"(.*?)(\d*)$", left_part)
-                                if left_part_match:
-                                    left_part, left_numbers = left_part_match.groups()
-                                    frame_num1 = left_numbers + frame_num1
-                                    frame_num2 = left_numbers + frame_num2
-
-                                if int(frame_num1) + 1 == int(frame_num2):
-                                    #logging.info(f"Frames {frame_num1} and {frame_num2} are consecutive")
-                                    sequence_base = os.path.join(root, left_part + '#' * len(frame_num1) + right_part + extension)
-                                    if sequence_base not in sequences:
-                                        sequences[sequence_base] = []
-                                    sequences[sequence_base].extend([frame_num1, frame_num2])
-                                else:
-                                    #logging.info(f"Frames {frame_num1} and {frame_num2} are not consecutive")  
-                                    pass    
-                        except AttributeError as e:
-                            debug_print(f"Error parsing files: {file1} and {file2} at index {index}")  # Anadido
-                            debug_print(f"AttributeError: {e}")  # Anadido
-                            # Continua con la proxima iteracion si no se pueden dividir los nombres correctamente
-                            continue                          
-
-            # Agregar archivos no secuenciales despues de procesar todas las secuencias
-            for file in filtered_files:
-                file_path = os.path.join(root, file)
-                if file.lower().endswith(tuple(self.sequence_extensions + self.non_sequence_extensions)):
-                    in_sequence = False
-                    for base, frames in sequences.items():
-                        if file_path.startswith(base.split('#')[0]) and file_path.endswith(base.split('#')[-1]):
-                            in_sequence = True
-                            break
-                    if not in_sequence:
-                        #logging.info(f"Agregando archivo no secuencial: {file_path}")
-                        to_add.append((file_path, all_read_files, False, "", False, False, False))
-
-
-        ##############################################
-
-        # Procesar las secuencias identificadas y verificar carpetas borrables
-        for base, frames in sequences.items():
-            sequences[base] = sorted(set(frames))
-            frame_range = f"[{min(frames)}-{max(frames)}]"
-            #logging.info (f"frame_range {frame_range}")
-            #logging.info (f"min(frames) {min(frames)}")
-            #logging.info (f"max(frames) {max(frames)}")
-                
-            #logging.info(f"Secuencia identificada: {base} con frames {sequences[base]}")
-
-           # Normalizar la base para la comparacion
-            normalized_base = os.path.normpath(base).replace('\\\\', '\\').lower()
-            normalized_base = normalized_base.replace('\\', '/')
-            #logging.info("") 
-            #logging.info (f"base {base}")
-            #logging.info (f"normalized_base {normalized_base}")
-
-            # Normalizar y resolver las rutas de los reads
-            normalized_read_files = {
-                os.path.abspath(os.path.normpath(path)).replace('\\\\', '\\').lower(): nodes
-                for path, nodes in all_read_files.items()
-            }
-
-            # Reemplazar %0Xd por la cantidad correspondiente de #
-            for path, nodes in list(normalized_read_files.items()):
-                new_key = re.sub(r'%0(\d+)d', lambda m: '#' * int(m.group(1)), path)
-                normalized_read_files[new_key] = normalized_read_files.pop(path)
-
-            normalized_read_files = {path.replace('\\', '/'): nodes for path, nodes in normalized_read_files.items()}
-
-            #logging.info(f"normalized_base: {normalized_base}")
-            #logging.info(f"normalized_read_files: {normalized_read_files}")
-
-            # Ahora utiliza normalized_read_files para la comparacion
-            matched_nodes = []
-            for read_path, nodes in normalized_read_files.items():
-                #logging.info(f"Normalized read path: {read_path}, Nodes: {nodes}")
-                match_check = normalized_base.startswith(os.path.dirname(read_path))
-                #logging.info(f"Comparing: {normalized_base} with {read_path} - Match: {match_check}")                
-                if normalized_base.startswith(os.path.dirname(read_path)):
-                    matched_nodes.extend(nodes)  
-                    #logging.info(f"Matched nodes for {normalized_base}: {matched_nodes}")
-
-            # Verificar si la carpeta contiene solo archivos de la secuencia
-            directory_path = os.path.dirname(base)
-            #logging.info (f"directory_path {directory_path}")
-            all_files_in_directory = set(os.listdir(directory_path))
-
-            sequence_files_set = set([os.path.basename(base).replace('#' * len(str(min(frames))), str(frame).zfill(len(str(min(frames))))) for frame in frames])
-            #logging.info (f"sequence_files_set {sequence_files_set}")
-            is_folder_deletable = all_files_in_directory == sequence_files_set
-            #logging.info (f"is_folder_deletable {is_folder_deletable}")
-
-            to_add.append((base, all_read_files, True, frame_range, False, is_folder_deletable, True))
-
-
-        # Ordenar to_add por "Status" y luego por "Footage" antes de Agregar a la tabla
-        to_add.sort(key=lambda x: x[0].replace('_', '0' + '_'))  # Ordenar por Footage, considerando _ despues de letras.
-
-
-        #end_time = time.time()
-        #logging.info("find_files execution time end: ", end_time - start_time, "seconds")
-        
-        return to_add  # En lugar de llamar a add_file_to_table, devuelve los datos
 
     def add_file_to_table(self, files_data):
         # Agrega los archivos a la tabla y determina su estado en relacion con los nodos Read
@@ -2782,8 +2616,15 @@ class ScannerWorker(QRunnable):
         # Definir los rangos de progreso para cada etapa
         self.Etapa1_inicio = 0
         self.Etapa1_fin = 10
-        self.Etapa2_inicio = 90
-        self.Etapa2_fin = 100
+        self.Etapa2_inicio = 10
+        self.Etapa2_fin = 70
+        self.Etapa3_inicio = 70
+        self.Etapa3_fin = 100
+
+        # Copiar propiedades necesarias desde file_scanner
+        self.sequence_extensions = self.file_scanner.sequence_extensions
+        self.non_sequence_extensions = self.file_scanner.non_sequence_extensions
+
 
     def get_timestamp(self):
         elapsed = time.time() - self.start_time
@@ -2838,8 +2679,8 @@ class ScannerWorker(QRunnable):
                     progress = self.Etapa1_inicio + (base_progress * (self.Etapa1_fin - self.Etapa1_inicio) / 100)
                 else:
                     base_progress = processed_items * 100  # Convertir a porcentaje
-                    # Mapear al rango de la Etapa2
-                    progress = self.Etapa2_inicio + (base_progress * (self.Etapa2_fin - self.Etapa2_inicio) / 100)
+                    # Mapear al rango de la Etapa3
+                    progress = self.Etapa3_inicio + (base_progress * (self.Etapa3_fin - self.Etapa3_inicio) / 100)
                 
                 progress = min(int(progress), 100)
                 
@@ -2869,11 +2710,11 @@ class ScannerWorker(QRunnable):
 
             # Marcar inicio de find_files
             find_files_start = time.time()
-            files_data = self.file_scanner.find_files(self.file_scanner.project_folder)
+            files_data = self.find_files(self.file_scanner.project_folder)
             find_files_time = time.time() - find_files_start
             
             # Segunda fase
-            self.items_log.append(f"\n{self.get_timestamp()} Segunda fase ({self.Etapa2_inicio}-{self.Etapa2_fin}%):")
+            self.items_log.append(f"\n{self.get_timestamp()} Segunda fase ({self.Etapa3_inicio}-{self.Etapa3_fin}%):")
             processed_items = 0  # Reiniciar contador para la segunda fase
             
             # Marcar inicio de search_unmatched_reads
@@ -2903,6 +2744,206 @@ class ScannerWorker(QRunnable):
         except Exception as e:
             debug_print(f"Error en el escaneo: {e}")
             self.signals.finished.emit()
+
+    def find_files(self, folder, progress_callback=None):
+        # Encuentra los archivos en la carpeta del proyecto y determina si son secuencias
+        end_time = time.time()
+        #logging.info(f"Scanning folder: {folder}")
+        #logging.info("")
+        #logging.info("find_files execution time start: ", end_time - start_time, "seconds")
+    
+        sequences = {}
+        all_read_files = self.get_read_files()
+        to_add = []
+
+        # Contador para el progreso
+        total_processed = 0
+        total_files = 0
+        processed_items = 0
+        update_interval = 20  # Actualizar cada 20 archivos
+
+        # Primera pasada para contar archivos totales
+        for root, _, files in os.walk(folder):
+            filtered_files = [f for f in files if f.lower().endswith(tuple(self.sequence_extensions + self.non_sequence_extensions))]
+            total_files += len(filtered_files)
+
+        def update_find_progress(description=""):
+            nonlocal processed_items
+            processed_items += 1
+            
+            # Solo actualizar cada update_interval archivos
+            if processed_items % update_interval == 0:
+                base_progress = (processed_items / max(1, total_files)) * 100
+                progress = self.Etapa2_inicio + (base_progress * (self.Etapa2_fin - self.Etapa2_inicio) / 100)
+                progress = min(int(progress), self.Etapa2_fin)
+                self.items_log.append(f"{self.get_timestamp()} Progreso {progress}%: {description}")
+                self.signals.progress.emit(progress)
+                QApplication.processEvents()
+        
+        # Log del inicio de la etapa 2
+        self.items_log.append(f"\n{self.get_timestamp()} Segunda fase ({self.Etapa2_inicio}-{self.Etapa2_fin}%):")
+        
+        for root, dirs, files in os.walk(folder):
+            #logging.info(f"Analyzing folder: {root}")
+
+            # Filtrar archivos segun las extensiones definidas
+            filtered_files = [f for f in files if f.lower().endswith(tuple(self.sequence_extensions + self.non_sequence_extensions))]
+            filtered_files.sort(key=lambda x: x.lower())
+
+            for i in range(len(filtered_files) - 1):
+                file1, file2 = filtered_files[i], filtered_files[i + 1]
+                #logging.info(f"Comparing: {file1} and {file2}")  
+
+                # Actualizar progreso mientras procesamos
+                update_find_progress(f"Analizando {file1}")
+
+                # Solo procesar archivos de secuencia para comparar diferencias
+                if (file1.lower().endswith(tuple(self.sequence_extensions)) and 
+                    file2.lower().endswith(tuple(self.sequence_extensions))):
+
+                    difference = [char1 != char2 for char1, char2 in zip(file1, file2)]
+                    #logging.info(f"Differences: {difference}") 
+                    diff_indices = [i for i, x in enumerate(difference) if x]
+                    #logging.info(f"diff_indices: {difference}") 
+
+                    if 1 <= len(diff_indices) <= 2:
+                        index = diff_indices[0]
+                        try:
+                            match1 = re.match(r"(.*?)(\d+)(\D*)$", file1)
+                            match2 = re.match(r"(.*?)(\d+)(\D*)$", file2)
+                            if progress_callback:
+                                progress_callback(f"Procesando secuencia {file1}")
+                                
+                            if match1 and match2:
+                                left_part_file1, frame_num1, right_part_file1 = match1.groups()
+                                left_part_file2, frame_num2, right_part_file2 = match2.groups()
+
+                            #logging.info(f"Frame numbers extracted: {frame_num1} and {frame_num2}")
+
+                            # Verifica si los numeros de frame son consecutivos
+                            if int(frame_num1) + 1 == int(frame_num2):
+                                #logging.info(f"Frames {frame_num1} and {frame_num2} are consecutive")
+                                sequence_base = os.path.join(root, left_part_file1 + '#' * len(frame_num1) + right_part_file1)
+                                if sequence_base not in sequences:
+                                    sequences[sequence_base] = []
+                                sequences[sequence_base].extend([frame_num1, frame_num2])
+                            else:
+                                #logging.info(f"Frames {frame_num1} and {frame_num2} are not consecutive")
+
+                                left_part = file1[:index]
+                                right_part = file1[index + len(frame_num1):]
+
+                                # Separar la extension de right_part
+                                right_part, extension = os.path.splitext(right_part)
+
+                                # Buscar numeros al final de left_part
+                                left_part_match = re.search(r"(.*?)(\d*)$", left_part)
+                                if left_part_match:
+                                    left_part, left_numbers = left_part_match.groups()
+                                    frame_num1 = left_numbers + frame_num1
+                                    frame_num2 = left_numbers + frame_num2
+
+                                if int(frame_num1) + 1 == int(frame_num2):
+                                    #logging.info(f"Frames {frame_num1} and {frame_num2} are consecutive")
+                                    sequence_base = os.path.join(root, left_part + '#' * len(frame_num1) + right_part + extension)
+                                    if sequence_base not in sequences:
+                                        sequences[sequence_base] = []
+                                    sequences[sequence_base].extend([frame_num1, frame_num2])
+                                else:
+                                    #logging.info(f"Frames {frame_num1} and {frame_num2} are not consecutive")  
+                                    pass    
+                        except AttributeError as e:
+                            debug_print(f"Error parsing files: {file1} and {file2} at index {index}")  # Anadido
+                            debug_print(f"AttributeError: {e}")  # Anadido
+                            # Continua con la proxima iteracion si no se pueden dividir los nombres correctamente
+                            continue                          
+
+            # Agregar archivos no secuenciales despues de procesar todas las secuencias
+            for file in filtered_files:
+                file_path = os.path.join(root, file)
+                if file.lower().endswith(tuple(self.sequence_extensions + self.non_sequence_extensions)):
+                    in_sequence = False
+                    for base, frames in sequences.items():
+                        if file_path.startswith(base.split('#')[0]) and file_path.endswith(base.split('#')[-1]):
+                            in_sequence = True
+                            break
+                    if not in_sequence:
+                        #logging.info(f"Agregando archivo no secuencial: {file_path}")
+                        to_add.append((file_path, all_read_files, False, "", False, False, False))
+                    
+                update_find_progress(f"Procesando {file}")
+
+
+        ##############################################
+
+        # Procesar las secuencias identificadas y verificar carpetas borrables
+        for base, frames in sequences.items():
+            sequences[base] = sorted(set(frames))
+            frame_range = f"[{min(frames)}-{max(frames)}]"
+            #logging.info (f"frame_range {frame_range}")
+            #logging.info (f"min(frames) {min(frames)}")
+            #logging.info (f"max(frames) {max(frames)}")
+                
+            #logging.info(f"Secuencia identificada: {base} con frames {sequences[base]}")
+
+           # Normalizar la base para la comparacion
+            normalized_base = os.path.normpath(base).replace('\\\\', '\\').lower()
+            normalized_base = normalized_base.replace('\\', '/')
+            #logging.info("") 
+            #logging.info (f"base {base}")
+            #logging.info (f"normalized_base {normalized_base}")
+
+            # Normalizar y resolver las rutas de los reads
+            normalized_read_files = {
+                os.path.abspath(os.path.normpath(path)).replace('\\\\', '\\').lower(): nodes
+                for path, nodes in all_read_files.items()
+            }
+
+            # Reemplazar %0Xd por la cantidad correspondiente de #
+            for path, nodes in list(normalized_read_files.items()):
+                new_key = re.sub(r'%0(\d+)d', lambda m: '#' * int(m.group(1)), path)
+                normalized_read_files[new_key] = normalized_read_files.pop(path)
+
+            normalized_read_files = {path.replace('\\', '/'): nodes for path, nodes in normalized_read_files.items()}
+
+            #logging.info(f"normalized_base: {normalized_base}")
+            #logging.info(f"normalized_read_files: {normalized_read_files}")
+
+            # Ahora utiliza normalized_read_files para la comparacion
+            matched_nodes = []
+            for read_path, nodes in normalized_read_files.items():
+                #logging.info(f"Normalized read path: {read_path}, Nodes: {nodes}")
+                match_check = normalized_base.startswith(os.path.dirname(read_path))
+                #logging.info(f"Comparing: {normalized_base} with {read_path} - Match: {match_check}")                
+                if normalized_base.startswith(os.path.dirname(read_path)):
+                    matched_nodes.extend(nodes)  
+                    #logging.info(f"Matched nodes for {normalized_base}: {matched_nodes}")
+
+            # Verificar si la carpeta contiene solo archivos de la secuencia
+            directory_path = os.path.dirname(base)
+            #logging.info (f"directory_path {directory_path}")
+            all_files_in_directory = set(os.listdir(directory_path))
+
+            sequence_files_set = set([os.path.basename(base).replace('#' * len(str(min(frames))), str(frame).zfill(len(str(min(frames))))) for frame in frames])
+            #logging.info (f"sequence_files_set {sequence_files_set}")
+            is_folder_deletable = all_files_in_directory == sequence_files_set
+            #logging.info (f"is_folder_deletable {is_folder_deletable}")
+
+            to_add.append((base, all_read_files, True, frame_range, False, is_folder_deletable, True))
+
+
+        # Ordenar to_add por "Status" y luego por "Footage" antes de Agregar a la tabla
+        to_add.sort(key=lambda x: x[0].replace('_', '0' + '_'))  # Ordenar por Footage, considerando _ despues de letras.
+
+
+        #end_time = time.time()
+        #logging.info("find_files execution time end: ", end_time - start_time, "seconds")
+        
+        return to_add  # En lugar de llamar a add_file_to_table, devuelve los datos
+
+    def get_read_files(self):
+        # Usar el método de file_scanner
+        return self.file_scanner.get_read_files()
 
 
 def main():
