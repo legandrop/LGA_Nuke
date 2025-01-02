@@ -66,6 +66,7 @@ class ShotGridManager:
             'corr': ('Corrections', '#2e77d4', 'Corrections'),
             'rev_su': ('Review Sup', '#a3557e', 'Rev_Sup'),
             'revleg': ('Review Lega', '#69135e', 'Rev_Lega'),
+            'revhld': ('Review Hold', '#933100', 'Rev_Hold'),
             'rev_di': ('Review Dir', '#98c054', 'ReviewDir'),
             'pubsh': ('Publish', '#244c19', 'Approved'),
             'pbshed': ('Published', '#244c19', 'Approved'),

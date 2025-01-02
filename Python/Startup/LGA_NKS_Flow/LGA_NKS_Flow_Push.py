@@ -25,7 +25,8 @@ status_translation = {
     "Rev_Dir": "rev_di",
     "Approved": "pubsh",
     "Rev_Sup_D": "rev_su",
-    "Rev_Dir_D": "rev_di"
+    "Rev_Dir_D": "rev_di",
+    "Rev_Hold": "revhld"
 }
 
 # Variable global para activar o desactivar los prints // En esta version el Debug se imprime al final del script
@@ -316,7 +317,7 @@ def Push_Task_Status(button_name, base_name, update_callback=None):
     sg_manager = ShotGridManager(sg_url, sg_script_name, sg_api_key, sg_login)
 
     sg_status = status_translation.get(button_name, None)
-    if sg_status in ["rev_di", "corr", "revleg"]:
+    if sg_status in ["rev_di", "corr", "revleg", "revhld"]:
         app = QApplication.instance()
         if app is None:
             app = QApplication([])

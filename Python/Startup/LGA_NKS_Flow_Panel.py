@@ -67,6 +67,7 @@ class ColorChangeWidget(QWidget):
             #{"name": "Corrs_Lega", "color": QColor(105, 19, 94), "style": "#69135e", "action": "color"},
             {"name": "Rev_Sup", "color": QColor(163, 85, 126), "style": "#a3557e", "action": "color"},
             {"name": "Rev_Lega", "color": QColor(105, 19, 94), "style": "#69135e", "action": "color"},
+            {"name": "Rev_Hold", "color": QColor(255, 128, 64), "style": "#933100", "action": "color"},
             {"name": "Rev_Dir", "color": QColor(152, 192, 84), "style": "#98c054", "action": "color"},
             {"name": "Approved", "color": QColor(36, 76, 25), "style": "#244c19", "action": "color"},
             {"name": "Rev_Sup_D", "color": QColor(82, 61, 128), "style": "#523d80", "action": "color"},
