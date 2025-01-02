@@ -368,13 +368,16 @@ class HieroOperations:
             te = hiero.ui.getTimelineEditor(seq)
             selected_clips = te.selection()
             
-            # Modificar la lógica de selección basada en force_all_clips
+            # Si force_all_clips es True, obtener solo los clips del track "EXR"
             if hasattr(self.gui_table, 'force_all_clips') and self.gui_table.force_all_clips:
                 # Si force_all_clips es True, obtener todos los clips directamente
                 all_tracks = seq.videoTracks()
                 selected_clips = []
                 for track in all_tracks:
-                    selected_clips.extend(track.items())
+                    # Solo procesar clips si el track se llama "EXR"
+                    if track.name() == "EXR":
+                        selected_clips.extend(track.items())
+                        debug_print(f"Procesando clips del track: {track.name()}")
             elif not selected_clips:
                 # Comportamiento original cuando no hay selección
                 all_tracks = seq.videoTracks()
