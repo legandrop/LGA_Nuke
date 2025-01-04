@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_merge v1.5 | 2024 | Lega  
+  LGA_gen_Merge v1.6 | 2024 | Lega  
   
   Crea nodos Merge con configuración de máscara predefinida.
   Soporta creación desde un nodo seleccionado o desde la posición del cursor.
@@ -20,7 +20,7 @@ from PySide2.QtCore import Qt, QEvent, QPoint
 
 def get_common_variables():
     distanciaY = 30  # Espacio libre entre nodos en la columna derecha
-    distanciaX = 180
+    distanciaX = 130
     dot_width = int(nuke.toNode("preferences")['dot_node_scale'].value() * 12)
     return distanciaX, distanciaY, dot_width
 
@@ -93,7 +93,10 @@ def createMerge():
         no_op = nuke.createNode("NoOp")
         current_node = no_op
 
-    
+    # Deseleccionar todos los nodos existentes
+    for n in nuke.allNodes():
+        n.setSelected(False)
+
     # Crear un nodo Roto a la derecha del nodo seleccionado
     roto = nuke.nodes.Roto()
     roto.setXpos(current_node.xpos() + distanciaX)
@@ -144,19 +147,14 @@ def createMerge():
     # Conectar la mascara del nodo Merge al Dot de la columna derecha
     merge.setInput(1, dot_right)
 
-    # Si se uso un NoOp, seleccionar los 4 nodos recien creados
+    # Al final de la función, seleccionar solo los nuevos nodos
+    roto['selected'].setValue(True)
+    blur['selected'].setValue(True)
+    dot_right['selected'].setValue(True)
+    merge['selected'].setValue(True)
+
+    # Eliminar el NoOp si existe
     if no_op:
-        # Desseleccionar todos los nodos
-        for node in nuke.allNodes():
-            node['selected'].setValue(False)
-
-        # Seleccionar los nodos recien creados
-        roto['selected'].setValue(True)
-        blur['selected'].setValue(True)
-        dot_right['selected'].setValue(True)
-        merge['selected'].setValue(True)
-
-        # Eliminar el NoOp despues de hacer las selecciones
         nuke.delete(no_op)
 
 

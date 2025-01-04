@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_grade v1.5 | 2024 | Lega  
+  LGA_gen_Grade v1.6 | 2024 | Lega  
   
   Crea nodos Grade con diferentes configuraciones de máscaras.
   Soporta creación desde un nodo seleccionado o desde la posición del cursor.
@@ -18,7 +18,7 @@ from PySide2.QtCore import Qt, QEvent, QPoint
 # Variables comunes
 def get_common_variables():
     distanciaY = 20  # Espacio libre entre nodos en la columna derecha
-    distanciaX = 180
+    distanciaX = 130
     dot_width = int(nuke.toNode("preferences")['dot_node_scale'].value() * 12)
     return distanciaX, distanciaY, dot_width
 
@@ -81,8 +81,13 @@ def find_next_node_in_column(current_node, tolerance_x=120):
 def gradeHI():
     # Obtener las variables comunes
     distanciaX, distanciaY, dot_width = get_common_variables()
-
+    
+    # Guardar el nodo seleccionado antes de deseleccionar todo
     selected_node, no_op = get_selected_node()
+    
+    # Deseleccionar todos los nodos
+    for n in nuke.allNodes():
+        n.setSelected(False)
 
     current_node = selected_node
 
@@ -172,9 +177,13 @@ def gradeHI():
 def gradeMask():
     # Obtener las variables comunes
     distanciaX, distanciaY, dot_width = get_common_variables()
-
-    # Obtener el nodo seleccionado o crear un NoOp si no hay nodo seleccionado 
+    
+    # Guardar el nodo seleccionado antes de deseleccionar todo
     selected_node, no_op = get_selected_node()
+    
+    # Deseleccionar todos los nodos
+    for n in nuke.allNodes():
+        n.setSelected(False)
 
     current_node = selected_node
 
