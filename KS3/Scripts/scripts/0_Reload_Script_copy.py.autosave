@@ -3,5 +3,5 @@ undo = nuke.Undo()
 undo.end()
 
 import importlib
-import LGA_grade
-importlib.reload(LGA_grade)
+import LGA_writePresets
+importlib.reload(LGA_writePresets)

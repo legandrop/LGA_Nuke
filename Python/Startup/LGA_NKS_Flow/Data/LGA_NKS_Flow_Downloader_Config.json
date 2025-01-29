@@ -5,7 +5,8 @@
     "close_to_tray": false,
     "log_file_path": "F:/",
     "project_names": [
-        "VL"
+        "VL",
+        "TOC"
     ],
     "new_versions_popup": false
 }

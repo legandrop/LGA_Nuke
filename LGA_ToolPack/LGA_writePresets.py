@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_writePresets v1.7 | 2024 | Lega  
+  LGA_writePresets v1.8 | 2025 | Lega  
   
   Creates Write nodes with predefined settings for different purposes.
   Supports both script-based and Read node-based path generation.  
@@ -280,10 +280,14 @@ def create_write_from_preset(preset, user_text=None):
         write_node['mov64_quality_min'].setValue(int(preset['mov64_quality_min']))
         write_node['mov64_quality_max'].setValue(int(preset['mov64_quality_max']))
         write_node['colorspace'].setValue(preset['colorspace'])
-    else:
-        write_node['compression'].setValue(preset['compression'])
-        write_node['dw_compression_level'].setValue(int(preset['compression_level']))
+    elif preset['file_type'] == 'png':
+        write_node['datatype'].setValue('16 bit' if preset.get('datatype', '16 bit') == '16 bit' else '8 bit')
         write_node['colorspace'].setValue(preset['colorspace'])
+    else:
+        if preset['file_type'] == 'exr':
+            write_node['compression'].setValue(preset['compression'])
+            write_node['dw_compression_level'].setValue(int(preset['compression_level']))
+            write_node['colorspace'].setValue(preset['colorspace'])
 
     write_node['create_directories'].setValue(create_directories)
 
