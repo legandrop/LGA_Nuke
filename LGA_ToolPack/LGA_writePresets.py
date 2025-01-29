@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_writePresets v1.8 | 2025 | Lega  
+  LGA_writePresets v1.9 | 2025 | Lega  
   
   Creates Write nodes with predefined settings for different purposes.
   Supports both script-based and Read node-based path generation.  
@@ -30,6 +30,20 @@ try:
 except ImportError:
     oz_backdrop_available = False
     nuke.tprint("El modulo LGA_oz_backdropReplacer no esta disponible. Continuando sin reemplazar el backdrop.")
+
+# Añadir al inicio del archivo
+FORMAT_COLORS = {
+    'EXR': '#FDFD91',  # Amarillo
+    'MOV': '#A4A4FF',  # Azul
+    'TIFF': '#9AFD9A', # Verde
+    'PNG': '#FFA7D3'   # Rosa
+}
+
+def format_name_with_color(text):
+    for fmt, color in FORMAT_COLORS.items():
+        if fmt in text.upper():
+            return text.replace(fmt, f'<span style="color: {color}; font-weight: bold;">{fmt}</span>')
+    return text
 
 # Funciones auxiliares del preRender original
 def align_write_to_dot(dot_node, write_node):
@@ -368,29 +382,54 @@ class ColoredItemDelegate(QStyledItemDelegate):
             if option.state & QStyle.State_Selected:
                 painter.fillRect(option.rect, QColor("#424242"))
             
-            # Agregar un espacio extra al inicio del rect para todos los textos
-            padding_left = 5  # Píxeles de espacio extra
+            padding_left = 5
             adjusted_rect = option.rect.adjusted(padding_left, 0, 0, 0)
             
-            if text.startswith("[Script]"):
+            # Separar prefijo y nombre
+            parts = text.split(" ", 1)
+            prefix, name = parts if len(parts) > 1 else ("", text)
+            
+            # Dibujar prefijo
+            if prefix == "[Script]":
                 painter.setPen(QColor("#ed2464"))
-                prefix = "[Script]"
-                painter.drawText(adjusted_rect, Qt.AlignLeft | Qt.AlignVCenter, prefix)
-                painter.setPen(QColor("white"))
-                text_width = painter.fontMetrics().horizontalAdvance(prefix)
-                painter.drawText(adjusted_rect.adjusted(text_width, 0, 0, 0), 
-                               Qt.AlignLeft | Qt.AlignVCenter, text[len(prefix):])
-            elif text.startswith("[Read]"):
+                painter.drawText(adjusted_rect, Qt.AlignLeft | Qt.AlignVCenter, prefix + " ")
+                prefix_width = painter.fontMetrics().horizontalAdvance(prefix + " ")
+            elif prefix == "[Read]":
                 painter.setPen(QColor("#66e2ff"))
-                prefix = "[Read]"
-                painter.drawText(adjusted_rect, Qt.AlignLeft | Qt.AlignVCenter, prefix)
-                painter.setPen(QColor("white"))
-                text_width = painter.fontMetrics().horizontalAdvance(prefix)
-                painter.drawText(adjusted_rect.adjusted(text_width, 0, 0, 0), 
-                               Qt.AlignLeft | Qt.AlignVCenter, text[len(prefix):])
+                painter.drawText(adjusted_rect, Qt.AlignLeft | Qt.AlignVCenter, prefix + " ")
+                prefix_width = painter.fontMetrics().horizontalAdvance(prefix + " ")
             else:
-                painter.setPen(QColor("white"))
-                painter.drawText(adjusted_rect, Qt.AlignLeft | Qt.AlignVCenter, text)
+                prefix_width = 0
+            
+            # Dibujar nombre con formato de color
+            remaining_rect = adjusted_rect.adjusted(prefix_width, 0, 0, 0)
+            painter.setPen(QColor("white"))
+            
+            # Buscar formatos en el nombre
+            for fmt, color in FORMAT_COLORS.items():
+                if fmt in name.upper():
+                    # Dividir el texto en partes
+                    parts = name.split(fmt, 1)
+                    
+                    # Dibujar parte antes del formato
+                    before_width = painter.fontMetrics().horizontalAdvance(parts[0])
+                    painter.drawText(remaining_rect, Qt.AlignLeft | Qt.AlignVCenter, parts[0])
+                    
+                    # Dibujar formato con color
+                    fmt_rect = remaining_rect.adjusted(before_width, 0, 0, 0)
+                    painter.setPen(QColor(color))
+                    painter.drawText(fmt_rect, Qt.AlignLeft | Qt.AlignVCenter, fmt)
+                    
+                    # Dibujar parte restante
+                    remaining_rect = fmt_rect.adjusted(
+                        painter.fontMetrics().horizontalAdvance(fmt), 0, 0, 0
+                    )
+                    painter.setPen(QColor("white"))
+                    painter.drawText(remaining_rect, Qt.AlignLeft | Qt.AlignVCenter, parts[1] if len(parts) > 1 else "")
+                    break
+            else:
+                # Si no encuentra formato, dibujar texto normal
+                painter.drawText(remaining_rect, Qt.AlignLeft | Qt.AlignVCenter, name)
             
             painter.restore()
 
@@ -496,14 +535,19 @@ class SelectedNodeInfo(QWidget):
         self.table.setFocus()
 
     def load_render_options(self):
-        """Carga las opciones de render en la tabla."""
+        """Carga las opciones de render en la tabla con formato de color."""
         self.table.setItemDelegate(ColoredItemDelegate())
         
         for row, name in enumerate(self.options):
-            item = QTableWidgetItem(name)
+            # Extraer el nombre real del preset
+            preset_number = row + 1
+            preset = self.presets[f'Preset{preset_number}']
+            display_name = preset['button_name']
+            
+            item = QTableWidgetItem(f"[{preset['button_type'].capitalize()}] {display_name}")
             item.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
             self.table.setItem(row, 0, item)
-
+        
         self.table.resizeColumnsToContents()
         self.table.setStyleSheet("""
             QTableView {
