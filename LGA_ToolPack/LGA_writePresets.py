@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_writePresets v1.9 | 2025 | Lega  
+  LGA_writePresets v1.91 | 2025 | Lega  
   
   Creates Write nodes with predefined settings for different purposes.
   Supports both script-based and Read node-based path generation.  
@@ -186,19 +186,36 @@ def find_top_read_node(node):
     return None
 
 def get_write_name_from_read(current_node, default_name):
-    """Obtiene el nombre para el Write basado en el Read más alto o usa el default"""
+    """Obtiene un nombre único para el Write basado en el Read más alto o usa el default"""
     read_node = find_top_read_node(current_node)
     
     if read_node:
         file_path = read_node['file'].value()
         file_name = os.path.basename(file_path)
         file_name = os.path.splitext(file_name)[0]
-        # Eliminar el padding si existe
+        
+        # Eliminar el padding y sufijos numéricos existentes
         if "_" in file_name:
-            file_name = "_".join(file_name.split("_")[:-1])
-        return 'Write_' + file_name
+            base_parts = file_name.split("_")
+            # Eliminar el último segmento si es numérico
+            if base_parts[-1].isdigit():
+                file_name = "_".join(base_parts[:-1])
+            else:
+                file_name = "_".join(base_parts[:-1]) if len(base_parts) > 1 else base_parts[0]
+        
+        base_name = 'Write_' + file_name
+        return get_unique_write_name(base_name)
     else:
         return 'Write_' + default_name
+
+def get_unique_write_name(base_name):
+    """Genera un nombre único para el Write node agregando sufijos numéricos si es necesario"""
+    index = 1
+    node_name = base_name
+    while nuke.exists(node_name):
+        node_name = f"{base_name}_{index}"
+        index += 1
+    return node_name
 
 def load_presets():
     """Lee el archivo .ini y retorna un diccionario con los presets"""
