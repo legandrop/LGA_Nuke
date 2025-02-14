@@ -35,6 +35,7 @@ except ImportError:
 FORMAT_COLORS = {
     'EXR': '#FDFD91',  # Amarillo
     'MOV': '#A4A4FF',  # Azul
+    'MXF': '#ff8050',  # Azul
     'TIFF': '#9AFD9A', # Verde
     'PNG': '#FFA7D3'   # Rosa
 }
@@ -310,6 +311,11 @@ def create_write_from_preset(preset, user_text=None):
         write_node['mov64_bitrate_tolerance'].setValue(int(preset['mov64_bitrate_tolerance']))
         write_node['mov64_quality_min'].setValue(int(preset['mov64_quality_min']))
         write_node['mov64_quality_max'].setValue(int(preset['mov64_quality_max']))
+        write_node['colorspace'].setValue(preset['colorspace'])
+    elif preset['file_type'] == 'mxf':
+        write_node['mxf_codec_profile_knob'].setValue(preset['mxf_codec_profile_knob'])
+        write_node['mxf_advanced'].setValue(preset['mxf_advanced'].lower() == 'true')
+        write_node['dataRange'].setValue(preset.get('dataRange'))
         write_node['colorspace'].setValue(preset['colorspace'])
     elif preset['file_type'] == 'png':
         write_node['datatype'].setValue('16 bit' if preset.get('datatype', '16 bit') == '16 bit' else '8 bit')
