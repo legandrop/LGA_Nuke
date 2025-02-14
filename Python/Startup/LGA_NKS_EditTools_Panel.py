@@ -1,7 +1,7 @@
 """
 _________________________________________
 
-  LGA_EditToolsPanel v2.6 - 2024 - Lega
+  LGA_EditToolsPanel v2.7 - 2025 - Lega
   Tools panel for Hiero / Nuke Studio
 _________________________________________
 
@@ -23,9 +23,14 @@ import importlib.util
 
 # Variable global para activar o desactivar los prints
 DEBUG = False
+DEBUG_BASIC = False
 
 def debug_print(*message):
     if DEBUG:
+        print(*message)
+
+def debug_print_b(*message):
+    if DEBUG_BASIC:
         print(*message)
 
 class ReconnectMediaWidget(QWidget):
@@ -52,6 +57,7 @@ class ReconnectMediaWidget(QWidget):
             ("Extend &Edit", self.extend_edit_to_playhead, "#453434", "Alt+E", "Alt+E"),
             ("Reconnect T > N", self.reconnect_t_to_n, "#4a4329"),
             ("Reconnect N > T", self.reconnect_n_to_t, "#4a4329"),
+            ("Reconnect T Win > Mac", self.execute_reconnect_win_to_mac, "#4a4329"),
             ("Reconnect Media", self.reconnectMediaFromTimeline, "#4a4329", "Alt+M", "Alt+M"),
             #("Check Frames", self.check_frames, "#4a4329"),  # Nuevo boton
             ]
@@ -239,6 +245,26 @@ class ReconnectMediaWidget(QWidget):
             else:
                 debug_print("No current undo item to end.")
 
+    def execute_reconnect_win_to_mac(self):
+        debug_print_b("\n=== INICIANDO PROCESO DE RECONNECT + REPLACE ===")
+        
+        try:
+            debug_print_b("\n>>> Ejecutando Reconnect script...")
+            self.execute_external_script('LGA_NKS_Reconnect.py')
+            debug_print_b(">>> Reconnect script completado")
+        except Exception as e:
+            debug_print_b(f"Error en Reconnect: {e}")
+        
+        try:
+            debug_print_b("\n>>> Ejecutando SelfReplace script...")
+            self.execute_external_script('LGA_NKS_SelfReplaceClip.py')
+            debug_print_b(">>> SelfReplace script completado")
+        except Exception as e:
+            debug_print_b(f"Error en SelfReplace: {e}")
+            
+        debug_print_b("\n=== PROCESO COMPLETO ===")
+
+
     def reconnect_media(self, old_prefix, new_prefix):
         try:
             seq = hiero.ui.activeSequence()
@@ -305,10 +331,6 @@ class ReconnectMediaWidget(QWidget):
             track_item.reconnectMedia(search_path)
 
 
-
-
-
-
 ###### Clean Project
     def clean_project(self):
         try:
@@ -325,7 +347,7 @@ class ReconnectMediaWidget(QWidget):
                 spec = importlib.util.spec_from_file_location(script_name[:-3], script_path)
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
-                module.run_script()
+                module.main()
             except Exception as e:
                 debug_print(f"Error ejecutando el script {script_name}: {e}")
         else:
@@ -334,6 +356,7 @@ class ReconnectMediaWidget(QWidget):
     # Nuevo metodo para ejecutar LGA_NKS_mediaMissingFrames.py
     def check_frames(self):
         self.execute_external_script('LGA_NKS_mediaMissingFrames.py')
+
 
 class CleanUnusedAction:
 
