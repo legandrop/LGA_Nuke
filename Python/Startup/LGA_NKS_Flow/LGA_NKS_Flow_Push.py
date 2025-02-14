@@ -1,7 +1,7 @@
 """
 _____________________________________________________________
 
-  LGA_NKS_Flow_Push v2.4 - 2024 - Lega Pugliese
+  LGA_NKS_Flow_Push v2.42 - 2024 - Lega Pugliese
   Envia a flow nuevos estados de las tasks comps. 
   En algunos estados permite enviar un mensaje a la version
 _____________________________________________________________
@@ -189,7 +189,8 @@ class ShotGridManager:
 
 class WorkerSignals(QObject):
     result_ready = Signal(str, int, int)
-    task_finished = Signal()  # Senal para indicar que la tarea ha terminado
+    task_finished = Signal()
+    debug_output = Signal()  # Nueva señal para imprimir logs
 
 class Worker(QRunnable):
     def __init__(self, button_name, base_name, sg_manager, message):
@@ -280,6 +281,7 @@ class Worker(QRunnable):
             debug_print(f"Exception in Worker.run: {e}")
         finally:
             self.signals.task_finished.emit()
+            self.signals.debug_output.emit()  # Emitir señal al finalizar
 
 class MessageBoxManager:
     def __init__(self):
@@ -327,6 +329,7 @@ def Push_Task_Status(button_name, base_name, update_callback=None):
         if message is not None:
             worker = Worker(button_name, base_name, sg_manager, message)
             worker.signals.result_ready.connect(handle_results)
+            worker.signals.debug_output.connect(lambda: print_debug_messages())  # Conectar nueva señal
             if update_callback:
                 worker.signals.task_finished.connect(update_callback)  # Conectar la senal a la funcion de callback
             QThreadPool.globalInstance().start(worker)
@@ -336,22 +339,16 @@ def Push_Task_Status(button_name, base_name, update_callback=None):
     else:
         worker = Worker(button_name, base_name, sg_manager, None)
         worker.signals.result_ready.connect(handle_results)
+        worker.signals.debug_output.connect(lambda: print_debug_messages())  # Conectar nueva señal
         if update_callback:
             worker.signals.task_finished.connect(update_callback)  # Conectar la senal a la funcion de callback
         QThreadPool.globalInstance().start(worker)
 
-    # Imprimir todos los mensajes de depuracion al final del script
-    if DEBUG:
-        for message in debug_messages:
-            print(message)
-
     return True  # Retornar True indicando que la operacion fue iniciada
 
-
+def print_debug_messages():
+    if DEBUG:
+        print("\n".join(debug_messages))
+        debug_messages.clear()  # Limpiar mensajes después de imprimir
 
 msg_manager = MessageBoxManager()
-
-# Al final del script, imprime todos los mensajes de depuracion.
-if DEBUG:
-    for message in debug_messages:
-        print(message)
