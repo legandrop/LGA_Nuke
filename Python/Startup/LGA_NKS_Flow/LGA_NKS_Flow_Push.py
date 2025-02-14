@@ -30,7 +30,7 @@ status_translation = {
 }
 
 # Variable global para activar o desactivar los prints // En esta version el Debug se imprime al final del script
-DEBUG = True
+DEBUG = False
 debug_messages = []
 
 
