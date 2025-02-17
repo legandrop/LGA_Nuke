@@ -1,7 +1,7 @@
 """
 ______________________________________________________________
 
-  LGA_arrangeNodes v1.75 | 2024 | Lega   
+  LGA_arrangeNodes v1.76 | 2025 | Lega   
  
   Align and distribute multiple columns based on connections  
 ______________________________________________________________
@@ -687,7 +687,7 @@ def organize_columns_and_find_principal(regular_nodes, original_positions, toler
     # Verifica si la principalGroup es None
     if principalGroup is None:
         debug_print_C("No se encontro una columna principal.")
-        return None, None, None, None  # Retorna si no hay una columna principal 
+        return None, None, None, None, None  # Retornar 5 valores None
 
     # Numerar columnas secundarias segun su distancia a la principal
     column_order = sorted(columnGroups.keys())
@@ -711,6 +711,11 @@ def organize_columns_and_find_principal(regular_nodes, original_positions, toler
 def main():
     # Obtener nodos seleccionados
     selected_nodes = nuke.selectedNodes()
+    
+    # Verificar si hay menos de 2 nodos seleccionados
+    if len(selected_nodes) < 2:
+        nuke.message("Select at least 2 nodes to arrange")
+        return
 
     # Iniciar el undo
     undo = nuke.Undo()
@@ -725,6 +730,11 @@ def main():
 
     # Paso B: Agrupar nodos en columnas segun su proximidad en X, identificar la columna principal y ordenar las columnas secundarias
     columnGroups, columnGroupHeights, principalGroup, sorted_column_positions, column_numbers = organize_columns_and_find_principal(regular_nodes, original_positions, toleranciaX)
+
+    # Verificar si no hay columna principal antes de continuar
+    if principalGroup is None:
+        undo.end()
+        return
 
     # Numeracion de grupos y columnas
     numerated_groups = {pos: idx for idx, pos in enumerate(sorted_column_positions)}
