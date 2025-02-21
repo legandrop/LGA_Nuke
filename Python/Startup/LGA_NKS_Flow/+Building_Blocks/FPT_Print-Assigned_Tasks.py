@@ -1,0 +1,60 @@
+# Igual que el v02a pero Usando variables de entorno de usuario y pass en vez de script
+
+import os
+import shotgun_api3
+
+# Recuperar datos de autenticacion de las variables de entorno
+url = os.environ.get("SHOTGRID_URL")
+login = os.environ.get("SHOTGRID_LOGIN")
+password = os.environ.get("SHOTGRID_PASSWORD")
+
+# Crear una instancia de la API de ShotGrid usando login y password
+sg = shotgun_api3.Shotgun(url, login=login, password=password)
+
+def get_assigned_tasks(sg, user_login):
+    # Modificar los filtros para asegurar que encontramos las tareas
+    filters = [
+        ['task_assignees.HumanUser.login', 'is', user_login],
+        ['sg_status_list', 'is_not', 'fin']
+    ]
+    # Añadir campos para shot status y project status
+    fields = [
+        'id', 
+        'content', 
+        'sg_status_list', 
+        'entity', 
+        'entity.Shot.code', 
+        'entity.Shot.description',
+        'entity.Shot.sg_status_list',  # Estado del shot
+        'project.Project.name',
+        'project.Project.sg_status'  # Estado del proyecto
+    ]
+    return sg.find("Task", filters, fields)
+
+def print_task_info(task):
+    # Actualizar para mostrar project status y shot status correctamente
+    print(f"\nProject: {task.get('project.Project.name', 'No project available')}")
+    print(f"Project Status: {task.get('project.Project.sg_status', 'No status available')}")
+    print(f"Shot: {task.get('entity.Shot.code', 'No shot available')}")
+    print(f"Shot Status: {task.get('entity.Shot.sg_status_list', 'No status available')}")
+    print(f"Task: {task['content']}")
+    print(f"Task Status: {task['sg_status_list']}")
+    print(f"Description: {task.get('entity.Shot.description', 'No description available')}")
+
+def main():
+    try:
+        # Obtener tareas asignadas al usuario actual
+        tasks = get_assigned_tasks(sg, login)
+        
+        if tasks:
+            print(f"\nTareas asignadas:")
+            for task in tasks:
+                print_task_info(task)
+        else:
+            print("No se encontraron tareas asignadas")
+            
+    except Exception as e:
+        print(f"Error al obtener tareas: {e}")
+
+if __name__ == "__main__":
+    main()
