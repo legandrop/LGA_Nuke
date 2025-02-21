@@ -1,54 +1,60 @@
-"""
-Script para deseleccionar completamente todos los elementos en el timeline de Hiero
-"""
+# Igual que el v02a pero Usando variables de entorno de usuario y pass en vez de script
 
-import hiero.core
-import hiero.ui
+import os
+import shotgun_api3
 
-def deselect_all():
-    """
-    Intenta deseleccionar todo usando múltiples métodos disponibles en la API
-    y selecciona un punto vacío al final del timeline
-    """
-    # Obtener la secuencia activa
-    sequence = hiero.ui.activeSequence()
-    if not sequence:
-        return False
+# Recuperar datos de autenticacion de las variables de entorno
+url = os.environ.get("SHOTGRID_URL")
+login = os.environ.get("SHOTGRID_LOGIN")
+password = os.environ.get("SHOTGRID_PASSWORD")
 
+# Crear una instancia de la API de ShotGrid usando login y password
+sg = shotgun_api3.Shotgun(url, login=login, password=password)
+
+def get_assigned_tasks(sg, user_login):
+    # Modificar los filtros para asegurar que encontramos las tareas
+    filters = [
+        ['task_assignees.HumanUser.login', 'is', user_login],
+        ['sg_status_list', 'is_not', 'fin']
+    ]
+    # Añadir campos para shot status y project status
+    fields = [
+        'id', 
+        'content', 
+        'sg_status_list', 
+        'entity', 
+        'entity.Shot.code', 
+        'entity.Shot.description',
+        'entity.Shot.sg_status_list',  # Estado del shot
+        'project.Project.name',
+        'project.Project.sg_status'  # Estado del proyecto
+    ]
+    return sg.find("Task", filters, fields)
+
+def print_task_info(task):
+    # Actualizar para mostrar project status y shot status correctamente
+    print(f"\nProject: {task.get('project.Project.name', 'No project available')}")
+    print(f"Project Status: {task.get('project.Project.sg_status', 'No status available')}")
+    print(f"Shot: {task.get('entity.Shot.code', 'No shot available')}")
+    print(f"Shot Status: {task.get('entity.Shot.sg_status_list', 'No status available')}")
+    print(f"Task: {task['content']}")
+    print(f"Task Status: {task['sg_status_list']}")
+    print(f"Description: {task.get('entity.Shot.description', 'No description available')}")
+
+def main():
     try:
-        # 1. Deseleccionar en Timeline Editor
-        timeline_editor = hiero.ui.getTimelineEditor(sequence)
-        if timeline_editor:
-            # Comenzar operación de actualización de selección
-            timeline_editor.beginSelectionUpdate()
-            try:
-                # Método directo de deselección
-                timeline_editor.selectNone()
-                timeline_editor.setSelection([])
-
-                # Encontrar el último frame usado en el timeline
-                last_frame = 0
-                for track in sequence.videoTracks():
-                    for item in track.items():
-                        last_frame = max(last_frame, item.timelineIn() + item.duration())
-
-                # Mover el playhead más allá del último frame
-                safe_frame = last_frame + 50  # 50 frames después del último clip
-                sequence.setTime(safe_frame)
-
-            finally:
-                timeline_editor.endSelectionUpdate()
-
-        # 2. Deseleccionar en la vista activa
-        active_view = hiero.ui.activeView()
-        if active_view and hasattr(active_view, 'selection'):
-            active_view.clearSelection()
-
-        return True
-
+        # Obtener tareas asignadas al usuario actual
+        tasks = get_assigned_tasks(sg, login)
+        
+        if tasks:
+            print(f"\nTareas asignadas:")
+            for task in tasks:
+                print_task_info(task)
+        else:
+            print("No se encontraron tareas asignadas")
+            
     except Exception as e:
-        print(f"Error al intentar deseleccionar: {str(e)}")
-        return False
+        print(f"Error al obtener tareas: {e}")
 
 if __name__ == "__main__":
-    deselect_all() 
+    main()

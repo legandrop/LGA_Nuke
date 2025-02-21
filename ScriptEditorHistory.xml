@@ -12857,4 +12857,90 @@ undo.end()
 
 import importlib
 import LGA_writePresets
-importlib.reload(LGA_writePresets)</script>
+importlib.reload(LGA_writePresets)# Igual que el v02a pero Usando variables de entorno de usuario y pass en vez de script
+
+import os
+import shotgun_api3
+
+# Recuperar datos de autenticacion de las variables de entorno
+url = os.environ.get(&quot;SHOTGRID_URL&quot;)
+login = os.environ.get(&quot;SHOTGRID_LOGIN&quot;)
+password = os.environ.get(&quot;SHOTGRID_PASSWORD&quot;)
+
+# Verificar que las variables de entorno se recuperen correctamente
+print(f&quot;URL: {url}&quot;)
+print(f&quot;Login: {login}&quot;)
+print(f&quot;Password: {password}&quot;)
+
+# Crear una instancia de la API de ShotGrid usando login y password
+sg = shotgun_api3.Shotgun(url, login=login, password=password)
+
+# Intentar recuperar una lista de proyectos para probar la conexion
+try:
+    projects = sg.find(&quot;Project&quot;, [], ['id', 'name'])
+    print(&quot;Conexion exitosa. Aqui estan algunos de tus proyectos:&quot;)
+    for project in projects:
+        print(f&quot;{project['id']}: {project['name']}&quot;)
+except Exception as e:
+    print(f&quot;Error al conectar con ShotGrid: {e}&quot;)
+# Igual que el v02a pero Usando variables de entorno de usuario y pass en vez de script
+
+import os
+import shotgun_api3
+
+# Recuperar datos de autenticacion de las variables de entorno
+url = os.environ.get(&quot;SHOTGRID_URL&quot;)
+login = os.environ.get(&quot;SHOTGRID_LOGIN&quot;)
+password = os.environ.get(&quot;SHOTGRID_PASSWORD&quot;)
+
+# Crear una instancia de la API de ShotGrid usando login y password
+sg = shotgun_api3.Shotgun(url, login=login, password=password)
+
+def get_assigned_tasks(sg, user_login):
+    # Modificar los filtros para asegurar que encontramos las tareas
+    filters = [
+        ['task_assignees.HumanUser.login', 'is', user_login],
+        ['sg_status_list', 'is_not', 'fin']
+    ]
+    # Añadir campos para shot status y project status
+    fields = [
+        'id', 
+        'content', 
+        'sg_status_list', 
+        'entity', 
+        'entity.Shot.code', 
+        'entity.Shot.description',
+        'entity.Shot.sg_status_list',  # Estado del shot
+        'project.Project.name',
+        'project.Project.sg_status'  # Estado del proyecto
+    ]
+    return sg.find(&quot;Task&quot;, filters, fields)
+
+def print_task_info(task):
+    # Actualizar para mostrar project status y shot status correctamente
+    print(f&quot;\nProject: {task.get('project.Project.name', 'No project available')}&quot;)
+    print(f&quot;Project Status: {task.get('project.Project.sg_status', 'No status available')}&quot;)
+    print(f&quot;Shot: {task.get('entity.Shot.code', 'No shot available')}&quot;)
+    print(f&quot;Shot Status: {task.get('entity.Shot.sg_status_list', 'No status available')}&quot;)
+    print(f&quot;Task: {task['content']}&quot;)
+    print(f&quot;Task Status: {task['sg_status_list']}&quot;)
+    print(f&quot;Description: {task.get('entity.Shot.description', 'No description available')}&quot;)
+
+def main():
+    try:
+        # Obtener tareas asignadas al usuario actual
+        tasks = get_assigned_tasks(sg, login)
+        
+        if tasks:
+            print(f&quot;\nTareas asignadas:&quot;)
+            for task in tasks:
+                print_task_info(task)
+        else:
+            print(&quot;No se encontraron tareas asignadas&quot;)
+            
+    except Exception as e:
+        print(f&quot;Error al obtener tareas: {e}&quot;)
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</script>
