@@ -33,14 +33,13 @@ def get_assigned_tasks(sg, user_login):
     ]
     return sg.find("Task", filters, fields)
 
-def find_latest_version_for_shot(sg, shot_id):
-    # Buscar la última versión asociada al shot
+def find_versions_for_shot(sg, shot_id):
+    # Buscar versiones asociadas al shot
     filters = [
         ['entity', 'is', {'type': 'Shot', 'id': shot_id}]
     ]
     fields = ['id', 'code', 'sg_status_list', 'description', 'created_at', 'user']
-    # Ordenar por fecha de creación descendente y limitar a 1 resultado
-    return sg.find_one("Version", filters, fields, [{'field_name': 'created_at', 'direction': 'desc'}])
+    return sg.find("Version", filters, fields)
 
 def print_task_info(task, sg):
     print(f"\nProject: {task.get('project.Project.name', 'No project available')}")
@@ -51,27 +50,28 @@ def print_task_info(task, sg):
     print(f"Task Status: {task['sg_status_list']}")
     print(f"Description: {task.get('entity.Shot.description', 'No description available')}")
     
-    # Obtener la última versión asociada al shot
+    # Obtener versiones asociadas al shot
     if task.get('entity'):
         shot_id = task['entity']['id']
-        version = find_latest_version_for_shot(sg, shot_id)
+        versions = find_versions_for_shot(sg, shot_id)
         
-        if version:
-            print("\nÚltima versión:")
-            print(f"  - Version SG: {version.get('code', 'No version code')}")
-            print(f"    Status: {version.get('sg_status_list', 'No status')}")
-            print(f"    Description: {version.get('description', 'No description')}")
-            print(f"    Created At: {version.get('created_at', 'No date available')}")
-            print(f"    User: {version['user']['name'] if version.get('user') else 'No user available'}")
-            
-            # Obtener notas de la versión
-            notes = sg.find("Note", [['note_links', 'in', {'type': 'Version', 'id': version['id']}]], ['content', 'user'])
-            if notes:
-                print("    Comments:")
-                for note in notes:
-                    print(f"      - {note['content']} (User: {note['user']['name']})")
-            else:
-                print("    No comments found.")
+        if versions:
+            print("\nVersiones asociadas:")
+            for version in versions:
+                print(f"  - Version SG: {version.get('code', 'No version code')}")
+                print(f"    Status: {version.get('sg_status_list', 'No status')}")
+                print(f"    Description: {version.get('description', 'No description')}")
+                print(f"    Created At: {version.get('created_at', 'No date available')}")
+                print(f"    User: {version['user']['name'] if version.get('user') else 'No user available'}")
+                
+                # Obtener notas de la versión
+                notes = sg.find("Note", [['note_links', 'in', {'type': 'Version', 'id': version['id']}]], ['content', 'user'])
+                if notes:
+                    print("    Comments:")
+                    for note in notes:
+                        print(f"      - {note['content']} (User: {note['user']['name']})")
+                else:
+                    print("    No comments found.")
         else:
             print("\nNo se encontraron versiones asociadas en ShotGrid.")
     

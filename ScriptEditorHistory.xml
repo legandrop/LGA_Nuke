@@ -12883,64 +12883,159 @@ try:
         print(f&quot;{project['id']}: {project['name']}&quot;)
 except Exception as e:
     print(f&quot;Error al conectar con ShotGrid: {e}&quot;)
-# Igual que el v02a pero Usando variables de entorno de usuario y pass en vez de script
+&quot;&quot;&quot;
+Script para obtener todos los tasks asignados al usuario actual en ShotGrid
+Incluye: shot, proyecto, estado, descripción y asignados
+&quot;&quot;&quot;
 
 import os
 import shotgun_api3
+import time
 
-# Recuperar datos de autenticacion de las variables de entorno
-url = os.environ.get(&quot;SHOTGRID_URL&quot;)
-login = os.environ.get(&quot;SHOTGRID_LOGIN&quot;)
-password = os.environ.get(&quot;SHOTGRID_PASSWORD&quot;)
+def connect_to_shotgrid():
+    # Obtener credenciales de las variables de entorno
+    sg_url = os.getenv('SHOTGRID_URL')
+    sg_login = os.getenv('SHOTGRID_LOGIN')
+    sg_password = os.getenv('SHOTGRID_PASSWORD')
+    
+    if not sg_url or not sg_login or not sg_password:
+        print(&quot;Las variables de entorno SHOTGRID_URL, SHOTGRID_LOGIN y SHOTGRID_PASSWORD deben estar configuradas.&quot;)
+        return None
+    
+    return shotgun_api3.Shotgun(sg_url, login=sg_login, password=sg_password)
 
-# Crear una instancia de la API de ShotGrid usando login y password
-sg = shotgun_api3.Shotgun(url, login=login, password=password)
+def get_user_id(sg, user_login):
+    # Obtener el ID del usuario usando su login
+    filters = [['login', 'is', user_login]]
+    fields = ['id']
+    user = sg.find_one(&quot;HumanUser&quot;, filters, fields)
+    return user['id'] if user else None
 
-def get_assigned_tasks(sg, user_login):
-    # Modificar los filtros para asegurar que encontramos las tareas
+def get_assigned_tasks(sg, user_id):
+    # Obtener todos los tasks asignados al usuario usando su ID
     filters = [
-        ['task_assignees.HumanUser.login', 'is', user_login],
-        ['sg_status_list', 'is_not', 'fin']
+        ['task_assignees', 'is', {'type': 'HumanUser', 'id': user_id}]
     ]
-    # Añadir campos para shot status y project status
     fields = [
-        'id', 
-        'content', 
-        'sg_status_list', 
-        'entity', 
-        'entity.Shot.code', 
-        'entity.Shot.description',
+        'id',
+        'content',
+        'sg_status_list',
+        'sg_description',
+        'sg_estimated_days',
+        'entity',  # Para obtener el shot asociado
+        'entity.Shot.code',  # Código del shot
         'entity.Shot.sg_status_list',  # Estado del shot
-        'project.Project.name',
-        'project.Project.sg_status'  # Estado del proyecto
+        'entity.Shot.project.Project.name',  # Nombre del proyecto
+        'task_assignees'  # Asignados (por si hay más de uno)
     ]
     return sg.find(&quot;Task&quot;, filters, fields)
 
-def print_task_info(task):
-    # Actualizar para mostrar project status y shot status correctamente
-    print(f&quot;\nProject: {task.get('project.Project.name', 'No project available')}&quot;)
-    print(f&quot;Project Status: {task.get('project.Project.sg_status', 'No status available')}&quot;)
-    print(f&quot;Shot: {task.get('entity.Shot.code', 'No shot available')}&quot;)
-    print(f&quot;Shot Status: {task.get('entity.Shot.sg_status_list', 'No status available')}&quot;)
-    print(f&quot;Task: {task['content']}&quot;)
-    print(f&quot;Task Status: {task['sg_status_list']}&quot;)
-    print(f&quot;Description: {task.get('entity.Shot.description', 'No description available')}&quot;)
+def get_latest_version_and_notes(sg, shot_id):
+    # Obtener la última versión y sus notas en un solo request
+    filters = [['entity', 'is', {'type': 'Shot', 'id': shot_id}]]
+    fields = [
+        'id',
+        'code',
+        'sg_status_list',
+        'description',
+        'created_at',
+        'user',
+        'notes.content',  # Obtener notas directamente
+        'notes.user'
+    ]
+    # Ordenar por fecha descendente y limitar a 1 resultado
+    order = [{'field_name': 'created_at', 'direction': 'desc'}]
+    version = sg.find_one(&quot;Version&quot;, filters, fields, order)
+    
+    if version:
+        # Extraer notas de la versión
+        version['notes'] = version.get('notes', [])
+    return version
+
+def print_task_info(task, sg):
+    # Imprimir información del task
+    print(f&quot;\nTask: {task['content']}&quot;)
+    print(f&quot;  Status: {task['sg_status_list']}&quot;)
+    print(f&quot;  Description: {task.get('sg_description', 'No description available')}&quot;)
+    print(f&quot;  Estimated Duration: {task.get('sg_estimated_days', 'No estimate available')} days&quot;)
+    
+    # Imprimir asignados
+    if task.get('task_assignees'):
+        print(&quot;  Assigned To:&quot;)
+        for assignee in task['task_assignees']:
+            print(f&quot;    - {assignee.get('name', 'Unknown')}&quot;)
+    else:
+        print(&quot;  No asignados encontrados.&quot;)
+    
+    # Imprimir información del shot
+    if task.get('entity') and task['entity'].get('type') == 'Shot':
+        shot_code = task.get('entity.Shot.code', 'No shot code')
+        shot_status = task.get('entity.Shot.sg_status_list', 'No status')
+        project_name = task.get('entity.Shot.project.Project.name', 'No project')
+        shot_description = task.get('entity.Shot.description', 'No description available')
+        
+        print(f&quot;  Shot: {shot_code}&quot;)
+        print(f&quot;    Shot Status: {shot_status}&quot;)
+        print(f&quot;    Project: {project_name}&quot;)
+        print(f&quot;    Description: {shot_description}&quot;)
+        
+        # Obtener la última versión y sus notas
+        latest_version = get_latest_version_and_notes(sg, task['entity']['id'])
+        if latest_version:
+            print(&quot;\n  Última versión:&quot;)
+            print(f&quot;    - Version SG: {latest_version.get('code', 'No version code')}&quot;)
+            print(f&quot;      Status: {latest_version.get('sg_status_list', 'No status')}&quot;)
+            print(f&quot;      Description: {latest_version.get('description', 'No description')}&quot;)
+            print(f&quot;      Created At: {latest_version.get('created_at', 'No date available')}&quot;)
+            print(f&quot;      User: {latest_version['user']['name'] if latest_version.get('user') else 'No user available'}&quot;)
+            
+            # Mostrar notas
+            if latest_version.get('notes'):
+                print(&quot;      Comments:&quot;)
+                for note in latest_version['notes']:
+                    print(f&quot;        - {note['content']} (User: {note['user']['name']})&quot;)
+            else:
+                print(&quot;      No comments found.&quot;)
+        else:
+            print(&quot;\n  No se encontraron versiones asociadas.&quot;)
+    else:
+        print(&quot;  No se encontró un shot asociado.&quot;)
+    
+    print(f&quot;  URL: {sg.base_url}/detail/Task/{task['id']}&quot;)
 
 def main():
-    try:
-        # Obtener tareas asignadas al usuario actual
-        tasks = get_assigned_tasks(sg, login)
-        
-        if tasks:
-            print(f&quot;\nTareas asignadas:&quot;)
-            for task in tasks:
-                print_task_info(task)
-        else:
-            print(&quot;No se encontraron tareas asignadas&quot;)
-            
-    except Exception as e:
-        print(f&quot;Error al obtener tareas: {e}&quot;)
+    # Iniciar el temporizador
+    start_time = time.time()
+    
+    # Conectar a ShotGrid
+    sg = connect_to_shotgrid()
+    if not sg:
+        return
+    
+    # Especificar el login del usuario que queremos consultar
+    user_login = os.getenv('SHOTGRID_LOGIN')  # Usar el mismo login que para la conexión
+    
+    # Obtener el ID del usuario
+    user_id = get_user_id(sg, user_login)
+    if not user_id:
+        print(f&quot;No se encontró el usuario con login {user_login}&quot;)
+        return
+    
+    # Obtener todos los tasks asignados al usuario
+    tasks = get_assigned_tasks(sg, user_id)
+    if not tasks:
+        print(f&quot;No se encontraron tasks asignados a {user_login}&quot;)
+        return
+    
+    # Imprimir la información de cada task
+    print(f&quot;\nTasks asignados a {user_login}:&quot;)
+    for task in tasks:
+        print_task_info(task, sg)
+    
+    # Calcular y mostrar el tiempo de ejecución
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f&quot;\nTiempo total de ejecución: {elapsed_time:.2f} segundos&quot;)
 
 if __name__ == &quot;__main__&quot;:
-    main()
-</script>
+    main() </script>
