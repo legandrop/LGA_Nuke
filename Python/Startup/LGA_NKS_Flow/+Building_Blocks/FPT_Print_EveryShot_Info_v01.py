@@ -2,7 +2,6 @@
 FPT_Print_EveryShot_Info.py
 Script para obtener todos los tasks asignados al usuario actual en ShotGrid
 Incluye: shot, proyecto, estado, descripción y asignados
-Filtra por estado del proyecto. Solo descarga tasks de proyectos en estado 'progress'
 """
 
 import os
@@ -30,10 +29,9 @@ def get_user_id(sg, user_login):
 
 def get_assigned_tasks(sg, user_id):
     # Obtener todos los tasks asignados al usuario usando su ID
-    # Excluyendo proyectos archivados y filtrando por estado del proyecto
+    # Excluyendo proyectos archivados
     filters = [
-        ['task_assignees', 'is', {'type': 'HumanUser', 'id': user_id}],
-        ['entity.Shot.project.Project.sg_project_status', 'is', 'progre']  # Nuevo filtro
+        ['task_assignees', 'is', {'type': 'HumanUser', 'id': user_id}]
     ]
     fields = [
         'id',

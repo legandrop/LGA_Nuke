@@ -29,7 +29,8 @@ def get_shot_and_tasks(sg, shot_code):
         'description',
         'sg_status_list',
         'project.Project.name',
-        'project.Project.sg_status',
+        'project.Project.sg_status',  # Cambiado de sg_status_list a sg_status
+        'image',  # Thumbnail del shot
         'tasks.content',  # Obtener el contenido de las tareas
         'tasks.sg_status_list',
         'tasks.sg_description',
@@ -62,10 +63,16 @@ def get_version_notes(sg, version_id):
 def print_shot_info(shot_data, latest_version, sg):
     print(f"\nInformación del Shot:")
     print(f"Project: {shot_data['project.Project.name']}")
-    print(f"Project Status: {shot_data['project.Project.sg_status']}")
+    print(f"Project Status: {shot_data['project.Project.sg_status']}")  # Status del proyecto
     print(f"Shot: {shot_data['code']}")
     print(f"Shot Status: {shot_data['sg_status_list']}")
     print(f"Description: {shot_data.get('description', 'No description available')}")
+    
+    # Mostrar el thumbnail si está disponible
+    if shot_data.get('image'):
+        print(f"Thumbnail: {shot_data['image']}")
+    else:
+        print("No thumbnail disponible.")
     
     # Imprimir tareas
     if shot_data.get('tasks'):

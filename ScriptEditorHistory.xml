@@ -12884,6 +12884,7 @@ try:
 except Exception as e:
     print(f&quot;Error al conectar con ShotGrid: {e}&quot;)
 &quot;&quot;&quot;
+FPT_Print_EveryShot_Info.py
 Script para obtener todos los tasks asignados al usuario actual en ShotGrid
 Incluye: shot, proyecto, estado, descripción y asignados
 &quot;&quot;&quot;
@@ -12913,8 +12914,10 @@ def get_user_id(sg, user_login):
 
 def get_assigned_tasks(sg, user_id):
     # Obtener todos los tasks asignados al usuario usando su ID
+    # Excluyendo proyectos archivados y filtrando por estado del proyecto
     filters = [
-        ['task_assignees', 'is', {'type': 'HumanUser', 'id': user_id}]
+        ['task_assignees', 'is', {'type': 'HumanUser', 'id': user_id}],
+        ['entity.Shot.project.Project.sg_project_status', 'is', 'progre']  # Nuevo filtro
     ]
     fields = [
         'id',
@@ -12926,9 +12929,12 @@ def get_assigned_tasks(sg, user_id):
         'entity.Shot.code',  # Código del shot
         'entity.Shot.sg_status_list',  # Estado del shot
         'entity.Shot.project.Project.name',  # Nombre del proyecto
+        'entity.Shot.project.Project.sg_project_status',  # Estado del proyecto
+        'entity.Shot.image',  # Thumbnail del shot
         'task_assignees'  # Asignados (por si hay más de uno)
     ]
-    return sg.find(&quot;Task&quot;, filters, fields)
+    # Excluir proyectos archivados
+    return sg.find(&quot;Task&quot;, filters, fields, include_archived_projects=False)
 
 def get_latest_version_and_notes(sg, shot_id):
     # Obtener la última versión y sus notas en un solo request
@@ -12972,12 +12978,21 @@ def print_task_info(task, sg):
         shot_code = task.get('entity.Shot.code', 'No shot code')
         shot_status = task.get('entity.Shot.sg_status_list', 'No status')
         project_name = task.get('entity.Shot.project.Project.name', 'No project')
+        project_status = task.get('entity.Shot.project.Project.sg_project_status', 'No status')
         shot_description = task.get('entity.Shot.description', 'No description available')
+        shot_thumbnail = task.get('entity.Shot.image', None)
         
         print(f&quot;  Shot: {shot_code}&quot;)
         print(f&quot;    Shot Status: {shot_status}&quot;)
         print(f&quot;    Project: {project_name}&quot;)
+        print(f&quot;    Project Status: {project_status}&quot;)
         print(f&quot;    Description: {shot_description}&quot;)
+        
+        # Mostrar el thumbnail si está disponible
+        if shot_thumbnail:
+            print(f&quot;    Thumbnail: {shot_thumbnail}&quot;)
+        else:
+            print(&quot;    No thumbnail disponible.&quot;)
         
         # Obtener la última versión y sus notas
         latest_version = get_latest_version_and_notes(sg, task['entity']['id'])
@@ -13027,15 +13042,21 @@ def main():
         print(f&quot;No se encontraron tasks asignados a {user_login}&quot;)
         return
     
+    # Contador de shots
+    shot_count = 0
+    
     # Imprimir la información de cada task
     print(f&quot;\nTasks asignados a {user_login}:&quot;)
     for task in tasks:
         print_task_info(task, sg)
+        if task.get('entity') and task['entity'].get('type') == 'Shot':
+            shot_count += 1
     
     # Calcular y mostrar el tiempo de ejecución
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f&quot;\nTiempo total de ejecución: {elapsed_time:.2f} segundos&quot;)
+    print(f&quot;Total de shots encontrados: {shot_count}&quot;)
 
 if __name__ == &quot;__main__&quot;:
     main() </script>

@@ -1,142 +1,156 @@
 """
-   
-   Imprime la version en Hiero, version en ShotGrid (SG), estado de la version en SG, 
-   descripcion y URLs de las tareas asociadas para los clips seleccionados en el timeline.
-   Tambien imprime los comentarios que haya en la version del clip seleccionado
-   Esta version nueva imprime la descripcion del shot, de la task, y el tiempo estimado
-   
+Script para obtener todos los tasks asignados al usuario actual en ShotGrid
+Incluye: shot, proyecto, estado, descripción y asignados
 """
 
-
-import hiero.core
 import os
-import re
 import shotgun_api3
-import sys
+import time
 
-class ShotGridManager:
-    def __init__(self, url, login, password):
-        self.sg = shotgun_api3.Shotgun(url, login=login, password=password)
-
-    def find_shot_and_tasks(self, project_name, shot_code):
-        projects = self.sg.find("Project", [['name', 'is', project_name]], ['id', 'name'])
-        if projects:
-            project_id = projects[0]['id']
-            filters = [
-                ['project', 'is', {'type': 'Project', 'id': project_id}],
-                ['code', 'is', shot_code]
-            ]
-            fields = ['id', 'code', 'description']
-            shots = self.sg.find("Shot", filters, fields)
-            if shots:
-                shot_id = shots[0]['id']
-                tasks = self.find_tasks_for_shot(shot_id)
-                return shots[0], tasks
-            else:
-                print("No se encontro el shot.")
-        else:
-            print("No se encontro el proyecto en ShotGrid.")
-        return None, None
-
-    def find_tasks_for_shot(self, shot_id):
-        filters = [['entity', 'is', {'type': 'Shot', 'id': shot_id}]]
-        fields = ['id', 'content', 'sg_description', 'sg_status_list', 'sg_estimated_days']
-        return self.sg.find("Task", filters, fields)
-
-    def find_version_by_code(self, shot_id, version_code):
-        filters = [
-            ['entity', 'is', {'type': 'Shot', 'id': shot_id}],
-            ['code', 'contains', version_code]
-        ]
-        fields = ['id', 'code', 'created_at', 'user', 'sg_status_list', 'description']
-        versions = self.sg.find("Version", filters, fields)
-        return versions
-
-    def get_task_url(self, task_id):
-        return f"{self.sg.base_url}/detail/Task/{task_id}"
-
-    def get_version_notes(self, version_id):
-        filters = [['note_links', 'in', {'type': 'Version', 'id': version_id}]]
-        fields = ['content', 'user']
-        return self.sg.find("Note", filters, fields)
-
-class HieroOperations:
-    def __init__(self, shotgrid_manager):
-        self.sg_manager = shotgrid_manager
-
-    def parse_exr_name(self, file_name):
-        base_name = re.sub(r'_%04d\.exr$', '', file_name)
-        version_match = re.search(r'_v(\d+)', base_name)
-        version_number = version_match.group(1) if version_match else 'Unknown'
-        return base_name, version_number
-
-    def process_selected_clips(self):
-        seq = hiero.ui.activeSequence()
-        if seq:
-            te = hiero.ui.getTimelineEditor(seq)
-            selected_clips = te.selection()
-            if selected_clips:
-                for clip in selected_clips:
-                    file_path = clip.source().mediaSource().fileinfos()[0].filename()
-                    exr_name = os.path.basename(file_path)
-                    base_name, hiero_version_number = self.parse_exr_name(exr_name)
-                    project_name = base_name.split('_')[0]
-                    parts = base_name.split('_')
-                    shot_code = '_'.join(parts[:5])
-
-                    shot, tasks = self.sg_manager.find_shot_and_tasks(project_name, shot_code)
-                    if shot:
-                        # Imprimir la descripcion del shot
-                        print(f"- Shot name: {shot['code']}")
-                        print(f"  Description: {shot.get('description', 'No description available')}")
-
-                        # Mostrar la informacion de la tarea Comp antes de verificar versiones
-                        comp_task = next((task for task in tasks if 'Comp' in task['content']), None)
-                        if comp_task:
-                            estimated_days = comp_task.get('sg_estimated_days', 0)
-                            print(f"- Task: {comp_task['content']} (Status: {comp_task['sg_status_list']})")
-                            print(f"  Description: {comp_task.get('sg_description', 'No description available')}")
-                            print(f"  Estimated Duration: {estimated_days} days")
-                            print(f"  URL: {self.sg_manager.get_task_url(comp_task['id'])}")
-
-                        # Luego verificar si hay versiones disponibles
-                        versions = self.sg_manager.find_version_by_code(shot['id'], f"_v{hiero_version_number}")
-                        if versions:
-                            version = versions[0]  # Assuming the first match is the correct version
-                            print(f"- Version Hiero: v{hiero_version_number}")
-                            print(f"- Version SG: {version['code']}")
-                            print(f"- Version SG status: {version['sg_status_list']}")
-                            print(f"- Description: {version['description']}")
-
-                            notes = self.sg_manager.get_version_notes(version['id'])
-                            if notes:
-                                print("  - Comments:")
-                                for note in notes:
-                                    print(f"    - {note['content']} (User: {note['user']['name']})")
-                            else:
-                                print("  - No comments found.")
-                        else:
-                            print(f"No versions found for Hiero version v{hiero_version_number} in ShotGrid.")
-                    else:
-                        print("No se encontro el shot correspondiente en ShotGrid.")
-            else:
-                print("No se han seleccionado clips en el timeline.")
-        else:
-            print("No se encontro una secuencia activa en Hiero.")
-
-def main():
-    global msg_manager
+def connect_to_shotgrid():
+    # Obtener credenciales de las variables de entorno
     sg_url = os.getenv('SHOTGRID_URL')
     sg_login = os.getenv('SHOTGRID_LOGIN')
     sg_password = os.getenv('SHOTGRID_PASSWORD')
-
+    
     if not sg_url or not sg_login or not sg_password:
         print("Las variables de entorno SHOTGRID_URL, SHOTGRID_LOGIN y SHOTGRID_PASSWORD deben estar configuradas.")
-        return
+        return None
+    
+    return shotgun_api3.Shotgun(sg_url, login=sg_login, password=sg_password)
 
-    sg_manager = ShotGridManager(sg_url, sg_login, sg_password)
-    hiero_ops = HieroOperations(sg_manager)
-    hiero_ops.process_selected_clips()
+def get_user_id(sg, user_login):
+    # Obtener el ID del usuario usando su login
+    filters = [['login', 'is', user_login]]
+    fields = ['id']
+    user = sg.find_one("HumanUser", filters, fields)
+    return user['id'] if user else None
+
+def get_assigned_tasks(sg, user_id):
+    # Obtener todos los tasks asignados al usuario usando su ID
+    filters = [
+        ['task_assignees', 'is', {'type': 'HumanUser', 'id': user_id}]
+    ]
+    fields = [
+        'id',
+        'content',
+        'sg_status_list',
+        'sg_description',
+        'sg_estimated_days',
+        'entity',  # Para obtener el shot asociado
+        'entity.Shot.code',  # Código del shot
+        'entity.Shot.sg_status_list',  # Estado del shot
+        'entity.Shot.project.Project.name',  # Nombre del proyecto
+        'task_assignees'  # Asignados (por si hay más de uno)
+    ]
+    return sg.find("Task", filters, fields)
+
+def get_latest_version_and_notes(sg, shot_id):
+    # Obtener la última versión y sus notas en un solo request
+    filters = [['entity', 'is', {'type': 'Shot', 'id': shot_id}]]
+    fields = [
+        'id',
+        'code',
+        'sg_status_list',
+        'description',
+        'created_at',
+        'user',
+        'notes.content',  # Obtener notas directamente
+        'notes.user'
+    ]
+    # Ordenar por fecha descendente y limitar a 1 resultado
+    order = [{'field_name': 'created_at', 'direction': 'desc'}]
+    version = sg.find_one("Version", filters, fields, order)
+    
+    if version:
+        # Extraer notas de la versión
+        version['notes'] = version.get('notes', [])
+    return version
+
+def print_task_info(task, sg):
+    # Imprimir información del task
+    print(f"\nTask: {task['content']}")
+    print(f"  Status: {task['sg_status_list']}")
+    print(f"  Description: {task.get('sg_description', 'No description available')}")
+    print(f"  Estimated Duration: {task.get('sg_estimated_days', 'No estimate available')} days")
+    
+    # Imprimir asignados
+    if task.get('task_assignees'):
+        print("  Assigned To:")
+        for assignee in task['task_assignees']:
+            print(f"    - {assignee.get('name', 'Unknown')}")
+    else:
+        print("  No asignados encontrados.")
+    
+    # Imprimir información del shot
+    if task.get('entity') and task['entity'].get('type') == 'Shot':
+        shot_code = task.get('entity.Shot.code', 'No shot code')
+        shot_status = task.get('entity.Shot.sg_status_list', 'No status')
+        project_name = task.get('entity.Shot.project.Project.name', 'No project')
+        shot_description = task.get('entity.Shot.description', 'No description available')
+        
+        print(f"  Shot: {shot_code}")
+        print(f"    Shot Status: {shot_status}")
+        print(f"    Project: {project_name}")
+        print(f"    Description: {shot_description}")
+        
+        # Obtener la última versión y sus notas
+        latest_version = get_latest_version_and_notes(sg, task['entity']['id'])
+        if latest_version:
+            print("\n  Última versión:")
+            print(f"    - Version SG: {latest_version.get('code', 'No version code')}")
+            print(f"      Status: {latest_version.get('sg_status_list', 'No status')}")
+            print(f"      Description: {latest_version.get('description', 'No description')}")
+            print(f"      Created At: {latest_version.get('created_at', 'No date available')}")
+            print(f"      User: {latest_version['user']['name'] if latest_version.get('user') else 'No user available'}")
+            
+            # Mostrar notas
+            if latest_version.get('notes'):
+                print("      Comments:")
+                for note in latest_version['notes']:
+                    print(f"        - {note['content']} (User: {note['user']['name']})")
+            else:
+                print("      No comments found.")
+        else:
+            print("\n  No se encontraron versiones asociadas.")
+    else:
+        print("  No se encontró un shot asociado.")
+    
+    print(f"  URL: {sg.base_url}/detail/Task/{task['id']}")
+
+def main():
+    # Iniciar el temporizador
+    start_time = time.time()
+    
+    # Conectar a ShotGrid
+    sg = connect_to_shotgrid()
+    if not sg:
+        return
+    
+    # Especificar el login del usuario que queremos consultar
+    user_login = os.getenv('SHOTGRID_LOGIN')  # Usar el mismo login que para la conexión
+    
+    # Obtener el ID del usuario
+    user_id = get_user_id(sg, user_login)
+    if not user_id:
+        print(f"No se encontró el usuario con login {user_login}")
+        return
+    
+    # Obtener todos los tasks asignados al usuario
+    tasks = get_assigned_tasks(sg, user_id)
+    if not tasks:
+        print(f"No se encontraron tasks asignados a {user_login}")
+        return
+    
+    # Imprimir la información de cada task
+    print(f"\nTasks asignados a {user_login}:")
+    for task in tasks:
+        print_task_info(task, sg)
+    
+    # Calcular y mostrar el tiempo de ejecución
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"\nTiempo total de ejecución: {elapsed_time:.2f} segundos")
 
 if __name__ == "__main__":
-    main()
+    main() 
