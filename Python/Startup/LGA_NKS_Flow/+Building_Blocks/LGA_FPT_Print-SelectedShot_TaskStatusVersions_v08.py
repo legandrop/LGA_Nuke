@@ -3,7 +3,8 @@
    Imprime la version en Hiero, version en ShotGrid (SG), estado de la version en SG, 
    descripcion y URLs de las tareas asociadas para los clips seleccionados en el timeline.
    Tambien imprime los comentarios que haya en la version del clip seleccionado
-   Esta version nueva imprime la descripcion del shot, de la task, y el tiempo estimado
+   Esta version nueva imprime la descripcion del shot, de la task, y el tiempo estimado y fecha de inicio y fin de la task
+   v08: agrega la fecha de update del shot y de la task
    
 """
 

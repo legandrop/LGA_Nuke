@@ -1,0 +1,154 @@
+Group {
+name DropShadow_LGA
+selected true
+xpos -3218
+ypos -6315
+addUserKnob {20 dropShadow l User}
+addUserKnob {41 X T Transform1.TX}
+addUserKnob {41 Y T Transform1.TY}
+addUserKnob {41 rotate T Transform1.rotate}
+addUserKnob {7 size R -3 5}
+size 1
+addUserKnob {41 blur T Blur1.size}
+addUserKnob {7 opacity}
+opacity 0.8
+addUserKnob {6 mirror +STARTLINE}
+addUserKnob {6 shadowOnly +STARTLINE}
+addUserKnob {26 ""}
+addUserKnob {41 ShadowColor T NoOp1.color_rgb}
+addUserKnob {41 glow T Glow1.brightness}
+}
+Input {
+inputs 0
+name img
+xpos 30
+ypos -204
+}
+Dot {
+name Dot1
+xpos 64
+ypos -105
+}
+set N8a54e800 [stack 0]
+Input {
+inputs 0
+name matte
+xpos 183
+ypos -200
+number 1
+}
+Invert {
+name Invert2
+selected true
+xpos 183
+ypos -163
+}
+push $N8a54e800
+Merge2 {
+inputs 2
+operation stencil
+name Merge1
+xpos 183
+ypos -109
+}
+Shuffle {
+in alpha
+red black
+green black
+blue black
+name Shuffle1
+xpos 337
+ypos -109
+}
+Mirror {
+Vertical {{parent.mirror}}
+name Mirror1
+xpos 447
+ypos -109
+}
+Transform {
+translate {{Transform1.TX} {Transform1.TY}}
+center {810 876}
+filter Rifman
+name Transform1
+xpos 447
+ypos -53
+addUserKnob {20 User}
+addUserKnob {7 TX R -200 200}
+TX -8
+addUserKnob {7 TY R -200 200}
+TY -8
+}
+Dilate {
+size {{parent.size-1 i}}
+name Dilate1
+xpos 447
+ypos -2
+}
+Multiply {
+value {{parent.opacity}}
+name Multiply1
+xpos 447
+ypos 44
+}
+Invert {
+name Invert1
+xpos 447
+ypos 106
+}
+Blur {
+size 58
+name Blur1
+xpos 447
+ypos 163
+}
+Constant {
+inputs 0
+color {{parent.NoOp1.color_rgb.r} {parent.NoOp1.color_rgb.g} {parent.NoOp1.color_rgb.b} 1}
+name Constant2
+xpos 604
+ypos 211
+}
+set N26142400 [stack 0]
+Merge2 {
+inputs 2
+operation stencil
+name In
+xpos 447
+ypos 235
+}
+Glow {
+channels rgba
+brightness 0
+name Glow1
+xpos 337
+ypos 235
+}
+Merge2 {
+inputs 2
+name Merge2
+xpos 28
+ypos 235
+disable {{parent.shadowOnly}}
+}
+Output {
+name Output1
+xpos 28
+ypos 336
+}
+Viewer {
+input_process false
+name Viewer1
+xpos 27
+ypos 426
+}
+push $N26142400
+NoOp {
+name NoOp1
+xpos 604
+ypos 325
+addUserKnob {20 User}
+addUserKnob {18 color_rgb}
+addUserKnob {6 color_rgb_panelDropped l "panel dropped state" +HIDDEN +STARTLINE}
+}
+end_group
