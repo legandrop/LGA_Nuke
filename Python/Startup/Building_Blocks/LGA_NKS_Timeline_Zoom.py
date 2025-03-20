@@ -22,7 +22,7 @@ from PySide2 import QtWidgets, QtCore, QtGui
 import time
 
 # Variable global para activar o desactivar los prints
-DEBUG = True
+DEBUG = False
 
 # Variable para definir el método de acceso a widgets
 IndexVsName = "name"

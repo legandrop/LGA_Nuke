@@ -12,7 +12,7 @@ import hiero.ui
 import os
 import subprocess
 
-DEBUG = True
+DEBUG = False
 
 def debug_print(*message):
     if DEBUG:

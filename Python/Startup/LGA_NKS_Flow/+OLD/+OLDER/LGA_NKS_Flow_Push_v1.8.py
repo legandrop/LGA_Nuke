@@ -29,7 +29,7 @@ status_translation = {
 }
 
 # Variable global para activar o desactivar los prints
-DEBUG = True
+DEBUG = False
 debug_messages = []
 wait_condition = QWaitCondition()
 wait_mutex = QMutex()

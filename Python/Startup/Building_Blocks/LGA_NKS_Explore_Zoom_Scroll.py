@@ -14,7 +14,7 @@ import hiero.core
 import hiero.ui
 from PySide2 import QtWidgets, QtCore
 
-DEBUG = True
+DEBUG = False
 
 def debug_print(*message):
     if DEBUG:

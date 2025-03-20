@@ -1,7 +1,7 @@
 # Mod Lega v1.0 para tener en cuenta el tamano y cantidad de lineas del texto
 
 # Variable global para activar o desactivar los prints
-DEBUG = True
+DEBUG = False
 
 def debug_print(*message):
     if DEBUG:

@@ -14,7 +14,7 @@ import os
 # Eliminamos la importación del SelfReplace
 # import LGA_NKS_SelfReplaceClip as self_replace
 
-DEBUG = True
+DEBUG = False
 
 def debug_print(*message):
     if DEBUG:
