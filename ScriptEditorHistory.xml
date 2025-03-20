@@ -192,46 +192,117 @@ def main():
 
 if __name__ == &quot;__main__&quot;:
     main()
-# Igual que el v02a pero Usando variables de entorno de usuario y pass en vez de script
+&quot;&quot;&quot;
+______________________________________________________
 
-import os
-import shotgun_api3
+  LGA_NKS_CreateNewTrack v1.0 - 2024 - Lega
+  Crea un nuevo track de video encima del track actualmente seleccionado
+______________________________________________________
 
-# Recuperar datos de autenticacion de las variables de entorno
-url = os.environ.get(&quot;SHOTGRID_URL&quot;)
-login = os.environ.get(&quot;SHOTGRID_LOGIN&quot;)
-password = os.environ.get(&quot;SHOTGRID_PASSWORD&quot;)
+&quot;&quot;&quot;
 
-# Verificar que las variables de entorno se recuperen correctamente
-print(f&quot;URL: {url}&quot;)
-print(f&quot;Login: {login}&quot;)
-print(f&quot;Password: {password}&quot;)
+import hiero.core
+import hiero.ui
 
-# Crear una instancia de la API de ShotGrid usando login y password
-sg = shotgun_api3.Shotgun(url, login=login, password=password)
+def print_tracks(seq, message):
+    &quot;&quot;&quot;Imprime los tracks en orden&quot;&quot;&quot;
+    print(f&quot;\n{message}&quot;)
+    print(&quot;Tracks (de abajo hacia arriba):&quot;)
+    for i, track in enumerate(seq.videoTracks()):
+        print(f&quot;{i}: {track.name()}&quot;)
 
-# Intentar recuperar una lista de proyectos para probar la conexion
-try:
-    projects = sg.find(&quot;Project&quot;, [], ['id', 'name'])
-    print(&quot;Conexion exitosa. Aqui estan algunos de tus proyectos:&quot;)
-    for project in projects:
-        print(f&quot;{project['id']}: {project['name']}&quot;)
+def get_selected_track_index(seq):
+    &quot;&quot;&quot;Obtiene el indice del track actualmente seleccionado&quot;&quot;&quot;
+    te = hiero.ui.getTimelineEditor(seq)
+    selected_items = te.selection()
     
-    # Obtener informacion del usuario actual
-    current_user = sg.find_one(&quot;HumanUser&quot;, [['login', 'is', login]], ['permission_rule_set'])
-    
-    if current_user and 'permission_rule_set' in current_user:
-        # Obtener el nombre del grupo de permisos
-        permission_group = sg.find_one(&quot;PermissionRuleSet&quot;, 
-                                     [['id', 'is', current_user['permission_rule_set']['id']]], 
-                                     ['code'])
-        if permission_group:
-            print(f&quot;\nTu grupo de permisos es: {permission_group['code']}&quot;)
-        else:
-            print(&quot;\nNo se pudo determinar tu grupo de permisos&quot;)
-    else:
-        print(&quot;\nNo se encontraron grupos de permisos para este usuario&quot;)
+    if not selected_items:
+        print(&quot;No hay items seleccionados en la linea de tiempo.&quot;)
+        return None
+        
+    # Obtener el track del primer item seleccionado
+    selected_track = selected_items[0].parentTrack()
+    if not selected_track:
+        print(&quot;No se pudo obtener el track seleccionado.&quot;)
+        return None
+        
+    # Encontrar el indice del track en la secuencia
+    for index, track in enumerate(seq.videoTracks()):
+        if track == selected_track:
+            return index
+            
+    return None
 
-except Exception as e:
-    print(f&quot;Error al conectar con ShotGrid: {e}&quot;)
-</script>
+def create_new_track(seq, track_index):
+    &quot;&quot;&quot;Crea un nuevo track y lo inserta en la posicion especificada&quot;&quot;&quot;
+    if track_index is None:
+        print(&quot;No se pudo determinar la posicion del nuevo track.&quot;)
+        return None
+        
+    # Crear el nuevo track
+    new_track = hiero.core.VideoTrack(&quot;New&quot;)
+    
+    # Obtener todos los tracks de video
+    video_tracks = list(seq.videoTracks())
+    
+    # Imprimir tracks antes de la operación
+    print_tracks(seq, &quot;ANTES DE LA OPERACIÓN&quot;)
+    
+    # Remover todos los tracks existentes
+    for track in video_tracks:
+        seq.removeTrack(track)
+    
+    # Insertar el nuevo track en la posicion deseada (encima del track seleccionado)
+    # Insertamos en track_index + 1 para que aparezca encima del track seleccionado
+    new_tracks = video_tracks[:track_index+1] + [new_track] + video_tracks[track_index+1:]
+    
+    # Imprimir el orden que vamos a insertar
+    print(&quot;\nORDEN DE INSERCIÓN:&quot;)
+    for i, track in enumerate(new_tracks):
+        print(f&quot;{i}: {track.name()}&quot;)
+    
+    # Reinsertar todos los tracks en el orden correcto
+    for track in new_tracks:
+        seq.addTrack(track)
+    
+    # Imprimir tracks después de la operación
+    print_tracks(seq, &quot;DESPUÉS DE LA OPERACIÓN&quot;)
+        
+    print(f&quot;Nuevo track creado encima del track en la posicion {track_index}&quot;)
+    return new_track
+
+def main():
+    try:
+        # Obtener la secuencia activa
+        seq = hiero.ui.activeSequence()
+        if not seq:
+            print(&quot;No se encontro una secuencia activa en Hiero.&quot;)
+            return
+            
+        # Iniciar una accion de undo
+        project = seq.project()
+        project.beginUndo(&quot;Crear Nuevo Track&quot;)
+        
+        try:
+            # Obtener el indice del track seleccionado
+            track_index = get_selected_track_index(seq)
+            
+            # Crear el nuevo track
+            new_track = create_new_track(seq, track_index)
+            
+            if new_track:
+                print(&quot;Operacion completada exitosamente.&quot;)
+            else:
+                print(&quot;No se pudo crear el nuevo track.&quot;)
+                
+        except Exception as e:
+            print(f&quot;Error durante la operacion: {e}&quot;)
+        finally:
+            # Finalizar la accion de undo
+            project.endUndo()
+            
+    except Exception as e:
+        print(f&quot;Error general: {e}&quot;)
+
+if __name__ == &quot;__main__&quot;:
+    main() </script>
