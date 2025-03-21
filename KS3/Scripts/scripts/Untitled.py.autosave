@@ -1,114 +1,53 @@
-"""
-______________________________________________________
+import nuke
+from PySide2 import QtWidgets, QtCore, QtGui
 
-  LGA_NKS_CreateNewTrack v1.0 - 2024 - Lega
-  Crea un nuevo track de video encima del track actualmente seleccionado
-______________________________________________________
+class MiddleClickInterceptor(QtCore.QObject):
+    def __init__(self):
+        super().__init__()
+        self.start_pos = None  # Guarda la posición inicial del clic
 
-"""
+    def eventFilter(self, obj, event):
+        if event.type() == QtCore.QEvent.MouseButtonPress:
+            if event.button() == QtCore.Qt.MiddleButton:
+                self.start_pos = event.pos()  # Guarda la posición inicial del clic
+                return False  # Permitimos el evento para no bloquear el drag
 
-import hiero.core
-import hiero.ui
+        elif event.type() == QtCore.QEvent.MouseButtonRelease:
+            if event.button() == QtCore.Qt.MiddleButton and self.start_pos:
+                end_pos = event.pos()  # Obtiene la posición final
+                distance = (end_pos - self.start_pos).manhattanLength()  # Calcula la distancia
 
-def print_tracks(seq, message):
-    """Imprime los tracks en orden"""
-    print(f"\n{message}")
-    print("Tracks (de abajo hacia arriba):")
-    for i, track in enumerate(seq.videoTracks()):
-        print(f"{i}: {track.name()}")
+                if distance < 5:  # Si no hubo arrastre (clic normal)
+                    self.start_pos = None  # Reseteamos la posición inicial
 
-def get_selected_track_index(seq):
-    """Obtiene el indice del track actualmente seleccionado"""
-    te = hiero.ui.getTimelineEditor(seq)
-    selected_items = te.selection()
-    
-    if not selected_items:
-        print("No hay items seleccionados en la linea de tiempo.")
-        return None
-        
-    # Obtener el track del primer item seleccionado
-    selected_track = selected_items[0].parentTrack()
-    if not selected_track:
-        print("No se pudo obtener el track seleccionado.")
-        return None
-        
-    # Encontrar el indice del track en la secuencia
-    for index, track in enumerate(seq.videoTracks()):
-        if track == selected_track:
-            return index
-            
-    return None
+                    # 🔹 🔹 FORZAMOS QUE Qt PROCESE EL EVENTO DE LIBERACIÓN 🔹 🔹
+                    QtCore.QTimer.singleShot(10, self.force_mouse_release)
 
-def create_new_track(seq, track_index):
-    """Crea un nuevo track y lo inserta en la posicion especificada"""
-    if track_index is None:
-        print("No se pudo determinar la posicion del nuevo track.")
-        return None
-        
-    # Crear el nuevo track
-    new_track = hiero.core.VideoTrack("New")
-    
-    # Obtener todos los tracks de video
-    video_tracks = list(seq.videoTracks())
-    
-    # Imprimir tracks antes de la operación
-    print_tracks(seq, "ANTES DE LA OPERACIÓN")
-    
-    # Remover todos los tracks existentes
-    for track in video_tracks:
-        seq.removeTrack(track)
-    
-    # Insertar el nuevo track en la posicion deseada (encima del track seleccionado)
-    # Insertamos en track_index + 1 para que aparezca encima del track seleccionado
-    new_tracks = video_tracks[:track_index+1] + [new_track] + video_tracks[track_index+1:]
-    
-    # Imprimir el orden que vamos a insertar
-    print("\nORDEN DE INSERCIÓN:")
-    for i, track in enumerate(new_tracks):
-        print(f"{i}: {track.name()}")
-    
-    # Reinsertar todos los tracks en el orden correcto
-    for track in new_tracks:
-        seq.addTrack(track)
-    
-    # Imprimir tracks después de la operación
-    print_tracks(seq, "DESPUÉS DE LA OPERACIÓN")
-        
-    print(f"Nuevo track creado encima del track en la posicion {track_index}")
-    return new_track
+                    # 🔹 🔹 MOSTRAMOS EL MENSAJE DESPUÉS DEL RELEASE 🔹 🔹
+                    QtCore.QTimer.singleShot(50, lambda: nuke.message("Ruedita del mouse apretada"))
 
-def main():
-    try:
-        # Obtener la secuencia activa
-        seq = hiero.ui.activeSequence()
-        if not seq:
-            print("No se encontro una secuencia activa en Hiero.")
-            return
-            
-        # Iniciar una accion de undo
-        project = seq.project()
-        project.beginUndo("Crear Nuevo Track")
-        
-        try:
-            # Obtener el indice del track seleccionado
-            track_index = get_selected_track_index(seq)
-            
-            # Crear el nuevo track
-            new_track = create_new_track(seq, track_index)
-            
-            if new_track:
-                print("Operacion completada exitosamente.")
-            else:
-                print("No se pudo crear el nuevo track.")
-                
-        except Exception as e:
-            print(f"Error durante la operacion: {e}")
-        finally:
-            # Finalizar la accion de undo
-            project.endUndo()
-            
-    except Exception as e:
-        print(f"Error general: {e}")
+                    return True  # Bloqueamos la acción original solo para clic sin drag
 
-if __name__ == "__main__":
-    main() 
+                self.start_pos = None
+                return False  # Permitimos que el evento siga su curso normal
+
+        return False  # Permitimos otros eventos
+
+    def force_mouse_release(self):
+        """ Envía manualmente un evento de liberación del botón del medio. """
+        widget = QtWidgets.QApplication.instance().widgetAt(QtGui.QCursor.pos())  # Obtiene el widget actual
+        if widget:
+            release_event = QtGui.QMouseEvent(
+                QtCore.QEvent.MouseButtonRelease,
+                QtGui.QCursor.pos(),  # Usa la posición actual del cursor
+                QtCore.Qt.MiddleButton,
+                QtCore.Qt.NoButton,
+                QtCore.Qt.NoModifier
+            )
+            QtWidgets.QApplication.sendEvent(widget, release_event)  # Envía el evento
+
+# Instalar el filtro en la aplicación de Nuke
+app = QtWidgets.QApplication.instance()
+if app:
+    interceptor = MiddleClickInterceptor()
+    app.installEventFilter(interceptor)

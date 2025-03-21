@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><script>import nuke
-from PySide2 import QtWidgets, QtCore
+from PySide2 import QtWidgets, QtCore, QtGui
 
 class MiddleClickInterceptor(QtCore.QObject):
     def __init__(self):
@@ -10,299 +10,283 @@ class MiddleClickInterceptor(QtCore.QObject):
         if event.type() == QtCore.QEvent.MouseButtonPress:
             if event.button() == QtCore.Qt.MiddleButton:
                 self.start_pos = event.pos()  # Guarda la posición inicial del clic
-                return False  # Permitimos que el evento continúe (para drag)
+                return False  # Permitimos el evento para no bloquear el drag
 
         elif event.type() == QtCore.QEvent.MouseButtonRelease:
             if event.button() == QtCore.Qt.MiddleButton and self.start_pos:
-                end_pos = event.pos()  # Obtiene la posición donde se soltó el botón
-                distance = (end_pos - self.start_pos).manhattanLength()  # Distancia en píxeles
+                end_pos = event.pos()  # Obtiene la posición final
+                distance = (end_pos - self.start_pos).manhattanLength()  # Calcula la distancia
 
-                if distance &lt; 5:  # 🔹 Si fue un clic sin arrastre
+                if distance &lt; 5:  # Si no hubo arrastre (clic normal)
                     self.start_pos = None  # Reseteamos la posición inicial
-                    
-                    # 🔹 DETENEMOS LA PROPAGACIÓN DEL EVENTO 🔹
-                    event.accept()  # Evita que el evento siga propagándose en Qt
 
-                    # 🔹 Retrasamos el mensaje para evitar problemas con Qt
+                    # 🔹 🔹 FORZAMOS QUE Qt PROCESE EL EVENTO DE LIBERACIÓN 🔹 🔹
+                    QtCore.QTimer.singleShot(10, self.force_mouse_release)
+
+                    # 🔹 🔹 MOSTRAMOS EL MENSAJE DESPUÉS DEL RELEASE 🔹 🔹
                     QtCore.QTimer.singleShot(50, lambda: nuke.message(&quot;Ruedita del mouse apretada&quot;))
 
-                    return True  # 🔹 BLOQUEAMOS la acción original del clic sin arrastre
+                    return True  # Bloqueamos la acción original solo para clic sin drag
 
-                # 🔹 Si hubo arrastre, permitimos el evento normalmente
                 self.start_pos = None
-                return False  
+                return False  # Permitimos que el evento siga su curso normal
 
-        return False  # Permitimos que otros eventos sigan su curso normal
+        return False  # Permitimos otros eventos
+
+    def force_mouse_release(self):
+        &quot;&quot;&quot; Envía manualmente un evento de liberación del botón del medio. &quot;&quot;&quot;
+        widget = QtWidgets.QApplication.instance().widgetAt(QtGui.QCursor.pos())  # Obtiene el widget actual
+        if widget:
+            release_event = QtGui.QMouseEvent(
+                QtCore.QEvent.MouseButtonRelease,
+                QtGui.QCursor.pos(),  # Usa la posición actual del cursor
+                QtCore.Qt.MiddleButton,
+                QtCore.Qt.NoButton,
+                QtCore.Qt.NoModifier
+            )
+            QtWidgets.QApplication.sendEvent(widget, release_event)  # Envía el evento
 
 # Instalar el filtro en la aplicación de Nuke
 app = QtWidgets.QApplication.instance()
 if app:
     interceptor = MiddleClickInterceptor()
     app.installEventFilter(interceptor)
-&quot;&quot;&quot;
-   
-   Imprime la version en Hiero, version en ShotGrid (SG), estado de la version en SG, 
-   descripcion y URLs de las tareas asociadas para los clips seleccionados en el timeline.
-   Tambien imprime los comentarios que haya en la version del clip seleccionado
-   Esta version nueva imprime la descripcion del shot, de la task, y el tiempo estimado y fecha de inicio y fin de la task
-   v08: agrega la fecha de update del shot y de la task
-   
-&quot;&quot;&quot;
+</script><script>import nuke
+from PySide2 import QtWidgets, QtCore, QtGui
+import time
+from PySide2.QtGui import QCursor, QMouseEvent
+from PySide2.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout
+from PySide2.QtCore import Qt, QEvent, QPoint, QTimer, QPropertyAnimation, QEasingCurve, Property
 
+# Estado del zoom
+_zoom_state = {
+    'zoom_level': None,
+    'is_zoomed_out': False,
+    'timestamp': None
+}
 
-import hiero.core
-import os
-import re
-import shotgun_api3
-import sys
+# Tiempo máximo entre clics (en segundos)
+MAX_TIME_BETWEEN_CLICKS = 9
 
-class ShotGridManager:
-    def __init__(self, url, login, password):
-        self.sg = shotgun_api3.Shotgun(url, login=login, password=password)
+# Variables globales para mantener referencias
+floating_message = None
 
-    def find_shot_and_tasks(self, project_name, shot_code):
-        projects = self.sg.find(&quot;Project&quot;, [['name', 'is', project_name]], ['id', 'name'])
-        if projects:
-            project_id = projects[0]['id']
-            filters = [
-                ['project', 'is', {'type': 'Project', 'id': project_id}],
-                ['code', 'is', shot_code]
-            ]
-            fields = ['id', 'code', 'description']
-            shots = self.sg.find(&quot;Shot&quot;, filters, fields)
-            if shots:
-                shot_id = shots[0]['id']
-                tasks = self.find_tasks_for_shot(shot_id)
-                return shots[0], tasks
-            else:
-                print(&quot;No se encontro el shot.&quot;)
-        else:
-            print(&quot;No se encontro el proyecto en ShotGrid.&quot;)
-        return None, None
-
-    def find_tasks_for_shot(self, shot_id):
-        filters = [['entity', 'is', {'type': 'Shot', 'id': shot_id}]]
-        fields = [
-            'id', 
-            'content', 
-            'sg_description', 
-            'sg_status_list', 
-            'sg_estimated_days',
-            'start_date',
-            'due_date'
-        ]
-        return self.sg.find(&quot;Task&quot;, filters, fields)
-
-    def find_version_by_code(self, shot_id, version_code):
-        filters = [
-            ['entity', 'is', {'type': 'Shot', 'id': shot_id}],
-            ['code', 'contains', version_code]
-        ]
-        fields = ['id', 'code', 'created_at', 'user', 'sg_status_list', 'description']
-        versions = self.sg.find(&quot;Version&quot;, filters, fields)
-        return versions
-
-    def get_task_url(self, task_id):
-        return f&quot;{self.sg.base_url}/detail/Task/{task_id}&quot;
-
-    def get_version_notes(self, version_id):
-        filters = [['note_links', 'in', {'type': 'Version', 'id': version_id}]]
-        fields = ['content', 'user']
-        return self.sg.find(&quot;Note&quot;, filters, fields)
-
-class HieroOperations:
-    def __init__(self, shotgrid_manager):
-        self.sg_manager = shotgrid_manager
-
-    def parse_exr_name(self, file_name):
-        base_name = re.sub(r'_%04d\.exr$', '', file_name)
-        version_match = re.search(r'_v(\d+)', base_name)
-        version_number = version_match.group(1) if version_match else 'Unknown'
-        return base_name, version_number
-
-    def process_selected_clips(self):
-        seq = hiero.ui.activeSequence()
-        if seq:
-            te = hiero.ui.getTimelineEditor(seq)
-            selected_clips = te.selection()
-            if selected_clips:
-                for clip in selected_clips:
-                    file_path = clip.source().mediaSource().fileinfos()[0].filename()
-                    exr_name = os.path.basename(file_path)
-                    base_name, hiero_version_number = self.parse_exr_name(exr_name)
-                    project_name = base_name.split('_')[0]
-                    parts = base_name.split('_')
-                    shot_code = '_'.join(parts[:5])
-
-                    shot, tasks = self.sg_manager.find_shot_and_tasks(project_name, shot_code)
-                    if shot:
-                        # Imprimir la descripcion del shot
-                        print(f&quot;- Shot name: {shot['code']}&quot;)
-                        print(f&quot;  Description: {shot.get('description', 'No description available')}&quot;)
-
-                        # Mostrar la informacion de la tarea Comp antes de verificar versiones
-                        comp_task = next((task for task in tasks if 'Comp' in task['content']), None)
-                        if comp_task:
-                            estimated_days = comp_task.get('sg_estimated_days', 0)
-                            print(f&quot;- Task: {comp_task['content']} (Status: {comp_task['sg_status_list']})&quot;)
-                            print(f&quot;  Description: {comp_task.get('sg_description', 'No description available')}&quot;)
-                            print(f&quot;  Start Date: {comp_task.get('start_date', 'No start date available')}&quot;)
-                            print(f&quot;  Due Date: {comp_task.get('due_date', 'No due date available')}&quot;)
-                            print(f&quot;  Estimated Duration: {estimated_days} days&quot;)
-                            print(f&quot;  URL: {self.sg_manager.get_task_url(comp_task['id'])}&quot;)
-
-                        # Luego verificar si hay versiones disponibles
-                        versions = self.sg_manager.find_version_by_code(shot['id'], f&quot;_v{hiero_version_number}&quot;)
-                        if versions:
-                            version = versions[0]  # Assuming the first match is the correct version
-                            print(f&quot;- Version Hiero: v{hiero_version_number}&quot;)
-                            print(f&quot;- Version SG: {version['code']}&quot;)
-                            print(f&quot;- Version SG status: {version['sg_status_list']}&quot;)
-                            print(f&quot;- Description: {version['description']}&quot;)
-
-                            notes = self.sg_manager.get_version_notes(version['id'])
-                            if notes:
-                                print(&quot;  - Comments:&quot;)
-                                for note in notes:
-                                    print(f&quot;    - {note['content']} (User: {note['user']['name']})&quot;)
-                            else:
-                                print(&quot;  - No comments found.&quot;)
-                        else:
-                            print(f&quot;No versions found for Hiero version v{hiero_version_number} in ShotGrid.&quot;)
-                    else:
-                        print(&quot;No se encontro el shot correspondiente en ShotGrid.&quot;)
-            else:
-                print(&quot;No se han seleccionado clips en el timeline.&quot;)
-        else:
-            print(&quot;No se encontro una secuencia activa en Hiero.&quot;)
-
-def main():
-    global msg_manager
-    sg_url = os.getenv('SHOTGRID_URL')
-    sg_login = os.getenv('SHOTGRID_LOGIN')
-    sg_password = os.getenv('SHOTGRID_PASSWORD')
-
-    if not sg_url or not sg_login or not sg_password:
-        print(&quot;Las variables de entorno SHOTGRID_URL, SHOTGRID_LOGIN y SHOTGRID_PASSWORD deben estar configuradas.&quot;)
-        return
-
-    sg_manager = ShotGridManager(sg_url, sg_login, sg_password)
-    hiero_ops = HieroOperations(sg_manager)
-    hiero_ops.process_selected_clips()
-
-if __name__ == &quot;__main__&quot;:
-    main()
-&quot;&quot;&quot;
-______________________________________________________
-
-  LGA_NKS_CreateNewTrack v1.0 - 2024 - Lega
-  Crea un nuevo track de video encima del track actualmente seleccionado
-______________________________________________________
-
-&quot;&quot;&quot;
-
-import hiero.core
-import hiero.ui
-
-def print_tracks(seq, message):
-    &quot;&quot;&quot;Imprime los tracks en orden&quot;&quot;&quot;
-    print(f&quot;\n{message}&quot;)
-    print(&quot;Tracks (de abajo hacia arriba):&quot;)
-    for i, track in enumerate(seq.videoTracks()):
-        print(f&quot;{i}: {track.name()}&quot;)
-
-def get_selected_track_index(seq):
-    &quot;&quot;&quot;Obtiene el indice del track actualmente seleccionado&quot;&quot;&quot;
-    te = hiero.ui.getTimelineEditor(seq)
-    selected_items = te.selection()
-    
-    if not selected_items:
-        print(&quot;No hay items seleccionados en la linea de tiempo.&quot;)
-        return None
-        
-    # Obtener el track del primer item seleccionado
-    selected_track = selected_items[0].parentTrack()
-    if not selected_track:
-        print(&quot;No se pudo obtener el track seleccionado.&quot;)
-        return None
-        
-    # Encontrar el indice del track en la secuencia
-    for index, track in enumerate(seq.videoTracks()):
-        if track == selected_track:
-            return index
-            
+def find_dag_widget():
+    &quot;&quot;&quot;Encuentra el widget del DAG&quot;&quot;&quot;
+    for widget in QApplication.allWidgets():
+        if widget.objectName() == &quot;DAG.1&quot;:
+            return widget
     return None
 
-def create_new_track(seq, track_index):
-    &quot;&quot;&quot;Crea un nuevo track y lo inserta en la posicion especificada&quot;&quot;&quot;
-    if track_index is None:
-        print(&quot;No se pudo determinar la posicion del nuevo track.&quot;)
-        return None
+class FloatingMessage(QWidget):
+    def __init__(self, text, parent=None):
+        super(FloatingMessage, self).__init__(parent)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Tool | Qt.WindowStaysOnTopHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
         
-    # Crear el nuevo track
-    new_track = hiero.core.VideoTrack(&quot;New&quot;)
-    
-    # Obtener todos los tracks de video
-    video_tracks = list(seq.videoTracks())
-    
-    # Imprimir tracks antes de la operación
-    print_tracks(seq, &quot;ANTES DE LA OPERACIÓN&quot;)
-    
-    # Remover todos los tracks existentes
-    for track in video_tracks:
-        seq.removeTrack(track)
-    
-    # Insertar el nuevo track en la posicion deseada (encima del track seleccionado)
-    # Insertamos en track_index + 1 para que aparezca encima del track seleccionado
-    new_tracks = video_tracks[:track_index+1] + [new_track] + video_tracks[track_index+1:]
-    
-    # Imprimir el orden que vamos a insertar
-    print(&quot;\nORDEN DE INSERCIÓN:&quot;)
-    for i, track in enumerate(new_tracks):
-        print(f&quot;{i}: {track.name()}&quot;)
-    
-    # Reinsertar todos los tracks en el orden correcto
-    for track in new_tracks:
-        seq.addTrack(track)
-    
-    # Imprimir tracks después de la operación
-    print_tracks(seq, &quot;DESPUÉS DE LA OPERACIÓN&quot;)
+        # Layout principal
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
         
-    print(f&quot;Nuevo track creado encima del track en la posicion {track_index}&quot;)
-    return new_track
-
-def main():
-    try:
-        # Obtener la secuencia activa
-        seq = hiero.ui.activeSequence()
-        if not seq:
-            print(&quot;No se encontro una secuencia activa en Hiero.&quot;)
-            return
+        # Label con el texto
+        self.label = QLabel(text)
+        self.label.setStyleSheet(&quot;&quot;&quot;
+            QLabel {
+                color: #FFFFFF;
+                background-color: #282828;
+                padding: 5px 10px;
+                border-radius: 4px;
+                font-family: Verdana;
+                font-size: 12px;
+            }
+        &quot;&quot;&quot;)
+        layout.addWidget(self.label)
+        
+        # Ajustar tamaño
+        self.adjustSize()
+        
+        # Encontrar el DAG y posicionar el mensaje
+        dag_widget = find_dag_widget()
+        if dag_widget:
+            # Obtener geometría del DAG
+            dag_geo = dag_widget.geometry()
+            dag_global_pos = dag_widget.mapToGlobal(QPoint(0, 0))
             
-        # Iniciar una accion de undo
-        project = seq.project()
-        project.beginUndo(&quot;Crear Nuevo Track&quot;)
+            # Posicionar en la parte superior del DAG, centrado horizontalmente
+            x = dag_global_pos.x() + (dag_geo.width() // 2) - (self.width() // 2)
+            y = dag_global_pos.y() + 10  # Un pequeño margen desde el borde superior
+            self.move(x, y)
         
+        # Propiedad para la opacidad
+        self._opacity = 1.0
+        
+        # Crear la animación
+        self.animation = QPropertyAnimation(self, b&quot;opacity&quot;)
+        self.animation.setDuration(1000)  # 1 segundo
+        self.animation.setStartValue(1.0)
+        self.animation.setEndValue(0.0)
+        self.animation.setEasingCurve(QEasingCurve.InQuad)
+        self.animation.finished.connect(self.deleteLater)
+        
+        # Iniciar la animación inmediatamente
+        self.animation.start()
+    
+    def get_opacity(self):
+        return self._opacity
+    
+    def set_opacity(self, value):
+        self._opacity = value
+        self.label.setStyleSheet(f&quot;&quot;&quot;
+            QLabel {{
+                color: rgba(255, 255, 255, {value});
+                background-color: rgba(40, 40, 40, {value});
+                padding: 5px 10px;
+                border-radius: 4px;
+                font-family: Verdana;
+                font-size: 12px;
+            }}
+        &quot;&quot;&quot;)
+    
+    # Definir la propiedad opacity
+    opacity = Property(float, get_opacity, set_opacity)
+
+def show_message(text):
+    &quot;&quot;&quot;Muestra un mensaje flotante cerca del cursor&quot;&quot;&quot;
+    global floating_message
+    
+    # Asegurarse de que la instancia anterior se elimine
+    if floating_message is not None:
         try:
-            # Obtener el indice del track seleccionado
-            track_index = get_selected_track_index(seq)
-            
-            # Crear el nuevo track
-            new_track = create_new_track(seq, track_index)
-            
-            if new_track:
-                print(&quot;Operacion completada exitosamente.&quot;)
-            else:
-                print(&quot;No se pudo crear el nuevo track.&quot;)
-                
-        except Exception as e:
-            print(f&quot;Error durante la operacion: {e}&quot;)
-        finally:
-            # Finalizar la accion de undo
-            project.endUndo()
-            
-    except Exception as e:
-        print(f&quot;Error general: {e}&quot;)
+            floating_message.deleteLater()
+        except:
+            pass
+    
+    # Crear nueva instancia
+    floating_message = FloatingMessage(text)
+    floating_message.show()
 
-if __name__ == &quot;__main__&quot;:
-    main() </script>
+def zoom_toggle():
+    &quot;&quot;&quot;
+    Alterna entre el zoom guardado y zoom total del DAG
+    &quot;&quot;&quot;
+    global _zoom_state
+    
+    current_time = time.time()
+    
+    # Si pasaron más de MAX_TIME_BETWEEN_CLICKS segundos, resetear el estado
+    if _zoom_state['is_zoomed_out'] and _zoom_state['timestamp']:
+        if current_time - _zoom_state['timestamp'] &gt; MAX_TIME_BETWEEN_CLICKS:
+            _zoom_state['is_zoomed_out'] = False
+            _zoom_state['zoom_level'] = None
+            _zoom_state['timestamp'] = None
+    
+    if not _zoom_state['is_zoomed_out']:
+        # Guardar zoom actual y timestamp
+        _zoom_state['zoom_level'] = nuke.zoom()
+        _zoom_state['timestamp'] = current_time
+        
+        # Hacer zoom out a todo el DAG (deseleccionar todo primero)
+        nuke.selectAll()
+        nuke.invertSelection()
+        nuke.zoomToFitSelected()
+        _zoom_state['is_zoomed_out'] = True
+        
+        # Mostrar mensaje de Zoom Out
+        show_message(&quot;Zoom Out&quot;)
+        
+    else:
+        # Obtener el widget bajo el cursor
+        widget = QApplication.widgetAt(QCursor.pos())
+        cursor_before = QCursor.pos()
+        
+        if widget:
+            # Simular un click completo (press y release) en el widget
+            local_pos = widget.mapFromGlobal(cursor_before)
+            
+            # Mouse press
+            press_event = QMouseEvent(QEvent.MouseButtonPress, 
+                                    local_pos,
+                                    Qt.LeftButton, 
+                                    Qt.LeftButton, 
+                                    Qt.NoModifier)
+            QApplication.sendEvent(widget, press_event)
+            
+            # Mouse release
+            release_event = QMouseEvent(QEvent.MouseButtonRelease, 
+                                      local_pos,
+                                      Qt.LeftButton, 
+                                      Qt.LeftButton, 
+                                      Qt.NoModifier)
+            QApplication.sendEvent(widget, release_event)
+            
+            # Crear un NoOp temporal
+            temp_node = nuke.createNode(&quot;NoOp&quot;, inpanel=False)
+            
+            # Obtener el centro del nodo temporal
+            xC = temp_node.xpos() + temp_node.screenWidth()/2
+            yC = temp_node.ypos() + temp_node.screenHeight()/2
+            
+            # Hacer zoom al nivel guardado usando el centro del nodo temporal
+            nuke.zoom(_zoom_state['zoom_level'], [xC, yC])
+            
+            # Eliminar el nodo temporal
+            nuke.delete(temp_node)
+            
+            # Resetear el estado
+            _zoom_state['is_zoomed_out'] = False
+            _zoom_state['timestamp'] = None
+            
+            # Mostrar mensaje de Zoom In
+            show_message(&quot;Zoom In&quot;)
+
+class MiddleClickInterceptor(QtCore.QObject):
+    def __init__(self):
+        super().__init__()
+        self.start_pos = None  # Guarda la posición inicial del clic
+
+    def eventFilter(self, obj, event):
+        if event.type() == QtCore.QEvent.MouseButtonPress:
+            if event.button() == QtCore.Qt.MiddleButton:
+                self.start_pos = event.pos()  # Guarda la posición inicial del clic
+                return False  # Permitimos el evento para no bloquear el drag
+
+        elif event.type() == QtCore.QEvent.MouseButtonRelease:
+            if event.button() == QtCore.Qt.MiddleButton and self.start_pos:
+                end_pos = event.pos()  # Obtiene la posición final
+                distance = (end_pos - self.start_pos).manhattanLength()  # Calcula la distancia
+
+                if distance &lt; 5:  # Si no hubo arrastre (clic normal)
+                    self.start_pos = None  # Reseteamos la posición inicial
+
+                    # 🔹 🔹 FORZAMOS QUE Qt PROCESE EL EVENTO DE LIBERACIÓN 🔹 🔹
+                    QtCore.QTimer.singleShot(10, self.force_mouse_release)
+
+                    # 🔹 🔹 EJECUTAMOS LA FUNCIÓN DE ZOOM EN LUGAR DEL MENSAJE 🔹 🔹
+                    QtCore.QTimer.singleShot(50, zoom_toggle)
+
+                    return True  # Bloqueamos la acción original solo para clic sin drag
+
+                self.start_pos = None
+                return False  # Permitimos que el evento siga su curso normal
+
+        return False  # Permitimos otros eventos
+
+    def force_mouse_release(self):
+        &quot;&quot;&quot; Envía manualmente un evento de liberación del botón del medio. &quot;&quot;&quot;
+        widget = QtWidgets.QApplication.instance().widgetAt(QtGui.QCursor.pos())  # Obtiene el widget actual
+        if widget:
+            release_event = QtGui.QMouseEvent(
+                QtCore.QEvent.MouseButtonRelease,
+                QtGui.QCursor.pos(),  # Usa la posición actual del cursor
+                QtCore.Qt.MiddleButton,
+                QtCore.Qt.NoButton,
+                QtCore.Qt.NoModifier
+            )
+            QtWidgets.QApplication.sendEvent(widget, release_event)  # Envía el evento
+
+# Instalar el filtro en la aplicación de Nuke
+app = QtWidgets.QApplication.instance()
+if app:
+    interceptor = MiddleClickInterceptor()
+    app.installEventFilter(interceptor)
+</script><script></script>
