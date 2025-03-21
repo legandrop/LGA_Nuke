@@ -213,8 +213,8 @@ n.addCommand("  Easy Navigate/Survive (Reset Bookmarks)", "Km_NodeGraph_Easy_Nav
 
 
 # Importar LGA_zoom
-import LGA_zoom
-n.addCommand("  Toggle Zoom", "LGA_zoom.main()", "h", shortcutContext=2, icon=icon_LTPF)
+import LGA_zoom2
+n.addCommand("  Toggle Zoom", "LGA_zoom2.main()", "h", shortcutContext=2, icon=icon_LTPF)
 
 # -----------------------------------------------------------------------------
 #                                 Version

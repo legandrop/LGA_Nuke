@@ -50,4 +50,4 @@ class MiddleClickInterceptor(QtCore.QObject):
 app = QtWidgets.QApplication.instance()
 if app:
     interceptor = MiddleClickInterceptor()
-    app.installEventFilter(interceptor)
+    app.installE

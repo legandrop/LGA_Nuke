@@ -31,6 +31,7 @@ MAX_TIME_BETWEEN_CLICKS = 9
 
 # Variables globales para mantener referencias
 floating_message = None
+_interceptor = None  # Mantenemos una referencia global al interceptor
 
 def find_dag_widget():
     """Encuentra el widget del DAG"""
@@ -245,8 +246,45 @@ class MiddleClickInterceptor(QtCore.QObject):
             )
             QtWidgets.QApplication.sendEvent(widget, release_event)  # Envía el evento
 
-# Instalar el filtro en la aplicación de Nuke
-app = QtWidgets.QApplication.instance()
-if app:
-    interceptor = MiddleClickInterceptor()
-    app.installEventFilter(interceptor)
+def install_middle_click_interceptor():
+    """Instala el interceptor de clic medio si no está ya instalado"""
+    global _interceptor
+    
+    # Solo instalamos si no existe ya
+    if _interceptor is None:
+        app = QtWidgets.QApplication.instance()
+        if app:
+            _interceptor = MiddleClickInterceptor()
+            app.installEventFilter(_interceptor)
+            
+            # Mensaje de depuración (puedes eliminarlo después)
+            print("Zoom MiddleClick interceptor instalado correctamente")
+            
+            # También puedes mostrar un mensaje flotante para confirmar
+            try:
+                show_message("MiddleClick Zoom Activado")
+            except:
+                pass
+
+def onScriptLoad():
+    """Función que se ejecuta cuando Nuke ha cargado completamente el script"""
+    # Usamos un pequeño retraso para asegurarnos que la GUI está lista
+    QtCore.QTimer.singleShot(1000, install_middle_click_interceptor)
+
+def main():
+    """
+    Función principal llamada desde el menú o atajo de teclado 'h'
+    Esta función simplemente llama a zoom_toggle sin reinstalar el filtro de eventos
+    """
+    # Ejecutamos el toggle de zoom
+    zoom_toggle()
+
+# Registramos una función para que se ejecute cuando la GUI de Nuke esté lista
+# Este es el punto clave para asegurar que nuestro interceptor se instale correctamente
+nuke.addOnCreate(lambda: QtCore.QTimer.singleShot(100, install_middle_click_interceptor), nodeClass='Root')
+
+# También instalamos cuando se importa el módulo, como respaldo
+install_middle_click_interceptor()
+
+# Además, usamos el callback onScriptLoad para una carga más robusta
+nuke.addOnScriptLoad(onScriptLoad)
