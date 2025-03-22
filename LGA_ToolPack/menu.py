@@ -213,26 +213,39 @@ n.addCommand("  Duplicate with inputs", "duplicateWithInputs.duplicateWithInputs
 # Crea separador y titulo
 n.addSeparator()
 n2.addSeparator()
+# Define el icono para los items
+icon_Knobs = _get_icon("TP_Knobs")
+
+# -----------------------------------------------------------------------------
+#                                 NODE BUILDS
+# -----------------------------------------------------------------------------
+n.addCommand("NODE BUILDS", lambda: None)
+n2.addCommand("NODE BUILDS", lambda: None)
+
+# Importar el LGA_build_Merge
+import LGA_build_Merge
+n.addCommand("  Create Merge | Switch ops", "LGA_build_Merge.main()", "shift+m", shortcutContext=2, icon=icon_Knobs)
+
+
+# Importar el LGA_build_Grade
+import LGA_build_Grade
+n.addCommand("  Create Grade | Mask", "LGA_build_Grade.gradeMask()", "shift+G", shortcutContext=2, icon=icon_Knobs)
+n.addCommand("  Create Grade | Highlights", "LGA_build_Grade.gradeHI()", "ctrl+shift+G", shortcutContext=2, icon=icon_Knobs)
+
+
+# Importar el LGA_build_iteration
+import LGA_build_iteration
+n.addCommand("  Create Iteration", "LGA_build_iteration.gen_iteration()", "shift+i", shortcutContext=2, icon=icon_Knobs)
+
+
+# Añadir sección KNOBS
 n.addCommand("KNOBS", lambda: None)
 n2.addCommand("KNOBS", lambda: None)
-# Define el icono para los items de Frame Range
-icon_Knobs = _get_icon("TP_Knobs")
 
 
 # Importar el LGA_channelsCycle
 import LGA_channelsCycle
 n.addCommand("  Channels Cycle", "LGA_channelsCycle.main()", "ctrl+alt+shift+a", shortcutContext=2, icon=icon_Knobs)
-
-
-# Importar el LGA_gen_Merge
-import LGA_gen_Merge
-n.addCommand("  Create Merge | Switch ops", "LGA_gen_Merge.main()", "shift+m", shortcutContext=2, icon=icon_Knobs)
-
-
-# Importar el LGA_gen_Grade
-import LGA_gen_Grade
-n.addCommand("  Create Grade | Mask", "LGA_gen_Grade.gradeMask()", "shift+G", shortcutContext=2, icon=icon_Knobs)
-n.addCommand("  Create Grade | Highlights", "LGA_gen_Grade.gradeHI()", "ctrl+shift+G", shortcutContext=2, icon=icon_Knobs)
 
 
 # Importar el LGA_disable_A_B

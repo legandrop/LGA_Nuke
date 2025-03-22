@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_gen_Merge v1.6 | 2024 | Lega  
+  LGA_build_Merge v1.6 | 2024 | Lega  
   
   Crea nodos Merge con configuración de máscara predefinida.
   Soporta creación desde un nodo seleccionado o desde la posición del cursor.

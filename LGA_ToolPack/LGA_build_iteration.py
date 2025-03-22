@@ -1,7 +1,7 @@
 """
 __________________________________________________________
 
-  LGA_gen_iteration v1.0 | 2024 | Lega   
+  LGA_build_iteration v1.0 | 2024 | Lega   
   Genera un dot debajo del nodo seleccionado y 
   otro dot a la izquierda de ese dot.
   Además crea un nodo Merge debajo del dot principal
@@ -192,4 +192,4 @@ def gen_iteration():
         nuke.delete(no_op)
         debug_print("NoOp temporal eliminado")
 
-gen_iteration()
+#gen_iteration()

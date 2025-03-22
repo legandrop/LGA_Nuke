@@ -51,242 +51,349 @@ app = QtWidgets.QApplication.instance()
 if app:
     interceptor = MiddleClickInterceptor()
     app.installEventFilter(interceptor)
-</script><script>import nuke
-from PySide2 import QtWidgets, QtCore, QtGui
-import time
+&quot;&quot;&quot;
+__________________________________________________________
+
+  LGA_gen_iteration v1.0 | 2024 | Lega   
+  Genera un dot debajo del nodo seleccionado y 
+  otro dot a la izquierda de ese dot.
+  Además crea un nodo Merge debajo del dot principal
+  conectando el dot al input B del Merge y el último dot
+  de la columna lateral al input A.
+  También crea un TimeOffset debajo del dot lateral
+  y un Transform debajo del TimeOffset.
+  Y un dot debajo del Transform.
+  El Merge queda alineado verticalmente con el último dot.
+__________________________________________________________
+
+&quot;&quot;&quot;
+
+import nuke
+
+# Variable global para activar o desactivar los prints
+DEBUG = False
+
+def debug_print(message):
+    if DEBUG:
+        print(message)
+
+def gen_iteration():
+    # Distancia entre nodos
+    distanciaY = 70
+    distanciaY_columna_lateral = 30  # Distancia vertical entre nodos en la columna lateral
+    distanciaX = -140  # Distancia fija a la izquierda (versión lejana)
+    dot_width = int(nuke.toNode(&quot;preferences&quot;)['dot_node_scale'].value() * 12)
+
+    # Obtener el nodo seleccionado
+    try:
+        current_node = nuke.selectedNode()
+    except ValueError:
+        nuke.message(&quot;No node selected.&quot;)
+        debug_print(&quot;No node selected.&quot;)
+        return
+
+    debug_print(f&quot;Nodo seleccionado: {current_node.name()}&quot;)
+
+    pos_tolerance = 120  # Tolerancia para la posicion en X
+    current_node_center_x = current_node.xpos() + (current_node.screenWidth() / 2)
+    current_node_center_y = current_node.ypos() + (current_node.screenHeight() / 2)
+
+    # Buscar el primer nodo que este debajo del nodo seleccionado con una tolerancia en X
+    all_nodes = [n for n in nuke.allNodes() if n != current_node and n.Class() != 'Root' and n.Class() != 'BackdropNode']
+    nodo_siguiente_en_columna = None
+    distMedia_NodoSiguiente = float('inf')
+
+    for node in all_nodes:
+        node_center_x = node.xpos() + (node.screenWidth() / 2)
+        node_center_y = node.ypos() + (node.screenHeight() / 2)
+
+        # Verifica si el nodo esta dentro de la tolerancia y en la direccion correcta (debajo del nodo actual)
+        if abs(node_center_x - current_node_center_x) &lt;= pos_tolerance and node_center_y &gt; current_node_center_y:
+            distance = node_center_y - current_node_center_y
+            if distance &gt; 0 and distance &lt; distMedia_NodoSiguiente:
+                distMedia_NodoSiguiente = distance
+                nodo_siguiente_en_columna = node
+                debug_print(f&quot;Nodo siguiente en la misma columna encontrado: {nodo_siguiente_en_columna.name()} a distancia {distMedia_NodoSiguiente}&quot;)
+
+    # Ajuste de la distancia Y si es necesario
+    if distMedia_NodoSiguiente != float('inf'):
+        if distMedia_NodoSiguiente &lt; distanciaY * 2:
+            distanciaY = distMedia_NodoSiguiente / 2 - (dot_width / 2) - 6
+        debug_print(f&quot;Distancia Y ajustada a: {distanciaY}&quot;)
+
+    # Calcular la posicion Y del dot
+    new_y_pos = int(current_node.ypos() + current_node.screenHeight() + distanciaY)
+    debug_print(f&quot;Posicion Y del nuevo Dot: {new_y_pos}&quot;)
+
+    # Crear un nuevo nodo de Dot debajo del nodo seleccionado
+    dot_node = nuke.nodes.Dot()
+
+    # Calcular la posicion X para centrar el Dot horizontalmente
+    dot_xpos = int(current_node.xpos() + (current_node.screenWidth() / 2) - (dot_width / 2))
+
+    # Establecer la nueva posicion del nodo Dot
+    dot_node.setXpos(dot_xpos)
+    dot_node.setYpos(new_y_pos)
+
+    # Conectar el nodo seleccionado al nodo de Dot
+    dot_node.setInput(0, current_node)
+    debug_print(f&quot;Nuevo Dot creado y conectado al nodo seleccionado: {current_node.name()}&quot;)
+
+    # Si hay un nodo siguiente en la columna, reconectarlo al dot
+    if nodo_siguiente_en_columna and current_node in nodo_siguiente_en_columna.dependencies(nuke.INPUTS):
+        for i in range(nodo_siguiente_en_columna.inputs()):
+            if nodo_siguiente_en_columna.input(i) == current_node:
+                nodo_siguiente_en_columna.setInput(i, dot_node)
+                debug_print(f&quot;Nodo siguiente en la columna conectado al nuevo Dot: {nodo_siguiente_en_columna.name()}&quot;)
+                break
+
+    # Crear un nuevo nodo de Dot a la izquierda del Dot recien creado
+    dot_side = nuke.nodes.Dot()
+    dot_side.setXpos(dot_node.xpos() + distanciaX)
+    dot_side.setYpos(dot_node.ypos())
+    dot_side.setInput(0, dot_node)
+    debug_print(f&quot;Nuevo Dot lateral creado y conectado al Dot principal&quot;)
+    
+    # Crear un nodo TimeOffset debajo del dot lateral
+    timeoffset = nuke.nodes.TimeOffset()
+    timeoffset.setXpos(dot_side.xpos() - (timeoffset.screenWidth() // 2) + (dot_width // 2))
+    timeoffset.setYpos(dot_side.ypos() + dot_side.screenHeight() + distanciaY_columna_lateral)
+    timeoffset.setInput(0, dot_side)
+    timeoffset['time_offset'].setValue(-1)
+    debug_print(f&quot;Nuevo TimeOffset creado y conectado al Dot lateral&quot;)
+    
+    # Crear un nodo Transform debajo del TimeOffset
+    transform = nuke.nodes.Transform()
+    transform.setXpos(timeoffset.xpos())
+    transform.setYpos(timeoffset.ypos() + timeoffset.screenHeight() + distanciaY_columna_lateral)
+    transform.setInput(0, timeoffset)
+    debug_print(f&quot;Nuevo Transform creado y conectado al TimeOffset&quot;)
+    
+    # Crear un dot debajo del Transform
+    dot_transform = nuke.nodes.Dot()
+    # Calcular la posición X para centrar el Dot horizontalmente respecto al Transform
+    dot_transform_xpos = int(transform.xpos() + (transform.screenWidth() / 2) - (dot_width / 2))
+    dot_transform.setXpos(dot_transform_xpos)
+    dot_transform.setYpos(transform.ypos() + transform.screenHeight() + distanciaY_columna_lateral)
+    dot_transform.setInput(0, transform)
+    debug_print(f&quot;Nuevo Dot creado debajo del Transform y conectado a él&quot;)
+
+    # Crear un nodo Merge debajo del dot principal
+    merge = nuke.nodes.Merge2()
+    
+    # Posicionar el Merge debajo del dot principal y alineado verticalmente con el último dot
+    merge.setXpos(dot_node.xpos() - (merge.screenWidth() // 2) + (dot_width // 2))
+    
+    # Calculamos la posición Y del Merge para alinear su centro con el centro del último dot
+    # Obtenemos el centro del dot_transform
+    dot_transform_center_y = dot_transform.ypos() + (dot_transform.screenHeight() // 2)
+    # Posicionamos el Merge para que su centro coincida con el centro del dot
+    merge.setYpos(dot_transform_center_y - (merge.screenHeight() // 2))
+    
+    # Configurar el nodo Merge
+    merge['operation'].setValue('mask')
+    merge['bbox'].setValue('A')
+    
+    # Conectar el dot principal al input B (input 0) del Merge
+    merge.setInput(0, dot_node)
+    # Conectar el último dot (debajo del Transform) al input A (input 1) del Merge
+    merge.setInput(1, dot_transform)
+    
+    debug_print(f&quot;Nuevo Merge creado y conectado al Dot principal en el input B y al último dot en el input A&quot;)
+
+
+gen_iteration()&quot;&quot;&quot;
+__________________________________________________________
+
+  LGA_gen_iteration v1.0 | 2024 | Lega   
+  Genera un dot debajo del nodo seleccionado y 
+  otro dot a la izquierda de ese dot.
+  Además crea un nodo Merge debajo del dot principal
+  conectando el dot al input B del Merge y el último dot
+  de la columna lateral al input A.
+  También crea un TimeOffset debajo del dot lateral
+  y un Transform debajo del TimeOffset.
+  Y un dot debajo del Transform.
+  El Merge queda alineado verticalmente con el último dot.
+  
+  Si no hay nodo seleccionado, crea el árbol de nodos
+  en la posición del cursor.
+__________________________________________________________
+
+&quot;&quot;&quot;
+
+import nuke
 from PySide2.QtGui import QCursor, QMouseEvent
-from PySide2.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout
-from PySide2.QtCore import Qt, QEvent, QPoint, QTimer, QPropertyAnimation, QEasingCurve, Property
+from PySide2.QtWidgets import QApplication
+from PySide2.QtCore import Qt, QEvent, QPoint
 
-# Estado del zoom
-_zoom_state = {
-    'zoom_level': None,
-    'is_zoomed_out': False,
-    'timestamp': None
-}
+# Variable global para activar o desactivar los prints
+DEBUG = False
 
-# Tiempo máximo entre clics (en segundos)
-MAX_TIME_BETWEEN_CLICKS = 9
+def debug_print(message):
+    if DEBUG:
+        print(message)
 
-# Variables globales para mantener referencias
-floating_message = None
+def simulate_dag_click():
+    &quot;&quot;&quot;Simula un click en el DAG en la posición actual del cursor&quot;&quot;&quot;
+    widget = QApplication.widgetAt(QCursor.pos())
+    if widget:
+        cursor_pos = QCursor.pos()
+        local_pos = widget.mapFromGlobal(cursor_pos)
+        
+        # Mouse press
+        press_event = QMouseEvent(QEvent.MouseButtonPress, 
+                                local_pos,
+                                Qt.LeftButton, 
+                                Qt.LeftButton, 
+                                Qt.NoModifier)
+        QApplication.sendEvent(widget, press_event)
+        
+        # Mouse release
+        release_event = QMouseEvent(QEvent.MouseButtonRelease, 
+                                  local_pos,
+                                  Qt.LeftButton, 
+                                  Qt.LeftButton, 
+                                  Qt.NoModifier)
+        QApplication.sendEvent(widget, release_event)
 
-def find_dag_widget():
-    &quot;&quot;&quot;Encuentra el widget del DAG&quot;&quot;&quot;
-    for widget in QApplication.allWidgets():
-        if widget.objectName() == &quot;DAG.1&quot;:
-            return widget
-    return None
+def gen_iteration():
+    # Distancia entre nodos
+    distanciaY = 70
+    distanciaY_columna_lateral = 30  # Distancia vertical entre nodos en la columna lateral
+    distanciaX = -140  # Distancia fija a la izquierda (versión lejana)
+    dot_width = int(nuke.toNode(&quot;preferences&quot;)['dot_node_scale'].value() * 12)
 
-class FloatingMessage(QWidget):
-    def __init__(self, text, parent=None):
-        super(FloatingMessage, self).__init__(parent)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Tool | Qt.WindowStaysOnTopHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        
-        # Layout principal
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        
-        # Label con el texto
-        self.label = QLabel(text)
-        self.label.setStyleSheet(&quot;&quot;&quot;
-            QLabel {
-                color: #FFFFFF;
-                background-color: #282828;
-                padding: 5px 10px;
-                border-radius: 4px;
-                font-family: Verdana;
-                font-size: 12px;
-            }
-        &quot;&quot;&quot;)
-        layout.addWidget(self.label)
-        
-        # Ajustar tamaño
-        self.adjustSize()
-        
-        # Encontrar el DAG y posicionar el mensaje
-        dag_widget = find_dag_widget()
-        if dag_widget:
-            # Obtener geometría del DAG
-            dag_geo = dag_widget.geometry()
-            dag_global_pos = dag_widget.mapToGlobal(QPoint(0, 0))
-            
-            # Posicionar en la parte superior del DAG, centrado horizontalmente
-            x = dag_global_pos.x() + (dag_geo.width() // 2) - (self.width() // 2)
-            y = dag_global_pos.y() + 10  # Un pequeño margen desde el borde superior
-            self.move(x, y)
-        
-        # Propiedad para la opacidad
-        self._opacity = 1.0
-        
-        # Crear la animación
-        self.animation = QPropertyAnimation(self, b&quot;opacity&quot;)
-        self.animation.setDuration(1000)  # 1 segundo
-        self.animation.setStartValue(1.0)
-        self.animation.setEndValue(0.0)
-        self.animation.setEasingCurve(QEasingCurve.InQuad)
-        self.animation.finished.connect(self.deleteLater)
-        
-        # Iniciar la animación inmediatamente
-        self.animation.start()
+    # Obtener el nodo seleccionado
+    selected_node = None
+    no_op = None
     
-    def get_opacity(self):
-        return self._opacity
-    
-    def set_opacity(self, value):
-        self._opacity = value
-        self.label.setStyleSheet(f&quot;&quot;&quot;
-            QLabel {{
-                color: rgba(255, 255, 255, {value});
-                background-color: rgba(40, 40, 40, {value});
-                padding: 5px 10px;
-                border-radius: 4px;
-                font-family: Verdana;
-                font-size: 12px;
-            }}
-        &quot;&quot;&quot;)
-    
-    # Definir la propiedad opacity
-    opacity = Property(float, get_opacity, set_opacity)
-
-def show_message(text):
-    &quot;&quot;&quot;Muestra un mensaje flotante cerca del cursor&quot;&quot;&quot;
-    global floating_message
-    
-    # Asegurarse de que la instancia anterior se elimine
-    if floating_message is not None:
-        try:
-            floating_message.deleteLater()
-        except:
-            pass
-    
-    # Crear nueva instancia
-    floating_message = FloatingMessage(text)
-    floating_message.show()
-
-def zoom_toggle():
-    &quot;&quot;&quot;
-    Alterna entre el zoom guardado y zoom total del DAG
-    &quot;&quot;&quot;
-    global _zoom_state
-    
-    current_time = time.time()
-    
-    # Si pasaron más de MAX_TIME_BETWEEN_CLICKS segundos, resetear el estado
-    if _zoom_state['is_zoomed_out'] and _zoom_state['timestamp']:
-        if current_time - _zoom_state['timestamp'] &gt; MAX_TIME_BETWEEN_CLICKS:
-            _zoom_state['is_zoomed_out'] = False
-            _zoom_state['zoom_level'] = None
-            _zoom_state['timestamp'] = None
-    
-    if not _zoom_state['is_zoomed_out']:
-        # Guardar zoom actual y timestamp
-        _zoom_state['zoom_level'] = nuke.zoom()
-        _zoom_state['timestamp'] = current_time
+    try:
+        selected_node = nuke.selectedNode()
+    except ValueError:
+        # Si no hay nodo seleccionado, simular click en el DAG antes de crear el NoOp
+        simulate_dag_click()
         
-        # Hacer zoom out a todo el DAG (deseleccionar todo primero)
-        nuke.selectAll()
-        nuke.invertSelection()
-        nuke.zoomToFitSelected()
-        _zoom_state['is_zoomed_out'] = True
+        # Crear un NoOp en la posición del cursor, pero más arriba para que el dot quede en la posición del cursor
+        no_op = nuke.createNode(&quot;NoOp&quot;)
         
-        # Mostrar mensaje de Zoom Out
-        show_message(&quot;Zoom Out&quot;)
+        # Ajustar la posición vertical del NoOp para que el dot quede cerca de donde estaba el cursor
+        no_op.setYpos(no_op.ypos() - distanciaY)
         
-    else:
-        # Obtener el widget bajo el cursor
-        widget = QApplication.widgetAt(QCursor.pos())
-        cursor_before = QCursor.pos()
-        
-        if widget:
-            # Simular un click completo (press y release) en el widget
-            local_pos = widget.mapFromGlobal(cursor_before)
-            
-            # Mouse press
-            press_event = QMouseEvent(QEvent.MouseButtonPress, 
-                                    local_pos,
-                                    Qt.LeftButton, 
-                                    Qt.LeftButton, 
-                                    Qt.NoModifier)
-            QApplication.sendEvent(widget, press_event)
-            
-            # Mouse release
-            release_event = QMouseEvent(QEvent.MouseButtonRelease, 
-                                      local_pos,
-                                      Qt.LeftButton, 
-                                      Qt.LeftButton, 
-                                      Qt.NoModifier)
-            QApplication.sendEvent(widget, release_event)
-            
-            # Crear un NoOp temporal
-            temp_node = nuke.createNode(&quot;NoOp&quot;, inpanel=False)
-            
-            # Obtener el centro del nodo temporal
-            xC = temp_node.xpos() + temp_node.screenWidth()/2
-            yC = temp_node.ypos() + temp_node.screenHeight()/2
-            
-            # Hacer zoom al nivel guardado usando el centro del nodo temporal
-            nuke.zoom(_zoom_state['zoom_level'], [xC, yC])
-            
-            # Eliminar el nodo temporal
-            nuke.delete(temp_node)
-            
-            # Resetear el estado
-            _zoom_state['is_zoomed_out'] = False
-            _zoom_state['timestamp'] = None
-            
-            # Mostrar mensaje de Zoom In
-            show_message(&quot;Zoom In&quot;)
+        selected_node = no_op
 
-class MiddleClickInterceptor(QtCore.QObject):
-    def __init__(self):
-        super().__init__()
-        self.start_pos = None  # Guarda la posición inicial del clic
+    debug_print(f&quot;Nodo seleccionado/creado: {selected_node.name()}&quot;)
 
-    def eventFilter(self, obj, event):
-        if event.type() == QtCore.QEvent.MouseButtonPress:
-            if event.button() == QtCore.Qt.MiddleButton:
-                self.start_pos = event.pos()  # Guarda la posición inicial del clic
-                return False  # Permitimos el evento para no bloquear el drag
+    pos_tolerance = 120  # Tolerancia para la posicion en X
+    current_node_center_x = selected_node.xpos() + (selected_node.screenWidth() / 2)
+    current_node_center_y = selected_node.ypos() + (selected_node.screenHeight() / 2)
 
-        elif event.type() == QtCore.QEvent.MouseButtonRelease:
-            if event.button() == QtCore.Qt.MiddleButton and self.start_pos:
-                end_pos = event.pos()  # Obtiene la posición final
-                distance = (end_pos - self.start_pos).manhattanLength()  # Calcula la distancia
+    # Buscar el primer nodo que este debajo del nodo seleccionado con una tolerancia en X
+    all_nodes = [n for n in nuke.allNodes() if n != selected_node and n.Class() != 'Root' and n.Class() != 'BackdropNode']
+    nodo_siguiente_en_columna = None
+    distMedia_NodoSiguiente = float('inf')
 
-                if distance &lt; 5:  # Si no hubo arrastre (clic normal)
-                    self.start_pos = None  # Reseteamos la posición inicial
+    for node in all_nodes:
+        node_center_x = node.xpos() + (node.screenWidth() / 2)
+        node_center_y = node.ypos() + (node.screenHeight() / 2)
 
-                    # 🔹 🔹 FORZAMOS QUE Qt PROCESE EL EVENTO DE LIBERACIÓN 🔹 🔹
-                    QtCore.QTimer.singleShot(10, self.force_mouse_release)
+        # Verifica si el nodo esta dentro de la tolerancia y en la direccion correcta (debajo del nodo actual)
+        if abs(node_center_x - current_node_center_x) &lt;= pos_tolerance and node_center_y &gt; current_node_center_y:
+            distance = node_center_y - current_node_center_y
+            if distance &gt; 0 and distance &lt; distMedia_NodoSiguiente:
+                distMedia_NodoSiguiente = distance
+                nodo_siguiente_en_columna = node
+                debug_print(f&quot;Nodo siguiente en la misma columna encontrado: {nodo_siguiente_en_columna.name()} a distancia {distMedia_NodoSiguiente}&quot;)
 
-                    # 🔹 🔹 EJECUTAMOS LA FUNCIÓN DE ZOOM EN LUGAR DEL MENSAJE 🔹 🔹
-                    QtCore.QTimer.singleShot(50, zoom_toggle)
+    # Ajuste de la distancia Y si es necesario
+    if distMedia_NodoSiguiente != float('inf'):
+        if distMedia_NodoSiguiente &lt; distanciaY * 2:
+            distanciaY = distMedia_NodoSiguiente / 2 - (dot_width / 2) - 6
+        debug_print(f&quot;Distancia Y ajustada a: {distanciaY}&quot;)
 
-                    return True  # Bloqueamos la acción original solo para clic sin drag
+    # Calcular la posicion Y del dot
+    new_y_pos = int(selected_node.ypos() + selected_node.screenHeight() + distanciaY)
+    debug_print(f&quot;Posicion Y del nuevo Dot: {new_y_pos}&quot;)
 
-                self.start_pos = None
-                return False  # Permitimos que el evento siga su curso normal
+    # Crear un nuevo nodo de Dot debajo del nodo seleccionado
+    dot_node = nuke.nodes.Dot()
 
-        return False  # Permitimos otros eventos
+    # Calcular la posicion X para centrar el Dot horizontalmente
+    dot_xpos = int(selected_node.xpos() + (selected_node.screenWidth() / 2) - (dot_width / 2))
 
-    def force_mouse_release(self):
-        &quot;&quot;&quot; Envía manualmente un evento de liberación del botón del medio. &quot;&quot;&quot;
-        widget = QtWidgets.QApplication.instance().widgetAt(QtGui.QCursor.pos())  # Obtiene el widget actual
-        if widget:
-            release_event = QtGui.QMouseEvent(
-                QtCore.QEvent.MouseButtonRelease,
-                QtGui.QCursor.pos(),  # Usa la posición actual del cursor
-                QtCore.Qt.MiddleButton,
-                QtCore.Qt.NoButton,
-                QtCore.Qt.NoModifier
-            )
-            QtWidgets.QApplication.sendEvent(widget, release_event)  # Envía el evento
+    # Establecer la nueva posicion del nodo Dot
+    dot_node.setXpos(dot_xpos)
+    dot_node.setYpos(new_y_pos)
 
-# Instalar el filtro en la aplicación de Nuke
-app = QtWidgets.QApplication.instance()
-if app:
-    interceptor = MiddleClickInterceptor()
-    app.installEventFilter(interceptor)
-</script><script></script>
+    # Conectar el nodo seleccionado al nodo de Dot
+    dot_node.setInput(0, selected_node)
+    debug_print(f&quot;Nuevo Dot creado y conectado al nodo seleccionado: {selected_node.name()}&quot;)
+
+    # Si hay un nodo siguiente en la columna, reconectarlo al dot
+    if nodo_siguiente_en_columna and selected_node in nodo_siguiente_en_columna.dependencies(nuke.INPUTS):
+        for i in range(nodo_siguiente_en_columna.inputs()):
+            if nodo_siguiente_en_columna.input(i) == selected_node:
+                nodo_siguiente_en_columna.setInput(i, dot_node)
+                debug_print(f&quot;Nodo siguiente en la columna conectado al nuevo Dot: {nodo_siguiente_en_columna.name()}&quot;)
+                break
+
+    # Crear un nuevo nodo de Dot a la izquierda del Dot recien creado
+    dot_side = nuke.nodes.Dot()
+    dot_side.setXpos(dot_node.xpos() + distanciaX)
+    dot_side.setYpos(dot_node.ypos())
+    dot_side.setInput(0, dot_node)
+    debug_print(f&quot;Nuevo Dot lateral creado y conectado al Dot principal&quot;)
+    
+    # Crear un nodo TimeOffset debajo del dot lateral
+    timeoffset = nuke.nodes.TimeOffset()
+    timeoffset.setXpos(dot_side.xpos() - (timeoffset.screenWidth() // 2) + (dot_width // 2))
+    timeoffset.setYpos(dot_side.ypos() + dot_side.screenHeight() + distanciaY_columna_lateral)
+    timeoffset.setInput(0, dot_side)
+    timeoffset['time_offset'].setValue(-1)
+    debug_print(f&quot;Nuevo TimeOffset creado y conectado al Dot lateral&quot;)
+    
+    # Crear un nodo Transform debajo del TimeOffset
+    transform = nuke.nodes.Transform()
+    transform.setXpos(timeoffset.xpos())
+    transform.setYpos(timeoffset.ypos() + timeoffset.screenHeight() + distanciaY_columna_lateral)
+    transform.setInput(0, timeoffset)
+    debug_print(f&quot;Nuevo Transform creado y conectado al TimeOffset&quot;)
+    
+    # Crear un dot debajo del Transform
+    dot_transform = nuke.nodes.Dot()
+    # Calcular la posición X para centrar el Dot horizontalmente respecto al Transform
+    dot_transform_xpos = int(transform.xpos() + (transform.screenWidth() / 2) - (dot_width / 2))
+    dot_transform.setXpos(dot_transform_xpos)
+    dot_transform.setYpos(transform.ypos() + transform.screenHeight() + distanciaY_columna_lateral)
+    dot_transform.setInput(0, transform)
+    debug_print(f&quot;Nuevo Dot creado debajo del Transform y conectado a él&quot;)
+
+    # Crear un nodo Merge debajo del dot principal
+    merge = nuke.nodes.Merge2()
+    
+    # Posicionar el Merge debajo del dot principal y alineado verticalmente con el último dot
+    merge.setXpos(dot_node.xpos() - (merge.screenWidth() // 2) + (dot_width // 2))
+    
+    # Calculamos la posición Y del Merge para alinear su centro con el centro del último dot
+    # Obtenemos el centro del dot_transform
+    dot_transform_center_y = dot_transform.ypos() + (dot_transform.screenHeight() // 2)
+    # Posicionamos el Merge para que su centro coincida con el centro del dot
+    merge.setYpos(dot_transform_center_y - (merge.screenHeight() // 2))
+    
+    # Configurar el nodo Merge
+    merge['operation'].setValue('mask')
+    merge['bbox'].setValue('A')
+    
+    # Conectar el dot principal al input B (input 0) del Merge
+    merge.setInput(0, dot_node)
+    # Conectar el último dot (debajo del Transform) al input A (input 1) del Merge
+    merge.setInput(1, dot_transform)
+    
+    debug_print(f&quot;Nuevo Merge creado y conectado al Dot principal en el input B y al último dot en el input A&quot;)
+    
+    # Eliminar el NoOp si fue creado
+    if no_op:
+        nuke.delete(no_op)
+        debug_print(&quot;NoOp temporal eliminado&quot;)
+
+gen_iteration()</script>
