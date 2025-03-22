@@ -222,6 +222,17 @@ icon_Knobs = _get_icon("TP_Knobs")
 n.addCommand("NODE BUILDS", lambda: None)
 n2.addCommand("NODE BUILDS", lambda: None)
 
+
+# Importar el LGA_build_iteration
+import LGA_build_iteration
+n.addCommand("  Create Iteration", "LGA_build_iteration.gen_iteration()", "shift+i", shortcutContext=2, icon=icon_Knobs)
+
+
+# Importar el LGA_build_Roto
+import LGA_build_Roto
+n.addCommand("  Create Roto Chain", "LGA_build_Roto.main()", "shift+o", shortcutContext=2, icon=icon_Knobs)
+
+
 # Importar el LGA_build_Merge
 import LGA_build_Merge
 n.addCommand("  Create Merge | Switch ops", "LGA_build_Merge.main()", "shift+m", shortcutContext=2, icon=icon_Knobs)
@@ -232,10 +243,6 @@ import LGA_build_Grade
 n.addCommand("  Create Grade | Mask", "LGA_build_Grade.gradeMask()", "shift+G", shortcutContext=2, icon=icon_Knobs)
 n.addCommand("  Create Grade | Highlights", "LGA_build_Grade.gradeHI()", "ctrl+shift+G", shortcutContext=2, icon=icon_Knobs)
 
-
-# Importar el LGA_build_iteration
-import LGA_build_iteration
-n.addCommand("  Create Iteration", "LGA_build_iteration.gen_iteration()", "shift+i", shortcutContext=2, icon=icon_Knobs)
 
 
 # Añadir sección KNOBS
