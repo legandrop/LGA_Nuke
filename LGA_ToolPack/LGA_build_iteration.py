@@ -1,16 +1,9 @@
 """
 __________________________________________________________
 
-  LGA_build_iteration v1.0 | 2024 | Lega   
-  Genera un dot debajo del nodo seleccionado y 
-  otro dot a la izquierda de ese dot.
-  Además crea un nodo Merge debajo del dot principal
-  conectando el dot al input B del Merge y el último dot
-  de la columna lateral al input A.
-  También crea un TimeOffset debajo del dot lateral
-  y un Transform debajo del TimeOffset.
-  Y un dot debajo del Transform.
-  El Merge queda alineado verticalmente con el último dot.
+  LGA_build_iteration v1.1 | 2024 | Lega   
+  Genera un arbol de nodos usado para generar variaciones
+  de una imagen.
   
   Si no hay nodo seleccionado, crea el árbol de nodos
   en la posición del cursor.
@@ -186,6 +179,18 @@ def gen_iteration():
     merge.setInput(1, dot_transform)
     
     debug_print(f"Nuevo Merge creado y conectado al Dot principal en el input B y al último dot en el input A")
+    
+    # Deseleccionar todos los nodos existentes
+    for n in nuke.allNodes():
+        n['selected'].setValue(False)
+    
+    # Al final de la función, seleccionar solo los nuevos nodos
+    dot_node['selected'].setValue(True)
+    dot_side['selected'].setValue(True)
+    timeoffset['selected'].setValue(True)
+    transform['selected'].setValue(True)
+    dot_transform['selected'].setValue(True)
+    merge['selected'].setValue(True)
     
     # Eliminar el NoOp si fue creado
     if no_op:
