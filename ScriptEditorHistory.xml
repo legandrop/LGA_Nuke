@@ -1,487 +1,267 @@
-<?xml version="1.0" encoding="UTF-8"?><script>import nuke
-from PySide2 import QtWidgets, QtCore, QtGui
+<?xml version="1.0" encoding="UTF-8"?><script>'''
+LGA_StickyNote.py - Script simple para mostrar un diálogo de entrada de texto
+'''
 
-class MiddleClickInterceptor(QtCore.QObject):
+import nuke
+from PySide2 import QtWidgets, QtGui, QtCore
+
+
+class StickyNote(QtWidgets.QDialog):
     def __init__(self):
-        super().__init__()
-        self.start_pos = None  # Guarda la posición inicial del clic
-
-    def eventFilter(self, obj, event):
-        if event.type() == QtCore.QEvent.MouseButtonPress:
-            if event.button() == QtCore.Qt.MiddleButton:
-                self.start_pos = event.pos()  # Guarda la posición inicial del clic
-                return False  # Permitimos el evento para no bloquear el drag
-
-        elif event.type() == QtCore.QEvent.MouseButtonRelease:
-            if event.button() == QtCore.Qt.MiddleButton and self.start_pos:
-                end_pos = event.pos()  # Obtiene la posición final
-                distance = (end_pos - self.start_pos).manhattanLength()  # Calcula la distancia
-
-                if distance &lt; 5:  # Si no hubo arrastre (clic normal)
-                    self.start_pos = None  # Reseteamos la posición inicial
-
-                    # 🔹 🔹 FORZAMOS QUE Qt PROCESE EL EVENTO DE LIBERACIÓN 🔹 🔹
-                    QtCore.QTimer.singleShot(10, self.force_mouse_release)
-
-                    # 🔹 🔹 MOSTRAMOS EL MENSAJE DESPUÉS DEL RELEASE 🔹 🔹
-                    QtCore.QTimer.singleShot(50, lambda: nuke.message(&quot;Ruedita del mouse apretada&quot;))
-
-                    return True  # Bloqueamos la acción original solo para clic sin drag
-
-                self.start_pos = None
-                return False  # Permitimos que el evento siga su curso normal
-
-        return False  # Permitimos otros eventos
-
-    def force_mouse_release(self):
-        &quot;&quot;&quot; Envía manualmente un evento de liberación del botón del medio. &quot;&quot;&quot;
-        widget = QtWidgets.QApplication.instance().widgetAt(QtGui.QCursor.pos())  # Obtiene el widget actual
-        if widget:
-            release_event = QtGui.QMouseEvent(
-                QtCore.QEvent.MouseButtonRelease,
-                QtGui.QCursor.pos(),  # Usa la posición actual del cursor
-                QtCore.Qt.MiddleButton,
-                QtCore.Qt.NoButton,
-                QtCore.Qt.NoModifier
-            )
-            QtWidgets.QApplication.sendEvent(widget, release_event)  # Envía el evento
-
-# Instalar el filtro en la aplicación de Nuke
-app = QtWidgets.QApplication.instance()
-if app:
-    interceptor = MiddleClickInterceptor()
-    app.installEventFilter(interceptor)
-&quot;&quot;&quot;
-__________________________________________________________
-
-  LGA_gen_iteration v1.0 | 2024 | Lega   
-  Genera un dot debajo del nodo seleccionado y 
-  otro dot a la izquierda de ese dot.
-  Además crea un nodo Merge debajo del dot principal
-  conectando el dot al input B del Merge y el último dot
-  de la columna lateral al input A.
-  También crea un TimeOffset debajo del dot lateral
-  y un Transform debajo del TimeOffset.
-  Y un dot debajo del Transform.
-  El Merge queda alineado verticalmente con el último dot.
-__________________________________________________________
-
-&quot;&quot;&quot;
-
-import nuke
-
-# Variable global para activar o desactivar los prints
-DEBUG = False
-
-def debug_print(message):
-    if DEBUG:
-        print(message)
-
-def gen_iteration():
-    # Distancia entre nodos
-    distanciaY = 70
-    distanciaY_columna_lateral = 30  # Distancia vertical entre nodos en la columna lateral
-    distanciaX = -140  # Distancia fija a la izquierda (versión lejana)
-    dot_width = int(nuke.toNode(&quot;preferences&quot;)['dot_node_scale'].value() * 12)
-
-    # Obtener el nodo seleccionado
-    try:
-        current_node = nuke.selectedNode()
-    except ValueError:
-        nuke.message(&quot;No node selected.&quot;)
-        debug_print(&quot;No node selected.&quot;)
-        return
-
-    debug_print(f&quot;Nodo seleccionado: {current_node.name()}&quot;)
-
-    pos_tolerance = 120  # Tolerancia para la posicion en X
-    current_node_center_x = current_node.xpos() + (current_node.screenWidth() / 2)
-    current_node_center_y = current_node.ypos() + (current_node.screenHeight() / 2)
-
-    # Buscar el primer nodo que este debajo del nodo seleccionado con una tolerancia en X
-    all_nodes = [n for n in nuke.allNodes() if n != current_node and n.Class() != 'Root' and n.Class() != 'BackdropNode']
-    nodo_siguiente_en_columna = None
-    distMedia_NodoSiguiente = float('inf')
-
-    for node in all_nodes:
-        node_center_x = node.xpos() + (node.screenWidth() / 2)
-        node_center_y = node.ypos() + (node.screenHeight() / 2)
-
-        # Verifica si el nodo esta dentro de la tolerancia y en la direccion correcta (debajo del nodo actual)
-        if abs(node_center_x - current_node_center_x) &lt;= pos_tolerance and node_center_y &gt; current_node_center_y:
-            distance = node_center_y - current_node_center_y
-            if distance &gt; 0 and distance &lt; distMedia_NodoSiguiente:
-                distMedia_NodoSiguiente = distance
-                nodo_siguiente_en_columna = node
-                debug_print(f&quot;Nodo siguiente en la misma columna encontrado: {nodo_siguiente_en_columna.name()} a distancia {distMedia_NodoSiguiente}&quot;)
-
-    # Ajuste de la distancia Y si es necesario
-    if distMedia_NodoSiguiente != float('inf'):
-        if distMedia_NodoSiguiente &lt; distanciaY * 2:
-            distanciaY = distMedia_NodoSiguiente / 2 - (dot_width / 2) - 6
-        debug_print(f&quot;Distancia Y ajustada a: {distanciaY}&quot;)
-
-    # Calcular la posicion Y del dot
-    new_y_pos = int(current_node.ypos() + current_node.screenHeight() + distanciaY)
-    debug_print(f&quot;Posicion Y del nuevo Dot: {new_y_pos}&quot;)
-
-    # Crear un nuevo nodo de Dot debajo del nodo seleccionado
-    dot_node = nuke.nodes.Dot()
-
-    # Calcular la posicion X para centrar el Dot horizontalmente
-    dot_xpos = int(current_node.xpos() + (current_node.screenWidth() / 2) - (dot_width / 2))
-
-    # Establecer la nueva posicion del nodo Dot
-    dot_node.setXpos(dot_xpos)
-    dot_node.setYpos(new_y_pos)
-
-    # Conectar el nodo seleccionado al nodo de Dot
-    dot_node.setInput(0, current_node)
-    debug_print(f&quot;Nuevo Dot creado y conectado al nodo seleccionado: {current_node.name()}&quot;)
-
-    # Si hay un nodo siguiente en la columna, reconectarlo al dot
-    if nodo_siguiente_en_columna and current_node in nodo_siguiente_en_columna.dependencies(nuke.INPUTS):
-        for i in range(nodo_siguiente_en_columna.inputs()):
-            if nodo_siguiente_en_columna.input(i) == current_node:
-                nodo_siguiente_en_columna.setInput(i, dot_node)
-                debug_print(f&quot;Nodo siguiente en la columna conectado al nuevo Dot: {nodo_siguiente_en_columna.name()}&quot;)
-                break
-
-    # Crear un nuevo nodo de Dot a la izquierda del Dot recien creado
-    dot_side = nuke.nodes.Dot()
-    dot_side.setXpos(dot_node.xpos() + distanciaX)
-    dot_side.setYpos(dot_node.ypos())
-    dot_side.setInput(0, dot_node)
-    debug_print(f&quot;Nuevo Dot lateral creado y conectado al Dot principal&quot;)
-    
-    # Crear un nodo TimeOffset debajo del dot lateral
-    timeoffset = nuke.nodes.TimeOffset()
-    timeoffset.setXpos(dot_side.xpos() - (timeoffset.screenWidth() // 2) + (dot_width // 2))
-    timeoffset.setYpos(dot_side.ypos() + dot_side.screenHeight() + distanciaY_columna_lateral)
-    timeoffset.setInput(0, dot_side)
-    timeoffset['time_offset'].setValue(-1)
-    debug_print(f&quot;Nuevo TimeOffset creado y conectado al Dot lateral&quot;)
-    
-    # Crear un nodo Transform debajo del TimeOffset
-    transform = nuke.nodes.Transform()
-    transform.setXpos(timeoffset.xpos())
-    transform.setYpos(timeoffset.ypos() + timeoffset.screenHeight() + distanciaY_columna_lateral)
-    transform.setInput(0, timeoffset)
-    debug_print(f&quot;Nuevo Transform creado y conectado al TimeOffset&quot;)
-    
-    # Crear un dot debajo del Transform
-    dot_transform = nuke.nodes.Dot()
-    # Calcular la posición X para centrar el Dot horizontalmente respecto al Transform
-    dot_transform_xpos = int(transform.xpos() + (transform.screenWidth() / 2) - (dot_width / 2))
-    dot_transform.setXpos(dot_transform_xpos)
-    dot_transform.setYpos(transform.ypos() + transform.screenHeight() + distanciaY_columna_lateral)
-    dot_transform.setInput(0, transform)
-    debug_print(f&quot;Nuevo Dot creado debajo del Transform y conectado a él&quot;)
-
-    # Crear un nodo Merge debajo del dot principal
-    merge = nuke.nodes.Merge2()
-    
-    # Posicionar el Merge debajo del dot principal y alineado verticalmente con el último dot
-    merge.setXpos(dot_node.xpos() - (merge.screenWidth() // 2) + (dot_width // 2))
-    
-    # Calculamos la posición Y del Merge para alinear su centro con el centro del último dot
-    # Obtenemos el centro del dot_transform
-    dot_transform_center_y = dot_transform.ypos() + (dot_transform.screenHeight() // 2)
-    # Posicionamos el Merge para que su centro coincida con el centro del dot
-    merge.setYpos(dot_transform_center_y - (merge.screenHeight() // 2))
-    
-    # Configurar el nodo Merge
-    merge['operation'].setValue('mask')
-    merge['bbox'].setValue('A')
-    
-    # Conectar el dot principal al input B (input 0) del Merge
-    merge.setInput(0, dot_node)
-    # Conectar el último dot (debajo del Transform) al input A (input 1) del Merge
-    merge.setInput(1, dot_transform)
-    
-    debug_print(f&quot;Nuevo Merge creado y conectado al Dot principal en el input B y al último dot en el input A&quot;)
-
-
-gen_iteration()&quot;&quot;&quot;
-__________________________________________________________
-
-  LGA_gen_iteration v1.0 | 2024 | Lega   
-  Genera un dot debajo del nodo seleccionado y 
-  otro dot a la izquierda de ese dot.
-  Además crea un nodo Merge debajo del dot principal
-  conectando el dot al input B del Merge y el último dot
-  de la columna lateral al input A.
-  También crea un TimeOffset debajo del dot lateral
-  y un Transform debajo del TimeOffset.
-  Y un dot debajo del Transform.
-  El Merge queda alineado verticalmente con el último dot.
-  
-  Si no hay nodo seleccionado, crea el árbol de nodos
-  en la posición del cursor.
-__________________________________________________________
-
-&quot;&quot;&quot;
-
-import nuke
-from PySide2.QtGui import QCursor, QMouseEvent
-from PySide2.QtWidgets import QApplication
-from PySide2.QtCore import Qt, QEvent, QPoint
-
-# Variable global para activar o desactivar los prints
-DEBUG = False
-
-def debug_print(message):
-    if DEBUG:
-        print(message)
-
-def simulate_dag_click():
-    &quot;&quot;&quot;Simula un click en el DAG en la posición actual del cursor&quot;&quot;&quot;
-    widget = QApplication.widgetAt(QCursor.pos())
-    if widget:
-        cursor_pos = QCursor.pos()
-        local_pos = widget.mapFromGlobal(cursor_pos)
+        super(StickyNote, self).__init__()
         
-        # Mouse press
-        press_event = QMouseEvent(QEvent.MouseButtonPress, 
-                                local_pos,
-                                Qt.LeftButton, 
-                                Qt.LeftButton, 
-                                Qt.NoModifier)
-        QApplication.sendEvent(widget, press_event)
+        self.text_edit = QtWidgets.QTextEdit()
+        self.text_edit.setAlignment(QtCore.Qt.AlignCenter)
+        self.title = QtWidgets.QLabel(&quot;&lt;b&gt;StickyNote&lt;/b&gt;&quot;)
+        self.title.setAlignment(QtCore.Qt.AlignCenter)
+        self.title.setStyleSheet(&quot;color: #AAAAAA;&quot;)
+
+        self.help = QtWidgets.QLabel('&lt;span style=&quot;font-size:7pt; color:#AAAAAA;&quot;&gt;Ctrl+Enter para confirmar&lt;/span&gt;')
+        self.help.setAlignment(QtCore.Qt.AlignCenter)
+
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addWidget(self.title)
+        self.layout.addWidget(self.text_edit)
+        self.layout.addWidget(self.help)
+        self.setLayout(self.layout)
+        self.resize(200, 150)
+        self.setStyleSheet(&quot;background-color: #242527;&quot;)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint)
+
+        self.text_edit.installEventFilter(self)
         
-        # Mouse release
-        release_event = QMouseEvent(QEvent.MouseButtonRelease, 
-                                  local_pos,
-                                  Qt.LeftButton, 
-                                  Qt.LeftButton, 
-                                  Qt.NoModifier)
-        QApplication.sendEvent(widget, release_event)
-
-def gen_iteration():
-    # Distancia entre nodos
-    distanciaY = 70
-    distanciaY_columna_lateral = 30  # Distancia vertical entre nodos en la columna lateral
-    distanciaX = -140  # Distancia fija a la izquierda (versión lejana)
-    dot_width = int(nuke.toNode(&quot;preferences&quot;)['dot_node_scale'].value() * 12)
-
-    # Obtener el nodo seleccionado
-    selected_node = None
-    no_op = None
+    def eventFilter(self, widget, event):
+        if isinstance(event, QtGui.QKeyEvent):
+            if event.key() == QtCore.Qt.Key_Return and event.modifiers() == QtCore.Qt.ControlModifier:
+                print(&quot;Texto ingresado:&quot;, self.text_edit.toPlainText())
+                self.close()
+                return True
+            elif event.key() == QtCore.Qt.Key_Escape:
+                print(&quot;Se presionó ESC para salir&quot;)
+                self.close()
+                return True
+        return False
     
-    try:
-        selected_node = nuke.selectedNode()
-    except ValueError:
-        # Si no hay nodo seleccionado, simular click en el DAG antes de crear el NoOp
-        simulate_dag_click()
+    def showEvent(self, event):
+        &quot;&quot;&quot;Se llama cuando el diálogo se muestra&quot;&quot;&quot;
+        super().showEvent(event)
+        self.activateWindow()  # Activar la ventana
+        self.raise_()          # Traer al frente
+        self.text_edit.setFocus()  # Dar foco al text_edit
+
+    def run(self):
+        # Usar QApplication.primaryScreen() en lugar de QDesktopWidget
+        cursor_pos = QtGui.QCursor.pos()
+        screen = QtWidgets.QApplication.primaryScreen()
+        avail_space = screen.availableGeometry()
         
-        # Crear un NoOp en la posición del cursor, pero más arriba para que el dot quede en la posición del cursor
-        no_op = nuke.createNode(&quot;NoOp&quot;)
+        posx = min(max(cursor_pos.x()-100, avail_space.left()), avail_space.right()-200)
+        posy = min(max(cursor_pos.y()-80, avail_space.top()), avail_space.bottom()-150)
         
-        # Ajustar la posición vertical del NoOp para que el dot quede cerca de donde estaba el cursor
-        no_op.setYpos(no_op.ypos() - distanciaY)
-        
-        selected_node = no_op
+        self.move(QtCore.QPoint(posx, posy))
+        self.text_edit.clear()
+        self.activateWindow()  # Asegurar que la ventana está activa
+        self.raise_()          # Traer al frente
+        self.text_edit.setFocus()
+        self.show()
 
-    debug_print(f&quot;Nodo seleccionado/creado: {selected_node.name()}&quot;)
 
-    pos_tolerance = 120  # Tolerancia para la posicion en X
-    current_node_center_x = selected_node.xpos() + (selected_node.screenWidth() / 2)
-    current_node_center_y = selected_node.ypos() + (selected_node.screenHeight() / 2)
-
-    # Buscar el primer nodo que este debajo del nodo seleccionado con una tolerancia en X
-    all_nodes = [n for n in nuke.allNodes() if n != selected_node and n.Class() != 'Root' and n.Class() != 'BackdropNode']
-    nodo_siguiente_en_columna = None
-    distMedia_NodoSiguiente = float('inf')
-
-    for node in all_nodes:
-        node_center_x = node.xpos() + (node.screenWidth() / 2)
-        node_center_y = node.ypos() + (node.screenHeight() / 2)
-
-        # Verifica si el nodo esta dentro de la tolerancia y en la direccion correcta (debajo del nodo actual)
-        if abs(node_center_x - current_node_center_x) &lt;= pos_tolerance and node_center_y &gt; current_node_center_y:
-            distance = node_center_y - current_node_center_y
-            if distance &gt; 0 and distance &lt; distMedia_NodoSiguiente:
-                distMedia_NodoSiguiente = distance
-                nodo_siguiente_en_columna = node
-                debug_print(f&quot;Nodo siguiente en la misma columna encontrado: {nodo_siguiente_en_columna.name()} a distancia {distMedia_NodoSiguiente}&quot;)
-
-    # Ajuste de la distancia Y si es necesario
-    if distMedia_NodoSiguiente != float('inf'):
-        if distMedia_NodoSiguiente &lt; distanciaY * 2:
-            distanciaY = distMedia_NodoSiguiente / 2 - (dot_width / 2) - 6
-        debug_print(f&quot;Distancia Y ajustada a: {distanciaY}&quot;)
-
-    # Calcular la posicion Y del dot
-    new_y_pos = int(selected_node.ypos() + selected_node.screenHeight() + distanciaY)
-    debug_print(f&quot;Posicion Y del nuevo Dot: {new_y_pos}&quot;)
-
-    # Crear un nuevo nodo de Dot debajo del nodo seleccionado
-    dot_node = nuke.nodes.Dot()
-
-    # Calcular la posicion X para centrar el Dot horizontalmente
-    dot_xpos = int(selected_node.xpos() + (selected_node.screenWidth() / 2) - (dot_width / 2))
-
-    # Establecer la nueva posicion del nodo Dot
-    dot_node.setXpos(dot_xpos)
-    dot_node.setYpos(new_y_pos)
-
-    # Conectar el nodo seleccionado al nodo de Dot
-    dot_node.setInput(0, selected_node)
-    debug_print(f&quot;Nuevo Dot creado y conectado al nodo seleccionado: {selected_node.name()}&quot;)
-
-    # Si hay un nodo siguiente en la columna, reconectarlo al dot
-    if nodo_siguiente_en_columna and selected_node in nodo_siguiente_en_columna.dependencies(nuke.INPUTS):
-        for i in range(nodo_siguiente_en_columna.inputs()):
-            if nodo_siguiente_en_columna.input(i) == selected_node:
-                nodo_siguiente_en_columna.setInput(i, dot_node)
-                debug_print(f&quot;Nodo siguiente en la columna conectado al nuevo Dot: {nodo_siguiente_en_columna.name()}&quot;)
-                break
-
-    # Crear un nuevo nodo de Dot a la izquierda del Dot recien creado
-    dot_side = nuke.nodes.Dot()
-    dot_side.setXpos(dot_node.xpos() + distanciaX)
-    dot_side.setYpos(dot_node.ypos())
-    dot_side.setInput(0, dot_node)
-    debug_print(f&quot;Nuevo Dot lateral creado y conectado al Dot principal&quot;)
-    
-    # Crear un nodo TimeOffset debajo del dot lateral
-    timeoffset = nuke.nodes.TimeOffset()
-    timeoffset.setXpos(dot_side.xpos() - (timeoffset.screenWidth() // 2) + (dot_width // 2))
-    timeoffset.setYpos(dot_side.ypos() + dot_side.screenHeight() + distanciaY_columna_lateral)
-    timeoffset.setInput(0, dot_side)
-    timeoffset['time_offset'].setValue(-1)
-    debug_print(f&quot;Nuevo TimeOffset creado y conectado al Dot lateral&quot;)
-    
-    # Crear un nodo Transform debajo del TimeOffset
-    transform = nuke.nodes.Transform()
-    transform.setXpos(timeoffset.xpos())
-    transform.setYpos(timeoffset.ypos() + timeoffset.screenHeight() + distanciaY_columna_lateral)
-    transform.setInput(0, timeoffset)
-    debug_print(f&quot;Nuevo Transform creado y conectado al TimeOffset&quot;)
-    
-    # Crear un dot debajo del Transform
-    dot_transform = nuke.nodes.Dot()
-    # Calcular la posición X para centrar el Dot horizontalmente respecto al Transform
-    dot_transform_xpos = int(transform.xpos() + (transform.screenWidth() / 2) - (dot_width / 2))
-    dot_transform.setXpos(dot_transform_xpos)
-    dot_transform.setYpos(transform.ypos() + transform.screenHeight() + distanciaY_columna_lateral)
-    dot_transform.setInput(0, transform)
-    debug_print(f&quot;Nuevo Dot creado debajo del Transform y conectado a él&quot;)
-
-    # Crear un nodo Merge debajo del dot principal
-    merge = nuke.nodes.Merge2()
-    
-    # Posicionar el Merge debajo del dot principal y alineado verticalmente con el último dot
-    merge.setXpos(dot_node.xpos() - (merge.screenWidth() // 2) + (dot_width // 2))
-    
-    # Calculamos la posición Y del Merge para alinear su centro con el centro del último dot
-    # Obtenemos el centro del dot_transform
-    dot_transform_center_y = dot_transform.ypos() + (dot_transform.screenHeight() // 2)
-    # Posicionamos el Merge para que su centro coincida con el centro del dot
-    merge.setYpos(dot_transform_center_y - (merge.screenHeight() // 2))
-    
-    # Configurar el nodo Merge
-    merge['operation'].setValue('mask')
-    merge['bbox'].setValue('A')
-    
-    # Conectar el dot principal al input B (input 0) del Merge
-    merge.setInput(0, dot_node)
-    # Conectar el último dot (debajo del Transform) al input A (input 1) del Merge
-    merge.setInput(1, dot_transform)
-    
-    debug_print(f&quot;Nuevo Merge creado y conectado al Dot principal en el input B y al último dot en el input A&quot;)
-    
-    # Eliminar el NoOp si fue creado
-    if no_op:
-        nuke.delete(no_op)
-        debug_print(&quot;NoOp temporal eliminado&quot;)
-
-gen_iteration()&quot;&quot;&quot;
-_____________________________________________________________________________
-
-  LGA_build_Roto v1.0 | 2024 | Lega  
-  
-  Crea nodos Roto, Blur y Dot conectados al input 1 del nodo seleccionado.
-  Requiere que haya un nodo seleccionado para funcionar.
-  Diseñado para añadir rápidamente máscaras a nodos existentes.
-_____________________________________________________________________________
-
-&quot;&quot;&quot;
-
-import nuke
-from PySide2.QtGui import QCursor, QMouseEvent
-from PySide2.QtWidgets import QApplication
-from PySide2.QtCore import Qt, QEvent, QPoint
-
-def get_common_variables():
-    distanciaY = 30  # Espacio libre entre nodos en la columna derecha
-    distanciaX = 130
-    dot_width = int(nuke.toNode(&quot;preferences&quot;)['dot_node_scale'].value() * 12)
-    return distanciaX, distanciaY, dot_width
-
-def get_selected_node():
-    try:
-        selected_node = nuke.selectedNode()
-        return selected_node
-    except ValueError:
-        return None
-
-def create_roto_chain():
-    &quot;&quot;&quot;Crea una cadena de nodos Roto, Blur y Dot conectada al nodo seleccionado&quot;&quot;&quot;
-    # Obtener las variables comunes
-    distanciaX, distanciaY, dot_width = get_common_variables()
-
-    # Obtener el nodo seleccionado
-    selected_node = get_selected_node()
-    
-    # Si no hay nodo seleccionado, no hacemos nada
-    if not selected_node:
-        nuke.message(&quot;Selecciona un nodo primero&quot;)
-        return
-    
-    # Deseleccionar todos los nodos existentes
-    for n in nuke.allNodes():
-        n.setSelected(False)
-
-    # Crear un Dot al lado del nodo seleccionado (a la misma altura)
-    dot_right = nuke.nodes.Dot()
-    dot_right.setXpos(selected_node.xpos() + distanciaX + (selected_node.screenWidth() // 2) - (dot_width // 2))
-    # Posicionamos el dot aproximadamente a la altura del centro del nodo seleccionado
-    dot_right.setYpos(selected_node.ypos() + (selected_node.screenHeight() // 2) - (dot_right.screenHeight() // 2))
-
-    # Crear un nodo Blur arriba del Dot
-    blur = nuke.nodes.Blur()
-    blur.setXpos(dot_right.xpos() - (blur.screenWidth() // 2) + (dot_width // 2))
-    blur.setYpos(dot_right.ypos() - blur.screenHeight() - distanciaY)
-    blur['channels'].setValue(&quot;alpha&quot;)
-    blur['size'].setValue(7)
-    blur['label'].setValue(&quot;[value size]&quot;)
-    
-    # Conectar el blur al dot
-    dot_right.setInput(0, blur)
-
-    # Crear un nodo Roto arriba del Blur
-    roto = nuke.nodes.Roto()
-    roto.setXpos(blur.xpos())
-    roto.setYpos(blur.ypos() - roto.screenHeight() - distanciaY)
-    
-    # Conectar el roto al blur
-    blur.setInput(0, roto)
-
-    # Abrir las propiedades del nodo Roto
-    nuke.show(roto)
-
-    # Conectar el dot al input 1 del nodo seleccionado
-    selected_node.setInput(1, dot_right)
-
-    # Al final de la función, seleccionar solo los nuevos nodos
-    roto['selected'].setValue(True)
-    blur['selected'].setValue(True)
-    dot_right['selected'].setValue(True)
+# Variables globales
+app = None
+sticky_note = None
 
 def main():
-    create_roto_chain()
+    &quot;&quot;&quot;Función principal para mostrar el diálogo de StickyNote.&quot;&quot;&quot;
+    global app, sticky_note
+    app = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    sticky_note = StickyNote()
+    sticky_note.run()
 
-# Ejecuta la funcion
-main()
+# Para uso en Nuke (no crea una nueva QApplication)
+def run_sticky_note():
+    &quot;&quot;&quot;Mostrar el StickyNote dentro de Nuke&quot;&quot;&quot;
+    global sticky_note
+    if sticky_note is None:
+        sticky_note = StickyNote()
+    sticky_note.run()
+
+# Ejecutar cuando se carga en Nuke
+run_sticky_note() import sys
+import os
+import importlib
+
+# Variable global para activar o desactivar los prints de depuración
+DEBUG = False
+
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+# Definir la ruta del script que quieres ejecutar
+ScriptPath = &quot;LGA_StickyNote.py&quot;
+
+def obtener_plugin_path(script_path):
+    &quot;&quot;&quot;
+    Determina la ruta del plugin dependiendo si es Hiero o Nuke.
+    - En Hiero: usa hiero.core.pluginPath()
+    - En Nuke: usa la ruta del script
+    &quot;&quot;&quot;
+    try:
+        import hiero.core
+        # Intentar obtener la ruta de plugins de Hiero
+        hiero_plugin_paths = hiero.core.pluginPath()
+        if isinstance(hiero_plugin_paths, (tuple, list)) and len(hiero_plugin_paths) &gt; 0:
+            return hiero_plugin_paths[0]
+        return hiero_plugin_paths
+    except (ImportError, NotImplementedError):
+        # Si no estamos en Hiero o pluginPath no está disponible, usar la ruta del script
+        return os.path.dirname(os.path.abspath(script_path))
+
+def ejecutar_script(script_path):
+    plugin_path = obtener_plugin_path(script_path)
+    
+    # Construir la ruta al directorio que contiene nuestro script
+    script_dir = os.path.join(plugin_path, os.path.dirname(script_path))
+    
+    # Normalizar la ruta
+    script_dir = os.path.normpath(script_dir)
+    
+    # Añadir el directorio al path de Python si no está ya
+    if script_dir not in sys.path:
+        sys.path.insert(0, script_dir)
+    
+    debug_print(&quot;Python path:&quot;, sys.path)
+    debug_print(&quot;Script directory:&quot;, script_dir)
+    debug_print(&quot;&quot;)
+    
+    # Obtener el nombre del módulo del script
+    module_name = os.path.splitext(os.path.basename(script_path))[0]
+    
+    try:
+        # Importar el módulo
+        debug_print(f&quot;Intentando importar el módulo: {module_name}&quot;)
+        module = importlib.import_module(module_name)
+        
+        # Recargar el módulo
+        debug_print(f&quot;Recargando el módulo: {module_name}&quot;)
+        module = importlib.reload(module)
+        
+        debug_print(f&quot;Módulo importado y recargado: {module}&quot;)
+        
+        # Si el módulo tiene una función main(), ejecutarla
+        if hasattr(module, 'main') and callable(module.main):
+            debug_print(&quot;Función main() encontrada. Ejecutando...&quot;)
+            module.main()
+        else:
+            debug_print(f&quot;El módulo {module_name} no tiene una función main() ejecutable.&quot;)
+            debug_print(&quot;Contenido del módulo:&quot;)
+            for attr in dir(module):
+                debug_print(f&quot;  {attr}&quot;)
+    except Exception as e:
+        debug_print(f&quot;Error al importar o ejecutar el módulo: {e}&quot;)
+        import traceback
+        traceback.print_exc()
+        
+        debug_print(f&quot;Asegúrate de que el archivo {os.path.basename(script_path)} está en {script_dir}&quot;)
+        
+        # Listar los contenidos del directorio para depuración
+        debug_print(&quot;Contenidos del directorio:&quot;)
+        try:
+            for root, dirs, files in os.walk(script_dir):
+                for file in files:
+                    debug_print(os.path.join(root, file))
+        except Exception as walk_error:
+            debug_print(f&quot;Error al listar el directorio: {walk_error}&quot;)
+
+# Ejecutar el script
+ejecutar_script(ScriptPath)
+import sys
+import os
+import importlib
+
+# Variable global para activar o desactivar los prints de depuración
+DEBUG = False
+
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+# Definir la ruta del script que quieres ejecutar
+ScriptPath = &quot;LGA_StickyNote.py&quot;
+
+def obtener_plugin_path(script_path):
+    &quot;&quot;&quot;
+    Determina la ruta del plugin dependiendo si es Hiero o Nuke.
+    - En Hiero: usa hiero.core.pluginPath()
+    - En Nuke: usa la ruta del script
+    &quot;&quot;&quot;
+    try:
+        import hiero.core
+        # Intentar obtener la ruta de plugins de Hiero
+        hiero_plugin_paths = hiero.core.pluginPath()
+        if isinstance(hiero_plugin_paths, (tuple, list)) and len(hiero_plugin_paths) &gt; 0:
+            return hiero_plugin_paths[0]
+        return hiero_plugin_paths
+    except (ImportError, NotImplementedError):
+        # Si no estamos en Hiero o pluginPath no está disponible, usar la ruta del script
+        return os.path.dirname(os.path.abspath(script_path))
+
+def ejecutar_script(script_path):
+    plugin_path = obtener_plugin_path(script_path)
+    
+    # Construir la ruta al directorio que contiene nuestro script
+    script_dir = os.path.join(plugin_path, os.path.dirname(script_path))
+    
+    # Normalizar la ruta
+    script_dir = os.path.normpath(script_dir)
+    
+    # Añadir el directorio al path de Python si no está ya
+    if script_dir not in sys.path:
+        sys.path.insert(0, script_dir)
+    
+    debug_print(&quot;Python path:&quot;, sys.path)
+    debug_print(&quot;Script directory:&quot;, script_dir)
+    debug_print(&quot;&quot;)
+    
+    # Obtener el nombre del módulo del script
+    module_name = os.path.splitext(os.path.basename(script_path))[0]
+    
+    try:
+        # Importar el módulo
+        debug_print(f&quot;Intentando importar el módulo: {module_name}&quot;)
+        module = importlib.import_module(module_name)
+        
+        # Recargar el módulo
+        debug_print(f&quot;Recargando el módulo: {module_name}&quot;)
+        module = importlib.reload(module)
+        
+        debug_print(f&quot;Módulo importado y recargado: {module}&quot;)
+        
+        # Si el módulo tiene una función main(), ejecutarla
+        if hasattr(module, 'main') and callable(module.main):
+            debug_print(&quot;Función main() encontrada. Ejecutando...&quot;)
+            module.main()
+        else:
+            debug_print(f&quot;El módulo {module_name} no tiene una función main() ejecutable.&quot;)
+            debug_print(&quot;Contenido del módulo:&quot;)
+            for attr in dir(module):
+                debug_print(f&quot;  {attr}&quot;)
+    except Exception as e:
+        debug_print(f&quot;Error al importar o ejecutar el módulo: {e}&quot;)
+        import traceback
+        traceback.print_exc()
+        
+        debug_print(f&quot;Asegúrate de que el archivo {os.path.basename(script_path)} está en {script_dir}&quot;)
+        
+        # Listar los contenidos del directorio para depuración
+        debug_print(&quot;Contenidos del directorio:&quot;)
+        try:
+            for root, dirs, files in os.walk(script_dir):
+                for file in files:
+                    debug_print(os.path.join(root, file))
+        except Exception as walk_error:
+            debug_print(f&quot;Error al listar el directorio: {walk_error}&quot;)
+
+# Ejecutar el script
+ejecutar_script(ScriptPath)
 </script>

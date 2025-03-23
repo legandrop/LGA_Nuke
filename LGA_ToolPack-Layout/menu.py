@@ -56,6 +56,11 @@ n.addSeparator()
 icon_LTPB = _get_icon("LTPB")
 
 
+# Importar el LGA_StickyNote
+import LGA_StickyNote
+n.addCommand ("  Create StickyNote", "LGA_StickyNote.run_sticky_note()", "Ctrl+Shift+n", shortcutContext=2, icon=icon_LTPB)
+
+
 # Importar el oz_backdrop
 nuke.pluginAddPath("./oz_backdrop")
 

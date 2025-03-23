@@ -1,88 +1,89 @@
-"""
-_____________________________________________________________________________
-
-  LGA_build_Roto v1.0 | 2024 | Lega  
-  
-  Crea nodos Roto, Blur y Dot conectados al input 1 del nodo seleccionado.
-  Requiere que haya un nodo seleccionado para funcionar.
-  Diseñado para añadir rápidamente máscaras a nodos existentes.
-_____________________________________________________________________________
-
-"""
+'''
+LGA_StickyNote.py - Script simple para mostrar un diálogo de entrada de texto
+'''
 
 import nuke
-from PySide2.QtGui import QCursor, QMouseEvent
-from PySide2.QtWidgets import QApplication
-from PySide2.QtCore import Qt, QEvent, QPoint
+from PySide2 import QtWidgets, QtGui, QtCore
 
-def get_common_variables():
-    distanciaY = 30  # Espacio libre entre nodos en la columna derecha
-    distanciaX = 130
-    dot_width = int(nuke.toNode("preferences")['dot_node_scale'].value() * 12)
-    return distanciaX, distanciaY, dot_width
 
-def get_selected_node():
-    try:
-        selected_node = nuke.selectedNode()
-        return selected_node
-    except ValueError:
-        return None
+class StickyNote(QtWidgets.QDialog):
+    def __init__(self):
+        super(StickyNote, self).__init__()
+        
+        self.text_edit = QtWidgets.QTextEdit()
+        self.text_edit.setAlignment(QtCore.Qt.AlignCenter)
+        self.title = QtWidgets.QLabel("<b>StickyNote</b>")
+        self.title.setAlignment(QtCore.Qt.AlignCenter)
+        self.title.setStyleSheet("color: #AAAAAA;")
 
-def create_roto_chain():
-    """Crea una cadena de nodos Roto, Blur y Dot conectada al nodo seleccionado"""
-    # Obtener las variables comunes
-    distanciaX, distanciaY, dot_width = get_common_variables()
+        self.help = QtWidgets.QLabel('<span style="font-size:7pt; color:#AAAAAA;">Ctrl+Enter para confirmar</span>')
+        self.help.setAlignment(QtCore.Qt.AlignCenter)
 
-    # Obtener el nodo seleccionado
-    selected_node = get_selected_node()
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addWidget(self.title)
+        self.layout.addWidget(self.text_edit)
+        self.layout.addWidget(self.help)
+        self.setLayout(self.layout)
+        self.resize(200, 150)
+        self.setStyleSheet("background-color: #242527;")
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint)
+
+        self.text_edit.installEventFilter(self)
+        
+    def eventFilter(self, widget, event):
+        if isinstance(event, QtGui.QKeyEvent):
+            if event.key() == QtCore.Qt.Key_Return and event.modifiers() == QtCore.Qt.ControlModifier:
+                print("Texto ingresado:", self.text_edit.toPlainText())
+                self.close()
+                return True
+            elif event.key() == QtCore.Qt.Key_Escape:
+                print("Se presionó ESC para salir")
+                self.close()
+                return True
+        return False
     
-    # Si no hay nodo seleccionado, no hacemos nada
-    if not selected_node:
-        nuke.message("Selecciona un nodo primero")
-        return
-    
-    # Deseleccionar todos los nodos existentes
-    for n in nuke.allNodes():
-        n.setSelected(False)
+    def showEvent(self, event):
+        """Se llama cuando el diálogo se muestra"""
+        super().showEvent(event)
+        self.activateWindow()  # Activar la ventana
+        self.raise_()          # Traer al frente
+        self.text_edit.setFocus()  # Dar foco al text_edit
 
-    # Crear un Dot al lado del nodo seleccionado (a la misma altura)
-    dot_right = nuke.nodes.Dot()
-    dot_right.setXpos(selected_node.xpos() + distanciaX + (selected_node.screenWidth() // 2) - (dot_width // 2))
-    # Posicionamos el dot aproximadamente a la altura del centro del nodo seleccionado
-    dot_right.setYpos(selected_node.ypos() + (selected_node.screenHeight() // 2) - (dot_right.screenHeight() // 2))
+    def run(self):
+        # Usar QApplication.primaryScreen() en lugar de QDesktopWidget
+        cursor_pos = QtGui.QCursor.pos()
+        screen = QtWidgets.QApplication.primaryScreen()
+        avail_space = screen.availableGeometry()
+        
+        posx = min(max(cursor_pos.x()-100, avail_space.left()), avail_space.right()-200)
+        posy = min(max(cursor_pos.y()-80, avail_space.top()), avail_space.bottom()-150)
+        
+        self.move(QtCore.QPoint(posx, posy))
+        self.text_edit.clear()
+        self.activateWindow()  # Asegurar que la ventana está activa
+        self.raise_()          # Traer al frente
+        self.text_edit.setFocus()
+        self.show()
 
-    # Crear un nodo Blur arriba del Dot
-    blur = nuke.nodes.Blur()
-    blur.setXpos(dot_right.xpos() - (blur.screenWidth() // 2) + (dot_width // 2))
-    blur.setYpos(dot_right.ypos() - blur.screenHeight() - distanciaY)
-    blur['channels'].setValue("alpha")
-    blur['size'].setValue(7)
-    blur['label'].setValue("[value size]")
-    
-    # Conectar el blur al dot
-    dot_right.setInput(0, blur)
 
-    # Crear un nodo Roto arriba del Blur
-    roto = nuke.nodes.Roto()
-    roto.setXpos(blur.xpos())
-    roto.setYpos(blur.ypos() - roto.screenHeight() - distanciaY)
-    
-    # Conectar el roto al blur
-    blur.setInput(0, roto)
-
-    # Abrir las propiedades del nodo Roto
-    nuke.show(roto)
-
-    # Conectar el dot al input 1 del nodo seleccionado
-    selected_node.setInput(1, dot_right)
-
-    # Al final de la función, seleccionar solo los nuevos nodos
-    roto['selected'].setValue(True)
-    blur['selected'].setValue(True)
-    dot_right['selected'].setValue(True)
+# Variables globales
+app = None
+sticky_note = None
 
 def main():
-    create_roto_chain()
+    """Función principal para mostrar el diálogo de StickyNote."""
+    global app, sticky_note
+    app = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    sticky_note = StickyNote()
+    sticky_note.run()
 
-# Ejecuta la funcion
-main()
+# Para uso en Nuke (no crea una nueva QApplication)
+def run_sticky_note():
+    """Mostrar el StickyNote dentro de Nuke"""
+    global sticky_note
+    if sticky_note is None:
+        sticky_note = StickyNote()
+    sticky_note.run()
+
+# Ejecutar cuando se carga en Nuke
+run_sticky_note() 
