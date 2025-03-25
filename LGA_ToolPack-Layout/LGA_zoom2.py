@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_zoom v2 | 2024 | Lega  
+  LGA_zoom v2.01 | 2025 | Lega  
   
   Alterna entre el zoom actual y un zoom que muestra todo el DAG.
   Permite volver al nivel de zoom anterior usando la posición del cursor
@@ -257,14 +257,6 @@ def install_middle_click_interceptor():
             _interceptor = MiddleClickInterceptor()
             app.installEventFilter(_interceptor)
             
-            # Mensaje de depuración (puedes eliminarlo después)
-            print("Zoom MiddleClick interceptor instalado correctamente")
-            
-            # También puedes mostrar un mensaje flotante para confirmar
-            try:
-                show_message("MiddleClick Zoom Activado")
-            except:
-                pass
 
 def onScriptLoad():
     """Función que se ejecuta cuando Nuke ha cargado completamente el script"""
