@@ -67,6 +67,10 @@ import LGA_writePresets
 n.addCommand ("  Write Presets", "LGA_writePresets.main()", "shift+w", shortcutContext=2, icon=icon_RnW)
 
 
+# Importar el LGA_Write_Focus
+import LGA_Write_Focus
+n.addCommand ("  Write Pub Focus", "LGA_Write_Focus.main()", "ctrl+alt+shift+w", shortcutContext=2, icon=icon_RnW)
+
 
 # Importar el LGA_Render_Complete y el LGA_Write_SendMail
 import LGA_Render_Complete
