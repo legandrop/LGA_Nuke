@@ -264,4 +264,447 @@ def ejecutar_script(script_path):
 
 # Ejecutar el script
 ejecutar_script(ScriptPath)
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+&quot;&quot;&quot;
+LGA_NKS_Trim_In v1.0
+Script para recortar el material antes del playhead en clips seleccionados.
+El clip se recorta tanto en el source como en el timeline, eliminando los frames antes del playhead
+y manteniendo la relación 1:1 para evitar retimes.
+Si el playhead está antes del inicio del clip, extiende el clip hasta el límite mínimo posible.
+&quot;&quot;&quot;
+
+import hiero.core
+import hiero.ui
+from PySide2.QtWidgets import QAction
+from PySide2.QtGui import QIcon
+
+# Configurar depuración
+DEBUG = True
+
+def debug_print(message):
+    &quot;&quot;&quot;Imprime mensajes de depuración si DEBUG está activado.&quot;&quot;&quot;
+    if DEBUG:
+        print(message)
+
+def print_clip_properties(clip):
+    &quot;&quot;&quot;Imprime todas las propiedades relevantes de un clip para debugging.&quot;&quot;&quot;
+    if not DEBUG:
+        return
+    
+    try:
+        # Información sobre el clip en el timeline
+        debug_print(&quot;\n=== PROPIEDADES DEL CLIP ===&quot;)
+        debug_print(f&quot;Nombre: {clip.name()}&quot;)
+        debug_print(f&quot;Timeline In: {clip.timelineIn()}&quot;)
+        debug_print(f&quot;Timeline Out: {clip.timelineOut()}&quot;)
+        debug_print(f&quot;Timeline Duration: {clip.duration()}&quot;)
+        
+        # Información sobre el source del clip
+        debug_print(f&quot;Source In: {clip.sourceIn()}&quot;)
+        debug_print(f&quot;Source Out: {clip.sourceOut()}&quot;)
+        debug_print(f&quot;Source Duration: {clip.sourceDuration()}&quot;)
+        
+        # Obtener el source item (MediaSource)
+        source_item = clip.source()
+        if source_item:
+            debug_print(f&quot;Media Source: {source_item.name()}&quot;)
+            debug_print(f&quot;Media File Path: {source_item.mediaSource().fileinfos()[0].filename()}&quot;)
+            debug_print(f&quot;Media Duration: {source_item.duration()}&quot;)
+            debug_print(f&quot;Media Start Time: {source_item.sourceIn()}&quot;)
+            debug_print(f&quot;Media End Time: {source_item.sourceOut()}&quot;)
+            
+        # Información sobre el playback speed
+        debug_print(f&quot;Playback Speed: {clip.playbackSpeed()}&quot;)
+        
+        # Espacio adicional para separar clips
+        debug_print(&quot;=============================\n&quot;)
+    except Exception as e:
+        debug_print(f&quot;Error al imprimir propiedades del clip: {e}&quot;)
+
+class TrimInToPlayhead:
+    &quot;&quot;&quot;
+    Clase para manejar el recorte del material antes del playhead en el timeline de Nuke Studio (Hiero).
+    &quot;&quot;&quot;
+    
+    def __init__(self):
+        &quot;&quot;&quot;Inicializa el objeto y crea las acciones del menú.&quot;&quot;&quot;
+        self.setup_actions()
+    
+    def setup_actions(self):
+        &quot;&quot;&quot;Configura las acciones del menú.&quot;&quot;&quot;
+        self.trim_in_action = QAction(&quot;Trim In to Playhead&quot;, None)
+        self.trim_in_action.triggered.connect(self.trim_in_to_playhead)
+        
+        # Registrar acción en el menú Timeline
+        hiero.core.events.registerInterest(&quot;kShowContextMenu/kTimeline&quot;, self.timeline_context_menu)
+        
+        # También podemos agregar un atajo de teclado si es necesario
+        # self.trim_in_action.setShortcut(&quot;Ctrl+T&quot;)
+    
+    def timeline_context_menu(self, event):
+        &quot;&quot;&quot;Añade nuestra acción al menú contextual del timeline.&quot;&quot;&quot;
+        contextMenu = event.menu
+        contextMenu.addAction(self.trim_in_action)
+    
+    def check_for_overlapping_items(self, track, current_item, new_in):
+        &quot;&quot;&quot;
+        Verifica si hay clips que se superpondrían con el nuevo in point.
+        
+        Args:
+            track: La pista donde está el clip
+            current_item: El clip actual que estamos modificando
+            new_in: El nuevo valor de in point
+            
+        Returns:
+            bool: True si hay superposición, False si no
+        &quot;&quot;&quot;
+        try:
+            # Aseguramos que new_in sea un entero
+            new_in = int(new_in)
+            
+            items = track.items()
+            for item in items:
+                if item != current_item:  # No comparar con el mismo clip
+                    # Verifica si el nuevo in point superpondría con el final del clip anterior
+                    if item.timelineIn() &lt; new_in and new_in &lt;= item.timelineOut():
+                        debug_print(f&quot;Superposición detectada con clip: {item.name()} ({item.timelineIn()}-{item.timelineOut()})&quot;)
+                        return True
+            return False
+        except Exception as e:
+            debug_print(f&quot;Error al verificar superposiciones: {e}&quot;)
+            return False
+    
+    def get_min_possible_timeline_in(self, clip):
+        &quot;&quot;&quot;
+        Calcula el mínimo in point posible teniendo en cuenta:
+        1. El media source (duración del archivo)
+        2. El clip anterior en la misma pista (para evitar superposiciones)
+        
+        Args:
+            clip: El clip que estamos analizando
+            
+        Returns:
+            int: El mínimo valor posible para timeline in
+        &quot;&quot;&quot;
+        try:
+            # Obtenemos información del timeline
+            timeline_in = clip.timelineIn()
+            timeline_out = clip.timelineOut()
+            source_in = clip.sourceIn()
+            source_out = clip.sourceOut()
+            
+            # Obtenemos información del media source
+            source_item = clip.source()
+            if not source_item:
+                debug_print(&quot;No se pudo obtener el source item del clip&quot;)
+                return None
+                
+            # Obtenemos los límites del media source
+            media_start = source_item.sourceIn()  # Típicamente 1001 para secuencias EXR
+            media_end = source_item.sourceOut()
+            
+            # Calculamos cuántos frames hay disponibles en el source antes del source_in actual
+            available_source_frames_before = source_in - 0  # source_in actual menos el mínimo posible (0)
+            
+            # El mínimo in point en el timeline, respetando los límites del media source
+            # Convertimos a entero para evitar problemas con valores flotantes
+            min_in_media = int(timeline_in - available_source_frames_before)
+            
+            debug_print(f&quot;Cálculo de límite de media:&quot;)
+            debug_print(f&quot;  - Media Start: {media_start}&quot;)
+            debug_print(f&quot;  - Media End: {media_end}&quot;)
+            debug_print(f&quot;  - Source In: {source_in}&quot;)
+            debug_print(f&quot;  - Available Source Frames Before: {available_source_frames_before}&quot;)
+            debug_print(f&quot;  - Timeline In: {timeline_in}&quot;)
+            debug_print(f&quot;  - Mínimo Timeline In basado en media: {min_in_media}&quot;)
+            
+            # Ahora verificamos si hay clips antes que limitarían la extensión
+            parent_track = clip.parent()
+            track_items = parent_track.items()
+            
+            # Ordenamos los items por su posición en el timeline
+            sorted_items = sorted(track_items, key=lambda x: x.timelineIn())
+            
+            # Buscamos el índice del clip actual
+            current_index = sorted_items.index(clip)
+            
+            # Verificamos si hay un clip antes de éste
+            min_in_prev_clip = None
+            if current_index &gt; 0:
+                prev_clip = sorted_items[current_index - 1]
+                # El límite sería el final del clip anterior
+                min_in_prev_clip = prev_clip.timelineOut()
+                debug_print(f&quot;  - Clip anterior: {prev_clip.name()} termina en frame {min_in_prev_clip}&quot;)
+            
+            # Determinar el límite final
+            if min_in_prev_clip is not None:
+                min_in = max(min_in_media, min_in_prev_clip)
+                debug_print(f&quot;  - Límite final (mayor entre media y clip anterior): {min_in}&quot;)
+            else:
+                min_in = min_in_media
+                debug_print(f&quot;  - Límite final (solo basado en media): {min_in}&quot;)
+                
+            return min_in
+            
+        except Exception as e:
+            debug_print(f&quot;Error al calcular el mínimo in point: {e}&quot;)
+            import traceback
+            debug_print(traceback.format_exc())
+            return None
+    
+    def extend_clip_to_minimum(self, clip, target_frame):
+        &quot;&quot;&quot;
+        Extiende el inicio del clip hasta un frame específico.
+        
+        Args:
+            clip: El clip a extender
+            target_frame: El frame objetivo para el nuevo in point
+            
+        Returns:
+            bool: True si la extensión fue exitosa, False en caso contrario
+        &quot;&quot;&quot;
+        try:
+            # Aseguramos que target_frame sea un entero
+            target_frame = int(target_frame)
+            
+            # Obtenemos los valores actuales
+            timeline_in = clip.timelineIn()
+            source_in = clip.sourceIn()
+            
+            # Calculamos la diferencia entre el actual in y el nuevo in
+            frame_difference = timeline_in - target_frame
+            
+            # Calculamos el nuevo source in
+            new_source_in = float(source_in) - float(frame_difference)
+            
+            # Comprobamos que no sea negativo
+            if new_source_in &lt; 0:
+                debug_print(f&quot;El nuevo source in sería negativo ({new_source_in}). Ajustando a 0.&quot;)
+                new_source_in = 0
+                # Recalculamos el target_frame basado en el nuevo source_in
+                target_frame = int(timeline_in - (source_in - new_source_in))
+            
+            # Establecemos el nuevo source in
+            clip.setSourceIn(new_source_in)
+            
+            # Establecemos el nuevo timeline in
+            clip.setTimelineIn(target_frame)
+            
+            # Imprimimos información sobre el ajuste
+            debug_print(f&quot;Clip extendido: {clip.name()}&quot;)
+            debug_print(f&quot;  - Timeline IN: {timeline_in} -&gt; {target_frame} (diferencia: {frame_difference})&quot;)
+            debug_print(f&quot;  - Source IN: {source_in} -&gt; {new_source_in}&quot;)
+            debug_print(f&quot;  - Nota: El playhead estaba antes del clip. Se ha extendido al mínimo posible.&quot;)
+            
+            return True
+            
+        except RuntimeError as re:
+            error_msg = str(re)
+            debug_print(f&quot;Error de runtime al extender clip: {error_msg}&quot;)
+            return False
+            
+        except TypeError as te:
+            error_msg = str(te)
+            debug_print(f&quot;Error de tipo al extender clip: {error_msg}&quot;)
+            debug_print(f&quot;  - Target frame (tipo: {type(target_frame)}): {target_frame}&quot;)
+            return False
+            
+        except OverflowError as oe:
+            error_msg = str(oe)
+            debug_print(f&quot;Error de overflow al extender clip: {error_msg}&quot;)
+            debug_print(f&quot;  - Target frame (tipo: {type(target_frame)}): {target_frame}&quot;)
+            return False
+            
+        except Exception as e:
+            debug_print(f&quot;Error inesperado al extender clip: {e}&quot;)
+            import traceback
+            debug_print(traceback.format_exc())
+            return False
+    
+    def trim_material_to_playhead(self, clip, playhead_frame):
+        &quot;&quot;&quot;
+        Recorta el material del clip a partir del playhead.
+        Ajusta tanto el source in como el timeline in para mantener la relación 1:1.
+        
+        Args:
+            clip: El clip a recortar
+            playhead_frame: La posición del playhead
+            
+        Returns:
+            bool: True si el recorte fue exitoso, False en caso contrario
+        &quot;&quot;&quot;
+        try:
+            # Obtenemos los valores actuales
+            timeline_in = clip.timelineIn()
+            timeline_out = clip.timelineOut()
+            source_in = clip.sourceIn()
+            source_out = clip.sourceOut()
+            
+            # Si el playhead está después del final del clip, no hacemos nada
+            if playhead_frame &gt;= timeline_out:
+                debug_print(f&quot;El playhead ({playhead_frame}) está después del final del clip {clip.name()} ({timeline_out})&quot;)
+                return False
+            
+            # Calculamos cuántos frames debemos recortar desde el inicio
+            frames_to_trim = playhead_frame - timeline_in
+            
+            # Calculamos los nuevos valores
+            new_source_in = source_in + frames_to_trim
+            new_timeline_in = playhead_frame
+            
+            # Verificamos que no estemos tratando de ir más allá de los límites del source
+            if new_source_in &gt;= source_out:
+                debug_print(f&quot;El recorte excedería los límites del source. No se puede recortar.&quot;)
+                return False
+            
+            # Guardamos los valores por si necesitamos revertir el cambio
+            original_timeline_in = timeline_in
+            original_source_in = source_in
+            
+            try:
+                # Primero establecemos el nuevo source in
+                clip.setSourceIn(new_source_in)
+                
+                # Luego el nuevo timeline in
+                clip.setTimelineIn(new_timeline_in)
+                
+            except Exception as e:
+                # Si algo sale mal, intentamos revertir los cambios
+                debug_print(f&quot;Error durante el recorte: {e}. Intentando revertir cambios...&quot;)
+                try:
+                    clip.setSourceIn(original_source_in)
+                    clip.setTimelineIn(original_timeline_in)
+                except:
+                    debug_print(&quot;No se pudieron revertir los cambios.&quot;)
+                return False
+            
+            # Imprimimos información sobre el ajuste
+            debug_print(f&quot;Clip recortado: {clip.name()}&quot;)
+            debug_print(f&quot;  - Timeline IN: {timeline_in} -&gt; {new_timeline_in} (recortado {frames_to_trim} frames)&quot;)
+            debug_print(f&quot;  - Source IN: {source_in} -&gt; {new_source_in} (recortado {frames_to_trim} frames)&quot;)
+            debug_print(f&quot;  - Frames recortados: {frames_to_trim}&quot;)
+            
+            return True
+            
+        except RuntimeError as re:
+            error_msg = str(re)
+            debug_print(f&quot;Error de runtime al recortar clip: {error_msg}&quot;)
+            return False
+            
+        except TypeError as te:
+            error_msg = str(te)
+            debug_print(f&quot;Error de tipo al recortar clip: {error_msg}&quot;)
+            return False
+            
+        except Exception as e:
+            debug_print(f&quot;Error inesperado al recortar clip: {e}&quot;)
+            import traceback
+            debug_print(traceback.format_exc())
+            return False
+    
+    def trim_in_to_playhead(self):
+        &quot;&quot;&quot;
+        Recorta el material antes del playhead en clips seleccionados.
+        Ajusta tanto el source como el timeline para mantener la relación 1:1.
+        Si el playhead está antes del inicio del clip, extiende el clip hasta el límite mínimo posible.
+        &quot;&quot;&quot;
+        seq = hiero.ui.activeSequence()
+        if not seq:
+            debug_print(&quot;\nNo se encontró una secuencia activa.&quot;)
+            return
+            
+        te = hiero.ui.getTimelineEditor(seq)
+        selected_clips = te.selection()
+        
+        current_viewer = hiero.ui.currentViewer()
+        player = current_viewer.player() if current_viewer else None
+        playhead_frame = player.time() if player else None
+
+        if not selected_clips:
+            debug_print(&quot;No hay clips seleccionados.&quot;)
+            return
+            
+        if playhead_frame is None:
+            debug_print(&quot;Posición del playhead no disponible.&quot;)
+            return
+        
+        debug_print(f&quot;Posición del playhead: {playhead_frame}&quot;)
+        
+        for clip in selected_clips:
+            try:
+                # Imprimimos las propiedades del clip para debugging
+                debug_print(&quot;\nPROPIEDADES ANTES DEL RECORTE:&quot;)
+                print_clip_properties(clip)
+                
+                # Obtenemos los valores actuales del timeline
+                timeline_in = clip.timelineIn()
+                timeline_out = clip.timelineOut()
+                
+                # Comprobamos si el playhead está antes del inicio del clip
+                if playhead_frame &lt; timeline_in:
+                    debug_print(f&quot;El playhead ({playhead_frame}) está antes del inicio del clip {clip.name()} ({timeline_in})&quot;)
+                    
+                    # Calculamos el mínimo in point posible
+                    min_in = self.get_min_possible_timeline_in(clip)
+                    
+                    if min_in is None:
+                        debug_print(&quot;No se pudo determinar el mínimo in point posible.&quot;)
+                        continue
+                    
+                    # Determinamos el frame objetivo para la extensión
+                    target_frame = playhead_frame
+                    
+                    # Si el playhead está antes del límite mínimo, ajustamos al mínimo
+                    if playhead_frame &lt; min_in:
+                        target_frame = int(min_in)  # Aseguramos que sea entero
+                        debug_print(f&quot;El playhead ({playhead_frame}) está antes del límite mínimo ({min_in}). Se ajustará al mínimo.&quot;)
+                    
+                    # Verificamos si hay superposición con otro clip en el frame objetivo
+                    parent_track = clip.parent()
+                    if self.check_for_overlapping_items(parent_track, clip, target_frame):
+                        debug_print(f&quot;No se puede extender: causaría superposición con otro clip&quot;)
+                        continue
+                    
+                    # Extendemos el clip hacia atrás
+                    success = self.extend_clip_to_minimum(clip, target_frame)
+                    if success:
+                        # Imprimimos las propiedades actualizadas
+                        debug_print(&quot;\nPROPIEDADES DESPUÉS DE LA EXTENSIÓN:&quot;)
+                        print_clip_properties(clip)
+                    
+                # Si el playhead está dentro del clip, recortamos normalmente
+                elif playhead_frame &lt; timeline_out:
+                    # Recortamos el material
+                    success = self.trim_material_to_playhead(clip, playhead_frame)
+                    if success:
+                        # Imprimimos las propiedades actualizadas
+                        debug_print(&quot;\nPROPIEDADES DESPUÉS DEL RECORTE:&quot;)
+                        print_clip_properties(clip)
+                    else:
+                        debug_print(f&quot;No se pudo recortar el clip {clip.name()}&quot;)
+                
+                # Si el playhead está después del final del clip, no hacemos nada
+                else:
+                    debug_print(f&quot;El playhead ({playhead_frame}) está después del final del clip {clip.name()} ({timeline_out})&quot;)
+                
+            except Exception as e:
+                debug_print(f&quot;Error al procesar el clip: {e}&quot;)
+                import traceback
+                debug_print(traceback.format_exc())
+
+# Instanciar la clase cuando se importa el módulo
+trim_tool = TrimInToPlayhead()
+
+# Función para testing/depuración
+def test_trim_in():
+    &quot;&quot;&quot;Función de prueba para ejecutar manualmente desde la consola de Python.&quot;&quot;&quot;
+    trimmer = TrimInToPlayhead()
+    trimmer.trim_in_to_playhead()
+    return &quot;Test completado&quot;
+
+# Para poder ejecutar la función desde la consola de Python directamente
+if __name__ == &quot;__main__&quot;:
+    test_trim_in()
 </script>
