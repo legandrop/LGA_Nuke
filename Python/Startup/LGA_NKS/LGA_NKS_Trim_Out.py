@@ -2,10 +2,13 @@
 # -*- coding: utf-8 -*-
 
 """
-LGA_NKS_Trim_Out v1.0
-Script para cortar el punto de salida de clips seleccionados en la posición del playhead.
-Modifica tanto el Source Out como el Destination Out para evitar crear retimes.
-Si el playhead excede los límites, se ajusta al máximo posible automáticamente.
+_____________________________________________________________________________________________________
+
+  LGA_NKS_Trim_Out v1.0 - 2025 - Lega
+  Script para cortar el punto de salida de clips seleccionados en la posición del playhead.
+  Modifica tanto el Source Out como el Destination Out para evitar crear retimes.
+  Si el playhead excede los límites, se ajusta al máximo posible automáticamente.
+_____________________________________________________________________________________________________
 """
 
 import hiero.core

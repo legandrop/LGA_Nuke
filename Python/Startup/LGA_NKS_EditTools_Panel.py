@@ -1,7 +1,7 @@
 """
 _________________________________________
 
-  LGA_EditToolsPanel v2.7 - 2025 - Lega
+  LGA_EditToolsPanel v2.8 - 2025 - Lega
   Tools panel for Hiero / Nuke Studio
 _________________________________________
 
@@ -22,8 +22,8 @@ from PySide2 import QtWidgets, QtCore
 import importlib.util
 
 # Variable global para activar o desactivar los prints
-DEBUG = False
-DEBUG_BASIC = False
+DEBUG = True
+DEBUG_BASIC = True
 
 def debug_print(*message):
     if DEBUG:
@@ -55,6 +55,8 @@ class ReconnectMediaWidget(QWidget):
             ("Default | Clip", self.default_clip, "#434c41"),
             ("Set Shot Name", self.set_shot_name, "#453434"),
             ("Extend &Edit", self.extend_edit_to_playhead, "#453434", "Alt+E", "Alt+E"),
+            ("Trim &In", self.trim_in, "#453434", "Alt+[", "Alt+["),
+            ("Trim &Out", self.trim_out, "#453434", "Alt+]", "Alt+]"),
             ("Reconnect T > N", self.reconnect_t_to_n, "#4a4329"),
             ("Reconnect N > T", self.reconnect_n_to_t, "#4a4329"),
             ("Reconnect T Win > Mac", self.execute_reconnect_win_to_mac, "#4a4329"),
@@ -218,6 +220,45 @@ class ReconnectMediaWidget(QWidget):
         else:
             debug_print("No clips selected or playhead position unavailable.")
 
+###### Trim In
+    def trim_in(self):
+        """Ejecuta el script LGA_NKS_Trim_In.py para recortar el material antes del playhead."""
+        debug_print_b("\n>>> Ejecutando Trim In script...")
+        
+        try:
+            # Obtenemos el proyecto activo y comenzamos un bloque de undo
+            project = hiero.core.projects()[-1]
+            with project.beginUndo("Trim In to Playhead"):
+                # Ejecutamos el script dentro del bloque de undo
+                result = self.execute_external_script('LGA_NKS_Trim_In.py')
+                if result:
+                    debug_print_b(">>> Trim In script completado")
+                else:
+                    debug_print_b(">>> Error al ejecutar Trim In script")
+        except Exception as e:
+            debug_print_b(f"Error durante la ejecución de Trim In: {e}")
+            import traceback
+            debug_print_b(traceback.format_exc())
+
+###### Trim Out
+    def trim_out(self):
+        """Ejecuta el script LGA_NKS_Trim_Out.py para recortar el material después del playhead."""
+        debug_print_b("\n>>> Ejecutando Trim Out script...")
+        
+        try:
+            # Obtenemos el proyecto activo y comenzamos un bloque de undo
+            project = hiero.core.projects()[-1]
+            with project.beginUndo("Trim Out to Playhead"):
+                # Ejecutamos el script dentro del bloque de undo
+                result = self.execute_external_script('LGA_NKS_Trim_Out.py')
+                if result:
+                    debug_print_b(">>> Trim Out script completado")
+                else:
+                    debug_print_b(">>> Error al ejecutar Trim Out script")
+        except Exception as e:
+            debug_print_b(f"Error durante la ejecución de Trim Out: {e}")
+            import traceback
+            debug_print_b(traceback.format_exc())
 
 ###### Reconnect
     def reconnect_t_to_n(self):
@@ -341,17 +382,43 @@ class ReconnectMediaWidget(QWidget):
 
     # Metodo para ejecutar scripts externos
     def execute_external_script(self, script_name):
-        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', script_name)
-        if os.path.exists(script_path):
-            try:
-                spec = importlib.util.spec_from_file_location(script_name[:-3], script_path)
-                module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(module)
-                module.main()
-            except Exception as e:
-                debug_print(f"Error ejecutando el script {script_name}: {e}")
-        else:
-            debug_print(f"Script no encontrado en la ruta: {script_path}")
+        # Intentamos varias rutas posibles para encontrar el script
+        script_paths = [
+            os.path.join(os.path.dirname(__file__), 'LGA_NKS', script_name),  # Ruta estándar
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'LGA_NKS', script_name),  # Ruta absoluta
+            os.path.join(os.path.dirname(__file__), script_name),  # Directamente en la carpeta del panel
+            os.path.join('Python/Startup/LGA_NKS', script_name)  # Ruta directa a la carpeta de scripts
+        ]
+        
+        debug_print_b(f"Intentando localizar script: {script_name}")
+        debug_print_b(f"Directorio actual: {os.path.dirname(__file__)}")
+        
+        # Probamos con cada posible ruta
+        for script_path in script_paths:
+            debug_print_b(f"Intentando ruta: {script_path}")
+            if os.path.exists(script_path):
+                debug_print_b(f"Script encontrado en: {script_path}")
+                try:
+                    spec = importlib.util.spec_from_file_location(script_name[:-3], script_path)
+                    module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(module)
+                    
+                    # Tratamos de llamar a la función 'main' o 'test_trim_in'/'test_trim_out' si existe
+                    if hasattr(module, 'main'):
+                        module.main()
+                    elif hasattr(module, 'test_trim_in') and script_name == 'LGA_NKS_Trim_In.py':
+                        module.test_trim_in()
+                    elif hasattr(module, 'test_trim_out') and script_name == 'LGA_NKS_Trim_Out.py':
+                        module.test_trim_out()
+                    
+                    return True
+                except Exception as e:
+                    debug_print_b(f"Error ejecutando el script {script_name}: {e}")
+                    return False
+        
+        # Si llegamos aquí, no encontramos el script
+        debug_print_b(f"Script no encontrado en ninguna de las rutas probadas: {script_name}")
+        return False
 
     # Nuevo metodo para ejecutar LGA_NKS_mediaMissingFrames.py
     def check_frames(self):
