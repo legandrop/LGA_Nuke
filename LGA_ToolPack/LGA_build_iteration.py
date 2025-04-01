@@ -1,7 +1,7 @@
 """
 __________________________________________________________
 
-  LGA_build_iteration v1.1 | 2024 | Lega   
+  LGA_build_iteration v1.2 | 2024 | Lega   
   Genera un arbol de nodos usado para generar variaciones
   de una imagen.
   
@@ -170,8 +170,8 @@ def gen_iteration():
     merge.setYpos(dot_transform_center_y - (merge.screenHeight() // 2))
     
     # Configurar el nodo Merge
-    merge['operation'].setValue('mask')
-    merge['bbox'].setValue('A')
+    merge['operation'].setValue('over')
+    merge['bbox'].setValue('union')
     
     # Conectar el dot principal al input B (input 0) del Merge
     merge.setInput(0, dot_node)
