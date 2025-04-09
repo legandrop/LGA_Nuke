@@ -1,0 +1,223 @@
+Group {
+ name DepthAnythingV2
+ addUserKnob {20 DepthAnythingV2}
+ addUserKnob {26 localGPU l "Local GPU:" T ""}
+ addUserKnob {26 gpuName l "" -STARTLINE T ""}
+ addUserKnob {6 useGPU l "Use GPU if available" +STARTLINE}
+ useGPU true
+ addUserKnob {26 outputOptions_divider l "<b>Output Options</b>"}
+ addUserKnob {4 view l View t "Determines the output of the node.\n\n<strong>Final Result:</strong> Generates the matte as an alpha channel.\n\n<strong>Preview:</strong> Visualizes depth using false colors in the RGB channels." M {"Preview (False Color)" "Final Result" "" "" "" "" "" "" "" "" "" ""}}
+ addUserKnob {4 downrez l Downrez t "Scales down the input to optimize optical flow calculation.  \n\nBy reducing the input size, memory requirements are lowered. For some 4K shots with significant motion, this preprocessing can also refine the quality of the retime." M {"1/1 (Full Res)" 1/2 1/4}}
+ downrez 1/2
+ addUserKnob {6 bypass_srgb l "Bypass sRGB conversion" t "DepthAnything expects sRGB images for optimal results. Enable this option to use your own color space conversion." +STARTLINE}
+ addUserKnob {26 depth_controls l "<b>Depth Controls</b>"}
+ addUserKnob {7 far l Far R -20 20}
+ addUserKnob {7 near l Near R -20 20}
+ near 5
+ addUserKnob {41 invert_map l "Invert Map" T Invert1.disable}
+ addUserKnob {20 "" n -1}
+ addUserKnob {20 infoTab l Info}
+ addUserKnob {26 toolName l "" +STARTLINE T "<font size='7'>DEPTHANYTHING</font> v2.1.0 | Released 2024-07-02"}
+ addUserKnob {26 ""}
+ addUserKnob {26 authorName l "" +STARTLINE T "Rafael Silva"}
+ addUserKnob {26 authorMail l "" +STARTLINE T "<a href=\"mailto:rafael@rafael.ai\"><span style=\"color:#C8C8C8;\">rafael@rafael.ai</a> - <a href=\"https://github.com/rafaelperez/Depth-Anything-for-Nuke\"><span style=\"color:#C8C8C8;\">GitHub</a>"}
+ addUserKnob {26 ""}
+ addUserKnob {26 credit l "" +STARTLINE T "TorchScript port based on the official <a href=\"https://depth-anything-v2.github.io\"><span style=\"color:#C8C8C8;\">DepthAnything</a> implementation.<br><br>Special thanks to the DepthAnything authors for their work.<br>"}
+ addUserKnob {26 ""}
+ addUserKnob {26 thanks l "" +STARTLINE T "Don't hesitate to reach out with any bugs, suggestions, or questions."}
+}
+ BackdropNode {
+  inputs 0
+  name BackdropNode1
+  tile_color 0x444444ff
+  note_font_size 42
+  xpos 475
+  ypos -1004
+  bdwidth 150
+  bdheight 519
+ }
+ Input {
+  inputs 0
+  name Input1
+  xpos 400
+  ypos -1378
+ }
+ Assert {
+  expression {{"\$nuke_version > 13.2"}}
+  message "Nuke13.2 or higher required."
+  name Assert1
+  xpos 400
+  ypos -1282
+ }
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  name Shuffle1
+  label "ensure rgba"
+  xpos 400
+  ypos -1217
+ }
+ Crop {
+  box {0 0 {width} {height}}
+  crop false
+  name Crop1
+  xpos 400
+  ypos -1138
+ }
+set N5bff3680 [stack 0]
+ Dot {
+  name Dot2
+  xpos 764
+  ypos -1134
+ }
+ Colorspace {
+  colorspace_out sRGB
+  name Colorspace1
+  xpos 730
+  ypos -1090
+  disable {{parent.bypass_srgb x65 1 1}}
+ }
+ Reformat {
+  type scale
+  scale {{"2 ** (parent.downrez * -1.0)"}}
+  resize height
+  name Reformat_downrez
+  xpos 730
+  ypos -1018
+ }
+ Inference {
+  useGPUIfAvailable {{parent.useGPU}}
+  modelFile "\[lsearch -inline \[plugins -all DepthAnythingV2.cat] *.cat]"
+  serialiseKnob {}
+  name Inference_DepthAnything_V2_small
+  onCreate "\nthis = nuke.thisNode()\ngpuName = this.knob(\"gpuName\").value()\nthis.parent().knob(\"gpuName\").setValue(gpuName)\n"
+  tile_color 0xff8466ff
+  xpos 730
+  ypos -946
+ }
+ Reformat {
+  type scale
+  scale {{"1/(2 ** (parent.downrez * -1.0))"}}
+  name Reformat_uprez
+  xpos 730
+  ypos -898
+ }
+ Grade {
+  channels alpha
+  blackpoint {{parent.near}}
+  whitepoint {{parent.far}}
+  black_clamp false
+  name Grade_alpha
+  xpos 730
+  ypos -833
+ }
+ Invert {
+  name Invert1
+  xpos 730
+  ypos -761
+ }
+ Dot {
+  name Dot1
+  xpos 764
+  ypos -510
+ }
+set N744608e0 [stack 0]
+ Dot {
+  name Dot3
+  xpos 764
+  ypos -414
+ }
+push $N5bff3680
+push $N744608e0
+ Reformat {
+  inputs 0
+  type "to box"
+  box_width 512
+  box_height 64
+  box_fixed true
+  name Reformat1
+  xpos 510
+  ypos -946
+ }
+ Ramp {
+  p0 {-1 0}
+  p1 {0 0}
+  color {0.003676506225 0.002124689054 0.2383975238 1}
+  name Ramp1
+  xpos 510
+  ypos -898
+ }
+ Ramp {
+  p0 {{input0.p1.x} 0}
+  p1 {60 0}
+  color {0.06662592292 0.0006070539821 0.3467040062 1}
+  name Ramp2
+  xpos 510
+  ypos -850
+ }
+ Ramp {
+  p0 {{input0.p1.x} 0}
+  p1 {268 0}
+  color {0.6307569742 0.0742135644 0.1714410484 1}
+  name Ramp3
+  xpos 510
+  ypos -802
+ }
+ Ramp {
+  p0 {{input0.p1.x} 0}
+  p1 {368 0}
+  color {0.904661119 0.2501582205 0.06301000714 1}
+  name Ramp4
+  xpos 510
+  ypos -754
+ }
+ Ramp {
+  p0 {{input0.p1.x} 0}
+  p1 {438 0}
+  color {0.9822503924 0.5149176121 0.02217387967 1}
+  name Ramp5
+  xpos 510
+  ypos -706
+ }
+ Ramp {
+  p0 {{input0.p1.x} 0}
+  p1 {512 0}
+  color {0.8631571531 0.938685596 0.01520851161 1}
+  name Ramp6
+  xpos 510
+  ypos -658
+ }
+ PostageStamp {
+  name PostageStamp1
+  xpos 510
+  ypos -586
+  postage_stamp true
+ }
+ STMap {
+  inputs 2
+  uv alpha
+  name STMap1
+  xpos 510
+  ypos -425
+ }
+ Switch {
+  inputs 2
+  which {{parent.view}}
+  name Switch1
+  xpos 400
+  ypos -370
+ }
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 depth.Z
+  name Copy1
+  xpos 400
+  ypos -281
+ }
+ Output {
+  name Output1
+  xpos 400
+  ypos -178
+ }
+end_group

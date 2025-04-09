@@ -1,0 +1,43 @@
+{
+    "include": [
+        "LGA_ToolPack"
+    ],
+    "exclude": [
+        "**/node_modules",
+        "**/__pycache__",
+        "**/site-packages",
+        "**/nuke"
+    ],
+    "ignore": [],
+    "defineConstant": {
+        "DEBUG": true
+    },
+    "venvPath": ".",
+    "reportMissingImports": false,
+    "reportMissingTypeStubs": false,
+    "pythonVersion": "3.9",
+    "pythonPlatform": "Windows",
+    "executionEnvironments": [
+        {
+            "root": "LGA_ToolPack",
+            "extraPaths": [
+                "C:/Program Files/Nuke15.0v1/python3.9/Lib/site-packages",
+                "C:/Program Files/Nuke15.0v1/python3.9/Lib",
+                "C:/Program Files/Nuke15.0v1/python3.9",
+                "C:/Program Files/Nuke15.0v1",
+                "C:/Program Files/Nuke15.0v1/plugins"
+            ]
+        }
+    ],
+    "typeCheckingMode": "basic",
+    "useLibraryCodeForTypes": true,
+    "reportMissingModuleSource": false,
+    "reportMissingMemberAccess": false,
+    "reportMissingParameterType": false,
+    "reportMissingReturnType": false,
+    "reportMissingTypeArgument": false,
+    "reportUnknownMemberType": false,
+    "reportUnknownParameterType": false,
+    "reportUnknownReturnType": false,
+    "reportUnknownVariableType": false
+} 

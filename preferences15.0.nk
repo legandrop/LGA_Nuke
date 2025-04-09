@@ -13,6 +13,7 @@ Preferences {
  platformPathRemaps ""
  maxPanels 5
  UIFontSize 12
+ ShadeDAGNodes false
  NodeColourSlot14 "OCIO GeoTracker FaceTracker FacialExpressions PinTool TransformRiggedGeo "
  postage_stamp_mode "Static frame"
  ArrowColorUp 0xff0000ff

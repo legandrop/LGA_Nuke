@@ -1,0 +1,13 @@
+{
+    "minimum_nuke_version_required": 13.2,
+    "version": 1,
+    "category": "Depth Estimation",
+    "description": "DepthAnything - https://github.com/rafaelperez/Depth-Anything-for-Nuke",
+    "cats": [
+        {
+            "filepath": "DepthAnythingV2.gizmo",
+            "name": "DepthAnythingV2",
+            "icon": "DepthAnythingV2.png"
+        }
+    ]
+}
