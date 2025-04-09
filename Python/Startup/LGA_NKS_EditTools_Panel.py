@@ -53,6 +53,7 @@ class ReconnectMediaWidget(QWidget):
             ("Clean Project", self.clean_project, "#283548"),
             ("Rec709 | Clip", self.rec709_clip, "#434c41"),
             ("Default | Clip", self.default_clip, "#434c41"),
+            ("New Video Track", self.create_new_track, "#263b23"),
             ("Set Shot Name", self.set_shot_name, "#453434"),
             ("Extend &Edit", self.extend_edit_to_playhead, "#453434", "Alt+E", "Alt+E"),
             ("Trim &In", self.trim_in, "#453434", "Alt+[", "Alt+["),
@@ -154,8 +155,24 @@ class ReconnectMediaWidget(QWidget):
         else:
             debug_print("No active sequence found.")
 
-
-
+    def create_new_track(self):
+        """Ejecuta el script LGA_NKS_CreateNewTrack.py para crear un nuevo track de video"""
+        debug_print_b("\n>>> Ejecutando Create New Track script...")
+        
+        try:
+            # Obtenemos el proyecto activo y comenzamos un bloque de undo
+            project = hiero.core.projects()[-1]
+            with project.beginUndo("Create New Track"):
+                # Ejecutamos el script dentro del bloque de undo
+                result = self.execute_external_script('LGA_NKS_CreateNewTrack.py')
+                if result:
+                    debug_print_b(">>> Create New Track script completado")
+                else:
+                    debug_print_b(">>> Error al ejecutar Create New Track script")
+        except Exception as e:
+            debug_print_b(f"Error durante la ejecución de Create New Track: {e}")
+            import traceback
+            debug_print_b(traceback.format_exc())
 
 ###### Shot name
     def set_shot_name(self):
