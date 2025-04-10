@@ -1,9 +1,9 @@
 """
-______________________________________________________
+_______________________________________________________________
 
-  LGA_NKS_CheckProjectVersions v1.1 - 2025 - Lega
+  LGA_NKS_CheckProjectVersions v1.5 - 2025 - Lega
   Chequea versiones de todos los proyectos abiertos en Hiero
-______________________________________________________
+_______________________________________________________________
 
 """
 
@@ -146,7 +146,7 @@ def obtener_timestamp():
     return ahora.strftime("%d/%m/%Y %H:%M:%S")
 
 class ProyectosAbertosDialog(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, proyectos_con_version_alta=None):
         super(ProyectosAbertosDialog, self).__init__(parent)
         self.setWindowTitle("Proyectos Abiertos")
         self.setMinimumSize(900, 200)  # Reducir la altura a la mitad
@@ -164,8 +164,8 @@ class ProyectosAbertosDialog(QMainWindow):
         self.destroyed.connect(self.on_destroyed)
         
         # Mostrar IDs de la ventana
-        print(f"ID de ventana nativo: {self.winId()}")
-        print(f"Nombre de objeto: {self.objectName()}")
+        debug_print(f"ID de ventana nativo: {self.winId()}")
+        debug_print(f"Nombre de objeto: {self.objectName()}")
         
         # Widget central y layout
         central_widget = QWidget()
@@ -215,8 +215,11 @@ class ProyectosAbertosDialog(QMainWindow):
         
         layout.addLayout(botones_layout)
         
-        # Cargar proyectos
-        self.actualizar_proyectos()
+        # Cargar proyectos o usar los datos proporcionados
+        if proyectos_con_version_alta:
+            self.actualizar_proyectos_con_datos(proyectos_con_version_alta)
+        else:
+            self.actualizar_proyectos()
     
     def on_destroyed(self):
         """Se llama cuando la ventana se destruye"""
@@ -225,7 +228,7 @@ class ProyectosAbertosDialog(QMainWindow):
     
     def actualizar_proyectos(self):
         """Actualiza la información de los proyectos abiertos en la tabla"""
-        print("Actualizando información de proyectos...")
+        debug_print("Actualizando información de proyectos...")
         # Limpiar tabla existente
         self.tabla_proyectos.clearContents()
         self.tabla_proyectos.setRowCount(0)
@@ -236,14 +239,39 @@ class ProyectosAbertosDialog(QMainWindow):
         # Llamar al método original de carga
         self.cargar_proyectos()
     
+    def actualizar_proyectos_con_datos(self, proyectos_con_version_alta):
+        """Actualiza la tabla con los datos proporcionados"""
+        debug_print("Actualizando información de proyectos con datos preexistentes...")
+        # Limpiar tabla existente
+        self.tabla_proyectos.clearContents()
+        self.tabla_proyectos.setRowCount(0)
+        
+        # Actualizar etiqueta de temporizador
+        self.label_timer.setText(f"Actualizando cada {INTERVALO_TEMPORIZADOR} minutos. Última: {obtener_timestamp()}")
+        
+        # Configurar el número de filas para los proyectos con versión más alta
+        self.tabla_proyectos.setRowCount(len(proyectos_con_version_alta))
+        
+        # Cargar datos directamente en la tabla
+        for i, proyecto_data in enumerate(proyectos_con_version_alta):
+            # Crear elementos de tabla
+            item_nombre = QTableWidgetItem(proyecto_data['nombre'])
+            item_ruta = QTableWidgetItem(proyecto_data['ruta_actual'])
+            item_ruta_alta = QTableWidgetItem(proyecto_data['ruta_alta'])
+            
+            # Asignar a la tabla
+            self.tabla_proyectos.setItem(i, 0, item_nombre)
+            self.tabla_proyectos.setItem(i, 1, item_ruta)
+            self.tabla_proyectos.setItem(i, 2, item_ruta_alta)
+            
+            debug_print(f"Añadido a tabla: {proyecto_data['nombre']}")
+    
     def cargar_proyectos(self):
         """Carga la información de los proyectos abiertos en la tabla"""
         proyectos = hiero.core.projects()
         
         if not proyectos:
-            self.tabla_proyectos.setRowCount(1)
-            self.tabla_proyectos.setItem(0, 0, QTableWidgetItem("No hay proyectos abiertos"))
-            self.tabla_proyectos.setSpan(0, 0, 1, 3)  # Combinar celdas para el mensaje
+            self.close()  # Cerrar la ventana si no hay proyectos abiertos
             return
         
         # Filtrar proyectos que tienen una versión más alta disponible
@@ -291,31 +319,14 @@ class ProyectosAbertosDialog(QMainWindow):
                 })
                 debug_print(f"Proyecto {nombre_interfaz} - Versión actual: {version_actual}, Versión más alta: {version_alta}")
         
-        # Si no hay proyectos con versión más alta, mostrar mensaje
+        # Si no hay proyectos con versión más alta, cerrar la ventana
         if not proyectos_con_version_alta:
-            self.tabla_proyectos.setRowCount(1)
-            mensaje = QTableWidgetItem("No hay proyectos con versiones más altas disponibles")
-            mensaje.setTextAlignment(Qt.AlignCenter)
-            self.tabla_proyectos.setItem(0, 0, mensaje)
-            self.tabla_proyectos.setSpan(0, 0, 1, 3)
+            debug_print("No hay proyectos con versiones más altas disponibles. Cerrando ventana.")
+            self.close()  # Cerrar la ventana si no hay proyectos con versiones más altas
             return
         
-        # Configurar el número de filas para los proyectos con versión más alta
-        self.tabla_proyectos.setRowCount(len(proyectos_con_version_alta))
-        
         # Cargar datos de proyectos con versión más alta
-        for i, proyecto_data in enumerate(proyectos_con_version_alta):
-            # Crear elementos de tabla
-            item_nombre = QTableWidgetItem(proyecto_data['nombre'])
-            item_ruta = QTableWidgetItem(proyecto_data['ruta_actual'])
-            item_ruta_alta = QTableWidgetItem(proyecto_data['ruta_alta'])
-            
-            # Asignar a la tabla
-            self.tabla_proyectos.setItem(i, 0, item_nombre)
-            self.tabla_proyectos.setItem(i, 1, item_ruta)
-            self.tabla_proyectos.setItem(i, 2, item_ruta_alta)
-            
-            debug_print(f"Añadido a tabla: {proyecto_data['nombre']}")
+        self.actualizar_proyectos_con_datos(proyectos_con_version_alta)
 
 def buscar_ventana_existente(nombre_objeto):
     """
@@ -333,7 +344,7 @@ def detener_temporizador():
     """Detiene el temporizador global si existe"""
     global temporizador_global
     if temporizador_global is not None and temporizador_global.isActive():
-        print(f"Deteniendo temporizador con ID: {temporizador_id}")
+        debug_print(f"Deteniendo temporizador con ID: {temporizador_id}")
         temporizador_global.stop()
         temporizador_global = None
 
@@ -350,7 +361,7 @@ def iniciar_temporizador():
     temporizador_global.timeout.connect(main)
     temporizador_global.start(INTERVALO_TEMPORIZADOR * 60 * 1000)  # Convertir minutos a milisegundos
     
-    print(f"Iniciado temporizador con ID: {temporizador_id}, intervalo: {INTERVALO_TEMPORIZADOR} minutos")
+    debug_print(f"Iniciado temporizador con ID: {temporizador_id}, intervalo: {INTERVALO_TEMPORIZADOR} minutos")
 
 def actualizar_intervalo_temporizador(nuevo_intervalo):
     """Actualiza el intervalo del temporizador y lo reinicia"""
@@ -368,17 +379,65 @@ def actualizar_intervalo_temporizador(nuevo_intervalo):
         ventana_existente.label_timer.setText(f"Actualizando cada {INTERVALO_TEMPORIZADOR} minutos")
 
 def main():
-    """Función principal que muestra el diálogo con los proyectos abiertos"""
+    """Función principal que muestra el diálogo con los proyectos abiertos SOLO si hay versiones más altas"""
+    # Verificar primero si hay proyectos abiertos
+    proyectos = hiero.core.projects()
+    if not proyectos or len(proyectos) == 0:
+        debug_print("No hay proyectos abiertos. No se mostrará la ventana.")
+        return
+    
+    # Verificar si hay proyectos con versiones más altas disponibles ANTES de abrir cualquier ventana
+    proyectos_con_version_alta = []
+    
+    for proyecto in proyectos:
+        nombre_interfaz = proyecto.name()
+        ruta_disco = proyecto.path()
+        version_actual = extraer_version(ruta_disco)
+        ruta_version_alta = encontrar_version_mas_alta(ruta_disco)
+        
+        # Verificar si tiene una versión más alta que la actual
+        version_actual_num = -1
+        version_alta_num = -1
+        
+        try:
+            if version_actual != "No detectada" and version_actual != "Error":
+                match_actual = re.search(r'v?(\d+)', version_actual)
+                if match_actual:
+                    version_actual_num = int(match_actual.group(1))
+            
+            if ruta_version_alta != "No detectada" and ruta_version_alta != "Error" and ruta_version_alta != "No disponible" and ruta_version_alta != "No hay otras versiones":
+                version_alta = extraer_version(ruta_version_alta)
+                if version_alta != "No detectada" and version_alta != "Error":
+                    match_alta = re.search(r'v?(\d+)', version_alta)
+                    if match_alta:
+                        version_alta_num = int(match_alta.group(1))
+        except Exception as e:
+            debug_print(f"Error al comparar versiones: {str(e)}")
+        
+        # Solo incluir proyectos con versión más alta disponible
+        if version_actual_num > 0 and version_alta_num > 0 and version_actual_num < version_alta_num:
+            proyectos_con_version_alta.append({
+                'proyecto': proyecto,
+                'nombre': nombre_interfaz,
+                'ruta_actual': ruta_disco,
+                'ruta_alta': ruta_version_alta
+            })
+    
+    # Si no hay proyectos con versiones más altas, no abrir la ventana
+    if not proyectos_con_version_alta:
+        debug_print("No hay proyectos con versiones más altas disponibles. No se mostrará la ventana.")
+        return
+    
     # Verificar si ya existe una ventana abierta con el mismo nombre de objeto
     ventana_existente = buscar_ventana_existente("LGA_ProyectosAbertosDialog")
     
     if ventana_existente:
         # Si ya existe, mostrar su ID y activarla
-        print(f"Ya existe una ventana con ID: {ventana_existente.winId()}")
-        print(f"Usando ventana existente con nombre de objeto: {ventana_existente.objectName()}")
+        debug_print(f"Ya existe una ventana con ID: {ventana_existente.winId()}")
+        debug_print(f"Usando ventana existente con nombre de objeto: {ventana_existente.objectName()}")
         
         # Actualizar los datos de la ventana existente
-        ventana_existente.actualizar_proyectos()
+        ventana_existente.actualizar_proyectos_con_datos(proyectos_con_version_alta)
         
         # Activar la ventana existente (traerla al frente)
         ventana_existente.setWindowState(ventana_existente.windowState() & ~Qt.WindowMinimized | Qt.WindowActive)
@@ -387,7 +446,7 @@ def main():
     else:
         # Si no existe, crear una nueva ventana
         global ventana_proyectos
-        ventana_proyectos = ProyectosAbertosDialog(hiero.ui.mainWindow())
+        ventana_proyectos = ProyectosAbertosDialog(hiero.ui.mainWindow(), proyectos_con_version_alta)
         ventana_proyectos.show()  # Usar show() en lugar de exec_() para modo no modal
     
     # Iniciar o reiniciar el temporizador

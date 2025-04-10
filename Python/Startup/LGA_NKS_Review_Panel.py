@@ -17,7 +17,7 @@ import socket
 import importlib.util
 from PySide2.QtWidgets import *
 from PySide2.QtGui import QIcon
-from PySide2.QtCore import *
+from PySide2.QtCore import QTimer, Qt
 from PySide2 import QtWidgets, QtCore
 
 # Variable global para activar o desactivar los prints
@@ -49,7 +49,8 @@ class ReviewPanel(QWidget):
             ("Reveal in &Explorer", self.execute_RevealInExplorer, "#321a1a", "Shift+E", "Shift+E"),
             ("Reveal NKS Project", self.execute_RevealNKSProject, "#321a1a"),
             ("Reveal NK Sc&ript", self.execute_RevealNKScript, "#321a1a", "Shift+R", "Shift+R"),
-            ("OpenInNuke&X", self.execute_OpenInNukeX, "#493800", "Shift+X", "Shift+X")
+            ("OpenInNuke&X", self.execute_OpenInNukeX, "#493800", "Shift+X", "Shift+X"),
+            ("Check Project Versions", self.execute_CheckProjectVersions, "#3a202e")  # Nuevo botón
         ]
 
         self.num_columns = 1  # Inicialmente una columna
@@ -58,6 +59,10 @@ class ReviewPanel(QWidget):
         # Conectar la senal de cambio de tamano del widget al metodo correspondiente
         self.adjust_columns_on_resize()
         self.resizeEvent = self.adjust_columns_on_resize
+        
+        # Ejecutar el script de verificación de versiones de proyectos al iniciar el panel
+        # Con un pequeño retraso para asegurar que Hiero haya cargado completamente
+        QTimer.singleShot(2000, self.execute_CheckProjectVersions)
 
     def create_buttons(self):
         for index, button_info in enumerate(self.buttons):
@@ -149,6 +154,9 @@ class ReviewPanel(QWidget):
 
     def execute_DisableEXR(self):
         self.execute_external_script('LGA_NKS_Clip_DisableEXR.py')
+        
+    def execute_CheckProjectVersions(self):
+        self.execute_external_script('LGA_NKS_CheckProjectVersions.py')
 
 
 # Crear la instancia del widget y anadirlo al gestor de ventanas de Hiero
