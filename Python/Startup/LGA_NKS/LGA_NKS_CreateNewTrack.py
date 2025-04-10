@@ -1,14 +1,16 @@
 """
 ______________________________________________________
 
-  LGA_NKS_CreateNewTrack v1.0 - 2024 - Lega
+  LGA_NKS_CreateNewTrack v1.1 - 2025 - Lega
   Crea un nuevo track de video encima del track actualmente seleccionado
+  y mantiene la posicion del scroll vertical
 ______________________________________________________
 
 """
 
 import hiero.core
 import hiero.ui
+from PySide2 import QtWidgets, QtCore
 
 DEBUG = False
 
@@ -44,6 +46,145 @@ def get_selected_track_index(seq):
             return index
             
     return None
+
+def get_vertical_scroll_state():
+    """
+    Obtiene el estado actual del scroll vertical del timeline.
+    """
+    try:
+        t = hiero.ui.getTimelineEditor(hiero.ui.activeSequence())
+        if not t:
+            return None
+            
+        # Buscar el QSplitter primero
+        splitter = None
+        for child in t.window().children():
+            if isinstance(child, QtWidgets.QSplitter):
+                splitter = child
+                break
+                
+        if not splitter:
+            debug_print("No se pudo encontrar el QSplitter")
+            return None
+            
+        # Buscar el TimelineView dentro del primer widget del QSplitter
+        timeline_view = None
+        for child in splitter.children():
+            if isinstance(child, QtWidgets.QWidget):
+                for subchild in child.children():
+                    if isinstance(subchild, QtWidgets.QAbstractScrollArea):
+                        timeline_view = subchild
+                        break
+                if timeline_view:
+                    break
+                    
+        if not timeline_view:
+            debug_print("No se pudo encontrar el TimelineView")
+            return None
+            
+        # Buscar v_container por nombre
+        v_container = None
+        for child in timeline_view.children():
+            if hasattr(child, 'objectName'):
+                if child.objectName() == "qt_scrollarea_vcontainer":
+                    v_container = child
+                    break
+        
+        if not v_container:
+            debug_print("No se pudo encontrar el contenedor vertical")
+            return None
+            
+        # Obtener scrollbar vertical
+        v_scrollbar = v_container.children()[0]  # QScrollBar vertical
+        
+        state = {
+            'v_scroll_value': v_scrollbar.value(),
+            'v_scroll_min': v_scrollbar.minimum(),
+            'v_scroll_max': v_scrollbar.maximum(),
+            'v_page_step': v_scrollbar.pageStep()
+        }
+        
+        debug_print(f"Estado del scroll vertical capturado: {state['v_scroll_value']}")
+        return state
+            
+    except Exception as e:
+        debug_print(f"Error al obtener el estado del scroll vertical: {e}")
+        import traceback
+        debug_print(traceback.format_exc())
+        
+    return None
+
+def restore_vertical_scroll_state(state):
+    """
+    Restaura el estado del scroll vertical del timeline.
+    """
+    if not state:
+        debug_print("No hay estado de scroll vertical para restaurar")
+        return False
+        
+    try:
+        t = hiero.ui.getTimelineEditor(hiero.ui.activeSequence())
+        if not t:
+            return False
+            
+        # Buscar el QSplitter primero
+        splitter = None
+        for child in t.window().children():
+            if isinstance(child, QtWidgets.QSplitter):
+                splitter = child
+                break
+                
+        if not splitter:
+            debug_print("No se pudo encontrar el QSplitter")
+            return False
+            
+        # Buscar el TimelineView dentro del primer widget del QSplitter
+        timeline_view = None
+        for child in splitter.children():
+            if isinstance(child, QtWidgets.QWidget):
+                for subchild in child.children():
+                    if isinstance(subchild, QtWidgets.QAbstractScrollArea):
+                        timeline_view = subchild
+                        break
+                if timeline_view:
+                    break
+                    
+        if not timeline_view:
+            debug_print("No se pudo encontrar el TimelineView")
+            return False
+            
+        # Buscar v_container por nombre
+        v_container = None
+        for child in timeline_view.children():
+            if hasattr(child, 'objectName'):
+                if child.objectName() == "qt_scrollarea_vcontainer":
+                    v_container = child
+                    break
+        
+        if not v_container:
+            debug_print("No se pudo encontrar el contenedor vertical")
+            return False
+            
+        # Obtener scrollbar vertical
+        v_scrollbar = v_container.children()[0]  # QScrollBar vertical
+        
+        debug_print(f"Restaurando valor del scroll vertical a: {state['v_scroll_value']}")
+        v_scrollbar.setPageStep(state['v_page_step'])
+        v_scrollbar.setMaximum(state['v_scroll_max'])
+        v_scrollbar.setMinimum(state['v_scroll_min'])
+        v_scrollbar.setValue(state['v_scroll_value'])
+        
+        # Procesar eventos
+        QtCore.QCoreApplication.processEvents()
+        
+        return True
+            
+    except Exception as e:
+        debug_print(f"Error al restaurar el scroll vertical: {e}")
+        import traceback
+        debug_print(traceback.format_exc())
+        
+    return False
 
 def create_new_track(seq, track_index):
     """Crea un nuevo track y lo inserta en la posicion especificada"""
@@ -94,6 +235,15 @@ def main():
         # Iniciar una accion de undo
         project = seq.project()
         project.beginUndo("Crear Nuevo Track")
+
+
+        # Capturar el estado del scroll vertical
+        vertical_scroll_state = get_vertical_scroll_state()
+        if vertical_scroll_state:
+            debug_print("Estado del scroll vertical capturado correctamente")
+        else:
+            debug_print("No se pudo capturar el estado del scroll vertical")
+
         
         try:
             # Obtener el indice del track seleccionado
@@ -110,8 +260,16 @@ def main():
         except Exception as e:
             debug_print(f"Error durante la operacion: {e}")
         finally:
+            # Restaurar el estado del scroll vertical
+            if vertical_scroll_state:
+                # Pequeño retraso para asegurar que la UI se actualice
+                QtCore.QTimer.singleShot(100, lambda: restore_vertical_scroll_state(vertical_scroll_state))
+                debug_print("Restauración del scroll vertical programada")
+
             # Finalizar la accion de undo
             project.endUndo()
+            
+
             
     except Exception as e:
         debug_print(f"Error general: {e}")
