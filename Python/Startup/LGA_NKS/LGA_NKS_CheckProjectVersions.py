@@ -12,9 +12,17 @@ import hiero.ui
 import re
 import os
 import glob
-from PySide2.QtWidgets import QMainWindow, QVBoxLayout, QLabel, QPushButton, QGridLayout, QFrame, QTableWidget, QTableWidgetItem, QWidget, QApplication
-from PySide2.QtCore import Qt
+import datetime
+from PySide2.QtWidgets import QMainWindow, QVBoxLayout, QLabel, QPushButton, QGridLayout, QFrame, QTableWidget, QTableWidgetItem, QWidget, QApplication, QHBoxLayout
+from PySide2.QtCore import Qt, QTimer
 from PySide2.QtGui import QFont, QColor
+
+# Configuración del temporizador (en minutos)
+INTERVALO_TEMPORIZADOR = 5
+
+# Variable global para almacenar el temporizador activo
+temporizador_global = None
+temporizador_id = "LGA_CheckProjects_Timer"
 
 DEBUG = False
 
@@ -132,11 +140,16 @@ def encontrar_version_mas_alta(ruta_actual):
         debug_print(f"Error al buscar versión más alta: {str(e)}")
         return "Error"
 
+def obtener_timestamp():
+    """Devuelve una cadena formateada con la fecha y hora actual"""
+    ahora = datetime.datetime.now()
+    return ahora.strftime("%d/%m/%Y %H:%M:%S")
+
 class ProyectosAbertosDialog(QMainWindow):
     def __init__(self, parent=None):
         super(ProyectosAbertosDialog, self).__init__(parent)
         self.setWindowTitle("Proyectos Abiertos")
-        self.setMinimumSize(900, 400)
+        self.setMinimumSize(900, 200)  # Reducir la altura a la mitad
         
         # Establecer un nombre de objeto único para esta ventana
         self.setObjectName("LGA_ProyectosAbertosDialog")
@@ -146,6 +159,9 @@ class ProyectosAbertosDialog(QMainWindow):
         
         # Hacer que la ventana se destruya completamente cuando se cierra
         self.setAttribute(Qt.WA_DeleteOnClose, True)
+        
+        # Conectar el evento de cierre para detener el temporizador
+        self.destroyed.connect(self.on_destroyed)
         
         # Mostrar IDs de la ventana
         print(f"ID de ventana nativo: {self.winId()}")
@@ -165,6 +181,11 @@ class ProyectosAbertosDialog(QMainWindow):
         titulo.setFont(font)
         layout.addWidget(titulo)
         
+        # Añadir información del temporizador
+        self.label_timer = QLabel(f"Actualizando cada {INTERVALO_TEMPORIZADOR} minutos")
+        self.label_timer.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.label_timer)
+        
         # Tabla para mostrar los datos
         self.tabla_proyectos = QTableWidget()
         self.tabla_proyectos.setColumnCount(3)
@@ -179,13 +200,28 @@ class ProyectosAbertosDialog(QMainWindow):
         
         layout.addWidget(self.tabla_proyectos)
         
+        # Botones inferiores en layout horizontal
+        botones_layout = QHBoxLayout()
+        
+        # Botón para actualizar
+        boton_actualizar = QPushButton("Actualizar Ahora")
+        boton_actualizar.clicked.connect(self.actualizar_proyectos)
+        botones_layout.addWidget(boton_actualizar)
+        
         # Botón para cerrar
         boton_cerrar = QPushButton("Cerrar")
         boton_cerrar.clicked.connect(self.close)
-        layout.addWidget(boton_cerrar)
+        botones_layout.addWidget(boton_cerrar)
+        
+        layout.addLayout(botones_layout)
         
         # Cargar proyectos
         self.actualizar_proyectos()
+    
+    def on_destroyed(self):
+        """Se llama cuando la ventana se destruye"""
+        # Detener el temporizador si la ventana se cierra
+        detener_temporizador()
     
     def actualizar_proyectos(self):
         """Actualiza la información de los proyectos abiertos en la tabla"""
@@ -194,9 +230,12 @@ class ProyectosAbertosDialog(QMainWindow):
         self.tabla_proyectos.clearContents()
         self.tabla_proyectos.setRowCount(0)
         
+        # Actualizar etiqueta de temporizador
+        self.label_timer.setText(f"Actualizando cada {INTERVALO_TEMPORIZADOR} minutos. Última: {obtener_timestamp()}")
+        
         # Llamar al método original de carga
         self.cargar_proyectos()
-        
+    
     def cargar_proyectos(self):
         """Carga la información de los proyectos abiertos en la tabla"""
         proyectos = hiero.core.projects()
@@ -290,6 +329,44 @@ def buscar_ventana_existente(nombre_objeto):
             return widget
     return None
 
+def detener_temporizador():
+    """Detiene el temporizador global si existe"""
+    global temporizador_global
+    if temporizador_global is not None and temporizador_global.isActive():
+        print(f"Deteniendo temporizador con ID: {temporizador_id}")
+        temporizador_global.stop()
+        temporizador_global = None
+
+def iniciar_temporizador():
+    """Inicia o reinicia el temporizador global"""
+    global temporizador_global, INTERVALO_TEMPORIZADOR
+    
+    # Detener temporizador existente si hay alguno
+    detener_temporizador()
+    
+    # Crear un nuevo temporizador
+    temporizador_global = QTimer()
+    temporizador_global.setObjectName(temporizador_id)
+    temporizador_global.timeout.connect(main)
+    temporizador_global.start(INTERVALO_TEMPORIZADOR * 60 * 1000)  # Convertir minutos a milisegundos
+    
+    print(f"Iniciado temporizador con ID: {temporizador_id}, intervalo: {INTERVALO_TEMPORIZADOR} minutos")
+
+def actualizar_intervalo_temporizador(nuevo_intervalo):
+    """Actualiza el intervalo del temporizador y lo reinicia"""
+    global INTERVALO_TEMPORIZADOR
+    
+    # Actualizar la variable global
+    INTERVALO_TEMPORIZADOR = nuevo_intervalo
+    
+    # Reiniciar el temporizador con el nuevo intervalo
+    iniciar_temporizador()
+    
+    # Actualizar la etiqueta en la ventana si existe
+    ventana_existente = buscar_ventana_existente("LGA_ProyectosAbertosDialog")
+    if ventana_existente:
+        ventana_existente.label_timer.setText(f"Actualizando cada {INTERVALO_TEMPORIZADOR} minutos")
+
 def main():
     """Función principal que muestra el diálogo con los proyectos abiertos"""
     # Verificar si ya existe una ventana abierta con el mismo nombre de objeto
@@ -307,13 +384,14 @@ def main():
         ventana_existente.setWindowState(ventana_existente.windowState() & ~Qt.WindowMinimized | Qt.WindowActive)
         ventana_existente.activateWindow()
         ventana_existente.raise_()
-        
-        return
+    else:
+        # Si no existe, crear una nueva ventana
+        global ventana_proyectos
+        ventana_proyectos = ProyectosAbertosDialog(hiero.ui.mainWindow())
+        ventana_proyectos.show()  # Usar show() en lugar de exec_() para modo no modal
     
-    # Si no existe, crear una nueva ventana
-    global ventana_proyectos
-    ventana_proyectos = ProyectosAbertosDialog(hiero.ui.mainWindow())
-    ventana_proyectos.show()  # Usar show() en lugar de exec_() para modo no modal
+    # Iniciar o reiniciar el temporizador
+    iniciar_temporizador()
 
 if __name__ == "__main__":
     main() 
