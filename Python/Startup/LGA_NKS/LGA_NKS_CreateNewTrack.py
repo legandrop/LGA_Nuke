@@ -1,7 +1,7 @@
 """
 ______________________________________________________
 
-  LGA_NKS_CreateNewTrack v1.1 - 2025 - Lega
+  LGA_NKS_CreateNewTrack v1.2 - 2025 - Lega
   Crea un nuevo track de video encima del track actualmente seleccionado
   y mantiene la posicion del scroll vertical
 ______________________________________________________
@@ -30,21 +30,46 @@ def get_selected_track_index(seq):
     te = hiero.ui.getTimelineEditor(seq)
     selected_items = te.selection()
     
-    if not selected_items:
-        debug_print("No hay items seleccionados en la linea de tiempo.")
-        return None
-        
-    # Obtener el track del primer item seleccionado
-    selected_track = selected_items[0].parentTrack()
-    if not selected_track:
-        debug_print("No se pudo obtener el track seleccionado.")
-        return None
-        
-    # Encontrar el indice del track en la secuencia
-    for index, track in enumerate(seq.videoTracks()):
-        if track == selected_track:
-            return index
-            
+    # Caso 1: Hay elementos seleccionados en la línea de tiempo
+    if selected_items:
+        for item in selected_items:
+            # Verificar primero si el item seleccionado es un track
+            if isinstance(item, hiero.core.TrackBase):
+                selected_track = item
+                debug_print("Track seleccionado directamente.")
+                # Encontrar el índice del track en la secuencia
+                for index, track in enumerate(seq.videoTracks()):
+                    if track == selected_track:
+                        return index
+            # Si no es un track, verificar si es un clip (comportamiento original)
+            elif hasattr(item, 'parentTrack'):
+                selected_track = item.parentTrack()
+                if selected_track:
+                    debug_print("Track obtenido a partir de un clip seleccionado.")
+                    # Encontrar el índice del track en la secuencia
+                    for index, track in enumerate(seq.videoTracks()):
+                        if track == selected_track:
+                            return index
+    
+    # Caso 2: Verificar si hay un track seleccionado directamente
+    # Esta es una ruta alternativa para detectar tracks seleccionados
+    try:
+        view = te.view()
+        if view:
+            selected_row = view.selectedRow()
+            if selected_row >= 0:
+                # Obtener el track correspondiente a la fila seleccionada
+                # En Hiero, las filas del timeline view corresponden a tracks
+                track_count = len(seq.videoTracks())
+                if selected_row < track_count:
+                    debug_print(f"Track seleccionado por fila: {selected_row}")
+                    # La fila seleccionada corresponde a un índice de track
+                    # (ajustar según sea necesario si el mapeo de filas a tracks es diferente)
+                    return selected_row
+    except Exception as e:
+        debug_print(f"Error al intentar obtener el track por fila: {e}")
+    
+    debug_print("No hay tracks seleccionados en la línea de tiempo.")
     return None
 
 def get_vertical_scroll_state():
