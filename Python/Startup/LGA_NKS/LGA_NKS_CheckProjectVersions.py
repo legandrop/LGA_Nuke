@@ -1,13 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?><script>nuke.toNode('NoOp1').knob('knobChanged').setValue('n=nuke.thisNode()\nk=nuke.thisKnob()\nif k.name() in [&quot;lga_firstFrame_int&quot;, &quot;lga_lastFrame_int&quot;, &quot;lga_frameCount&quot;]:\n rife=nuke.toNode(&quot;RIFE1&quot;)\n if rife:\n  try:\n   fc=int(n[&quot;lga_frameCount&quot;].value())\n   tk=rife[&quot;timingFrame&quot;]\n   tk.clearAnimated()\n   tk.setAnimated()\n   tk.setValueAt(1, 1)\n   tk.setValueAt(2, fc)\n  except:\n   nuke.message(&quot;Error setting keyframes&quot;)')
-nuke.toNode('LGA_Morph').knob('knobChanged').setValue('n=nuke.thisNode()\nk=nuke.thisKnob()\nif k.name() in [&quot;lga_firstFrame&quot;,&quot;lga_lastFrame&quot;,&quot;lga_frameRangeIn&quot;,&quot;lga_frameRangeOut&quot;,&quot;python_button&quot;,&quot;python_button_1&quot;,&quot;python_button_2&quot;]:\n data=nuke.toNode(&quot;NoOp_Morph&quot;)\n rife=nuke.toNode(&quot;RIFE_Morph&quot;)\n merge=nuke.toNode(&quot;Merge_Morph&quot;)\n try:\n  fi=int(data[&quot;lga_firstFrame_int&quot;].value())\n  fo=int(data[&quot;lga_lastFrame_int&quot;].value())\n  fc=int(data[&quot;lga_frameCount&quot;].value())\n  if rife:\n   tk=rife[&quot;timingFrame&quot;]\n   tk.clearAnimated()\n   tk.setAnimated()\n   tk.setValueAt(fi, fi)\n   tk.setValueAt(fi+1, fo)\n  for node in [rife, merge]:\n   if node:\n    dk=node[&quot;disable&quot;]\n    dk.clearAnimated()\n    dk.setAnimated()\n    dk.setValueAt(1, fi)\n    dk.setValueAt(0, fi+1)\n    dk.setValueAt(0, fo-1)\n    dk.setValueAt(1, fo)\n except Exception as e:\n  nuke.message(&quot;Keyframe error: {}&quot;.format(e))')
-&quot;&quot;&quot;
+"""
 ______________________________________________________
 
   LGA_NKS_CheckProjectVersions v1.0 - 2025 - Lega
   Chequea versiones de todos los proyectos abiertos en Hiero
 ______________________________________________________
 
-&quot;&quot;&quot;
+"""
 
 import hiero.core
 import hiero.ui
@@ -25,9 +23,9 @@ def debug_print(*message):
         print(*message)
 
 def extraer_version(ruta_disco):
-    &quot;&quot;&quot;Extrae el número de versión de la ruta del archivo en disco&quot;&quot;&quot;
+    """Extrae el número de versión de la ruta del archivo en disco"""
     if not ruta_disco:
-        return &quot;No detectada&quot;
+        return "No detectada"
     
     try:
         # Obtener el nombre del archivo (sin la ruta completa)
@@ -46,13 +44,13 @@ def extraer_version(ruta_disco):
         if resultado:
             return 'v' + resultado.group(1)  # Añade 'v' a los números encontrados
         
-        return &quot;No detectada&quot;
+        return "No detectada"
     except Exception as e:
-        debug_print(f&quot;Error al extraer versión: {str(e)}&quot;)
-        return &quot;Error&quot;
+        debug_print(f"Error al extraer versión: {str(e)}")
+        return "Error"
 
 def comparar_versiones(version1, version2):
-    &quot;&quot;&quot;Compara dos versiones en formato 'v###' y devuelve la mayor&quot;&quot;&quot;
+    """Compara dos versiones en formato 'v###' y devuelve la mayor"""
     try:
         # Extraer solo los números de las versiones
         match1 = re.search(r'v?(\d+)', version1)
@@ -64,18 +62,18 @@ def comparar_versiones(version1, version2):
         num1 = int(match1.group(1))
         num2 = int(match2.group(1))
         
-        if num1 &gt; num2:
+        if num1 > num2:
             return version1
         else:
             return version2
     except Exception as e:
-        debug_print(f&quot;Error al comparar versiones {version1} y {version2}: {str(e)}&quot;)
+        debug_print(f"Error al comparar versiones {version1} y {version2}: {str(e)}")
         return version1  # En caso de error, devuelve la primera versión
 
 def encontrar_version_mas_alta(ruta_actual):
-    &quot;&quot;&quot;Encuentra la ruta del archivo con la versión más alta en la misma carpeta&quot;&quot;&quot;
+    """Encuentra la ruta del archivo con la versión más alta en la misma carpeta"""
     if not ruta_actual or not os.path.exists(ruta_actual):
-        return &quot;No disponible&quot;
+        return "No disponible"
     
     try:
         # Obtener la carpeta que contiene el archivo actual
@@ -89,21 +87,21 @@ def encontrar_version_mas_alta(ruta_actual):
         if not base_match:
             base_match = re.match(r'(.+?)\.hrox$', nombre_archivo)
             if not base_match:
-                return &quot;No detectada&quot;
+                return "No detectada"
         
         base_nombre = base_match.group(1)
         
         # Buscar todos los archivos .hrox en el directorio con el mismo nombre base
-        patron_busqueda = os.path.join(directorio, f&quot;{base_nombre}*v*.hrox&quot;)
+        patron_busqueda = os.path.join(directorio, f"{base_nombre}*v*.hrox")
         archivos = glob.glob(patron_busqueda)
         
         # Si no encuentra con el patrón v*.hrox, intentar con cualquier número
         if not archivos:
-            patron_busqueda = os.path.join(directorio, f&quot;{base_nombre}*[0-9]*.hrox&quot;)
+            patron_busqueda = os.path.join(directorio, f"{base_nombre}*[0-9]*.hrox")
             archivos = glob.glob(patron_busqueda)
         
         if not archivos:
-            return &quot;No hay otras versiones&quot;
+            return "No hay otras versiones"
         
         # Extraer versiones de todos los archivos encontrados
         version_mas_alta = None
@@ -111,7 +109,7 @@ def encontrar_version_mas_alta(ruta_actual):
         
         for archivo in archivos:
             version = extraer_version(archivo)
-            if version == &quot;No detectada&quot; or version == &quot;Error&quot;:
+            if version == "No detectada" or version == "Error":
                 continue
                 
             if version_mas_alta is None:
@@ -128,23 +126,23 @@ def encontrar_version_mas_alta(ruta_actual):
             # Devolver la ruta completa del archivo con la versión más alta
             return archivo_mas_alto
         else:
-            return &quot;No detectada&quot;
+            return "No detectada"
             
     except Exception as e:
-        debug_print(f&quot;Error al buscar versión más alta: {str(e)}&quot;)
-        return &quot;Error&quot;
+        debug_print(f"Error al buscar versión más alta: {str(e)}")
+        return "Error"
 
 class ProyectosAbertosDialog(QDialog):
     def __init__(self, parent=None):
         super(ProyectosAbertosDialog, self).__init__(parent)
-        self.setWindowTitle(&quot;Proyectos Abiertos&quot;)
+        self.setWindowTitle("Proyectos Abiertos")
         self.setMinimumSize(900, 400)
         
         # Crear layout principal
         layout = QVBoxLayout()
         
         # Añadir título
-        titulo = QLabel(&quot;Versiones de Proyectos Abiertos&quot;)
+        titulo = QLabel("Versiones de Proyectos Abiertos")
         titulo.setAlignment(Qt.AlignCenter)
         font = QFont()
         font.setBold(True)
@@ -156,9 +154,9 @@ class ProyectosAbertosDialog(QDialog):
         self.tabla_proyectos = QTableWidget()
         self.tabla_proyectos.setColumnCount(3)
         self.tabla_proyectos.setHorizontalHeaderLabels([
-            &quot;Nombre del Proyecto&quot;, 
-            &quot;Ruta en Disco&quot;,
-            &quot;Versión Más Alta en Disco&quot;
+            "Nombre del Proyecto", 
+            "Ruta en Disco",
+            "Versión Más Alta en Disco"
         ])
         self.tabla_proyectos.horizontalHeader().setStretchLastSection(True)
         self.tabla_proyectos.setColumnWidth(0, 200)  # Nombre del proyecto
@@ -167,7 +165,7 @@ class ProyectosAbertosDialog(QDialog):
         layout.addWidget(self.tabla_proyectos)
         
         # Botón para cerrar
-        boton_cerrar = QPushButton(&quot;Cerrar&quot;)
+        boton_cerrar = QPushButton("Cerrar")
         boton_cerrar.clicked.connect(self.accept)
         layout.addWidget(boton_cerrar)
         
@@ -177,12 +175,12 @@ class ProyectosAbertosDialog(QDialog):
         self.cargar_proyectos()
     
     def cargar_proyectos(self):
-        &quot;&quot;&quot;Carga la información de los proyectos abiertos en la tabla&quot;&quot;&quot;
+        """Carga la información de los proyectos abiertos en la tabla"""
         proyectos = hiero.core.projects()
         
         if not proyectos:
             self.tabla_proyectos.setRowCount(1)
-            self.tabla_proyectos.setItem(0, 0, QTableWidgetItem(&quot;No hay proyectos abiertos&quot;))
+            self.tabla_proyectos.setItem(0, 0, QTableWidgetItem("No hay proyectos abiertos"))
             self.tabla_proyectos.setSpan(0, 0, 1, 3)  # Combinar celdas para el mensaje
             return
         
@@ -212,35 +210,35 @@ class ProyectosAbertosDialog(QDialog):
             version_alta_num = -1
             
             try:
-                if version_actual != &quot;No detectada&quot; and version_actual != &quot;Error&quot;:
+                if version_actual != "No detectada" and version_actual != "Error":
                     match_actual = re.search(r'v?(\d+)', version_actual)
                     if match_actual:
                         version_actual_num = int(match_actual.group(1))
                 
-                if ruta_version_alta != &quot;No detectada&quot; and ruta_version_alta != &quot;Error&quot; and ruta_version_alta != &quot;No disponible&quot; and ruta_version_alta != &quot;No hay otras versiones&quot;:
+                if ruta_version_alta != "No detectada" and ruta_version_alta != "Error" and ruta_version_alta != "No disponible" and ruta_version_alta != "No hay otras versiones":
                     version_alta = extraer_version(ruta_version_alta)
-                    if version_alta != &quot;No detectada&quot; and version_alta != &quot;Error&quot;:
+                    if version_alta != "No detectada" and version_alta != "Error":
                         match_alta = re.search(r'v?(\d+)', version_alta)
                         if match_alta:
                             version_alta_num = int(match_alta.group(1))
             except Exception as e:
-                debug_print(f&quot;Error al comparar versiones para colorear: {str(e)}&quot;)
+                debug_print(f"Error al comparar versiones para colorear: {str(e)}")
             
-            if version_actual_num &gt; 0 and version_alta_num &gt; 0 and version_actual_num &lt; version_alta_num:
+            if version_actual_num > 0 and version_alta_num > 0 and version_actual_num < version_alta_num:
                 item_ruta.setBackground(QColor(255, 200, 200))  # Rojo claro
-                debug_print(f&quot;Versión actual {version_actual} no es la más alta&quot;)
+                debug_print(f"Versión actual {version_actual} no es la más alta")
             
             # Asignar a la tabla
             self.tabla_proyectos.setItem(i, 0, item_nombre)
             self.tabla_proyectos.setItem(i, 1, item_ruta)
             self.tabla_proyectos.setItem(i, 2, item_ruta_alta)
             
-            debug_print(f&quot;Proyecto {i+1} - Nombre: {nombre_interfaz}, Ruta actual: {ruta_disco}, Ruta más alta: {ruta_version_alta}&quot;)
+            debug_print(f"Proyecto {i+1} - Nombre: {nombre_interfaz}, Ruta actual: {ruta_disco}, Ruta más alta: {ruta_version_alta}")
 
 def main():
-    &quot;&quot;&quot;Función principal que muestra el diálogo con los proyectos abiertos&quot;&quot;&quot;
+    """Función principal que muestra el diálogo con los proyectos abiertos"""
     dialogo = ProyectosAbertosDialog(hiero.ui.mainWindow())
     dialogo.exec_()
 
-if __name__ == &quot;__main__&quot;:
-    main() </script>
+if __name__ == "__main__":
+    main() 
