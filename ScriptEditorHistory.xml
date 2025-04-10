@@ -186,10 +186,10 @@ class ProyectosAbertosDialog(QDialog):
             self.tabla_proyectos.setSpan(0, 0, 1, 3)  # Combinar celdas para el mensaje
             return
         
-        # Configurar el número de filas
-        self.tabla_proyectos.setRowCount(len(proyectos))
+        # Filtrar proyectos que tienen una versión más alta disponible
+        proyectos_con_version_alta = []
         
-        for i, proyecto in enumerate(proyectos):
+        for proyecto in proyectos:
             # Obtener nombre de la interfaz
             nombre_interfaz = proyecto.name()
             
@@ -202,12 +202,7 @@ class ProyectosAbertosDialog(QDialog):
             # Encontrar la ruta de la versión más alta en disco
             ruta_version_alta = encontrar_version_mas_alta(ruta_disco)
             
-            # Crear elementos de tabla
-            item_nombre = QTableWidgetItem(nombre_interfaz)
-            item_ruta = QTableWidgetItem(ruta_disco)
-            item_ruta_alta = QTableWidgetItem(ruta_version_alta)
-            
-            # Colorear si la versión actual no es la más alta
+            # Verificar si tiene una versión más alta que la actual
             version_actual_num = -1
             version_alta_num = -1
             
@@ -224,18 +219,43 @@ class ProyectosAbertosDialog(QDialog):
                         if match_alta:
                             version_alta_num = int(match_alta.group(1))
             except Exception as e:
-                debug_print(f&quot;Error al comparar versiones para colorear: {str(e)}&quot;)
+                debug_print(f&quot;Error al comparar versiones: {str(e)}&quot;)
             
+            # Solo incluir proyectos con versión más alta disponible
             if version_actual_num &gt; 0 and version_alta_num &gt; 0 and version_actual_num &lt; version_alta_num:
-                item_ruta.setBackground(QColor(255, 200, 200))  # Rojo claro
-                debug_print(f&quot;Versión actual {version_actual} no es la más alta&quot;)
+                proyectos_con_version_alta.append({
+                    'proyecto': proyecto,
+                    'nombre': nombre_interfaz,
+                    'ruta_actual': ruta_disco,
+                    'ruta_alta': ruta_version_alta
+                })
+                debug_print(f&quot;Proyecto {nombre_interfaz} - Versión actual: {version_actual}, Versión más alta: {version_alta}&quot;)
+        
+        # Si no hay proyectos con versión más alta, mostrar mensaje
+        if not proyectos_con_version_alta:
+            self.tabla_proyectos.setRowCount(1)
+            mensaje = QTableWidgetItem(&quot;No hay proyectos con versiones más altas disponibles&quot;)
+            mensaje.setTextAlignment(Qt.AlignCenter)
+            self.tabla_proyectos.setItem(0, 0, mensaje)
+            self.tabla_proyectos.setSpan(0, 0, 1, 3)
+            return
+        
+        # Configurar el número de filas para los proyectos con versión más alta
+        self.tabla_proyectos.setRowCount(len(proyectos_con_version_alta))
+        
+        # Cargar datos de proyectos con versión más alta
+        for i, proyecto_data in enumerate(proyectos_con_version_alta):
+            # Crear elementos de tabla
+            item_nombre = QTableWidgetItem(proyecto_data['nombre'])
+            item_ruta = QTableWidgetItem(proyecto_data['ruta_actual'])
+            item_ruta_alta = QTableWidgetItem(proyecto_data['ruta_alta'])
             
             # Asignar a la tabla
             self.tabla_proyectos.setItem(i, 0, item_nombre)
             self.tabla_proyectos.setItem(i, 1, item_ruta)
             self.tabla_proyectos.setItem(i, 2, item_ruta_alta)
             
-            debug_print(f&quot;Proyecto {i+1} - Nombre: {nombre_interfaz}, Ruta actual: {ruta_disco}, Ruta más alta: {ruta_version_alta}&quot;)
+            debug_print(f&quot;Añadido a tabla: {proyecto_data['nombre']}&quot;)
 
 def main():
     &quot;&quot;&quot;Función principal que muestra el diálogo con los proyectos abiertos&quot;&quot;&quot;

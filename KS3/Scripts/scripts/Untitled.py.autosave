@@ -9,8 +9,12 @@ ______________________________________________________
 
 import hiero.core
 import hiero.ui
-from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QListWidget, QListWidgetItem
+import re
+import os
+import glob
+from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QGridLayout, QFrame, QTableWidget, QTableWidgetItem
 from PySide2.QtCore import Qt
+from PySide2.QtGui import QFont, QColor
 
 DEBUG = False
 
@@ -18,23 +22,147 @@ def debug_print(*message):
     if DEBUG:
         print(*message)
 
+def extraer_version(ruta_disco):
+    """Extrae el número de versión de la ruta del archivo en disco"""
+    if not ruta_disco:
+        return "No detectada"
+    
+    try:
+        # Obtener el nombre del archivo (sin la ruta completa)
+        nombre_archivo = os.path.basename(ruta_disco)
+        
+        # Quitar la extensión .hrox
+        nombre_sin_extension = os.path.splitext(nombre_archivo)[0]
+        
+        # Buscar la parte que comienza con 'v' seguida de números al final del nombre
+        resultado = re.search(r'(?:_|-)?(v\d+)$', nombre_sin_extension)
+        if resultado:
+            return resultado.group(1)  # Devuelve 'v###'
+        
+        # Si no encuentra 'v', buscar solo números al final después de un guion bajo o guion
+        resultado = re.search(r'(?:_|-)?(\d+)$', nombre_sin_extension)
+        if resultado:
+            return 'v' + resultado.group(1)  # Añade 'v' a los números encontrados
+        
+        return "No detectada"
+    except Exception as e:
+        debug_print(f"Error al extraer versión: {str(e)}")
+        return "Error"
+
+def comparar_versiones(version1, version2):
+    """Compara dos versiones en formato 'v###' y devuelve la mayor"""
+    try:
+        # Extraer solo los números de las versiones
+        match1 = re.search(r'v?(\d+)', version1)
+        match2 = re.search(r'v?(\d+)', version2)
+        
+        if not match1 or not match2:
+            return version1  # Si no se pueden extraer números, devuelve la primera versión
+            
+        num1 = int(match1.group(1))
+        num2 = int(match2.group(1))
+        
+        if num1 > num2:
+            return version1
+        else:
+            return version2
+    except Exception as e:
+        debug_print(f"Error al comparar versiones {version1} y {version2}: {str(e)}")
+        return version1  # En caso de error, devuelve la primera versión
+
+def encontrar_version_mas_alta(ruta_actual):
+    """Encuentra la ruta del archivo con la versión más alta en la misma carpeta"""
+    if not ruta_actual or not os.path.exists(ruta_actual):
+        return "No disponible"
+    
+    try:
+        # Obtener la carpeta que contiene el archivo actual
+        directorio = os.path.dirname(ruta_actual)
+        
+        # Obtener el nombre base del proyecto (sin versión ni extensión)
+        nombre_archivo = os.path.basename(ruta_actual)
+        
+        # Extraer la parte base del nombre (antes de la versión)
+        base_match = re.match(r'(.+?)(?:_|-)?v?\d+\.hrox$', nombre_archivo)
+        if not base_match:
+            base_match = re.match(r'(.+?)\.hrox$', nombre_archivo)
+            if not base_match:
+                return "No detectada"
+        
+        base_nombre = base_match.group(1)
+        
+        # Buscar todos los archivos .hrox en el directorio con el mismo nombre base
+        patron_busqueda = os.path.join(directorio, f"{base_nombre}*v*.hrox")
+        archivos = glob.glob(patron_busqueda)
+        
+        # Si no encuentra con el patrón v*.hrox, intentar con cualquier número
+        if not archivos:
+            patron_busqueda = os.path.join(directorio, f"{base_nombre}*[0-9]*.hrox")
+            archivos = glob.glob(patron_busqueda)
+        
+        if not archivos:
+            return "No hay otras versiones"
+        
+        # Extraer versiones de todos los archivos encontrados
+        version_mas_alta = None
+        archivo_mas_alto = None
+        
+        for archivo in archivos:
+            version = extraer_version(archivo)
+            if version == "No detectada" or version == "Error":
+                continue
+                
+            if version_mas_alta is None:
+                version_mas_alta = version
+                archivo_mas_alto = archivo
+            else:
+                version_previa = version_mas_alta
+                version_mas_alta = comparar_versiones(version_mas_alta, version)
+                
+                if version_mas_alta != version_previa:
+                    archivo_mas_alto = archivo
+        
+        if version_mas_alta and archivo_mas_alto:
+            # Devolver la ruta completa del archivo con la versión más alta
+            return archivo_mas_alto
+        else:
+            return "No detectada"
+            
+    except Exception as e:
+        debug_print(f"Error al buscar versión más alta: {str(e)}")
+        return "Error"
+
 class ProyectosAbertosDialog(QDialog):
     def __init__(self, parent=None):
         super(ProyectosAbertosDialog, self).__init__(parent)
         self.setWindowTitle("Proyectos Abiertos")
-        self.setMinimumSize(500, 300)
+        self.setMinimumSize(900, 400)
         
         # Crear layout principal
         layout = QVBoxLayout()
         
         # Añadir título
-        titulo = QLabel("Nombres Completos de Proyectos Abiertos")
+        titulo = QLabel("Versiones de Proyectos Abiertos")
         titulo.setAlignment(Qt.AlignCenter)
+        font = QFont()
+        font.setBold(True)
+        font.setPointSize(12)
+        titulo.setFont(font)
         layout.addWidget(titulo)
         
-        # Crear lista para mostrar proyectos
-        self.lista_proyectos = QListWidget()
-        layout.addWidget(self.lista_proyectos)
+        # Tabla para mostrar los datos
+        self.tabla_proyectos = QTableWidget()
+        self.tabla_proyectos.setColumnCount(3)
+        self.tabla_proyectos.setHorizontalHeaderLabels([
+            "Nombre del Proyecto", 
+            "Ruta en Disco",
+            "Versión Más Alta en Disco"
+        ])
+        self.tabla_proyectos.horizontalHeader().setStretchLastSection(True)
+        self.tabla_proyectos.setColumnWidth(0, 200)  # Nombre del proyecto
+        self.tabla_proyectos.setColumnWidth(1, 350)  # Ruta en disco
+        
+        layout.addWidget(self.tabla_proyectos)
         
         # Botón para cerrar
         boton_cerrar = QPushButton("Cerrar")
@@ -47,19 +175,85 @@ class ProyectosAbertosDialog(QDialog):
         self.cargar_proyectos()
     
     def cargar_proyectos(self):
-        """Carga los nombres de los proyectos abiertos en la lista"""
+        """Carga la información de los proyectos abiertos en la tabla"""
         proyectos = hiero.core.projects()
         
         if not proyectos:
-            item = QListWidgetItem("No hay proyectos abiertos")
-            self.lista_proyectos.addItem(item)
+            self.tabla_proyectos.setRowCount(1)
+            self.tabla_proyectos.setItem(0, 0, QTableWidgetItem("No hay proyectos abiertos"))
+            self.tabla_proyectos.setSpan(0, 0, 1, 3)  # Combinar celdas para el mensaje
             return
         
+        # Filtrar proyectos que tienen una versión más alta disponible
+        proyectos_con_version_alta = []
+        
         for proyecto in proyectos:
-            nombre_completo = proyecto.path()
-            item = QListWidgetItem(nombre_completo)
-            self.lista_proyectos.addItem(item)
-            debug_print("Proyecto encontrado:", nombre_completo)
+            # Obtener nombre de la interfaz
+            nombre_interfaz = proyecto.name()
+            
+            # Obtener ruta del disco
+            ruta_disco = proyecto.path()
+            
+            # Extraer versión de la ruta en disco (para comparación)
+            version_actual = extraer_version(ruta_disco)
+            
+            # Encontrar la ruta de la versión más alta en disco
+            ruta_version_alta = encontrar_version_mas_alta(ruta_disco)
+            
+            # Verificar si tiene una versión más alta que la actual
+            version_actual_num = -1
+            version_alta_num = -1
+            
+            try:
+                if version_actual != "No detectada" and version_actual != "Error":
+                    match_actual = re.search(r'v?(\d+)', version_actual)
+                    if match_actual:
+                        version_actual_num = int(match_actual.group(1))
+                
+                if ruta_version_alta != "No detectada" and ruta_version_alta != "Error" and ruta_version_alta != "No disponible" and ruta_version_alta != "No hay otras versiones":
+                    version_alta = extraer_version(ruta_version_alta)
+                    if version_alta != "No detectada" and version_alta != "Error":
+                        match_alta = re.search(r'v?(\d+)', version_alta)
+                        if match_alta:
+                            version_alta_num = int(match_alta.group(1))
+            except Exception as e:
+                debug_print(f"Error al comparar versiones: {str(e)}")
+            
+            # Solo incluir proyectos con versión más alta disponible
+            if version_actual_num > 0 and version_alta_num > 0 and version_actual_num < version_alta_num:
+                proyectos_con_version_alta.append({
+                    'proyecto': proyecto,
+                    'nombre': nombre_interfaz,
+                    'ruta_actual': ruta_disco,
+                    'ruta_alta': ruta_version_alta
+                })
+                debug_print(f"Proyecto {nombre_interfaz} - Versión actual: {version_actual}, Versión más alta: {version_alta}")
+        
+        # Si no hay proyectos con versión más alta, mostrar mensaje
+        if not proyectos_con_version_alta:
+            self.tabla_proyectos.setRowCount(1)
+            mensaje = QTableWidgetItem("No hay proyectos con versiones más altas disponibles")
+            mensaje.setTextAlignment(Qt.AlignCenter)
+            self.tabla_proyectos.setItem(0, 0, mensaje)
+            self.tabla_proyectos.setSpan(0, 0, 1, 3)
+            return
+        
+        # Configurar el número de filas para los proyectos con versión más alta
+        self.tabla_proyectos.setRowCount(len(proyectos_con_version_alta))
+        
+        # Cargar datos de proyectos con versión más alta
+        for i, proyecto_data in enumerate(proyectos_con_version_alta):
+            # Crear elementos de tabla
+            item_nombre = QTableWidgetItem(proyecto_data['nombre'])
+            item_ruta = QTableWidgetItem(proyecto_data['ruta_actual'])
+            item_ruta_alta = QTableWidgetItem(proyecto_data['ruta_alta'])
+            
+            # Asignar a la tabla
+            self.tabla_proyectos.setItem(i, 0, item_nombre)
+            self.tabla_proyectos.setItem(i, 1, item_ruta)
+            self.tabla_proyectos.setItem(i, 2, item_ruta_alta)
+            
+            debug_print(f"Añadido a tabla: {proyecto_data['nombre']}")
 
 def main():
     """Función principal que muestra el diálogo con los proyectos abiertos"""
