@@ -1,7 +1,7 @@
 """
 ______________________________________________________
 
-  LGA_NKS_CheckProjectVersions v1.0 - 2025 - Lega
+  LGA_NKS_CheckProjectVersions v1.1 - 2025 - Lega
   Chequea versiones de todos los proyectos abiertos en Hiero
 ______________________________________________________
 
@@ -12,7 +12,7 @@ import hiero.ui
 import re
 import os
 import glob
-from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QGridLayout, QFrame, QTableWidget, QTableWidgetItem
+from PySide2.QtWidgets import QMainWindow, QVBoxLayout, QLabel, QPushButton, QGridLayout, QFrame, QTableWidget, QTableWidgetItem, QWidget, QApplication
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QFont, QColor
 
@@ -132,14 +132,26 @@ def encontrar_version_mas_alta(ruta_actual):
         debug_print(f"Error al buscar versión más alta: {str(e)}")
         return "Error"
 
-class ProyectosAbertosDialog(QDialog):
+class ProyectosAbertosDialog(QMainWindow):
     def __init__(self, parent=None):
         super(ProyectosAbertosDialog, self).__init__(parent)
         self.setWindowTitle("Proyectos Abiertos")
         self.setMinimumSize(900, 400)
         
-        # Crear layout principal
-        layout = QVBoxLayout()
+        # Establecer un nombre de objeto único para esta ventana
+        self.setObjectName("LGA_ProyectosAbertosDialog")
+        
+        # Configurar banderas de ventana para permitir minimizar, maximizar y cerrar
+        self.setWindowFlags(Qt.Window | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint | Qt.WindowCloseButtonHint)
+        
+        # Mostrar IDs de la ventana
+        print(f"ID de ventana nativo: {self.winId()}")
+        print(f"Nombre de objeto: {self.objectName()}")
+        
+        # Widget central y layout
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        layout = QVBoxLayout(central_widget)
         
         # Añadir título
         titulo = QLabel("Versiones de Proyectos Abiertos")
@@ -166,10 +178,8 @@ class ProyectosAbertosDialog(QDialog):
         
         # Botón para cerrar
         boton_cerrar = QPushButton("Cerrar")
-        boton_cerrar.clicked.connect(self.accept)
+        boton_cerrar.clicked.connect(self.close)
         layout.addWidget(boton_cerrar)
-        
-        self.setLayout(layout)
         
         # Cargar proyectos
         self.cargar_proyectos()
@@ -255,10 +265,37 @@ class ProyectosAbertosDialog(QDialog):
             
             debug_print(f"Añadido a tabla: {proyecto_data['nombre']}")
 
+def buscar_ventana_existente(nombre_objeto):
+    """
+    Busca si ya existe una ventana con el nombre de objeto especificado
+    Devuelve la ventana si existe, None en caso contrario
+    """
+    for widget in QApplication.instance().allWidgets():
+        if widget.objectName() == nombre_objeto and isinstance(widget, QMainWindow):
+            return widget
+    return None
+
 def main():
     """Función principal que muestra el diálogo con los proyectos abiertos"""
-    dialogo = ProyectosAbertosDialog(hiero.ui.mainWindow())
-    dialogo.exec_()
+    # Verificar si ya existe una ventana abierta con el mismo nombre de objeto
+    ventana_existente = buscar_ventana_existente("LGA_ProyectosAbertosDialog")
+    
+    if ventana_existente:
+        # Si ya existe, mostrar su ID y activarla
+        print(f"Ya existe una ventana con ID: {ventana_existente.winId()}")
+        print(f"Usando ventana existente con nombre de objeto: {ventana_existente.objectName()}")
+        
+        # Activar la ventana existente (traerla al frente)
+        ventana_existente.setWindowState(ventana_existente.windowState() & ~Qt.WindowMinimized | Qt.WindowActive)
+        ventana_existente.activateWindow()
+        ventana_existente.raise_()
+        
+        return
+    
+    # Si no existe, crear una nueva ventana
+    global ventana_proyectos
+    ventana_proyectos = ProyectosAbertosDialog(hiero.ui.mainWindow())
+    ventana_proyectos.show()  # Usar show() en lugar de exec_() para modo no modal
 
 if __name__ == "__main__":
     main() 
