@@ -144,6 +144,9 @@ class ProyectosAbertosDialog(QMainWindow):
         # Configurar banderas de ventana para permitir minimizar, maximizar y cerrar
         self.setWindowFlags(Qt.Window | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint | Qt.WindowCloseButtonHint)
         
+        # Hacer que la ventana se destruya completamente cuando se cierra
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
+        
         # Mostrar IDs de la ventana
         print(f"ID de ventana nativo: {self.winId()}")
         print(f"Nombre de objeto: {self.objectName()}")
@@ -182,8 +185,18 @@ class ProyectosAbertosDialog(QMainWindow):
         layout.addWidget(boton_cerrar)
         
         # Cargar proyectos
-        self.cargar_proyectos()
+        self.actualizar_proyectos()
     
+    def actualizar_proyectos(self):
+        """Actualiza la información de los proyectos abiertos en la tabla"""
+        print("Actualizando información de proyectos...")
+        # Limpiar tabla existente
+        self.tabla_proyectos.clearContents()
+        self.tabla_proyectos.setRowCount(0)
+        
+        # Llamar al método original de carga
+        self.cargar_proyectos()
+        
     def cargar_proyectos(self):
         """Carga la información de los proyectos abiertos en la tabla"""
         proyectos = hiero.core.projects()
@@ -268,10 +281,12 @@ class ProyectosAbertosDialog(QMainWindow):
 def buscar_ventana_existente(nombre_objeto):
     """
     Busca si ya existe una ventana con el nombre de objeto especificado
-    Devuelve la ventana si existe, None en caso contrario
+    Devuelve la ventana si existe y está visible, None en caso contrario
     """
     for widget in QApplication.instance().allWidgets():
-        if widget.objectName() == nombre_objeto and isinstance(widget, QMainWindow):
+        if (widget.objectName() == nombre_objeto and 
+            isinstance(widget, QMainWindow) and 
+            widget.isVisible()):
             return widget
     return None
 
@@ -284,6 +299,9 @@ def main():
         # Si ya existe, mostrar su ID y activarla
         print(f"Ya existe una ventana con ID: {ventana_existente.winId()}")
         print(f"Usando ventana existente con nombre de objeto: {ventana_existente.objectName()}")
+        
+        # Actualizar los datos de la ventana existente
+        ventana_existente.actualizar_proyectos()
         
         # Activar la ventana existente (traerla al frente)
         ventana_existente.setWindowState(ventana_existente.windowState() & ~Qt.WindowMinimized | Qt.WindowActive)

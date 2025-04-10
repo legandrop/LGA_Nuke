@@ -187,8 +187,18 @@ class ProyectosAbertosDialog(QMainWindow):
         layout.addWidget(boton_cerrar)
         
         # Cargar proyectos
-        self.cargar_proyectos()
+        self.actualizar_proyectos()
     
+    def actualizar_proyectos(self):
+        &quot;&quot;&quot;Actualiza la información de los proyectos abiertos en la tabla&quot;&quot;&quot;
+        print(&quot;Actualizando información de proyectos...&quot;)
+        # Limpiar tabla existente
+        self.tabla_proyectos.clearContents()
+        self.tabla_proyectos.setRowCount(0)
+        
+        # Llamar al método original de carga
+        self.cargar_proyectos()
+        
     def cargar_proyectos(self):
         &quot;&quot;&quot;Carga la información de los proyectos abiertos en la tabla&quot;&quot;&quot;
         proyectos = hiero.core.projects()
@@ -291,6 +301,9 @@ def main():
         # Si ya existe, mostrar su ID y activarla
         print(f&quot;Ya existe una ventana con ID: {ventana_existente.winId()}&quot;)
         print(f&quot;Usando ventana existente con nombre de objeto: {ventana_existente.objectName()}&quot;)
+        
+        # Actualizar los datos de la ventana existente
+        ventana_existente.actualizar_proyectos()
         
         # Activar la ventana existente (traerla al frente)
         ventana_existente.setWindowState(ventana_existente.windowState() &amp; ~Qt.WindowMinimized | Qt.WindowActive)
