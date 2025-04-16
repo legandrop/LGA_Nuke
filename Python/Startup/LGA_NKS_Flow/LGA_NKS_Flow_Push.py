@@ -1,7 +1,7 @@
 """
 _____________________________________________________________
 
-  LGA_NKS_Flow_Push v2.42 - 2024 - Lega Pugliese
+  LGA_NKS_Flow_Push v2.44 - 2025 - Lega Pugliese
   Envia a flow nuevos estados de las tasks comps. 
   En algunos estados permite enviar un mensaje a la version
 _____________________________________________________________
@@ -226,55 +226,51 @@ class Worker(QRunnable):
 
             debug_print(f"Buscando shot y tareas para el proyecto: {project_name}, Shot: {shot_code}")
             project, shot, tasks = self.sg_manager.find_shot_and_tasks(project_name, shot_code)
+            
             if shot:
                 debug_print(f"Shot encontrado: {shot['code']} (ID: {shot['id']})")
-                sg_highest_version, sg_version_number, user_id = self.sg_manager.find_highest_version_for_shot(shot['id'])
-                if sg_highest_version:
-                    debug_print(f"Version mas alta encontrada: {sg_highest_version['code']} (Version: {sg_version_number})")
-                    base_version_highlighted = re.sub(r'(_)(v\d+)', r'\1<span style="color: yellow;">\2</span>', self.base_name)
-                    base_name_styled = f'<span style="color: white; font-weight: bold;">{base_version_highlighted}</span>'
-                    sg_version_highlighted = f'<span style="color: yellow;">v{sg_version_number}</span>'
-                    info = (f"Warning: Changing task status on outdated version<br><br>"
-                            f"{base_name_styled}<br><br>"
-                            f"Version in SG: {sg_version_highlighted}")
-                    self.signals.result_ready.emit(info, int(sg_version_number), version_number)
-
-                    sg_status = status_translation.get(self.button_name, None)
-                    if sg_status:
-                        task_id = None
-                        task_assignee_id = None
-                        for task in tasks:
-                            if task['content'].lower() == task_name:
-                                debug_print(f"Actualizando tarea: {task['content']} (ID: {task['id']})")
-                                self.sg_manager.update_task_status(task['id'], sg_status)
-                                task_id = task['id']
-                                task_assignee_id = self.sg_manager.get_task_assignee(task_id)
-                                break
-                        if sg_status == "rev_di" or sg_status == "corr":
-                            debug_print(f"Actualizando version del Shot: {shot_code}, Version: {version_number_str} a: vwd")
-                            self.sg_manager.update_version_status(project_name, shot_code, version_number_str, "vwd")
-                            project_id = project['id']
-                            try:
-                                if self.message:
-                                    debug_print(f"Agregando comentario a la version (ID: {sg_highest_version['id']}): {self.message}")
-                                    self.sg_manager.add_comment_to_version(sg_highest_version['id'], project_id, self.message, user_id, task_assignee_id, shot['id'])
-                            except Exception as e:
-                                debug_print(f"Error while adding comment to version: {e}")
-                        elif sg_status == "rev_su":
-                            debug_print(f"Actualizando version del Shot: {shot_code}, Version: {version_number_str} a: rev")
-                            self.sg_manager.update_version_status(project_name, shot_code, version_number_str, "rev")
-                        elif sg_status == "revleg":
-                            debug_print(f"Actualizando version del Shot: {shot_code}, Version: {version_number_str} a: unvleg")
-                            self.sg_manager.update_version_status(project_name, shot_code, version_number_str, "unvleg")
-                            project_id = project['id']
-                            try:
-                                if self.message:
-                                    debug_print(f"Agregando comentario a la version (ID: {sg_highest_version['id']}): {self.message}")
-                                    self.sg_manager.add_comment_to_version(sg_highest_version['id'], project_id, self.message, user_id, task_assignee_id, shot['id'])
-                            except Exception as e:
-                                debug_print(f"Error while adding comment to version: {e}")
+                
+                # Realizar las actualizaciones en ShotGrid
+                sg_status = status_translation.get(self.button_name, None)
+                if sg_status:
+                    task_id = None
+                    task_assignee_id = None
+                    for task in tasks:
+                        if task['content'].lower() == task_name:
+                            debug_print(f"Actualizando tarea: {task['content']} (ID: {task['id']})")
+                            self.sg_manager.update_task_status(task['id'], sg_status)
+                            task_id = task['id']
+                            task_assignee_id = self.sg_manager.get_task_assignee(task_id)
+                            break
+                            
+                    # Buscar la versión más alta para obtener su ID y usuario para los comentarios
+                    sg_highest_version, sg_version_number, user_id = self.sg_manager.find_highest_version_for_shot(shot['id'])
+                    
+                    if sg_status == "rev_di" or sg_status == "corr":
+                        debug_print(f"Actualizando version del Shot: {shot_code}, Version: {version_number_str} a: vwd")
+                        self.sg_manager.update_version_status(project_name, shot_code, version_number_str, "vwd")
+                        project_id = project['id']
+                        try:
+                            if self.message and sg_highest_version:
+                                debug_print(f"Agregando comentario a la version (ID: {sg_highest_version['id']}): {self.message}")
+                                self.sg_manager.add_comment_to_version(sg_highest_version['id'], project_id, self.message, user_id, task_assignee_id, shot['id'])
+                        except Exception as e:
+                            debug_print(f"Error while adding comment to version: {e}")
+                    elif sg_status == "rev_su":
+                        debug_print(f"Actualizando version del Shot: {shot_code}, Version: {version_number_str} a: rev")
+                        self.sg_manager.update_version_status(project_name, shot_code, version_number_str, "rev")
+                    elif sg_status == "revleg":
+                        debug_print(f"Actualizando version del Shot: {shot_code}, Version: {version_number_str} a: unvleg")
+                        self.sg_manager.update_version_status(project_name, shot_code, version_number_str, "unvleg")
+                        project_id = project['id']
+                        try:
+                            if self.message and sg_highest_version:
+                                debug_print(f"Agregando comentario a la version (ID: {sg_highest_version['id']}): {self.message}")
+                                self.sg_manager.add_comment_to_version(sg_highest_version['id'], project_id, self.message, user_id, task_assignee_id, shot['id'])
+                        except Exception as e:
+                            debug_print(f"Error while adding comment to version: {e}")
                 else:
-                    debug_print(f"No se encontro la version mas alta para el Shot (ID: {shot['id']})")
+                    debug_print(f"No se encontro un estado valido para: {self.button_name}")
             else:
                 debug_print(f"No se encontro el Shot con el codigo: {shot_code}")
         except Exception as e:
@@ -299,6 +295,37 @@ class MessageBoxManager:
         msg_box.show()
         self.message_boxes.append(msg_box)
 
+def show_version_dialog(base_name, local_version, flow_version):
+    """Muestra un diálogo preguntando si se desea continuar cuando la versión local es más antigua."""
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
+    
+    msgBox = QMessageBox()
+    msgBox.setWindowTitle("Verificación de Versión")
+    msgBox.setTextFormat(Qt.RichText)
+    
+    # Formatear el nombre base con la versión resaltada
+    base_version_highlighted = re.sub(r'(_)(v\d+)', r'\1<span style="color: #ff9900;">\2</span>', base_name)
+    
+    msgBox.setText(
+        f"<div style='text-align: center;'>"
+        f"<span style='color: #ff9900;'><b>¡Atención!</b></span><br><br>"
+        f"La versión que intentas actualizar no es la más reciente:<br><br>"
+        f"<span style='font-weight: bold;'>{base_version_highlighted}</span><br><br>"
+        f"Versión local: <span style='color: #ff9900;'>v{local_version}</span><br>"
+        f"Última versión en Flow: <span style='color: #00ff00;'>v{flow_version}</span><br><br>"
+        f"¿Deseas continuar de todos modos?</div>"
+    )
+    
+    msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+    msgBox.setDefaultButton(QMessageBox.No)
+    msgBox.button(QMessageBox.Yes).setText("Continuar de todos modos")
+    msgBox.button(QMessageBox.No).setText("Cancelar")
+    
+    response = msgBox.exec_()
+    return response == QMessageBox.Yes
+
 def handle_results(info, sg_version_number, version_number):
     if sg_version_number > version_number:
         msg_manager.show_warning_message(info)
@@ -318,6 +345,8 @@ def Push_Task_Status(button_name, base_name, update_callback=None):
 
     sg_manager = ShotGridManager(sg_url, sg_script_name, sg_api_key, sg_login)
 
+    # Primero solicitar el mensaje al usuario para ciertos estados
+    message = None
     sg_status = status_translation.get(button_name, None)
     if sg_status in ["rev_di", "corr", "revleg", "revhld"]:
         app = QApplication.instance()
@@ -326,25 +355,65 @@ def Push_Task_Status(button_name, base_name, update_callback=None):
 
         input_dialog = InputDialog(base_name)
         message = input_dialog.get_text()
-        if message is not None:
-            worker = Worker(button_name, base_name, sg_manager, message)
-            worker.signals.result_ready.connect(handle_results)
-            worker.signals.debug_output.connect(lambda: print_debug_messages())  # Conectar nueva señal
-            if update_callback:
-                worker.signals.task_finished.connect(update_callback)  # Conectar la senal a la funcion de callback
-            QThreadPool.globalInstance().start(worker)
-        else:
-            # Operacion cancelada por el usuario
-            return False  # Retornar False si el usuario cancela la operacion
-    else:
-        worker = Worker(button_name, base_name, sg_manager, None)
+        if message is None:
+            # Operación cancelada por el usuario al cerrar el diálogo de comentarios
+            return False
+
+    # Ahora extraer información del nombre base y verificar versiones
+    try:
+        project_name = base_name.split('_')[0]
+        parts = base_name.split('_')
+        shot_code = '_'.join(parts[:5])
+        
+        # Extraer número de versión
+        version_number_str = None
+        for part in parts:
+            if part.startswith('v') and part[1:].isdigit():
+                version_number_str = part
+                break
+                
+        if not version_number_str:
+            debug_print("Error: No se encontró un número de versión válido en el nombre del archivo.")
+            return False
+            
+        local_version = int(version_number_str.replace('v', ''))
+        
+        # Verificar versión en Flow ANTES de hacer cualquier cambio
+        project, shot, _ = sg_manager.find_shot_and_tasks(project_name, shot_code)
+        if not shot:
+            debug_print(f"No se encontró el Shot con el código: {shot_code}")
+            return False
+            
+        sg_highest_version, sg_version_number, _ = sg_manager.find_highest_version_for_shot(shot['id'])
+        if not sg_highest_version:
+            debug_print(f"No se encontró la versión más alta para el Shot (ID: {shot['id']})")
+        elif sg_version_number and int(sg_version_number) > local_version:
+            # Si la versión en Flow es mayor, mostrar el diálogo y preguntar si desea continuar
+            debug_print(f"Versión local ({local_version}) es menor que la versión en Flow ({sg_version_number})")
+            if not show_version_dialog(base_name, local_version, sg_version_number):
+                debug_print("Usuario canceló la operación debido a diferencia de versiones")
+                return False  # El usuario decidió no continuar
+    except Exception as e:
+        debug_print(f"Error durante la verificación de versiones: {e}")
+        # Continuamos con el proceso aunque falle la verificación
+
+    # Una vez que el usuario ha confirmado (o no hay problema de versiones), proceder con las actualizaciones
+    if sg_status in ["rev_di", "corr", "revleg", "revhld"]:
+        worker = Worker(button_name, base_name, sg_manager, message)
         worker.signals.result_ready.connect(handle_results)
         worker.signals.debug_output.connect(lambda: print_debug_messages())  # Conectar nueva señal
         if update_callback:
-            worker.signals.task_finished.connect(update_callback)  # Conectar la senal a la funcion de callback
+            worker.signals.task_finished.connect(update_callback)
+        QThreadPool.globalInstance().start(worker)
+    else:
+        worker = Worker(button_name, base_name, sg_manager, None)
+        worker.signals.result_ready.connect(handle_results)
+        worker.signals.debug_output.connect(lambda: print_debug_messages())
+        if update_callback:
+            worker.signals.task_finished.connect(update_callback)
         QThreadPool.globalInstance().start(worker)
 
-    return True  # Retornar True indicando que la operacion fue iniciada
+    return True  # Retornar True indicando que la operación fue iniciada
 
 def print_debug_messages():
     if DEBUG:
