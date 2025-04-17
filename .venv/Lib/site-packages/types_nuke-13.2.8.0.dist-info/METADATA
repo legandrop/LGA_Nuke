@@ -1,0 +1,28 @@
+Metadata-Version: 2.1
+Name: types-nuke
+Version: 13.2.8.0
+Summary: Unofficial python stubs for Foundry Nuke
+Home-page: https://github.com/LumaPictures/cg-stubs
+License: MIT
+Keywords: 3d,graphics,games,VFX,CG,animation
+Author: Chad Dombrova
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Project-URL: Repository, https://github.com/LumaPictures/cg-stubs
+Description-Content-Type: text/markdown
+
+# Python type stubs for Foundry Nuke
+
