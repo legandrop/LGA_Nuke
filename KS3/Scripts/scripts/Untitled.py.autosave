@@ -1,315 +1,374 @@
 """
-_____________________________________________________________________________________________________
+________________________________________________________________________
 
-  LGA_ToolPack_settings v0.1 | 2025 | Lega
-  Configuracion de la herramienta LGA_ToolPack
-_____________________________________________________________________________________________________
+  LGA_RnW_ColorSpace_Favs v1.3 | 2024 | Lega
+  Tool for applying OCIO color spaces to selected Read and Write nodes
+________________________________________________________________________
+
 """
 
-import sys
-import os
-import configparser
 from PySide2.QtWidgets import (
     QApplication,
     QWidget,
     QVBoxLayout,
-    QHBoxLayout,
-    QGroupBox,
-    QLabel,
-    QLineEdit,
-    QFormLayout,
+    QTableWidget,
+    QTableWidgetItem,
+    QHeaderView,
     QPushButton,
+    QHBoxLayout,
 )
-from PySide2.QtCore import Qt
-
-# Importar funciones y constantes desde LGA_Write_Focus
-# Asumiendo que ambos scripts estan en el mismo directorio o en el sys.path
-try:
-    from LGA_Write_Focus import (
-        get_config_path,
-        ensure_config_exists,
-        get_node_name_from_config,
-        DEFAULT_NODE_NAME,  # Importar el valor por defecto tambien
-        CONFIG_SECTION,  # Constante para la seccion
-        CONFIG_NODE_NAME_KEY,  # Constante para la clave
-    )
-except ImportError:
-    print(
-        "Error: No se pudo importar LGA_Write_Focus.py. Asegurate de que este en la misma carpeta o en el PYTHONPATH."
-    )
-
-    # Definir funciones dummy o valores por defecto para que la UI no falle
-    def ensure_config_exists():
-        pass
-
-    def get_node_name_from_config() -> str:
-        return "Write_Pub"  # Usar valor por defecto
-
-    DEFAULT_NODE_NAME = "Write_Pub"
-
-# --- Importaciones de LGA_showInlFlow ---
-try:
-    from LGA_showInlFlow import (
-        get_config_path as sif_get_config_path,
-        ensure_config_exists as sif_ensure_config_exists,
-        get_credentials_from_config as sif_get_credentials_from_config,
-        CONFIG_SECTION as SIF_CONFIG_SECTION,
-        CONFIG_URL_KEY as SIF_CONFIG_URL_KEY,
-        CONFIG_LOGIN_KEY as SIF_CONFIG_LOGIN_KEY,
-        CONFIG_PASSWORD_KEY as SIF_CONFIG_PASSWORD_KEY,
-    )
-except ImportError:
-    print(
-        "Error: No se pudo importar LGA_showInlFlow.py. Asegurate de que este en la misma carpeta o en el PYTHONPATH."
-    )
-
-    # Definir funciones dummy o valores por defecto para que la UI no falle
-    def sif_ensure_config_exists():
-        pass
-
-    def sif_get_credentials_from_config() -> tuple[str | None, str | None, str | None]:
-        return None, None, None
-
-    def sif_get_config_path() -> str | None:
-        return None  # Para la funcion de guardado
-
-    # Asignar valores por defecto a las constantes que faltan
-    SIF_CONFIG_SECTION = "Credentials"
-    SIF_CONFIG_URL_KEY = "shotgrid_url"
-    SIF_CONFIG_LOGIN_KEY = "shotgrid_login"
-    SIF_CONFIG_PASSWORD_KEY = "shotgrid_password"
+from PySide2.QtCore import Qt, QRect
+from PySide2.QtGui import QCursor, QPalette, QColor
+import configparser
+import nuke
+import os
+import shutil
 
 
-class SettingsWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("LGA ToolPack Settings")
-        self.setMinimumWidth(400)
-        self.initUI()
+class SelectedNodeInfo(QWidget):
+    def __init__(self, selected_nodes, parent=None, initial_color_spaces=None):
+        super(SelectedNodeInfo, self).__init__(parent)
+        # Cargar color spaces solo si no se pasaron pre-cargados
+        self.color_spaces = (
+            initial_color_spaces
+            if initial_color_spaces is not None
+            else self.load_color_spaces()
+        )
+        self.selected_nodes = selected_nodes
+        # Solo inicializar UI si hay color spaces (aunque main ya lo verifica)
+        if self.color_spaces:
+            self.initUI()
+        else:
+            # Este caso no debería ocurrir si main funciona, pero por seguridad:
+            print("Error interno: __init__ llamado sin color spaces válidos.")
+            # Considerar cerrar o no hacer nada
+            # self.close()
 
     def initUI(self):
-        main_layout = QVBoxLayout(self)
+        self.setWindowFlags(
+            Qt.FramelessWindowHint
+        )  # Quitar la barra de titulo estandar
 
-        # --- Write Presets Section ---
-        write_presets_group = QGroupBox("Write Presets")
-        write_presets_layout = QVBoxLayout()
-        write_presets_layout.addWidget(
-            QLabel("(Placeholder for Write Presets functionality)")
+        # Verificar los tipos de nodos seleccionados y establecer el titulo apropiado
+        node_classes = [node.Class() for node in self.selected_nodes]
+        if "Write" in node_classes and "Read" in node_classes:
+            self.setWindowTitle(" Input + Output Transform")
+            header_label = "Input & Output Transform"
+        elif "Write" in node_classes:
+            self.setWindowTitle(" Output Transform")
+            header_label = "Output Transform"
+        elif "Read" in node_classes:
+            self.setWindowTitle(" Input Transform")
+            header_label = "Input Transform"
+        else:
+            self.setWindowTitle("Node Information")
+            header_label = "Transform"
+
+        layout = QVBoxLayout(self)
+
+        # Crear una barra de titulo personalizada con el titulo y el boton de cierre en la misma linea
+        title_bar = QWidget(self)
+        title_bar.setFixedHeight(20)  # Ajustar el alto de la barra de titulo
+        title_bar.setAutoFillBackground(
+            True
+        )  # Asegurar que el fondo se llene con el color especificado
+        title_bar.setStyleSheet(
+            "background-color: #323232;"
+        )  # Establecer el color de fondo
+
+        title_bar_layout = QHBoxLayout(title_bar)
+        title_bar_layout.setContentsMargins(0, 0, 0, 0)  # Ajustar los margenes a cero
+
+        # Anadir un expansor para centrar el titulo
+        title_bar_layout.addStretch(1)
+
+        # Crear el titulo de la ventana
+        title_label = QPushButton(self.windowTitle(), self)
+        title_label.setStyleSheet(
+            "background-color: none; color: white; border: none; font-weight: bold;"
         )
-        self.save_write_presets_button = QPushButton("Save")
-        # self.save_write_presets_button.clicked.connect(self.save_write_presets) # Placeholder
-        write_presets_layout.addWidget(self.save_write_presets_button, 0, Qt.AlignRight)
-        write_presets_group.setLayout(write_presets_layout)
-        main_layout.addWidget(write_presets_group)
+        title_label.setEnabled(False)  # Hacer que el boton no sea clickeable
+        title_bar_layout.addWidget(title_label)
 
-        # --- Write Focus Section ---
-        write_focus_group = QGroupBox("Write Focus")
-        write_focus_layout_container = QVBoxLayout()  # Contenedor para Form y Boton
-        write_focus_form_layout = QFormLayout()  # Layout para etiquetas y campos
-        self.write_focus_input = QLineEdit()
-        # --- Leer y mostrar el valor actual ---
-        ensure_config_exists()  # Asegurarse de que el archivo .ini exista
-        current_node_name = get_node_name_from_config()
-        self.write_focus_input.setText(current_node_name)
-        # --- Fin lectura ---
-        write_focus_form_layout.addRow(
-            "Name of the Write Node to Focus:", self.write_focus_input
+        # Anadir otro expansor para centrar el titulo
+        title_bar_layout.addStretch(1)
+
+        # Agregar el boton de cierre personalizado al final
+        close_button = QPushButton("X", self)
+        close_button.setFixedSize(
+            20, 20
+        )  # Ajustar el tamano de la X para que sea consistente con la altura de la barra
+        close_button.setStyleSheet(
+            "background-color: none; color: white; border: none;"
+        )
+        close_button.clicked.connect(self.close)
+        title_bar_layout.addWidget(close_button)
+
+        # Mover el boton de cierre al final con espaciado
+        title_bar_layout.setSpacing(0)
+
+        layout.addWidget(title_bar)
+
+        # Crear la tabla sin el horizontal header
+        self.table = QTableWidget(len(self.color_spaces), 1, self)
+        self.table.horizontalHeader().setVisible(
+            False
+        )  # Ocultar el encabezado horizontal
+
+        # Eliminar numeros de las filas
+        self.table.verticalHeader().setVisible(False)
+
+        # Configurar la paleta de la tabla para cambiar el color de seleccion a gris claro
+        palette = self.table.palette()
+        palette.setColor(QPalette.Highlight, QColor(230, 230, 230))  # Gris claro
+        palette.setColor(QPalette.HighlightedText, QColor(Qt.black))
+        self.table.setPalette(palette)
+
+        # Configurar el estilo de la tabla
+        self.table.setStyleSheet(
+            """
+            QTableView::item:selected {
+                background-color: rgb(230, 230, 230);  # Gris claro
+                color: black;
+            }
+        """
         )
 
-        # Anadir FormLayout al contenedor
-        write_focus_layout_container.addLayout(write_focus_form_layout)
+        # Configurar el comportamiento de seleccion para seleccionar filas enteras
+        self.table.setSelectionBehavior(QTableWidget.SelectRows)
 
-        # Boton Save
-        self.save_write_focus_button = QPushButton("Save")
-        self.save_write_focus_button.clicked.connect(self.save_write_focus_settings)
-        write_focus_layout_container.addWidget(
-            self.save_write_focus_button, 0, Qt.AlignRight
-        )  # Anadir boton al contenedor
+        # Cargar datos en la tabla
+        self.load_data()
 
-        write_focus_group.setLayout(
-            write_focus_layout_container
-        )  # Establecer layout del grupo
-        main_layout.addWidget(write_focus_group)
+        # Conectar el evento de clic de la celda para cambiar el espacio de color
+        self.table.cellClicked.connect(self.change_color_space)
 
-        # --- Show in Flow Section ---
-        show_flow_group = QGroupBox("Show in Flow")
-        show_flow_layout_container = QVBoxLayout()  # Contenedor para Form y Boton
-        show_flow_form_layout = QFormLayout()  # Layout para etiquetas y campos
-        self.username_input = QLineEdit()
-        self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Password)  # Mask password
-        self.site_input = QLineEdit()
-        show_flow_form_layout.addRow("Username:", self.username_input)
-        show_flow_form_layout.addRow("Password:", self.password_input)
-        show_flow_form_layout.addRow("Site:", self.site_input)
+        layout.addWidget(self.table)
+        self.setLayout(layout)
 
-        # --- Leer y mostrar valores actuales de Show In Flow ---
-        sif_ensure_config_exists()  # Asegurarse de que el archivo .ini exista
-        sif_url, sif_login, sif_password = sif_get_credentials_from_config()
-        self.site_input.setText(sif_url or "")
-        self.username_input.setText(sif_login or "")
-        self.password_input.setText(sif_password or "")
-        # --- Fin lectura ---
+        # Ajustar el tamano de la ventana y posicionarla en el centro
+        self.adjust_window_size()
 
-        # Anadir FormLayout al contenedor
-        show_flow_layout_container.addLayout(show_flow_form_layout)
+    def load_color_spaces(self):
+        config = configparser.ConfigParser(allow_no_value=True)
+        ini_path = None  # Inicializar ini_path a None
+        fallback_list = []  # Lista vacía como fallback final si todo falla
 
-        # Boton Save
-        self.save_show_flow_button = QPushButton("Save")
-        self.save_show_flow_button.clicked.connect(self.save_show_flow_settings)
-        show_flow_layout_container.addWidget(
-            self.save_show_flow_button, 0, Qt.AlignRight
-        )  # Anadir boton al contenedor
-
-        show_flow_group.setLayout(
-            show_flow_layout_container
-        )  # Establecer layout del grupo
-        main_layout.addWidget(show_flow_group)
-
-        # --- Color Space Favs Section ---
-        color_space_group = QGroupBox("Color Space Favs")
-        color_space_layout = QVBoxLayout()
-        color_space_layout.addWidget(
-            QLabel("(Placeholder for Color Space Favorites functionality)")
+        # Definir la ruta de AppData y el nombre del INI
+        app_data_path = os.getenv("APPDATA")
+        ini_name = "LGA_RnW_ColorSpace_Favs_List.ini"
+        local_ini_path = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), ini_name
         )
-        self.save_color_space_button = QPushButton("Save")
-        # self.save_color_space_button.clicked.connect(self.save_color_space) # Placeholder
-        color_space_layout.addWidget(self.save_color_space_button, 0, Qt.AlignRight)
-        color_space_group.setLayout(color_space_layout)
-        main_layout.addWidget(color_space_group)
 
-        main_layout.addStretch()  # Push everything up
+        if app_data_path:
+            lga_toolpack_dir = os.path.join(app_data_path, "LGA", "ToolPack")
+            ini_path_appdata = os.path.join(lga_toolpack_dir, ini_name)
 
-    def save_write_focus_settings(self):
-        """Guarda el nombre del nodo de Write Focus en su archivo .ini."""
-        config_file_path = get_config_path()
-        if not config_file_path:
+            # 1. Crear carpeta AppData si no existe
+            if not os.path.exists(lga_toolpack_dir):
+                try:
+                    os.makedirs(lga_toolpack_dir)
+                    print(f"Carpeta creada en: {lga_toolpack_dir}")
+                except OSError as e:
+                    print(
+                        f"Error al crear la carpeta {lga_toolpack_dir}: {e}. Intentando usar INI local."
+                    )
+                    # Si falla la creación, intentaremos usar el local más adelante
+                    pass
+
+            # 2. Verificar/Copiar INI a AppData
+            # Solo intentar copiar si la carpeta existe o se acaba de crear con éxito
+            if os.path.exists(lga_toolpack_dir):
+                if not os.path.exists(ini_path_appdata):
+                    if os.path.exists(local_ini_path):
+                        try:
+                            shutil.copy2(local_ini_path, ini_path_appdata)
+                            print(
+                                f"Archivo INI copiado desde {local_ini_path} a {ini_path_appdata}"
+                            )
+                            ini_path = ini_path_appdata  # Usar el INI recién copiado
+                        except Exception as e:
+                            print(
+                                f"Error al copiar el archivo INI a AppData: {e}. Intentando usar INI local."
+                            )
+                            # Si falla la copia, intentaremos usar el local más adelante
+                            pass
+                    else:
+                        print(
+                            f"Error: El archivo INI no existe en AppData ({ini_path_appdata}) y el archivo local ({local_ini_path}) tampoco existe para copiar."
+                        )
+                        # No se puede continuar sin un INI, se usará fallback_list
+                else:
+                    # Si el INI ya existe en AppData, esa es la ruta a usar
+                    ini_path = ini_path_appdata
+            else:
+                # Si la carpeta de AppData no se pudo crear, intentaremos usar el local más adelante
+                print(
+                    f"La carpeta {lga_toolpack_dir} no existe y no pudo ser creada. Intentando usar INI local."
+                )
+
+        else:
             print(
-                "Error: No se pudo obtener la ruta del archivo de configuracion para Write Focus."
+                "Error: No se pudo obtener la ruta APPDATA. Intentando usar INI local."
             )
-            # Opcional: Mostrar mensaje en la UI
-            return
 
-        new_node_name = self.write_focus_input.text().strip()
-        if not new_node_name:
-            print("Error: El nombre del nodo para Write Focus no puede estar vacio.")
-            # Opcional: Mostrar mensaje en la UI y quizas revertir al valor anterior
-            current_node_name = get_node_name_from_config()  # Releer por si acaso
-            self.write_focus_input.setText(current_node_name)
-            return
+        # 3. Intentar usar INI local si no se pudo usar el de AppData
+        if ini_path is None:  # Si no tenemos una ruta válida de AppData
+            if os.path.exists(local_ini_path):
+                print(f"Usando archivo INI local: {local_ini_path}")
+                ini_path = local_ini_path
+            else:
+                print(
+                    f"Error: No se pudo determinar una ruta válida para el archivo INI (ni AppData ni local: {local_ini_path})."
+                )
+                # No hay archivo INI disponible
 
-        config = configparser.ConfigParser()
-        try:
-            # Leer la configuracion existente para preservar otras posibles claves/secciones
-            config.read(config_file_path)
-
-            # Asegurarse de que la seccion exista
-            if not config.has_section(CONFIG_SECTION):
-                config.add_section(CONFIG_SECTION)
-
-            # Establecer el nuevo valor
-            config.set(CONFIG_SECTION, CONFIG_NODE_NAME_KEY, new_node_name)
-
-            # Escribir los cambios de vuelta al archivo
-            with open(config_file_path, "w") as configfile:
-                config.write(configfile)
-
+        # 4. Leer la configuración desde la ruta INI determinada (si existe)
+        if ini_path and os.path.exists(ini_path):
+            try:
+                config.optionxform = str  # type: ignore # Mantener mayusculas/minusculas
+                config.read(ini_path)
+                if "ColorSpaces" in config:
+                    return [key for key in config["ColorSpaces"]]
+                else:
+                    print(
+                        f"Error: La seccion 'ColorSpaces' no se encuentra en el archivo INI: {ini_path}"
+                    )
+                    return fallback_list  # Retornar lista vacía si la sección no está
+            except configparser.Error as e:
+                print(f"Error al leer el archivo INI {ini_path}: {e}")
+                return fallback_list  # Retornar lista vacía si hay error de lectura
+        else:
+            # Si al final no se encontró ningún archivo INI válido
             print(
-                f"Configuracion de Write Focus guardada: {CONFIG_NODE_NAME_KEY} = {new_node_name} en {config_file_path}"
+                "Error final: No se pudo encontrar o acceder a un archivo INI válido."
             )
-            # Opcional: Mostrar mensaje de exito en la UI (ej. status bar)
+            return fallback_list  # Retornar lista vacía como último recurso
 
-        except IOError as e:
-            print(
-                f"Error de I/O al guardar la configuracion de Write Focus en {config_file_path}: {e}"
+    def load_data(self):
+        for row, name in enumerate(self.color_spaces):
+            node_item = QTableWidgetItem(name)
+            self.table.setItem(row, 0, node_item)
+
+        self.table.resizeColumnsToContents()
+
+    def adjust_window_size(self):
+        # Desactivar temporalmente el estiramiento de la ultima columna
+        self.table.horizontalHeader().setStretchLastSection(False)
+
+        # Ajustar las columnas al contenido
+        self.table.resizeColumnsToContents()
+
+        # Calcular el ancho de la ventana basado en el ancho de las columnas y el texto mas ancho
+        width = self.table.verticalHeader().width()  # Un poco de relleno para estetica
+        for i in range(self.table.columnCount()):
+            width += (
+                self.table.columnWidth(i) + 50
+            )  # Un poco mas de relleno entre columnas
+
+        # Ajustar el ancho adicional basado en el texto mas ancho
+        longest_text = max(self.color_spaces, key=len)
+        font_metrics = self.table.fontMetrics()
+        text_width = (
+            font_metrics.horizontalAdvance(longest_text) + 50
+        )  # Un poco de relleno adicional
+        width = max(width, text_width)
+
+        # Asegurarse de que el ancho no supera el 80% del ancho de pantalla
+        screen = QApplication.primaryScreen()
+        screen_rect = screen.availableGeometry()
+        max_width = screen_rect.width() * 0.8
+        final_width = min(width, max_width)
+
+        # Calcular la altura basada en la altura de los headers y las filas
+        height = self.table.horizontalHeader().height() + 20
+        for i in range(self.table.rowCount()):
+            height += self.table.rowHeight(i)
+
+        # Agregar un relleno total de 6 pixeles
+        height += 10
+
+        # Incluir la altura de la barra de titulo personalizada
+        title_bar_height = 20
+        height += title_bar_height
+
+        # Asegurarse de que la altura no supera el 80% del alto de pantalla
+        max_height = screen_rect.height() * 0.8
+        final_height = min(height, max_height)
+
+        # Reactivar el estiramiento de la ultima columna
+        self.table.horizontalHeader().setStretchLastSection(True)
+
+        # Ajustar el tamano de la ventana
+        self.resize(final_width, final_height)
+
+        # Obtener la posicion actual del puntero del mouse
+        cursor_pos = QCursor.pos()
+
+        # Mover la ventana para que se centre en la posicion actual del puntero del mouse
+        self.move(cursor_pos.x() - final_width // 2, cursor_pos.y() - final_height // 2)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.close()
+        elif event.key() in (Qt.Key_Return, Qt.Key_Enter):
+            current_row = self.table.currentRow()
+            if current_row >= 0:
+                self.change_color_space(current_row, 0)
+        else:
+            super(SelectedNodeInfo, self).keyPressEvent(event)
+
+    def change_color_space(self, row, column):
+        selected_color_space = self.color_spaces[row]
+
+        # Obtener los nodos seleccionados
+        selected_nodes = nuke.selectedNodes()
+
+        if selected_nodes:
+            for node in selected_nodes:
+                if node.Class() == "Read" or node.Class() == "Write":
+                    try:
+                        node["colorspace"].setValue(selected_color_space)
+                    except Exception as e:
+                        print(f"Error al cambiar el espacio de color: {e}")
+
+        # Cerrar la ventana despues de aplicar los cambios
+        self.close()
+
+
+app = None
+window = None
+
+
+def main():
+    global app, window
+    selected_nodes = nuke.selectedNodes()
+
+    # Verificar si hay algun nodo Read o Write seleccionado
+    if any(node.Class() in ["Read", "Write"] for node in selected_nodes):
+
+        # Intentar cargar los color spaces ANTES de crear la ventana principal
+        temp_loader = SelectedNodeInfo(
+            selected_nodes
+        )  # Instancia temporal solo para cargar
+        color_spaces = temp_loader.color_spaces  # Acceder a la lista cargada
+        del temp_loader  # Eliminar instancia temporal
+
+        if not color_spaces:
+            nuke.message(
+                "Error: No se pudieron cargar los espacios de color.\nVerifique que el archivo 'LGA_RnW_ColorSpace_Favs_List.ini' exista en\nAppData\\Roaming\\LGA\\ToolPack o junto al script."
             )
-            # Opcional: Mostrar mensaje de error en la UI
-        except configparser.Error as e:
-            print(
-                f"Error de formato ConfigParser al guardar la configuracion de Write Focus: {e}"
-            )
-            # Opcional: Mostrar mensaje de error en la UI
-        except Exception as e:
-            print(f"Error inesperado al guardar la configuracion de Write Focus: {e}")
-            # Opcional: Mostrar mensaje de error en la UI
+            return  # No continuar si no hay color spaces
 
-    def save_show_flow_settings(self):
-        """Guarda las credenciales de Show in Flow en su archivo .ini."""
-        config_file_path = sif_get_config_path()
-        if not config_file_path:
-            print(
-                "Error: No se pudo obtener la ruta del archivo de configuracion para Show in Flow."
-            )
-            # Opcional: Mostrar mensaje en la UI
-            return
-
-        new_url = self.site_input.text().strip()
-        new_login = self.username_input.text().strip()
-        new_password = (
-            self.password_input.text().strip()
-        )  # No hacer strip() a la contrasena?
-
-        # Validacion basica (ej. no permitir campos vacios)
-        if not new_url or not new_login or not new_password:
-            print(
-                "Error: Los campos URL, Username y Password de Show in Flow no pueden estar vacios."
-            )
-            # Opcional: Mostrar mensaje en la UI
-            # Podriamos tambien revertir los campos a los valores guardados previamente
-            # sif_url, sif_login, sif_password = sif_get_credentials_from_config()
-            # self.site_input.setText(sif_url or "")
-            # self.username_input.setText(sif_login or "")
-            # self.password_input.setText(sif_password or "")
-            return
-
-        config = configparser.ConfigParser()
-        try:
-            # Leer la configuracion existente
-            config.read(
-                config_file_path, encoding="utf-8"
-            )  # Especificar encoding por si acaso
-
-            # Asegurarse de que la seccion exista
-            if not config.has_section(SIF_CONFIG_SECTION):
-                config.add_section(SIF_CONFIG_SECTION)
-
-            # Establecer los nuevos valores
-            config.set(SIF_CONFIG_SECTION, SIF_CONFIG_URL_KEY, new_url)
-            config.set(SIF_CONFIG_SECTION, SIF_CONFIG_LOGIN_KEY, new_login)
-            config.set(SIF_CONFIG_SECTION, SIF_CONFIG_PASSWORD_KEY, new_password)
-
-            # Escribir los cambios de vuelta al archivo
-            with open(config_file_path, "w", encoding="utf-8") as configfile:
-                config.write(configfile)
-
-            print(f"Configuracion de Show in Flow guardada en {config_file_path}")
-            # Opcional: Mostrar mensaje de exito en la UI
-
-        except IOError as e:
-            print(
-                f"Error de I/O al guardar la configuracion de Show in Flow en {config_file_path}: {e}"
-            )
-            # Opcional: Mostrar mensaje de error en la UI
-        except configparser.Error as e:
-            print(
-                f"Error de formato ConfigParser al guardar la configuracion de Show in Flow: {e}"
-            )
-            # Opcional: Mostrar mensaje de error en la UI
-        except Exception as e:
-            print(f"Error inesperado al guardar la configuracion de Show in Flow: {e}")
-            # Opcional: Mostrar mensaje de error en la UI
+        # Si hay color spaces, proceder a crear y mostrar la ventana
+        app = QApplication.instance() or QApplication([])
+        # Pasar los color_spaces ya cargados para evitar cargarlos de nuevo
+        window = SelectedNodeInfo(selected_nodes, initial_color_spaces=color_spaces)
+        window.show()
+    else:
+        nuke.message("Por favor seleccione al menos un nodo Read o Write.")
 
 
-# --- Main Execution ---
-if __name__ == "__main__":
-    # Solo se necesita una instancia de QApplication por script
-    app = QApplication.instance() or QApplication(sys.argv)
-
-    settings_window = SettingsWindow()
-    settings_window.show()
-
-    # Mantener el bucle para ejecucion standalone
-    try:
-        sys.exit(app.exec_())
-    except SystemExit:
-        pass  # Evitar error si ya existe una instancia de app (ej. dentro de Nuke)
+# Llamar a main() para iniciar la aplicacion
+main()
