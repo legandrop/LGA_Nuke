@@ -396,4 +396,1768 @@ def main():
     iniciar_temporizador()
 
 if __name__ == &quot;__main__&quot;:
-    main() </script>
+    main() &quot;&quot;&quot;
+__________________________________________________________
+
+  LGA_build_iteration v1.2 | 2024 | Lega
+  Genera un arbol de nodos usado para generar variaciones
+  de una imagen.
+
+  Si no hay nodo seleccionado, crea el árbol de nodos
+  en la posición del cursor.
+__________________________________________________________
+
+&quot;&quot;&quot;
+
+import nuke
+from PySide2.QtGui import QCursor, QMouseEvent
+from PySide2.QtWidgets import QApplication
+from PySide2.QtCore import Qt, QEvent, QPoint
+
+# Variable global para activar o desactivar los prints
+DEBUG = False
+
+# Valor predeterminado por si el nodo preferences no existe
+DEFAULT_DOT_WIDTH = 12
+
+
+def debug_print(message):
+    if DEBUG:
+        print(message)
+
+
+def simulate_dag_click():
+    &quot;&quot;&quot;Simula un click en el DAG en la posición actual del cursor&quot;&quot;&quot;
+    widget = QApplication.widgetAt(QCursor.pos())
+    if widget:
+        cursor_pos = QCursor.pos()
+        local_pos = widget.mapFromGlobal(cursor_pos)
+
+        # Mouse press
+        press_event = QMouseEvent(
+            QEvent.MouseButtonPress,
+            local_pos,
+            Qt.LeftButton,
+            Qt.LeftButton,
+            Qt.NoModifier,
+        )
+        QApplication.sendEvent(widget, press_event)
+
+        # Mouse release
+        release_event = QMouseEvent(
+            QEvent.MouseButtonRelease,
+            local_pos,
+            Qt.LeftButton,
+            Qt.LeftButton,
+            Qt.NoModifier,
+        )
+        QApplication.sendEvent(widget, release_event)
+
+
+def gen_iteration():
+    # Distancia entre nodos
+    distanciaY = 70
+    distanciaY_columna_lateral = (
+        30  # Distancia vertical entre nodos en la columna lateral
+    )
+    distanciaX = -140  # Distancia fija a la izquierda (versión lejana)
+
+    # Intentar obtener dot_width desde las preferencias, usar valor predeterminado si falla
+    prefs_node = nuke.toNode(&quot;preferences&quot;)
+    if prefs_node and &quot;dot_node_scale&quot; in prefs_node.knobs():
+        dot_width = int(prefs_node[&quot;dot_node_scale&quot;].value() * 12)
+    else:
+        dot_width = DEFAULT_DOT_WIDTH  # Usar valor predeterminado
+
+    # Obtener el nodo seleccionado
+    selected_node = None
+    no_op = None
+
+    try:
+        selected_node = nuke.selectedNode()
+    except ValueError:
+        # Si no hay nodo seleccionado, simular click en el DAG antes de crear el NoOp
+        simulate_dag_click()
+
+        # Crear un NoOp en la posición del cursor, pero más arriba para que el dot quede en la posición del cursor
+        no_op = nuke.createNode(&quot;NoOp&quot;)
+
+        # Ajustar la posición vertical del NoOp para que el dot quede cerca de donde estaba el cursor
+        no_op.setYpos(no_op.ypos() - distanciaY)
+
+        selected_node = no_op
+
+    debug_print(f&quot;Nodo seleccionado/creado: {selected_node.name()}&quot;)
+
+    pos_tolerance = 120  # Tolerancia para la posicion en X
+    current_node_center_x = selected_node.xpos() + (selected_node.screenWidth() / 2)
+    current_node_center_y = selected_node.ypos() + (selected_node.screenHeight() / 2)
+
+    # Buscar el primer nodo que este debajo del nodo seleccionado con una tolerancia en X
+    all_nodes = [
+        n
+        for n in nuke.allNodes()
+        if n != selected_node and n.Class() != &quot;Root&quot; and n.Class() != &quot;BackdropNode&quot;
+    ]
+    nodo_siguiente_en_columna = None
+    distMedia_NodoSiguiente = float(&quot;inf&quot;)
+
+    for node in all_nodes:
+        node_center_x = node.xpos() + (node.screenWidth() / 2)
+        node_center_y = node.ypos() + (node.screenHeight() / 2)
+
+        # Verifica si el nodo esta dentro de la tolerancia y en la direccion correcta (debajo del nodo actual)
+        if (
+            abs(node_center_x - current_node_center_x) &lt;= pos_tolerance
+            and node_center_y &gt; current_node_center_y
+        ):
+            distance = node_center_y - current_node_center_y
+            if distance &gt; 0 and distance &lt; distMedia_NodoSiguiente:
+                distMedia_NodoSiguiente = distance
+                nodo_siguiente_en_columna = node
+                debug_print(
+                    f&quot;Nodo siguiente en la misma columna encontrado: {nodo_siguiente_en_columna.name()} a distancia {distMedia_NodoSiguiente}&quot;
+                )
+
+    # Ajuste de la distancia Y si es necesario
+    if distMedia_NodoSiguiente != float(&quot;inf&quot;):
+        if distMedia_NodoSiguiente &lt; distanciaY * 2:
+            distanciaY = distMedia_NodoSiguiente / 2 - (dot_width / 2) - 6
+        debug_print(f&quot;Distancia Y ajustada a: {distanciaY}&quot;)
+
+    # Calcular la posicion Y del dot
+    new_y_pos = int(selected_node.ypos() + selected_node.screenHeight() + distanciaY)
+    debug_print(f&quot;Posicion Y del nuevo Dot: {new_y_pos}&quot;)
+
+    # Crear un nuevo nodo de Dot debajo del nodo seleccionado
+    dot_node = nuke.nodes.Dot()
+
+    # Calcular la posicion X para centrar el Dot horizontalmente
+    dot_xpos = int(
+        selected_node.xpos() + (selected_node.screenWidth() / 2) - (dot_width / 2)
+    )
+
+    # Establecer la nueva posicion del nodo Dot
+    dot_node.setXpos(dot_xpos)
+    dot_node.setYpos(new_y_pos)
+
+    # Conectar el nodo seleccionado al nodo de Dot
+    dot_node.setInput(0, selected_node)
+    debug_print(
+        f&quot;Nuevo Dot creado y conectado al nodo seleccionado: {selected_node.name()}&quot;
+    )
+
+    # Guardar la conexión original del nodo siguiente antes de modificarla
+    next_node_input_index = -1
+    if (
+        nodo_siguiente_en_columna
+        and selected_node in nodo_siguiente_en_columna.dependencies(nuke.INPUTS)
+    ):
+        for i in range(nodo_siguiente_en_columna.inputs()):
+            if nodo_siguiente_en_columna.input(i) == selected_node:
+                # Reconectar la entrada del nodo siguiente al dot principal
+                nodo_siguiente_en_columna.setInput(i, dot_node)
+                next_node_input_index = i  # Guardamos el indice donde estaba conectado
+                debug_print(
+                    f&quot;Nodo siguiente en la columna conectado al nuevo Dot principal: {nodo_siguiente_en_columna.name()}&quot;
+                )
+                break
+
+    # Crear un nuevo nodo de Dot a la izquierda del Dot recien creado
+    dot_side = nuke.nodes.Dot()
+    dot_side.setXpos(dot_node.xpos() + distanciaX)
+    dot_side.setYpos(dot_node.ypos())
+    dot_side.setInput(0, dot_node)
+    debug_print(f&quot;Nuevo Dot lateral creado y conectado al Dot principal&quot;)
+
+    # Crear un nodo TimeOffset debajo del dot lateral
+    timeoffset = nuke.nodes.TimeOffset()
+    timeoffset.setXpos(
+        dot_side.xpos() - (timeoffset.screenWidth() // 2) + (dot_width // 2)
+    )
+    timeoffset.setYpos(
+        dot_side.ypos() + dot_side.screenHeight() + distanciaY_columna_lateral
+    )
+    timeoffset.setInput(0, dot_side)
+    timeoffset[&quot;time_offset&quot;].setValue(-1)
+    debug_print(f&quot;Nuevo TimeOffset creado y conectado al Dot lateral&quot;)
+
+    # Crear un nodo Transform debajo del TimeOffset
+    transform = nuke.nodes.Transform()
+    transform.setXpos(timeoffset.xpos())
+    transform.setYpos(
+        timeoffset.ypos() + timeoffset.screenHeight() + distanciaY_columna_lateral
+    )
+    transform.setInput(0, timeoffset)
+    debug_print(f&quot;Nuevo Transform creado y conectado al TimeOffset&quot;)
+
+    # Crear un dot debajo del Transform
+    dot_transform = nuke.nodes.Dot()
+    # Calcular la posición X para centrar el Dot horizontalmente respecto al Transform
+    dot_transform_xpos = int(
+        transform.xpos() + (transform.screenWidth() / 2) - (dot_width / 2)
+    )
+    dot_transform.setXpos(dot_transform_xpos)
+    dot_transform.setYpos(
+        transform.ypos() + transform.screenHeight() + distanciaY_columna_lateral
+    )
+    dot_transform.setInput(0, transform)
+    debug_print(f&quot;Nuevo Dot creado debajo del Transform y conectado a él&quot;)
+
+    # Crear un nodo Merge debajo del dot principal
+    merge = nuke.nodes.Merge2()
+
+    # Posicionar el Merge debajo del dot principal y alineado verticalmente con el último dot
+    merge.setXpos(dot_node.xpos() - (merge.screenWidth() // 2) + (dot_width // 2))
+
+    # Calculamos la posición Y del Merge para alinear su centro con el centro del último dot
+    # Obtenemos el centro del dot_transform
+    dot_transform_center_y = dot_transform.ypos() + (dot_transform.screenHeight() // 2)
+    # Posicionamos el Merge para que su centro coincida con el centro del dot
+    merge.setYpos(dot_transform_center_y - (merge.screenHeight() // 2))
+
+    # Configurar el nodo Merge
+    merge[&quot;operation&quot;].setValue(&quot;over&quot;)
+    merge[&quot;bbox&quot;].setValue(&quot;union&quot;)
+
+    # Conectar el dot principal al input B (input 0) del Merge
+    merge.setInput(0, dot_node)
+    # Conectar el último dot (debajo del Transform) al input A (input 1) del Merge
+    merge.setInput(1, dot_transform)
+
+    debug_print(
+        f&quot;Nuevo Merge creado y conectado al Dot principal en el input B y al último dot en el input A&quot;
+    )
+
+    # Reconectar el nodo siguiente (si existia y estaba conectado al dot principal) a la salida del Merge
+    if nodo_siguiente_en_columna and next_node_input_index != -1:
+        # Verificamos si la entrada sigue conectada al dot_node (podria haber cambiado por otra operacion)
+        if nodo_siguiente_en_columna.input(next_node_input_index) == dot_node:
+            nodo_siguiente_en_columna.setInput(next_node_input_index, merge)
+            debug_print(
+                f&quot;Nodo siguiente en la columna reconectado a la salida del Merge: {nodo_siguiente_en_columna.name()}&quot;
+            )
+
+    # Deseleccionar todos los nodos existentes
+    for n in nuke.allNodes():
+        n[&quot;selected&quot;].setValue(False)
+
+    # Al final de la función, seleccionar solo los nuevos nodos
+    dot_node[&quot;selected&quot;].setValue(True)
+    dot_side[&quot;selected&quot;].setValue(True)
+    timeoffset[&quot;selected&quot;].setValue(True)
+    transform[&quot;selected&quot;].setValue(True)
+    dot_transform[&quot;selected&quot;].setValue(True)
+    merge[&quot;selected&quot;].setValue(True)
+
+    # Eliminar el NoOp si fue creado
+    if no_op:
+        nuke.delete(no_op)
+        debug_print(&quot;NoOp temporal eliminado&quot;)
+
+
+gen_iteration()
+&quot;&quot;&quot;
+_____________________________________________________________________________________________________
+
+  LGA_showInFlow v2.1 | 2024 | Lega
+  Abre la URL de la task Comp del shot, tomando la informacion del nombre del script
+
+  Para el login en Windows hay que guardar la informacion del sitio variables de entorno:
+
+  1- Abrir el cmd como administrador.
+
+  2- Usar los siguientes comandos para establecer las variables de entorno (ponerlos uno por uno):
+
+  setx SHOTGRID_URL &quot;https://pagina.shotgrid.autodesk.com&quot;
+  setx SHOTGRID_LOGIN &quot;tu_usuario&quot;
+  setx SHOTGRID_PASSWORD &quot;tu_contrasena&quot;
+
+  (el usuario es el mail que se usa para login)
+_____________________________________________________________________________________________________
+&quot;&quot;&quot;
+
+import os
+import sys
+import re
+import platform
+import nuke
+import webbrowser
+import threading
+import subprocess
+import configparser
+
+# Agregar la ruta de la carpeta shotgun_api3 al sys.path
+script_dir = os.path.dirname(os.path.abspath(__file__))
+shotgun_api_path = os.path.join(script_dir, &quot;shotgun_api3&quot;)
+sys.path.append(shotgun_api_path)
+
+# Ahora importamos shotgun_api3
+import shotgun_api3
+
+# Constantes para el archivo de configuracion
+CONFIG_FILE_NAME = &quot;ShowInFlow.ini&quot;
+CONFIG_SECTION = &quot;Credentials&quot;
+CONFIG_URL_KEY = &quot;shotgrid_url&quot;
+CONFIG_LOGIN_KEY = &quot;shotgrid_login&quot;
+CONFIG_PASSWORD_KEY = &quot;shotgrid_password&quot;
+
+
+# --- Inicio: Funciones de manejo de configuracion ---
+
+
+def get_config_path():
+    &quot;&quot;&quot;Devuelve la ruta completa al archivo de configuracion.&quot;&quot;&quot;
+    try:
+        appdata_path = os.getenv(&quot;APPDATA&quot;)
+        if not appdata_path:
+            print(&quot;Error: No se pudo encontrar la variable de entorno APPDATA.&quot;)
+            return None
+        config_dir = os.path.join(appdata_path, &quot;LGA&quot;, &quot;ToolPack&quot;)
+        return os.path.join(config_dir, CONFIG_FILE_NAME)
+    except Exception as e:
+        print(f&quot;Error al obtener la ruta de configuracion: {e}&quot;)
+        return None
+
+
+def ensure_config_exists():
+    &quot;&quot;&quot;
+    Asegura que el directorio de configuracion y el archivo .ini existan.
+    Si no existen, los crea vacios.
+    &quot;&quot;&quot;
+    config_file_path = get_config_path()
+    if not config_file_path:
+        return False  # Indicar fallo si no se pudo obtener la ruta
+
+    config_dir = os.path.dirname(config_file_path)
+
+    try:
+        # Crear el directorio si no existe
+        if not os.path.exists(config_dir):
+            os.makedirs(config_dir)
+            print(f&quot;Directorio creado: {config_dir}&quot;)
+
+        # Crear el archivo .ini si no existe
+        if not os.path.exists(config_file_path):
+            config = configparser.ConfigParser()
+            config[CONFIG_SECTION] = {}  # Crear seccion vacia
+            with open(config_file_path, &quot;w&quot;) as configfile:
+                config.write(configfile)
+            print(
+                f&quot;Archivo de configuración creado: {config_file_path}. Por favor, complételo con sus credenciales.&quot;
+            )
+            return False  # Indicar que el archivo fue creado y esta vacio
+        return True  # Indicar que el archivo ya existia (o se creo correctamente antes)
+
+    except Exception as e:
+        print(f&quot;Error al asegurar la configuración: {e}&quot;)
+        return False
+
+
+def get_credentials_from_config():
+    &quot;&quot;&quot;
+    Lee las credenciales de ShotGrid desde el archivo de configuracion .ini.
+    Devuelve (url, login, password) o (None, None, None) si hay errores o faltan datos.
+    &quot;&quot;&quot;
+    config_file_path = get_config_path()
+    if not config_file_path or not os.path.exists(config_file_path):
+        print(&quot;Archivo de configuración no encontrado.&quot;)
+        return None, None, None
+
+    try:
+        config = configparser.ConfigParser()
+        config.read(config_file_path)
+
+        # Verificar si la seccion y las claves existen
+        if (
+            config.has_section(CONFIG_SECTION)
+            and config.has_option(CONFIG_SECTION, CONFIG_URL_KEY)
+            and config.has_option(CONFIG_SECTION, CONFIG_LOGIN_KEY)
+            and config.has_option(CONFIG_SECTION, CONFIG_PASSWORD_KEY)
+        ):
+
+            sg_url = config.get(CONFIG_SECTION, CONFIG_URL_KEY).strip()
+            sg_login = config.get(CONFIG_SECTION, CONFIG_LOGIN_KEY).strip()
+            sg_password = config.get(CONFIG_SECTION, CONFIG_PASSWORD_KEY).strip()
+
+            # Validar que los valores no esten vacios
+            if sg_url and sg_login and sg_password:
+                return sg_url, sg_login, sg_password
+            else:
+                print(f&quot;Una o más credenciales en {config_file_path} están vacías.&quot;)
+                return None, None, None
+        else:
+            print(
+                f&quot;Sección [{CONFIG_SECTION}] o alguna de las claves '{CONFIG_URL_KEY}', '{CONFIG_LOGIN_KEY}', '{CONFIG_PASSWORD_KEY}' no encontrada en {config_file_path}.&quot;
+            )
+            return None, None, None
+
+    except configparser.Error as e:
+        print(f&quot;Error al leer el archivo de configuración {config_file_path}: {e}.&quot;)
+        return None, None, None
+    except Exception as e:
+        print(f&quot;Error inesperado al leer la configuración: {e}.&quot;)
+        return None, None, None
+
+
+# --- Fin: Funciones de manejo de configuracion ---
+
+
+# Verificacion del sistema operativo y configuracion de la ruta del navegador
+if platform.system() == &quot;Windows&quot;:
+    # print(&quot;Windows&quot;)
+    browser_path = &quot;C:/Program Files/Google/Chrome/Application/chrome.exe %s&quot;
+elif platform.system() == &quot;Darwin&quot;:  # macOS
+    # print(&quot;mac&quot;)
+    browser_path = &quot;/Applications/Google Chrome.app/Contents/MacOS/Google Chrome&quot;
+else:
+    # No es necesario el debug_print aqui, la ruta quedara vacia si no es Win/Mac
+    browser_path = &quot;&quot;
+
+use_default_browser = False  # Si esta en True, usa el navegador por defecto, si esta en False, usa browser_path
+
+DEBUG = False
+
+
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+
+class ShotGridManager:
+    def __init__(self, url, login, password):
+        self.sg = shotgun_api3.Shotgun(url, login=login, password=password)
+
+    def find_shot_and_tasks(self, project_name, shot_code):
+        debug_print(f&quot;Buscando proyecto: {project_name}, shot: {shot_code}&quot;)
+        projects = self.sg.find(
+            &quot;Project&quot;, [[&quot;name&quot;, &quot;is&quot;, project_name]], [&quot;id&quot;, &quot;name&quot;]
+        )
+        if projects:
+            project_id = projects[0][&quot;id&quot;]
+            debug_print(f&quot;Proyecto encontrado: {project_id}&quot;)
+            filters = [
+                [&quot;project&quot;, &quot;is&quot;, {&quot;type&quot;: &quot;Project&quot;, &quot;id&quot;: project_id}],
+                [&quot;code&quot;, &quot;is&quot;, shot_code],
+            ]
+            fields = [&quot;id&quot;, &quot;code&quot;, &quot;description&quot;]
+            shots = self.sg.find(&quot;Shot&quot;, filters, fields)
+            if shots:
+                shot_id = shots[0][&quot;id&quot;]
+                debug_print(f&quot;Shot encontrado: {shot_id}&quot;)
+                tasks = self.find_tasks_for_shot(shot_id)
+                return shots[0], tasks
+            else:
+                debug_print(&quot;No se encontro el shot.&quot;)
+        else:
+            debug_print(&quot;No se encontro el proyecto en ShotGrid.&quot;)
+        return None, None
+
+    def find_tasks_for_shot(self, shot_id):
+        debug_print(f&quot;Buscando tareas para el shot: {shot_id}&quot;)
+        filters = [[&quot;entity&quot;, &quot;is&quot;, {&quot;type&quot;: &quot;Shot&quot;, &quot;id&quot;: shot_id}]]
+        fields = [&quot;id&quot;, &quot;content&quot;, &quot;sg_status_list&quot;]
+        tasks = self.sg.find(&quot;Task&quot;, filters, fields)
+        debug_print(f&quot;Tareas encontradas: {tasks}&quot;)
+        return tasks
+
+    def get_task_url(self, task_id):
+        # Usa self.sg.base_url que ya contiene la URL base leida
+        return f&quot;{self.sg.base_url}/detail/Task/{task_id}&quot;
+
+
+class NukeOperations:
+    def __init__(self, shotgrid_manager):
+        self.sg_manager = shotgrid_manager
+
+    def parse_nuke_script_name(self, file_name):
+        base_name = re.sub(r&quot;_%04d\.nk$&quot;, &quot;&quot;, file_name)
+        version_match = re.search(r&quot;_v(\d+)&quot;, base_name)
+        version_number = version_match.group(1) if version_match else &quot;Unknown&quot;
+        return base_name, version_number
+
+    def process_current_script(self):
+        file_path = nuke.root().name()
+        debug_print(f&quot;Nuke script file path: {file_path}&quot;)
+        if file_path:
+            nuke_script_name = os.path.basename(file_path)
+            debug_print(f&quot;Nuke script name: {nuke_script_name}&quot;)
+            base_name, nuke_version_number = self.parse_nuke_script_name(
+                nuke_script_name
+            )
+            debug_print(
+                f&quot;Parsed base name: {base_name}, version number: {nuke_version_number}&quot;
+            )
+            project_name = base_name.split(&quot;_&quot;)[0]
+            parts = base_name.split(&quot;_&quot;)
+            shot_code = &quot;_&quot;.join(parts[:5])
+            debug_print(f&quot;Project name: {project_name}, shot code: {shot_code}&quot;)
+
+            shot, tasks = self.sg_manager.find_shot_and_tasks(project_name, shot_code)
+            if shot:
+                for task in tasks:
+                    if task[&quot;content&quot;] == &quot;Comp&quot;:
+                        task_url = self.sg_manager.get_task_url(task[&quot;id&quot;])
+                        debug_print(
+                            f&quot;  - Task: {task['content']} (Status: {task['sg_status_list']}) URL: {task_url}&quot;
+                        )
+                        if use_default_browser:
+                            webbrowser.open(task_url)
+                        else:
+                            self.open_url_in_browser(task_url)
+            else:
+                debug_print(&quot;No se encontro el shot correspondiente en ShotGrid.&quot;)
+        else:
+            debug_print(&quot;No se encontro un script activo en Nuke.&quot;)
+
+    def open_url_in_browser(self, url):
+        if platform.system() == &quot;Darwin&quot;:  # macOS
+            try:
+                subprocess.run([browser_path, url])
+                debug_print(f&quot;Opening {url} in specified browser on macOS...&quot;)
+            except Exception as e:
+                debug_print(f&quot;Failed to open URL in specified browser on macOS: {e}&quot;)
+        elif platform.system() == &quot;Windows&quot;:
+            debug_print(&quot;Windows&quot;)
+            try:
+                webbrowser.get(browser_path).open(url)
+                debug_print(f&quot;Opening {url} in specified browser on Windows...&quot;)
+            except Exception as e:
+                debug_print(f&quot;Failed to open URL in specified browser on Windows: {e}&quot;)
+
+
+def threaded_function():
+    # Primero asegurar que el archivo de config existe
+    if not ensure_config_exists():
+        # Si ensure_config_exists devuelve False, significa que se creo el archivo
+        # o hubo un error. En ambos casos, no podemos proceder sin credenciales.
+        nuke.message(
+            &quot;Archivo de configuración 'ShowInFlow.ini' no encontrado o recién creado.\nPor favor, configúrelo con sus credenciales en:\n%APPDATA%\\LGA\\ToolPack\\&quot;
+        )
+        return
+
+    # Leer credenciales desde el archivo .ini
+    sg_url, sg_login, sg_password = get_credentials_from_config()
+
+    if not sg_url or not sg_login or not sg_password:
+        debug_print(
+            &quot;Las credenciales de ShotGrid no se encontraron o están incompletas en el archivo de configuración.&quot;
+        )
+        # Mostrar mensaje al usuario tambien
+        config_path = get_config_path()
+        nuke.message(
+            f&quot;No se pudieron leer las credenciales de ShotGrid desde:\n{config_path}\n\nAsegúrese de que el archivo exista y contenga las claves '{CONFIG_URL_KEY}', '{CONFIG_LOGIN_KEY}', y '{CONFIG_PASSWORD_KEY}' en la sección '[{CONFIG_SECTION}]'.&quot;
+        )
+        return
+
+    try:
+        sg_manager = ShotGridManager(sg_url, sg_login, sg_password)
+        nuke_ops = NukeOperations(sg_manager)
+        nuke_ops.process_current_script()
+    except shotgun_api3.AuthenticationFault:
+        nuke.message(
+            f&quot;Error de autenticación con ShotGrid. Verifique las credenciales en:\n{get_config_path()}&quot;
+        )
+    except Exception as e:
+        nuke.message(f&quot;Ocurrió un error inesperado: {e}&quot;)
+        debug_print(f&quot;Error detallado: {e}&quot;)
+
+
+def main():
+    thread = threading.Thread(target=threaded_function)
+    thread.start()
+
+    # Este join lo tuve que agregar en MAC. Volver a probar en mac y si es necesario agregarlo,
+    # entonces le ponemos un IF porque me cuelga la interface en windows mientras se ejecuta:
+    # thread.join() #
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+&quot;&quot;&quot;
+_____________________________________________________________________________________________________
+
+  LGA_showInFlow v2.1 | 2024 | Lega
+  Abre la URL de la task Comp del shot, tomando la informacion del nombre del script
+
+  Para el login en Windows hay que guardar la informacion del sitio variables de entorno:
+
+  1- Abrir el cmd como administrador.
+
+  2- Usar los siguientes comandos para establecer las variables de entorno (ponerlos uno por uno):
+
+  setx SHOTGRID_URL &quot;https://pagina.shotgrid.autodesk.com&quot;
+  setx SHOTGRID_LOGIN &quot;tu_usuario&quot;
+  setx SHOTGRID_PASSWORD &quot;tu_contrasena&quot;
+
+  (el usuario es el mail que se usa para login)
+_____________________________________________________________________________________________________
+&quot;&quot;&quot;
+
+import os
+import sys
+import re
+import platform
+import nuke
+import webbrowser
+import threading
+import subprocess
+import configparser
+
+# Agregar la ruta de la carpeta shotgun_api3 al sys.path
+script_dir = os.path.dirname(os.path.abspath(__file__))
+shotgun_api_path = os.path.join(script_dir, &quot;shotgun_api3&quot;)
+sys.path.append(shotgun_api_path)
+
+# Ahora importamos shotgun_api3
+import shotgun_api3
+
+# Constantes para el archivo de configuracion
+CONFIG_FILE_NAME = &quot;ShowInFlow.ini&quot;
+CONFIG_SECTION = &quot;Credentials&quot;
+CONFIG_URL_KEY = &quot;shotgrid_url&quot;
+CONFIG_LOGIN_KEY = &quot;shotgrid_login&quot;
+CONFIG_PASSWORD_KEY = &quot;shotgrid_password&quot;
+
+# --- Inicio: Funciones de manejo de configuracion ---
+
+
+def get_config_path():
+    &quot;&quot;&quot;Devuelve la ruta completa al archivo de configuracion.&quot;&quot;&quot;
+    try:
+        appdata_path = os.getenv(&quot;APPDATA&quot;)
+        if not appdata_path:
+            # Usar nuke.message para errores criticos en Nuke
+            nuke.message(&quot;Error: No se pudo encontrar la variable de entorno APPDATA.&quot;)
+            return None
+        config_dir = os.path.join(appdata_path, &quot;LGA&quot;, &quot;ToolPack&quot;)
+        return os.path.join(config_dir, CONFIG_FILE_NAME)
+    except Exception as e:
+        nuke.message(f&quot;Error al obtener la ruta de configuracion: {e}&quot;)
+        return None
+
+
+def ensure_config_exists():
+    &quot;&quot;&quot;
+    Asegura que el directorio de configuracion y el archivo .ini existan.
+    Si no existen, los crea vacios y devuelve False.
+    Devuelve True si el archivo ya existe.
+    &quot;&quot;&quot;
+    config_file_path = get_config_path()
+    if not config_file_path:
+        return False  # Fallo al obtener la ruta
+
+    config_dir = os.path.dirname(config_file_path)
+
+    try:
+        # Crear el directorio si no existe
+        if not os.path.exists(config_dir):
+            os.makedirs(config_dir)
+            print(f&quot;Directorio de configuracion creado: {config_dir}&quot;)
+
+        # Crear el archivo .ini si no existe
+        if not os.path.exists(config_file_path):
+            config = configparser.ConfigParser()
+            config[CONFIG_SECTION] = {
+                CONFIG_URL_KEY: &quot;&quot;,
+                CONFIG_LOGIN_KEY: &quot;&quot;,
+                CONFIG_PASSWORD_KEY: &quot;&quot;,
+            }
+            with open(config_file_path, &quot;w&quot;) as configfile:
+                config.write(configfile)
+            nuke.message(
+                f&quot;Archivo de configuración creado: {config_file_path}\n&quot;
+                + &quot;Por favor, complételo con sus credenciales de ShotGrid.&quot;
+            )
+            return False  # Indicar que el archivo fue creado y necesita datos
+        return True  # Indicar que el archivo ya existia
+
+    except Exception as e:
+        nuke.message(f&quot;Error al asegurar la configuración: {e}&quot;)
+        return False
+
+
+def get_credentials_from_config():
+    &quot;&quot;&quot;
+    Lee las credenciales de ShotGrid desde el archivo .ini.
+    Devuelve (url, login, password) o (None, None, None) si hay errores o faltan datos.
+    &quot;&quot;&quot;
+    config_file_path = get_config_path()
+    if not config_file_path or not os.path.exists(config_file_path):
+        # ensure_config_exists deberia haberlo creado o mostrado error
+        return None, None, None
+
+    try:
+        config = configparser.ConfigParser()
+        # Leer el archivo especificando la codificacion por si acaso
+        config.read(config_file_path, encoding=&quot;utf-8&quot;)
+
+        # Verificar si la seccion existe
+        if not config.has_section(CONFIG_SECTION):
+            nuke.message(f&quot;Falta la sección [{CONFIG_SECTION}] en {config_file_path}&quot;)
+            return None, None, None
+
+        # Obtener valores, usando None como default si falta la clave
+        sg_url = config.get(CONFIG_SECTION, CONFIG_URL_KEY, fallback=None)
+        sg_login = config.get(CONFIG_SECTION, CONFIG_LOGIN_KEY, fallback=None)
+        sg_password = config.get(CONFIG_SECTION, CONFIG_PASSWORD_KEY, fallback=None)
+
+        # Verificar que todas las credenciales se hayan obtenido y no esten vacias
+        if sg_url and sg_login and sg_password:
+            return sg_url.strip(), sg_login.strip(), sg_password.strip()
+        else:
+            missing = []
+            if not sg_url:
+                missing.append(CONFIG_URL_KEY)
+            if not sg_login:
+                missing.append(CONFIG_LOGIN_KEY)
+            if not sg_password:
+                missing.append(CONFIG_PASSWORD_KEY)
+            nuke.message(
+                f&quot;Faltan o están vacías las siguientes credenciales en {config_file_path}:\n&quot;
+                + &quot;, &quot;.join(missing)
+            )
+            return None, None, None
+
+    except configparser.Error as e:
+        nuke.message(
+            f&quot;Error al leer el archivo de configuración {config_file_path}: {e}&quot;
+        )
+        return None, None, None
+    except Exception as e:
+        nuke.message(f&quot;Error inesperado al leer la configuración: {e}&quot;)
+        return None, None, None
+
+
+# --- Fin: Funciones de manejo de configuracion ---
+
+
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+
+# Verificacion del sistema operativo y configuracion de la ruta del navegador
+if platform.system() == &quot;Windows&quot;:
+    # print(&quot;Windows&quot;)
+    browser_path = &quot;C:/Program Files/Google/Chrome/Application/chrome.exe %s&quot;
+elif platform.system() == &quot;Darwin&quot;:  # macOS
+    # print(&quot;mac&quot;)
+    browser_path = &quot;/Applications/Google Chrome.app/Contents/MacOS/Google Chrome&quot;
+else:
+    browser_path = &quot;&quot;  # Ruta del navegador para otros sistemas, si aplica
+    debug_print(&quot;No se detecto el OS&quot;)
+
+use_default_browser = False  # Si esta en True, usa el navegador por defecto, si esta en False, usa browser_path
+
+DEBUG = False
+
+
+class ShotGridManager:
+    def __init__(self, url, login, password):
+        self.sg = shotgun_api3.Shotgun(url, login=login, password=password)
+
+    def find_shot_and_tasks(self, project_name, shot_code):
+        debug_print(f&quot;Buscando proyecto: {project_name}, shot: {shot_code}&quot;)
+        projects = self.sg.find(
+            &quot;Project&quot;, [[&quot;name&quot;, &quot;is&quot;, project_name]], [&quot;id&quot;, &quot;name&quot;]
+        )
+        if projects:
+            project_id = projects[0][&quot;id&quot;]
+            debug_print(f&quot;Proyecto encontrado: {project_id}&quot;)
+            filters = [
+                [&quot;project&quot;, &quot;is&quot;, {&quot;type&quot;: &quot;Project&quot;, &quot;id&quot;: project_id}],
+                [&quot;code&quot;, &quot;is&quot;, shot_code],
+            ]
+            fields = [&quot;id&quot;, &quot;code&quot;, &quot;description&quot;]
+            shots = self.sg.find(&quot;Shot&quot;, filters, fields)
+            if shots:
+                shot_id = shots[0][&quot;id&quot;]
+                debug_print(f&quot;Shot encontrado: {shot_id}&quot;)
+                tasks = self.find_tasks_for_shot(shot_id)
+                return shots[0], tasks
+            else:
+                debug_print(&quot;No se encontro el shot.&quot;)
+        else:
+            debug_print(&quot;No se encontro el proyecto en ShotGrid.&quot;)
+        return None, None
+
+    def find_tasks_for_shot(self, shot_id):
+        debug_print(f&quot;Buscando tareas para el shot: {shot_id}&quot;)
+        filters = [[&quot;entity&quot;, &quot;is&quot;, {&quot;type&quot;: &quot;Shot&quot;, &quot;id&quot;: shot_id}]]
+        fields = [&quot;id&quot;, &quot;content&quot;, &quot;sg_status_list&quot;]
+        tasks = self.sg.find(&quot;Task&quot;, filters, fields)
+        debug_print(f&quot;Tareas encontradas: {tasks}&quot;)
+        return tasks
+
+    def get_task_url(self, task_id):
+        return f&quot;{self.sg.base_url}/detail/Task/{task_id}&quot;
+
+
+class NukeOperations:
+    def __init__(self, shotgrid_manager):
+        self.sg_manager = shotgrid_manager
+
+    def parse_nuke_script_name(self, file_name):
+        base_name = re.sub(r&quot;_%04d\.nk$&quot;, &quot;&quot;, file_name)
+        version_match = re.search(r&quot;_v(\d+)&quot;, base_name)
+        version_number = version_match.group(1) if version_match else &quot;Unknown&quot;
+        return base_name, version_number
+
+    def process_current_script(self):
+        file_path = nuke.root().name()
+        debug_print(f&quot;Nuke script file path: {file_path}&quot;)
+        if file_path:
+            nuke_script_name = os.path.basename(file_path)
+            debug_print(f&quot;Nuke script name: {nuke_script_name}&quot;)
+            base_name, nuke_version_number = self.parse_nuke_script_name(
+                nuke_script_name
+            )
+            debug_print(
+                f&quot;Parsed base name: {base_name}, version number: {nuke_version_number}&quot;
+            )
+            project_name = base_name.split(&quot;_&quot;)[0]
+            parts = base_name.split(&quot;_&quot;)
+            shot_code = &quot;_&quot;.join(parts[:5])
+            debug_print(f&quot;Project name: {project_name}, shot code: {shot_code}&quot;)
+
+            shot, tasks = self.sg_manager.find_shot_and_tasks(project_name, shot_code)
+            if shot:
+                for task in tasks:
+                    if task[&quot;content&quot;] == &quot;Comp&quot;:
+                        task_url = self.sg_manager.get_task_url(task[&quot;id&quot;])
+                        debug_print(
+                            f&quot;  - Task: {task['content']} (Status: {task['sg_status_list']}) URL: {task_url}&quot;
+                        )
+                        if use_default_browser:
+                            webbrowser.open(task_url)
+                        else:
+                            self.open_url_in_browser(task_url)
+            else:
+                debug_print(&quot;No se encontro el shot correspondiente en ShotGrid.&quot;)
+        else:
+            debug_print(&quot;No se encontro un script activo en Nuke.&quot;)
+
+    def open_url_in_browser(self, url):
+        if platform.system() == &quot;Darwin&quot;:  # macOS
+            try:
+                subprocess.run([browser_path, url])
+                debug_print(f&quot;Opening {url} in specified browser on macOS...&quot;)
+            except Exception as e:
+                debug_print(f&quot;Failed to open URL in specified browser on macOS: {e}&quot;)
+        elif platform.system() == &quot;Windows&quot;:
+            debug_print(&quot;Windows&quot;)
+            try:
+                webbrowser.get(browser_path).open(url)
+                debug_print(f&quot;Opening {url} in specified browser on Windows...&quot;)
+            except Exception as e:
+                debug_print(f&quot;Failed to open URL in specified browser on Windows: {e}&quot;)
+
+
+def threaded_function():
+    # 1. Asegurar que el archivo de configuracion existe
+    if not ensure_config_exists():
+        # Si devuelve False, ya se mostro un mensaje desde ensure_config_exists
+        # sobre creacion o error. No continuar.
+        return
+
+    # 2. Leer credenciales desde el archivo .ini
+    sg_url, sg_login, sg_password = get_credentials_from_config()
+
+    # 3. Verificar que las credenciales se leyeron correctamente
+    if not sg_url or not sg_login or not sg_password:
+        # Si faltan credenciales, get_credentials_from_config ya mostro un mensaje
+        debug_print(&quot;Credenciales no encontradas o incompletas en el archivo INI.&quot;)
+        return
+
+    # 4. Proceder con la logica principal usando las credenciales del archivo
+    try:
+        debug_print(f&quot;Conectando a ShotGrid URL: {sg_url} con login: {sg_login}&quot;)
+        sg_manager = ShotGridManager(sg_url, sg_login, sg_password)
+        nuke_ops = NukeOperations(sg_manager)
+        nuke_ops.process_current_script()
+    except shotgun_api3.AuthenticationFault:
+        nuke.message(
+            f&quot;Error de autenticación con ShotGrid.\nVerifique las credenciales en:\n{get_config_path()}&quot;
+        )
+        debug_print(&quot;Error de autenticación con ShotGrid.&quot;)
+    except Exception as e:
+        # Capturar otros posibles errores durante la ejecucion
+        nuke.message(
+            f&quot;Ocurrió un error inesperado al procesar la información de ShotGrid: {e}&quot;
+        )
+        debug_print(f&quot;Error detallado: {e}&quot;)
+
+
+def main():
+    thread = threading.Thread(target=threaded_function)
+    thread.start()
+
+    # Este join lo tuve que agregar en MAC. Volver a probar en mac y si es necesario agregarlo,
+    # entonces le ponemos un IF porque me cuelga la interface en windows mientras se ejecuta:
+    # thread.join() #
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+&quot;&quot;&quot;
+_____________________________________________________________________________________________________
+
+  LGA_showInFlow v2.1 | 2024 | Lega
+  Abre la URL de la task Comp del shot, tomando la informacion del nombre del script
+
+  Para el login en Windows hay que guardar la informacion del sitio variables de entorno:
+
+  1- Abrir el cmd como administrador.
+
+  2- Usar los siguientes comandos para establecer las variables de entorno (ponerlos uno por uno):
+
+  setx SHOTGRID_URL &quot;https://pagina.shotgrid.autodesk.com&quot;
+  setx SHOTGRID_LOGIN &quot;tu_usuario&quot;
+  setx SHOTGRID_PASSWORD &quot;tu_contrasena&quot;
+
+  (el usuario es el mail que se usa para login)
+_____________________________________________________________________________________________________
+&quot;&quot;&quot;
+
+import os
+import sys
+import re
+import platform
+import nuke
+import webbrowser
+import threading
+import subprocess
+import configparser
+
+# Agregar la ruta de la carpeta shotgun_api3 al sys.path
+script_dir = os.path.dirname(os.path.abspath(__file__))
+shotgun_api_path = os.path.join(script_dir, &quot;shotgun_api3&quot;)
+sys.path.append(shotgun_api_path)
+
+# Ahora importamos shotgun_api3
+import shotgun_api3
+
+# Constantes para el archivo de configuracion (adaptadas del ejemplo)
+CONFIG_FILE_NAME = &quot;ShowInFlow.ini&quot;
+CONFIG_SECTION = &quot;Credentials&quot;
+CONFIG_URL_KEY = &quot;shotgrid_url&quot;
+CONFIG_LOGIN_KEY = &quot;shotgrid_login&quot;
+CONFIG_PASSWORD_KEY = &quot;shotgrid_password&quot;
+
+# --- Inicio: Funciones de manejo de configuracion (basadas en LGA_Write_Focus.py) ---
+
+
+def get_config_path():
+    &quot;&quot;&quot;Devuelve la ruta completa al archivo de configuracion.&quot;&quot;&quot;
+    try:
+        appdata_path = os.getenv(&quot;APPDATA&quot;)
+        if not appdata_path:
+            print(&quot;Error: No se pudo encontrar la variable de entorno APPDATA.&quot;)
+            return None
+        config_dir = os.path.join(appdata_path, &quot;LGA&quot;, &quot;ToolPack&quot;)
+        return os.path.join(config_dir, CONFIG_FILE_NAME)
+    except Exception as e:
+        print(f&quot;Error al obtener la ruta de configuracion: {e}&quot;)
+        return None
+
+
+def ensure_config_exists():
+    &quot;&quot;&quot;
+    Asegura que el directorio de configuracion y el archivo .ini existan.
+    Si no existen, los crea con valores vacios.
+    &quot;&quot;&quot;
+    config_file_path = get_config_path()
+    if not config_file_path:
+        return  # Salir si no se pudo obtener la ruta
+
+    config_dir = os.path.dirname(config_file_path)
+
+    try:
+        # Crear el directorio si no existe
+        if not os.path.exists(config_dir):
+            os.makedirs(config_dir)
+            print(f&quot;Directorio de configuracion creado: {config_dir}&quot;)
+
+        # Crear el archivo .ini si no existe
+        if not os.path.exists(config_file_path):
+            config = configparser.ConfigParser()
+            config[CONFIG_SECTION] = {
+                CONFIG_URL_KEY: &quot;&quot;,
+                CONFIG_LOGIN_KEY: &quot;&quot;,
+                CONFIG_PASSWORD_KEY: &quot;&quot;,
+            }
+            with open(config_file_path, &quot;w&quot;, encoding=&quot;utf-8&quot;) as configfile:
+                config.write(configfile)
+            print(
+                f&quot;Archivo de configuración creado: {config_file_path}. Por favor, complételo con sus credenciales.&quot;
+            )
+        # else: # Debugging opcional como en el ejemplo
+        #     print(f&quot;Archivo de configuración ya existe: {config_file_path}&quot;)
+
+    except Exception as e:
+        print(f&quot;Error al asegurar la configuración: {e}&quot;)
+
+
+def get_credentials_from_config():
+    &quot;&quot;&quot;
+    Lee las credenciales de ShotGrid desde el archivo .ini.
+    Devuelve (url, login, password) o (None, None, None) si hay errores o faltan datos.
+    Usa print para errores internos, similar al ejemplo.
+    &quot;&quot;&quot;
+    config_file_path = get_config_path()
+    if not config_file_path or not os.path.exists(config_file_path):
+        print(
+            f&quot;Archivo de configuración no encontrado en la ruta esperada: {config_file_path}&quot;
+        )
+        return None, None, None
+
+    try:
+        config = configparser.ConfigParser()
+        config.read(config_file_path, encoding=&quot;utf-8&quot;)
+
+        # Verificar si la seccion y las claves existen
+        if (
+            config.has_section(CONFIG_SECTION)
+            and config.has_option(CONFIG_SECTION, CONFIG_URL_KEY)
+            and config.has_option(CONFIG_SECTION, CONFIG_LOGIN_KEY)
+            and config.has_option(CONFIG_SECTION, CONFIG_PASSWORD_KEY)
+        ):
+
+            sg_url = config.get(CONFIG_SECTION, CONFIG_URL_KEY).strip()
+            sg_login = config.get(CONFIG_SECTION, CONFIG_LOGIN_KEY).strip()
+            sg_password = config.get(CONFIG_SECTION, CONFIG_PASSWORD_KEY).strip()
+
+            # Validar que los valores no esten vacios
+            if sg_url and sg_login and sg_password:
+                return sg_url, sg_login, sg_password
+            else:
+                print(f&quot;Una o más credenciales en {config_file_path} están vacías.&quot;)
+                return None, None, None
+        else:
+            missing = []
+            if not config.has_section(CONFIG_SECTION):
+                missing.append(f&quot;Seccion [{CONFIG_SECTION}]&quot;)
+            if not config.has_option(CONFIG_SECTION, CONFIG_URL_KEY):
+                missing.append(f&quot;Clave {CONFIG_URL_KEY}&quot;)
+            if not config.has_option(CONFIG_SECTION, CONFIG_LOGIN_KEY):
+                missing.append(f&quot;Clave {CONFIG_LOGIN_KEY}&quot;)
+            if not config.has_option(CONFIG_SECTION, CONFIG_PASSWORD_KEY):
+                missing.append(f&quot;Clave {CONFIG_PASSWORD_KEY}&quot;)
+            print(
+                f&quot;Configuración incompleta en {config_file_path}. Falta: {', '.join(missing)}&quot;
+            )
+            return None, None, None
+
+    except configparser.Error as e:
+        print(f&quot;Error al leer el archivo de configuración {config_file_path}: {e}.&quot;)
+        return None, None, None
+    except Exception as e:
+        print(f&quot;Error inesperado al leer la configuración: {e}.&quot;)
+        return None, None, None
+
+
+# --- Fin: Funciones de manejo de configuracion ---
+
+# Asegurarse de que el archivo de configuracion existe al iniciar (como en el ejemplo)
+ensure_config_exists()
+
+# Verificacion del sistema operativo y configuracion de la ruta del navegador
+if platform.system() == &quot;Windows&quot;:
+    # print(&quot;Windows&quot;)
+    browser_path = &quot;C:/Program Files/Google/Chrome/Application/chrome.exe %s&quot;
+elif platform.system() == &quot;Darwin&quot;:  # macOS
+    # print(&quot;mac&quot;)
+    browser_path = &quot;/Applications/Google Chrome.app/Contents/MacOS/Google Chrome&quot;
+else:
+    browser_path = &quot;&quot;  # Ruta del navegador para otros sistemas, si aplica
+    # debug_print (&quot;No se detecto el OS&quot;) # Corregido: Eliminado/Comentado
+
+use_default_browser = False  # Si esta en True, usa el navegador por defecto, si esta en False, usa browser_path
+
+DEBUG = False
+
+
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+
+class ShotGridManager:
+    def __init__(self, url, login, password):
+        self.sg = shotgun_api3.Shotgun(url, login=login, password=password)
+
+    def find_shot_and_tasks(self, project_name, shot_code):
+        debug_print(f&quot;Buscando proyecto: {project_name}, shot: {shot_code}&quot;)
+        projects = self.sg.find(
+            &quot;Project&quot;, [[&quot;name&quot;, &quot;is&quot;, project_name]], [&quot;id&quot;, &quot;name&quot;]
+        )
+        if projects:
+            project_id = projects[0][&quot;id&quot;]
+            debug_print(f&quot;Proyecto encontrado: {project_id}&quot;)
+            filters = [
+                [&quot;project&quot;, &quot;is&quot;, {&quot;type&quot;: &quot;Project&quot;, &quot;id&quot;: project_id}],
+                [&quot;code&quot;, &quot;is&quot;, shot_code],
+            ]
+            fields = [&quot;id&quot;, &quot;code&quot;, &quot;description&quot;]
+            shots = self.sg.find(&quot;Shot&quot;, filters, fields)
+            if shots:
+                shot_id = shots[0][&quot;id&quot;]
+                debug_print(f&quot;Shot encontrado: {shot_id}&quot;)
+                tasks = self.find_tasks_for_shot(shot_id)
+                return shots[0], tasks
+            else:
+                debug_print(&quot;No se encontro el shot.&quot;)
+        else:
+            debug_print(&quot;No se encontro el proyecto en ShotGrid.&quot;)
+        return None, None
+
+    def find_tasks_for_shot(self, shot_id):
+        debug_print(f&quot;Buscando tareas para el shot: {shot_id}&quot;)
+        filters = [[&quot;entity&quot;, &quot;is&quot;, {&quot;type&quot;: &quot;Shot&quot;, &quot;id&quot;: shot_id}]]
+        fields = [&quot;id&quot;, &quot;content&quot;, &quot;sg_status_list&quot;]
+        tasks = self.sg.find(&quot;Task&quot;, filters, fields)
+        debug_print(f&quot;Tareas encontradas: {tasks}&quot;)
+        return tasks
+
+    def get_task_url(self, task_id):
+        return f&quot;{self.sg.base_url}/detail/Task/{task_id}&quot;
+
+
+class NukeOperations:
+    def __init__(self, shotgrid_manager):
+        self.sg_manager = shotgrid_manager
+
+    def parse_nuke_script_name(self, file_name):
+        base_name = re.sub(r&quot;_%04d\.nk$&quot;, &quot;&quot;, file_name)
+        version_match = re.search(r&quot;_v(\d+)&quot;, base_name)
+        version_number = version_match.group(1) if version_match else &quot;Unknown&quot;
+        return base_name, version_number
+
+    def process_current_script(self):
+        file_path = nuke.root().name()
+        debug_print(f&quot;Nuke script file path: {file_path}&quot;)
+        if file_path:
+            nuke_script_name = os.path.basename(file_path)
+            debug_print(f&quot;Nuke script name: {nuke_script_name}&quot;)
+            base_name, nuke_version_number = self.parse_nuke_script_name(
+                nuke_script_name
+            )
+            debug_print(
+                f&quot;Parsed base name: {base_name}, version number: {nuke_version_number}&quot;
+            )
+            project_name = base_name.split(&quot;_&quot;)[0]
+            parts = base_name.split(&quot;_&quot;)
+            shot_code = &quot;_&quot;.join(parts[:5])
+            debug_print(f&quot;Project name: {project_name}, shot code: {shot_code}&quot;)
+
+            shot, tasks = self.sg_manager.find_shot_and_tasks(project_name, shot_code)
+            if shot:
+                for task in tasks:
+                    if task[&quot;content&quot;] == &quot;Comp&quot;:
+                        task_url = self.sg_manager.get_task_url(task[&quot;id&quot;])
+                        debug_print(
+                            f&quot;  - Task: {task['content']} (Status: {task['sg_status_list']}) URL: {task_url}&quot;
+                        )
+                        if use_default_browser:
+                            webbrowser.open(task_url)
+                        else:
+                            self.open_url_in_browser(task_url)
+            else:
+                debug_print(&quot;No se encontro el shot correspondiente en ShotGrid.&quot;)
+        else:
+            debug_print(&quot;No se encontro un script activo en Nuke.&quot;)
+
+    def open_url_in_browser(self, url):
+        if platform.system() == &quot;Darwin&quot;:  # macOS
+            try:
+                subprocess.run([browser_path, url])
+                debug_print(f&quot;Opening {url} in specified browser on macOS...&quot;)
+            except Exception as e:
+                debug_print(f&quot;Failed to open URL in specified browser on macOS: {e}&quot;)
+        elif platform.system() == &quot;Windows&quot;:
+            debug_print(&quot;Windows&quot;)
+            try:
+                webbrowser.get(browser_path).open(url)
+                debug_print(f&quot;Opening {url} in specified browser on Windows...&quot;)
+            except Exception as e:
+                debug_print(f&quot;Failed to open URL in specified browser on Windows: {e}&quot;)
+
+
+def threaded_function():
+    # Leer credenciales desde el archivo .ini usando la funcion adaptada
+    sg_url, sg_login, sg_password = get_credentials_from_config()
+
+    # Verificar si las credenciales se leyeron correctamente
+    if not sg_url or not sg_login or not sg_password:
+        # Si fallo, get_credentials_from_config ya imprimio el error.
+        # Mostrar mensaje en Nuke y salir del hilo.
+        config_path = get_config_path() or &quot;AppData\\LGA\\ToolPack\\ShowInFlow.ini&quot;
+        nuke.message(
+            f&quot;No se pudieron leer las credenciales de ShotGrid desde:\n{config_path}\n\nRevise la consola para detalles y asegúrese de que el archivo esté completo.&quot;
+        )
+        return
+
+    # Si las credenciales son validas, proceder con la logica original
+    try:
+        debug_print(f&quot;Conectando a ShotGrid URL: {sg_url} con login: {sg_login}&quot;)
+        sg_manager = ShotGridManager(sg_url, sg_login, sg_password)
+        nuke_ops = NukeOperations(sg_manager)
+        nuke_ops.process_current_script()
+    except shotgun_api3.AuthenticationFault:
+        # Error especifico de autenticacion
+        nuke.message(
+            f&quot;Error de autenticación con ShotGrid.\nVerifique las credenciales en:\n{get_config_path()}&quot;
+        )
+        debug_print(&quot;Error de autenticación con ShotGrid.&quot;)
+    except Exception as e:
+        # Otros errores durante la conexion o procesamiento
+        nuke.message(
+            f&quot;Ocurrió un error al conectar o procesar la información de ShotGrid: {e}&quot;
+        )
+        debug_print(f&quot;Error detallado: {e}&quot;)
+
+
+def main():
+    thread = threading.Thread(target=threaded_function)
+    thread.start()
+
+    # Este join lo tuve que agregar en MAC. Volver a probar en mac y si es necesario agregarlo,
+    # entonces le ponemos un IF porque me cuelga la interface en windows mientras se ejecuta:
+    # thread.join() #
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+&quot;&quot;&quot;
+_____________________________________________________________________________________________________
+
+  LGA_showInFlow v2.1 | 2024 | Lega
+  Abre la URL de la task Comp del shot, tomando la informacion del nombre del script
+
+  Para el login en Windows hay que guardar la informacion del sitio variables de entorno:
+
+  1- Abrir el cmd como administrador.
+
+  2- Usar los siguientes comandos para establecer las variables de entorno (ponerlos uno por uno):
+
+  setx SHOTGRID_URL &quot;https://pagina.shotgrid.autodesk.com&quot;
+  setx SHOTGRID_LOGIN &quot;tu_usuario&quot;
+  setx SHOTGRID_PASSWORD &quot;tu_contrasena&quot;
+
+  (el usuario es el mail que se usa para login)
+_____________________________________________________________________________________________________
+&quot;&quot;&quot;
+
+import os
+import sys
+import re
+import platform
+import nuke
+import webbrowser
+import threading
+import subprocess
+import configparser
+
+# Agregar la ruta de la carpeta shotgun_api3 al sys.path
+script_dir = os.path.dirname(os.path.abspath(__file__))
+shotgun_api_path = os.path.join(script_dir, &quot;shotgun_api3&quot;)
+sys.path.append(shotgun_api_path)
+
+# Ahora importamos shotgun_api3
+import shotgun_api3
+
+# Constantes para el archivo de configuracion (adaptadas del ejemplo)
+CONFIG_FILE_NAME = &quot;ShowInFlow.ini&quot;
+CONFIG_SECTION = &quot;Credentials&quot;
+CONFIG_URL_KEY = &quot;shotgrid_url&quot;
+CONFIG_LOGIN_KEY = &quot;shotgrid_login&quot;
+CONFIG_PASSWORD_KEY = &quot;shotgrid_password&quot;
+
+# --- Inicio: Funciones de manejo de configuracion (basadas en LGA_Write_Focus.py) ---
+
+
+def get_config_path():
+    &quot;&quot;&quot;Devuelve la ruta completa al archivo de configuracion.&quot;&quot;&quot;
+    try:
+        appdata_path = os.getenv(&quot;APPDATA&quot;)
+        if not appdata_path:
+            print(&quot;Error: No se pudo encontrar la variable de entorno APPDATA.&quot;)
+            return None
+        config_dir = os.path.join(appdata_path, &quot;LGA&quot;, &quot;ToolPack&quot;)
+        return os.path.join(config_dir, CONFIG_FILE_NAME)
+    except Exception as e:
+        print(f&quot;Error al obtener la ruta de configuracion: {e}&quot;)
+        return None
+
+
+def ensure_config_exists():
+    &quot;&quot;&quot;
+    Asegura que el directorio de configuracion y el archivo .ini existan.
+    Si no existen, los crea con valores vacios.
+    &quot;&quot;&quot;
+    config_file_path = get_config_path()
+    if not config_file_path:
+        return  # Salir si no se pudo obtener la ruta
+
+    config_dir = os.path.dirname(config_file_path)
+
+    try:
+        # Crear el directorio si no existe
+        if not os.path.exists(config_dir):
+            os.makedirs(config_dir)
+            print(f&quot;Directorio de configuracion creado: {config_dir}&quot;)
+
+        # Crear el archivo .ini si no existe
+        if not os.path.exists(config_file_path):
+            config = configparser.ConfigParser()
+            config[CONFIG_SECTION] = {
+                CONFIG_URL_KEY: &quot;&quot;,
+                CONFIG_LOGIN_KEY: &quot;&quot;,
+                CONFIG_PASSWORD_KEY: &quot;&quot;,
+            }
+            with open(config_file_path, &quot;w&quot;, encoding=&quot;utf-8&quot;) as configfile:
+                config.write(configfile)
+            print(
+                f&quot;Archivo de configuración creado: {config_file_path}. Por favor, complételo con sus credenciales.&quot;
+            )
+        # else: # Debugging opcional como en el ejemplo
+        #     print(f&quot;Archivo de configuración ya existe: {config_file_path}&quot;)
+
+    except Exception as e:
+        print(f&quot;Error al asegurar la configuración: {e}&quot;)
+
+
+def get_credentials_from_config():
+    &quot;&quot;&quot;
+    Lee las credenciales de ShotGrid desde el archivo .ini.
+    Devuelve (url, login, password) o (None, None, None) si hay errores o faltan datos.
+    Usa print para errores internos, similar al ejemplo.
+    &quot;&quot;&quot;
+    config_file_path = get_config_path()
+    if not config_file_path or not os.path.exists(config_file_path):
+        print(
+            f&quot;Archivo de configuración no encontrado en la ruta esperada: {config_file_path}&quot;
+        )
+        return None, None, None
+
+    try:
+        config = configparser.ConfigParser()
+        config.read(config_file_path, encoding=&quot;utf-8&quot;)
+
+        # Verificar si la seccion y las claves existen
+        if (
+            config.has_section(CONFIG_SECTION)
+            and config.has_option(CONFIG_SECTION, CONFIG_URL_KEY)
+            and config.has_option(CONFIG_SECTION, CONFIG_LOGIN_KEY)
+            and config.has_option(CONFIG_SECTION, CONFIG_PASSWORD_KEY)
+        ):
+
+            sg_url = config.get(CONFIG_SECTION, CONFIG_URL_KEY).strip()
+            sg_login = config.get(CONFIG_SECTION, CONFIG_LOGIN_KEY).strip()
+            sg_password = config.get(CONFIG_SECTION, CONFIG_PASSWORD_KEY).strip()
+
+            # Validar que los valores no esten vacios
+            if sg_url and sg_login and sg_password:
+                return sg_url, sg_login, sg_password
+            else:
+                print(f&quot;Una o más credenciales en {config_file_path} están vacías.&quot;)
+                return None, None, None
+        else:
+            missing = []
+            if not config.has_section(CONFIG_SECTION):
+                missing.append(f&quot;Seccion [{CONFIG_SECTION}]&quot;)
+            if not config.has_option(CONFIG_SECTION, CONFIG_URL_KEY):
+                missing.append(f&quot;Clave {CONFIG_URL_KEY}&quot;)
+            if not config.has_option(CONFIG_SECTION, CONFIG_LOGIN_KEY):
+                missing.append(f&quot;Clave {CONFIG_LOGIN_KEY}&quot;)
+            if not config.has_option(CONFIG_SECTION, CONFIG_PASSWORD_KEY):
+                missing.append(f&quot;Clave {CONFIG_PASSWORD_KEY}&quot;)
+            print(
+                f&quot;Configuración incompleta en {config_file_path}. Falta: {', '.join(missing)}&quot;
+            )
+            return None, None, None
+
+    except configparser.Error as e:
+        print(f&quot;Error al leer el archivo de configuración {config_file_path}: {e}.&quot;)
+        return None, None, None
+    except Exception as e:
+        print(f&quot;Error inesperado al leer la configuración: {e}.&quot;)
+        return None, None, None
+
+
+# --- Fin: Funciones de manejo de configuracion ---
+
+# Asegurarse de que el archivo de configuracion existe al iniciar (como en el ejemplo)
+ensure_config_exists()
+
+# Verificacion del sistema operativo y configuracion de la ruta del navegador
+if platform.system() == &quot;Windows&quot;:
+    # print(&quot;Windows&quot;)
+    browser_path = &quot;C:/Program Files/Google/Chrome/Application/chrome.exe %s&quot;
+elif platform.system() == &quot;Darwin&quot;:  # macOS
+    # print(&quot;mac&quot;)
+    browser_path = &quot;/Applications/Google Chrome.app/Contents/MacOS/Google Chrome&quot;
+else:
+    browser_path = &quot;&quot;  # Ruta del navegador para otros sistemas, si aplica
+    # debug_print (&quot;No se detecto el OS&quot;) # Corregido: Eliminado/Comentado
+
+use_default_browser = False  # Si esta en True, usa el navegador por defecto, si esta en False, usa browser_path
+
+DEBUG = False
+
+
+# Definir debug_print aqui para que siempre exista
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+
+class ShotGridManager:
+    def __init__(self, url, login, password):
+        self.sg = shotgun_api3.Shotgun(url, login=login, password=password)
+
+    def find_shot_and_tasks(self, project_name, shot_code):
+        debug_print(f&quot;Buscando proyecto: {project_name}, shot: {shot_code}&quot;)
+        projects = self.sg.find(
+            &quot;Project&quot;, [[&quot;name&quot;, &quot;is&quot;, project_name]], [&quot;id&quot;, &quot;name&quot;]
+        )
+        if projects:
+            project_id = projects[0][&quot;id&quot;]
+            debug_print(f&quot;Proyecto encontrado: {project_id}&quot;)
+            filters = [
+                [&quot;project&quot;, &quot;is&quot;, {&quot;type&quot;: &quot;Project&quot;, &quot;id&quot;: project_id}],
+                [&quot;code&quot;, &quot;is&quot;, shot_code],
+            ]
+            fields = [&quot;id&quot;, &quot;code&quot;, &quot;description&quot;]
+            shots = self.sg.find(&quot;Shot&quot;, filters, fields)
+            if shots:
+                shot_id = shots[0][&quot;id&quot;]
+                debug_print(f&quot;Shot encontrado: {shot_id}&quot;)
+                tasks = self.find_tasks_for_shot(shot_id)
+                return shots[0], tasks
+            else:
+                debug_print(&quot;No se encontro el shot.&quot;)
+        else:
+            debug_print(&quot;No se encontro el proyecto en ShotGrid.&quot;)
+        return None, None
+
+    def find_tasks_for_shot(self, shot_id):
+        debug_print(f&quot;Buscando tareas para el shot: {shot_id}&quot;)
+        filters = [[&quot;entity&quot;, &quot;is&quot;, {&quot;type&quot;: &quot;Shot&quot;, &quot;id&quot;: shot_id}]]
+        fields = [&quot;id&quot;, &quot;content&quot;, &quot;sg_status_list&quot;]
+        tasks = self.sg.find(&quot;Task&quot;, filters, fields)
+        debug_print(f&quot;Tareas encontradas: {tasks}&quot;)
+        return tasks
+
+    def get_task_url(self, task_id):
+        return f&quot;{self.sg.base_url}/detail/Task/{task_id}&quot;
+
+
+class NukeOperations:
+    def __init__(self, shotgrid_manager):
+        self.sg_manager = shotgrid_manager
+
+    def parse_nuke_script_name(self, file_name):
+        base_name = re.sub(r&quot;_%04d\.nk$&quot;, &quot;&quot;, file_name)
+        version_match = re.search(r&quot;_v(\d+)&quot;, base_name)
+        version_number = version_match.group(1) if version_match else &quot;Unknown&quot;
+        return base_name, version_number
+
+    def process_current_script(self):
+        file_path = nuke.root().name()
+        debug_print(f&quot;Nuke script file path: {file_path}&quot;)
+        if file_path:
+            nuke_script_name = os.path.basename(file_path)
+            debug_print(f&quot;Nuke script name: {nuke_script_name}&quot;)
+            base_name, nuke_version_number = self.parse_nuke_script_name(
+                nuke_script_name
+            )
+            debug_print(
+                f&quot;Parsed base name: {base_name}, version number: {nuke_version_number}&quot;
+            )
+            project_name = base_name.split(&quot;_&quot;)[0]
+            parts = base_name.split(&quot;_&quot;)
+            shot_code = &quot;_&quot;.join(parts[:5])
+            debug_print(f&quot;Project name: {project_name}, shot code: {shot_code}&quot;)
+
+            shot, tasks = self.sg_manager.find_shot_and_tasks(project_name, shot_code)
+            if shot:
+                for task in tasks:
+                    if task[&quot;content&quot;] == &quot;Comp&quot;:
+                        task_url = self.sg_manager.get_task_url(task[&quot;id&quot;])
+                        debug_print(
+                            f&quot;  - Task: {task['content']} (Status: {task['sg_status_list']}) URL: {task_url}&quot;
+                        )
+                        if use_default_browser:
+                            webbrowser.open(task_url)
+                        else:
+                            self.open_url_in_browser(task_url)
+            else:
+                debug_print(&quot;No se encontro el shot correspondiente en ShotGrid.&quot;)
+        else:
+            debug_print(&quot;No se encontro un script activo en Nuke.&quot;)
+
+    def open_url_in_browser(self, url):
+        if platform.system() == &quot;Darwin&quot;:  # macOS
+            try:
+                subprocess.run([browser_path, url])
+                debug_print(f&quot;Opening {url} in specified browser on macOS...&quot;)
+            except Exception as e:
+                debug_print(f&quot;Failed to open URL in specified browser on macOS: {e}&quot;)
+        elif platform.system() == &quot;Windows&quot;:
+            debug_print(&quot;Windows&quot;)
+            try:
+                webbrowser.get(browser_path).open(url)
+                debug_print(f&quot;Opening {url} in specified browser on Windows...&quot;)
+            except Exception as e:
+                debug_print(f&quot;Failed to open URL in specified browser on Windows: {e}&quot;)
+
+
+def threaded_function():
+    # Leer credenciales desde el archivo .ini usando la funcion adaptada
+    sg_url, sg_login, sg_password = get_credentials_from_config()
+
+    # Verificar si las credenciales se leyeron correctamente
+    if not sg_url or not sg_login or not sg_password:
+        # Si fallo, get_credentials_from_config ya imprimio el error.
+        # Mostrar mensaje en Nuke y salir del hilo.
+        config_path = get_config_path() or &quot;AppData\\LGA\\ToolPack\\ShowInFlow.ini&quot;
+        nuke.message(
+            f&quot;No se pudieron leer las credenciales de ShotGrid desde:\n{config_path}\n\nRevise la consola para detalles y asegúrese de que el archivo esté completo.&quot;
+        )
+        return
+
+    # Si las credenciales son validas, proceder con la logica original
+    try:
+        debug_print(f&quot;Conectando a ShotGrid URL: {sg_url} con login: {sg_login}&quot;)
+        sg_manager = ShotGridManager(sg_url, sg_login, sg_password)
+        nuke_ops = NukeOperations(sg_manager)
+        nuke_ops.process_current_script()
+    except shotgun_api3.AuthenticationFault:
+        # Error especifico de autenticacion
+        nuke.message(
+            f&quot;Error de autenticación con ShotGrid.\nVerifique las credenciales en:\n{get_config_path()}&quot;
+        )
+        debug_print(&quot;Error de autenticación con ShotGrid.&quot;)
+    except Exception as e:
+        # Otros errores durante la conexion o procesamiento
+        nuke.message(
+            f&quot;Ocurrió un error al conectar o procesar la información de ShotGrid: {e}&quot;
+        )
+        debug_print(f&quot;Error detallado: {e}&quot;)
+
+
+def main():
+    thread = threading.Thread(target=threaded_function)
+    thread.start()
+
+    # Este join lo tuve que agregar en MAC. Volver a probar en mac y si es necesario agregarlo,
+    # entonces le ponemos un IF porque me cuelga la interface en windows mientras se ejecuta:
+    # thread.join() #
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+import sys
+import os
+import configparser
+from PySide2.QtWidgets import (
+    QApplication,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QGroupBox,
+    QLabel,
+    QLineEdit,
+    QFormLayout,
+    QPushButton,
+)
+from PySide2.QtCore import Qt
+
+# Importar funciones y constantes desde LGA_Write_Focus
+# Asumiendo que ambos scripts estan en el mismo directorio o en el sys.path
+try:
+    from LGA_Write_Focus import (
+        get_config_path,
+        ensure_config_exists,
+        get_node_name_from_config,
+        DEFAULT_NODE_NAME,  # Importar el valor por defecto tambien
+        CONFIG_SECTION,  # Constante para la seccion
+        CONFIG_NODE_NAME_KEY,  # Constante para la clave
+    )
+except ImportError:
+    print(
+        &quot;Error: No se pudo importar LGA_Write_Focus.py. Asegurate de que este en la misma carpeta o en el PYTHONPATH.&quot;
+    )
+
+    # Definir funciones dummy o valores por defecto para que la UI no falle
+    def ensure_config_exists():
+        pass
+
+    def get_node_name_from_config() -&gt; str:
+        return &quot;Write_Pub&quot;  # Usar valor por defecto
+
+    DEFAULT_NODE_NAME = &quot;Write_Pub&quot;
+
+
+class SettingsWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle(&quot;LGA ToolPack Settings&quot;)
+        self.setMinimumWidth(400)
+        self.initUI()
+
+    def initUI(self):
+        main_layout = QVBoxLayout(self)
+
+        # --- Write Presets Section ---
+        write_presets_group = QGroupBox(&quot;Write Presets&quot;)
+        write_presets_layout = QVBoxLayout()
+        write_presets_layout.addWidget(
+            QLabel(&quot;(Placeholder for Write Presets functionality)&quot;)
+        )
+        self.save_write_presets_button = QPushButton(&quot;Save&quot;)
+        # self.save_write_presets_button.clicked.connect(self.save_write_presets) # Placeholder
+        write_presets_layout.addWidget(self.save_write_presets_button, 0, Qt.AlignRight)
+        write_presets_group.setLayout(write_presets_layout)
+        main_layout.addWidget(write_presets_group)
+
+        # --- Write Focus Section ---
+        write_focus_group = QGroupBox(&quot;Write Focus&quot;)
+        write_focus_layout_container = QVBoxLayout()  # Contenedor para Form y Boton
+        write_focus_form_layout = QFormLayout()  # Layout para etiquetas y campos
+        self.write_focus_input = QLineEdit()
+        # --- Leer y mostrar el valor actual ---
+        ensure_config_exists()  # Asegurarse de que el archivo .ini exista
+        current_node_name = get_node_name_from_config()
+        self.write_focus_input.setText(current_node_name)
+        # --- Fin lectura ---
+        write_focus_form_layout.addRow(
+            &quot;Name of the Write Node to Focus:&quot;, self.write_focus_input
+        )
+
+        # Anadir FormLayout al contenedor
+        write_focus_layout_container.addLayout(write_focus_form_layout)
+
+        # Boton Save
+        self.save_write_focus_button = QPushButton(&quot;Save&quot;)
+        self.save_write_focus_button.clicked.connect(self.save_write_focus_settings)
+        write_focus_layout_container.addWidget(
+            self.save_write_focus_button, 0, Qt.AlignRight
+        )  # Anadir boton al contenedor
+
+        write_focus_group.setLayout(
+            write_focus_layout_container
+        )  # Establecer layout del grupo
+        main_layout.addWidget(write_focus_group)
+
+        # --- Show in Flow Section ---
+        show_flow_group = QGroupBox(&quot;Show in Flow&quot;)
+        show_flow_layout_container = QVBoxLayout()  # Contenedor para Form y Boton
+        show_flow_form_layout = QFormLayout()  # Layout para etiquetas y campos
+        self.username_input = QLineEdit()
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Password)  # Mask password
+        self.site_input = QLineEdit()
+        show_flow_form_layout.addRow(&quot;Username:&quot;, self.username_input)
+        show_flow_form_layout.addRow(&quot;Password:&quot;, self.password_input)
+        show_flow_form_layout.addRow(&quot;Site:&quot;, self.site_input)
+
+        # Anadir FormLayout al contenedor
+        show_flow_layout_container.addLayout(show_flow_form_layout)
+
+        # Boton Save
+        self.save_show_flow_button = QPushButton(&quot;Save&quot;)
+        # self.save_show_flow_button.clicked.connect(self.save_show_flow_settings) # Placeholder
+        show_flow_layout_container.addWidget(
+            self.save_show_flow_button, 0, Qt.AlignRight
+        )  # Anadir boton al contenedor
+
+        show_flow_group.setLayout(
+            show_flow_layout_container
+        )  # Establecer layout del grupo
+        main_layout.addWidget(show_flow_group)
+
+        # --- Color Space Favs Section ---
+        color_space_group = QGroupBox(&quot;Color Space Favs&quot;)
+        color_space_layout = QVBoxLayout()
+        color_space_layout.addWidget(
+            QLabel(&quot;(Placeholder for Color Space Favorites functionality)&quot;)
+        )
+        self.save_color_space_button = QPushButton(&quot;Save&quot;)
+        # self.save_color_space_button.clicked.connect(self.save_color_space) # Placeholder
+        color_space_layout.addWidget(self.save_color_space_button, 0, Qt.AlignRight)
+        color_space_group.setLayout(color_space_layout)
+        main_layout.addWidget(color_space_group)
+
+        main_layout.addStretch()  # Push everything up
+
+    def save_write_focus_settings(self):
+        &quot;&quot;&quot;Guarda el nombre del nodo de Write Focus en su archivo .ini.&quot;&quot;&quot;
+        config_file_path = get_config_path()
+        if not config_file_path:
+            print(
+                &quot;Error: No se pudo obtener la ruta del archivo de configuracion para Write Focus.&quot;
+            )
+            # Opcional: Mostrar mensaje en la UI
+            return
+
+        new_node_name = self.write_focus_input.text().strip()
+        if not new_node_name:
+            print(&quot;Error: El nombre del nodo para Write Focus no puede estar vacio.&quot;)
+            # Opcional: Mostrar mensaje en la UI y quizas revertir al valor anterior
+            current_node_name = get_node_name_from_config()  # Releer por si acaso
+            self.write_focus_input.setText(current_node_name)
+            return
+
+        config = configparser.ConfigParser()
+        try:
+            # Leer la configuracion existente para preservar otras posibles claves/secciones
+            config.read(config_file_path)
+
+            # Asegurarse de que la seccion exista
+            if not config.has_section(CONFIG_SECTION):
+                config.add_section(CONFIG_SECTION)
+
+            # Establecer el nuevo valor
+            config.set(CONFIG_SECTION, CONFIG_NODE_NAME_KEY, new_node_name)
+
+            # Escribir los cambios de vuelta al archivo
+            with open(config_file_path, &quot;w&quot;) as configfile:
+                config.write(configfile)
+
+            print(
+                f&quot;Configuracion de Write Focus guardada: {CONFIG_NODE_NAME_KEY} = {new_node_name} en {config_file_path}&quot;
+            )
+            # Opcional: Mostrar mensaje de exito en la UI (ej. status bar)
+
+        except IOError as e:
+            print(
+                f&quot;Error de I/O al guardar la configuracion de Write Focus en {config_file_path}: {e}&quot;
+            )
+            # Opcional: Mostrar mensaje de error en la UI
+        except configparser.Error as e:
+            print(
+                f&quot;Error de formato ConfigParser al guardar la configuracion de Write Focus: {e}&quot;
+            )
+            # Opcional: Mostrar mensaje de error en la UI
+        except Exception as e:
+            print(f&quot;Error inesperado al guardar la configuracion de Write Focus: {e}&quot;)
+            # Opcional: Mostrar mensaje de error en la UI
+
+
+# --- Main Execution ---
+if __name__ == &quot;__main__&quot;:
+    # Solo se necesita una instancia de QApplication por script
+    app = QApplication.instance() or QApplication(sys.argv)
+
+    settings_window = SettingsWindow()
+    settings_window.show()
+
+    # Mantener el bucle para ejecucion standalone
+    try:
+        sys.exit(app.exec_())
+    except SystemExit:
+        pass  # Evitar error si ya existe una instancia de app (ej. dentro de Nuke)
+</script>
