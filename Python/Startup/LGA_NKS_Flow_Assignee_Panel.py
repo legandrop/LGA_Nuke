@@ -35,6 +35,13 @@ class AssigneePanel(QWidget):
         self.get_assignees_button.clicked.connect(self.get_assignees_for_selected_clip)
         self.layout.addWidget(self.get_assignees_button, 0, 0)
 
+        # Botón para limpiar asignees
+        self.clear_assignees_button = QPushButton("Clear Assignees")
+        self.clear_assignees_button.clicked.connect(
+            self.clear_assignees_for_selected_clip
+        )
+        self.layout.addWidget(self.clear_assignees_button, 1, 0)
+
     def parse_exr_name(self, exr_name):
         # Ajustar el manejo del formato del nombre del archivo EXR
         if "%04d" in exr_name:
@@ -104,6 +111,65 @@ class AssigneePanel(QWidget):
             spec.loader.exec_module(module)
             # Llamar a la función principal pasando el base_name
             module.show_task_assignees_from_base_name(base_name)
+        except Exception as e:
+            QMessageBox.warning(self, "Error al ejecutar", str(e))
+
+    def clear_assignees_for_selected_clip(self):
+        seq = hiero.ui.activeSequence()
+        if not seq:
+            QMessageBox.warning(self, "No Sequence", "No hay una secuencia activa.")
+            return
+        te = hiero.ui.getTimelineEditor(seq)
+        selected_items = te.selection()
+        if not selected_items:
+            QMessageBox.warning(
+                self, "No Selection", "Selecciona un clip en el timeline."
+            )
+            return
+        for item in selected_items:
+            if not isinstance(item, hiero.core.EffectTrackItem):
+                if item.source().mediaSource().isMediaPresent():
+                    fileinfos = item.source().mediaSource().fileinfos()
+                    if not fileinfos:
+                        continue
+                    file_path = fileinfos[0].filename()
+                    exr_name = os.path.basename(file_path)
+                    exr_name = exr_name.replace(".%", "_%")
+                    try:
+                        base_name = self.parse_exr_name(exr_name)
+                        self.call_clear_assignees_script(base_name)
+                    except Exception as e:
+                        QMessageBox.warning(self, "Formato Incorrecto", str(e))
+                else:
+                    QMessageBox.warning(
+                        self, "Media Missing", "El clip no tiene media presente."
+                    )
+
+    def call_clear_assignees_script(self, base_name):
+        script_path = os.path.join(
+            os.path.dirname(__file__), "LGA_NKS_Flow", "LGA_NKS_Flow_Clear_Assignees.py"
+        )
+        if not os.path.exists(script_path):
+            QMessageBox.warning(
+                self,
+                "Script no encontrado",
+                f"No se encontró el script en la ruta: {script_path}",
+            )
+            return
+        try:
+            import importlib.util
+
+            spec = importlib.util.spec_from_file_location(
+                "LGA_NKS_Flow_Clear_Assignees", script_path
+            )
+            if spec is None or spec.loader is None:
+                raise ImportError(
+                    "No se pudo cargar el módulo LGA_NKS_Flow_Clear_Assignees.py"
+                )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            # Llamar a la función principal pasando el base_name
+            module.clear_task_assignees_from_base_name(base_name)
         except Exception as e:
             QMessageBox.warning(self, "Error al ejecutar", str(e))
 
