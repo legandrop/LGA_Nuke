@@ -103,7 +103,7 @@ class AssigneePanel(QWidget):
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             # Llamar a la función principal pasando el base_name
-            module.print_task_assignees_from_base_name(base_name)
+            module.show_task_assignees_from_base_name(base_name)
         except Exception as e:
             QMessageBox.warning(self, "Error al ejecutar", str(e))
 

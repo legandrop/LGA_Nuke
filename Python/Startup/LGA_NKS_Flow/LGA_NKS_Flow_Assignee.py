@@ -10,6 +10,7 @@ import os
 import re
 import shotgun_api3
 from PySide2.QtCore import QRunnable, Slot, QThreadPool, Signal, QObject
+from PySide2.QtWidgets import QApplication, QMessageBox
 
 # Variable global para debug
 DEBUG = True
@@ -104,6 +105,8 @@ class AssigneeWorker(QRunnable):
         self.sg_manager = sg_manager
         self.base_name = base_name
         self.signals = WorkerSignals()
+        self.shot_name = None
+        self.assignees = []
 
     @Slot()
     def run(self):
@@ -144,15 +147,10 @@ class AssigneeWorker(QRunnable):
                 debug_print(f"No se encontro la tarea '{task_name}' para el shot.")
                 return
             debug_print(f"Task ID encontrado: {task_id}")
-            # Obtener e imprimir los asignados
+            # Obtener los asignados
             assignees = self.sg_manager.get_task_assignees(task_id)
-            if assignees:
-                for user in assignees:
-                    debug_print(
-                        f"Asignado: {user.get('name', 'Sin nombre')} (ID: {user.get('id', '-')})"
-                    )
-            else:
-                debug_print("No se encontraron asignados.")
+            self.shot_name = shot.get("code", "-") if shot else shot_code
+            self.assignees = assignees
         except Exception as e:
             debug_print(f"Error en el worker: {e}")
         finally:
@@ -173,14 +171,36 @@ def get_env_credentials():
     return sg_url, sg_script_name, sg_api_key, sg_login
 
 
-def print_task_assignees_from_base_name(base_name):
+def show_assignees_dialog(shot_name, assignees):
+    """
+    Muestra una ventana con el nombre del shot y los asignees.
+    """
+    app = QApplication.instance() or QApplication([])
+    if assignees:
+        assignees_str = "\n".join(
+            [user.get("name", "Sin nombre") for user in assignees]
+        )
+    else:
+        assignees_str = "No assignees found."
+    msg = QMessageBox()
+    msg.setWindowTitle("Shot Assignees")
+    msg.setText(f"Shot: {shot_name}\n\nAssignees:\n{assignees_str}")
+    msg.setStandardButtons(QMessageBox.Ok)
+    msg.exec_()
+
+
+def show_task_assignees_from_base_name(base_name):
     sg_url, sg_script_name, sg_api_key, sg_login = get_env_credentials()
     if not all([sg_url, sg_script_name, sg_api_key, sg_login]):
         print_debug_messages()
         return
     sg_manager = ShotGridManager(sg_url, sg_script_name, sg_api_key, sg_login)
     worker = AssigneeWorker(sg_manager, base_name)
-    worker.signals.debug_output.connect(print_debug_messages)
+
+    def on_finished():
+        show_assignees_dialog(worker.shot_name, worker.assignees)
+
+    worker.signals.finished.connect(on_finished)
     QThreadPool.globalInstance().start(worker)
 
 
@@ -191,4 +211,4 @@ if __name__ == "__main__":
         print("Uso: python LGA_NKS_Flow_Assignee.py <base_name>")
     else:
         base_name = sys.argv[1]
-        print_task_assignees_from_base_name(base_name)
+        show_task_assignees_from_base_name(base_name)
