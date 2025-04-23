@@ -1965,4 +1965,110 @@ undo.end()
 
 import importlib
 import LGA_writePresets
-importlib.reload(LGA_RnW_ColorSpace_Favs)</script>
+importlib.reload(LGA_RnW_ColorSpace_Favs)&quot;&quot;&quot;
+____________________________________________________________________________________
+
+  LGA_NKS_Flow_Assignee_Panel v1.0 - 2025 - Lega Pugliese
+  Panel para obtener los asignados de la tarea del clip seleccionado en Flow
+____________________________________________________________________________________
+&quot;&quot;&quot;
+
+import hiero.ui
+import hiero.core
+import sys
+import os
+from PySide2.QtWidgets import (
+    QWidget,
+    QPushButton,
+    QGridLayout,
+    QMessageBox,
+)
+from PySide2.QtCore import Qt
+
+
+def debug_print(*message):
+    print(*message)
+
+
+class AssigneePanel(QWidget):
+    def __init__(self):
+        super(AssigneePanel, self).__init__()
+        self.setObjectName(&quot;com.lega.FPTAssigneePanel&quot;)
+        self.setWindowTitle(&quot;Get Assignees&quot;)
+        self.layout = QGridLayout()
+        self.setLayout(self.layout)
+
+        self.get_assignees_button = QPushButton(&quot;Get Assignees&quot;)
+        self.get_assignees_button.clicked.connect(self.get_assignees_for_selected_clip)
+        self.layout.addWidget(self.get_assignees_button, 0, 0)
+
+    def parse_exr_name(self, exr_name):
+        # Ajustar el manejo del formato del nombre del archivo EXR
+        if &quot;%04d&quot; in exr_name:
+            exr_name = exr_name.replace(&quot;.%&quot;, &quot;_%&quot;)  # Reemplazar patron para analisis
+        parts = exr_name.split(&quot;_&quot;)
+        if len(parts) &lt; 7 or not parts[-2].startswith(&quot;v&quot;):
+            raise ValueError(
+                f&quot;Nombre del archivo EXR no tiene el formato esperado: {exr_name}&quot;
+            )
+        base_name = &quot;_&quot;.join(parts[:-1])
+        return base_name
+
+    def get_assignees_for_selected_clip(self):
+        seq = hiero.ui.activeSequence()
+        if not seq:
+            QMessageBox.warning(self, &quot;No Sequence&quot;, &quot;No hay una secuencia activa.&quot;)
+            return
+        te = hiero.ui.getTimelineEditor(seq)
+        selected_items = te.selection()
+        if not selected_items:
+            QMessageBox.warning(
+                self, &quot;No Selection&quot;, &quot;Selecciona un clip en el timeline.&quot;
+            )
+            return
+        for item in selected_items:
+            if not isinstance(item, hiero.core.EffectTrackItem):
+                if item.source().mediaSource().isMediaPresent():
+                    fileinfos = item.source().mediaSource().fileinfos()
+                    if not fileinfos:
+                        continue
+                    file_path = fileinfos[0].filename()
+                    exr_name = os.path.basename(file_path)
+                    exr_name = exr_name.replace(&quot;.%&quot;, &quot;_%&quot;)
+                    try:
+                        base_name = self.parse_exr_name(exr_name)
+                        self.call_assignee_script(base_name)
+                    except Exception as e:
+                        QMessageBox.warning(self, &quot;Formato Incorrecto&quot;, str(e))
+                else:
+                    QMessageBox.warning(
+                        self, &quot;Media Missing&quot;, &quot;El clip no tiene media presente.&quot;
+                    )
+
+    def call_assignee_script(self, base_name):
+        # Llama al script LGA_NKS_Flow_Assignee.py enviando el base_name como argumento
+        script_path = os.path.join(
+            os.path.dirname(__file__), &quot;LGA_NKS_Flow&quot;, &quot;LGA_NKS_Flow_Assignee.py&quot;
+        )
+        if not os.path.exists(script_path):
+            QMessageBox.warning(
+                self,
+                &quot;Script no encontrado&quot;,
+                f&quot;No se encontró el script en la ruta: {script_path}&quot;,
+            )
+            return
+        # Ejecutar el script en un subproceso
+        import subprocess
+
+        env = os.environ.copy()
+        try:
+            subprocess.Popen([sys.executable, script_path, base_name], env=env)
+        except Exception as e:
+            QMessageBox.warning(self, &quot;Error al ejecutar&quot;, str(e))
+
+
+# Crear la instancia del panel y agregarlo al windowManager de Hiero
+assigneePanel = AssigneePanel()
+wm = hiero.ui.windowManager()
+wm.addWindow(assigneePanel)
+</script>

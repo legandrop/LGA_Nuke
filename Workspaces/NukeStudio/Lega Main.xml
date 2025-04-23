@@ -20,7 +20,7 @@
                     </dock>
                 </splitter>
                 <split size="2003"/>
-                <dock id="" activePageId="uk.co.thefoundry.sequenceviewer.16">
+                <dock id="" activePageId="uk.co.thefoundry.sequenceviewer.28">
                     <page id="uk.co.thefoundry.exportqueue.1"/>
                     <page id="Viewer.1"/>
                     <page id="uk.co.thefoundry.sequenceviewer.28"/>
@@ -60,22 +60,26 @@
                         <page id="com.lega.RevtoolPanel"/>
                     </dock>
                 </splitter>
-                <split size="151"/>
+                <split size="133"/>
                 <dock id="" activePageId="com.lega.FPTPanel">
                     <page id="com.lega.FPTPanel"/>
                 </dock>
-                <split size="3113"/>
+                <split size="130"/>
+                <dock id="" activePageId="com.lega.FPTAssigneePanel">
+                    <page id="com.lega.FPTAssigneePanel"/>
+                </dock>
+                <split size="2997"/>
                 <dock id="" activePageId="uk.co.thefoundry.timeline.18">
                     <page id="DAG.1"/>
-                    <page id="uk.co.thefoundry.timeline.2" layout="splitter(401,2708)"/>
+                    <page id="uk.co.thefoundry.timeline.2" layout="splitter(82,554)"/>
                     <page id="uk.co.thefoundry.timeline.11" layout="splitter(83,553)"/>
-                    <page id="uk.co.thefoundry.timeline.10" layout="splitter(423,2672)"/>
+                    <page id="uk.co.thefoundry.timeline.10" layout="splitter(87,549)"/>
                     <page id="uk.co.thefoundry.timeline.8" layout="splitter(187,449)"/>
-                    <page id="uk.co.thefoundry.timeline.36" layout="splitter(340,2769)"/>
-                    <page id="uk.co.thefoundry.timeline.26" layout="splitter(379,2730)"/>
-                    <page id="uk.co.thefoundry.timeline.28" layout="splitter(379,2730)"/>
-                    <page id="uk.co.thefoundry.timeline.29" layout="splitter(379,2730)"/>
-                    <page id="uk.co.thefoundry.timeline.18" layout="splitter(340,2769)"/>
+                    <page id="uk.co.thefoundry.timeline.36" layout="splitter(70,566)"/>
+                    <page id="uk.co.thefoundry.timeline.26" layout="splitter(78,558)"/>
+                    <page id="uk.co.thefoundry.timeline.28" layout="splitter(78,558)"/>
+                    <page id="uk.co.thefoundry.timeline.29" layout="splitter(78,558)"/>
+                    <page id="uk.co.thefoundry.timeline.18" layout="splitter(327,2666)"/>
                 </dock>
             </splitter>
         </splitter>
