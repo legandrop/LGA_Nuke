@@ -1,8 +1,9 @@
 """
 ____________________________________________________________________________________
 
-  LGA_NKS_Flow_Assignee_Panel v0.1 - 2025 - Lega Pugliese
-  Panel para obtener los asignados de la tarea del clip seleccionado en Flow
+  LGA_NKS_Flow_Assignee_Panel v1.0 - 2025 - Lega Pugliese
+  Panel para obtener los asignados de la tarea del clip seleccionado en Flow,
+  limpiarlos o sumar asignados a la tarea comp.
 ____________________________________________________________________________________
 """
 
@@ -15,8 +16,11 @@ from PySide2.QtWidgets import (
     QPushButton,
     QGridLayout,
     QMessageBox,
+    QSpacerItem,
+    QSizePolicy,
 )
 from PySide2.QtCore import Qt
+from PySide2.QtGui import QColor
 
 
 def debug_print(*message):
@@ -27,48 +31,107 @@ class AssigneePanel(QWidget):
     def __init__(self):
         super(AssigneePanel, self).__init__()
         self.setObjectName("com.lega.FPTAssigneePanel")
-        self.setWindowTitle("Flow Assignee")
+        self.setWindowTitle("Assignees")
         self.layout = QGridLayout()
         self.setLayout(self.layout)
 
-        self.get_assignees_button = QPushButton("Get Assignees")
-        self.get_assignees_button.clicked.connect(self.get_assignees_for_selected_clip)
-        self.layout.addWidget(self.get_assignees_button, 0, 0)
+        # Definir los botones y sus colores/estilos
+        self.buttons = [
+            {
+                "name": "Get Assignees",
+                "color": QColor(46, 119, 212),
+                "style": "#202233",
+                "callback": self.get_assignees_for_selected_clip,
+            },
+            {
+                "name": "Clear Assignees",
+                "color": QColor(36, 76, 25),
+                "style": "#202233",
+                "callback": self.clear_assignees_for_selected_clip,
+            },
+            {
+                "name": "Lega Pugliese",
+                "color": QColor(105, 19, 94),
+                "style": "#69135e",
+                "callback": lambda: self.assign_assignee_for_selected_clip(
+                    "Lega Pugliese"
+                ),
+            },
+            {
+                "name": "Sebas Romano",
+                "color": QColor(163, 85, 126),
+                "style": "#a3557e",
+                "callback": lambda: self.assign_assignee_for_selected_clip(
+                    "Sebas Romano"
+                ),
+            },
+            {
+                "name": "Patricio Barreiro",
+                "color": QColor(152, 192, 84),
+                "style": "#19335D",
+                "callback": lambda: self.assign_assignee_for_selected_clip(
+                    "Patricio Barreiro"
+                ),
+            },
+            {
+                "name": "Mariel Falco",
+                "color": QColor(82, 61, 128),
+                "style": "#665621",
+                "callback": lambda: self.assign_assignee_for_selected_clip(
+                    "Mariel Falco"
+                ),
+            },
+        ]
 
-        # Botón para limpiar asignees
-        self.clear_assignees_button = QPushButton("Clear Assignees")
-        self.clear_assignees_button.clicked.connect(
-            self.clear_assignees_for_selected_clip
-        )
-        self.layout.addWidget(self.clear_assignees_button, 1, 0)
+        self.num_columns = 1  # Inicialmente una columna
+        self.create_buttons()
 
-        # Botón para asignar a Lega Pugliese
-        self.assign_lega_button = QPushButton("Lega Pugliese")
-        self.assign_lega_button.clicked.connect(
-            lambda: self.assign_assignee_for_selected_clip("Lega Pugliese")
-        )
-        self.layout.addWidget(self.assign_lega_button, 2, 0)
+        # Conectar la senal de cambio de tamano del widget al metodo correspondiente
+        self.adjust_columns_on_resize()
+        self.resizeEvent = self.adjust_columns_on_resize
 
-        # Botón para asignar a Sebas Romano
-        self.assign_sebas_button = QPushButton("Sebas Romano")
-        self.assign_sebas_button.clicked.connect(
-            lambda: self.assign_assignee_for_selected_clip("Sebas Romano")
-        )
-        self.layout.addWidget(self.assign_sebas_button, 3, 0)
+    def create_buttons(self):
+        # Limpiar el layout actual antes de crear nuevos botones
+        while self.layout.count():
+            item = self.layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
 
-        # Botón para asignar a Patricio Barreiro
-        self.assign_patricio_button = QPushButton("Patricio Barreiro")
-        self.assign_patricio_button.clicked.connect(
-            lambda: self.assign_assignee_for_selected_clip("Patricio Barreiro")
-        )
-        self.layout.addWidget(self.assign_patricio_button, 4, 0)
+        for index, button_info in enumerate(self.buttons):
+            name = button_info["name"]
+            style = button_info["style"]
+            callback = button_info["callback"]
+            button = QPushButton(name)
+            # Aplicar solo el color de fondo, sin negrita ni color de texto blanco
+            button.setStyleSheet(f"background-color: {style}")
+            button.clicked.connect(callback)
+            row = index // self.num_columns
+            column = index % self.num_columns
+            self.layout.addWidget(button, row, column)
 
-        # Botón para asignar a Mariel Falco
-        self.assign_mariel_button = QPushButton("Mariel Falco")
-        self.assign_mariel_button.clicked.connect(
-            lambda: self.assign_assignee_for_selected_clip("Mariel Falco")
+        # Calcular el numero de filas usadas
+        num_rows = (len(self.buttons) + self.num_columns - 1) // self.num_columns
+
+        # Anadir el espaciador vertical al final
+        spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.layout.addItem(spacer, num_rows, 0, 1, self.num_columns)
+
+    def adjust_columns_on_resize(self, event=None):
+        # Obtener el ancho actual del widget
+        panel_width = self.width()
+        button_width = 100  # Ancho aproximado de cada boton
+        min_button_spacing = 10  # Espacio minimo entre botones
+
+        # Calcular el numero de columnas en funcion del ancho del widget
+        new_num_columns = max(
+            1, (panel_width + min_button_spacing) // (button_width + min_button_spacing)
         )
-        self.layout.addWidget(self.assign_mariel_button, 5, 0)
+
+        if new_num_columns != self.num_columns:
+            self.num_columns = new_num_columns
+            # Volver a crear los botones con el nuevo numero de columnas
+            self.create_buttons()
 
     def parse_exr_name(self, exr_name):
         # Ajustar el manejo del formato del nombre del archivo EXR
@@ -114,7 +177,7 @@ class AssigneePanel(QWidget):
                     )
 
     def call_assignee_script(self, base_name):
-        # Importar y ejecutar la función del script LGA_NKS_Flow_Assignee.py directamente
+        # Importar y ejecutar la funcion del script LGA_NKS_Flow_Assignee.py directamente
         script_path = os.path.join(
             os.path.dirname(__file__), "LGA_NKS_Flow", "LGA_NKS_Flow_Assignee.py"
         )

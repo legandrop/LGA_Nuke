@@ -20,7 +20,7 @@
                     </dock>
                 </splitter>
                 <split size="2003"/>
-                <dock id="" activePageId="uk.co.thefoundry.sequenceviewer.28">
+                <dock id="" activePageId="Viewer.1">
                     <page id="uk.co.thefoundry.exportqueue.1"/>
                     <page id="Viewer.1"/>
                     <page id="uk.co.thefoundry.sequenceviewer.28"/>
@@ -64,11 +64,11 @@
                 <dock id="" activePageId="com.lega.FPTPanel">
                     <page id="com.lega.FPTPanel"/>
                 </dock>
-                <split size="130"/>
+                <split size="138"/>
                 <dock id="" activePageId="com.lega.FPTAssigneePanel">
                     <page id="com.lega.FPTAssigneePanel"/>
                 </dock>
-                <split size="2997"/>
+                <split size="2989"/>
                 <dock id="" activePageId="uk.co.thefoundry.timeline.18">
                     <page id="DAG.1"/>
                     <page id="uk.co.thefoundry.timeline.2" layout="splitter(82,554)"/>
@@ -79,7 +79,7 @@
                     <page id="uk.co.thefoundry.timeline.26" layout="splitter(78,558)"/>
                     <page id="uk.co.thefoundry.timeline.28" layout="splitter(78,558)"/>
                     <page id="uk.co.thefoundry.timeline.29" layout="splitter(78,558)"/>
-                    <page id="uk.co.thefoundry.timeline.18" layout="splitter(327,2666)"/>
+                    <page id="uk.co.thefoundry.timeline.18" layout="splitter(326,2659)"/>
                 </dock>
             </splitter>
         </splitter>
