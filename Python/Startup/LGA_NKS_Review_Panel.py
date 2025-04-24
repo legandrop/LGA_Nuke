@@ -1,12 +1,11 @@
 """
 _______________________________________
 
-  LGA_ReviewPanel v2.7 - 2024 - Lega
+  LGA_ReviewPanel v2.71 - Lega
   Tools panel for Hiero / Nuke Studio
 _______________________________________
 
-""" 
-
+"""
 
 import hiero.ui
 import hiero.core
@@ -23,9 +22,11 @@ from PySide2 import QtWidgets, QtCore
 # Variable global para activar o desactivar los prints
 DEBUG = False
 
+
 def debug_print(*message):
     if DEBUG:
         print(*message)
+
 
 class ReviewPanel(QWidget):
     def __init__(self):
@@ -33,7 +34,9 @@ class ReviewPanel(QWidget):
 
         self.setObjectName("com.lega.RevtoolPanel")
         self.setWindowTitle("Review")
-        self.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a2a2a; border: 1px solid white; }")
+        self.setStyleSheet(
+            "QToolTip { color: #ffffff; background-color: #2a2a2a; border: 1px solid white; }"
+        )
 
         self.layout = QGridLayout(self)  # Usamos QGridLayout en lugar de QVBoxLayout
         self.setLayout(self.layout)
@@ -43,14 +46,34 @@ class ReviewPanel(QWidget):
             ("Self ReplaceClip", self.execute_SelfReplaceClip, "#0e1f3a"),
             ("ON Clips | OFF v00", self.execute_EnableOrDisableClips, "#0e1f3a"),
             ("ON OFF EXR", self.execute_DisableEXR, "#0e1f3a", "Shift+D", "Shift+D"),
-            ("EXR Track Difference", self.execute_ToggleBlendModeForEXRTrack, "#283526"),
+            (
+                "EXR Track Difference",
+                self.execute_ToggleBlendModeForEXRTrack,
+                "#283526",
+            ),
             ("Compare Versions", self.execute_CompareVersions, "#273c24"),
             ("Compare OFF", self.execute_CompareVersionsOff, "#273c24"),
-            ("Reveal in &Explorer", self.execute_RevealInExplorer, "#321a1a", "Shift+E", "Shift+E"),
+            (
+                "Reveal in &Explorer",
+                self.execute_RevealInExplorer,
+                "#321a1a",
+                "Shift+E",
+                "Shift+E",
+            ),
             ("Reveal NKS Project", self.execute_RevealNKSProject, "#321a1a"),
-            ("Reveal NK Sc&ript", self.execute_RevealNKScript, "#321a1a", "Shift+R", "Shift+R"),
+            (
+                "Reveal NK Sc&ript",
+                self.execute_RevealNKScript,
+                "#321a1a",
+                "Shift+R",
+                "Shift+R",
+            ),
             ("OpenInNuke&X", self.execute_OpenInNukeX, "#493800", "Shift+X", "Shift+X"),
-            ("Check Project Versions", self.execute_CheckProjectVersions, "#3a202e")  # Nuevo botón
+            (
+                "Check Project Versions",
+                self.execute_CheckProjectVersions,
+                "#3a202e",
+            ),  # Nuevo botón
         ]
 
         self.num_columns = 1  # Inicialmente una columna
@@ -59,10 +82,10 @@ class ReviewPanel(QWidget):
         # Conectar la senal de cambio de tamano del widget al metodo correspondiente
         self.adjust_columns_on_resize()
         self.resizeEvent = self.adjust_columns_on_resize
-        
+
         # Ejecutar el script de verificación de versiones de proyectos al iniciar el panel
         # Con un pequeño retraso para asegurar que Hiero haya cargado completamente
-        QTimer.singleShot(2000, self.execute_CheckProjectVersions)
+        QTimer.singleShot(17000, self.execute_CheckProjectVersions)
 
     def create_buttons(self):
         for index, button_info in enumerate(self.buttons):
@@ -91,7 +114,9 @@ class ReviewPanel(QWidget):
         min_button_spacing = 10  # Espacio minimo entre botones
 
         # Calcular el numero de columnas en funcion del ancho del widget
-        self.num_columns = max(1, (panel_width + min_button_spacing) // (button_width + min_button_spacing))
+        self.num_columns = max(
+            1, (panel_width + min_button_spacing) // (button_width + min_button_spacing)
+        )
 
         # Limpiar el layout actual y eliminar widgets solo si existen
         while self.layout.count():
@@ -112,10 +137,12 @@ class ReviewPanel(QWidget):
 
     # Metodo generico para ejecutar scripts externos
     def execute_external_script(self, script_name):
-        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', script_name)
+        script_path = os.path.join(os.path.dirname(__file__), "LGA_NKS", script_name)
         if os.path.exists(script_path):
             try:
-                spec = importlib.util.spec_from_file_location(script_name[:-3], script_path)
+                spec = importlib.util.spec_from_file_location(
+                    script_name[:-3], script_path
+                )
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
                 module.main()
@@ -126,37 +153,37 @@ class ReviewPanel(QWidget):
 
     # Handlers para cada boton que ejecutan scripts externos
     def execute_SelfReplaceClip(self):
-        self.execute_external_script('LGA_NKS_SelfReplaceClip.py')
+        self.execute_external_script("LGA_NKS_SelfReplaceClip.py")
 
     def execute_EnableOrDisableClips(self):
-        self.execute_external_script('LGA_NKS_ON_Clips_OFF_v00-Clips.py')
+        self.execute_external_script("LGA_NKS_ON_Clips_OFF_v00-Clips.py")
 
     def execute_ToggleBlendModeForEXRTrack(self):
-        self.execute_external_script('LGA_NKS_EXRTrack_Difference.py')
+        self.execute_external_script("LGA_NKS_EXRTrack_Difference.py")
 
     def execute_CompareVersions(self):
-        self.execute_external_script('LGA_NKS_Compare_Versions.py')
+        self.execute_external_script("LGA_NKS_Compare_Versions.py")
 
     def execute_CompareVersionsOff(self):
-        self.execute_external_script('LGA_NKS_Compare_Versions_OFF.py')
+        self.execute_external_script("LGA_NKS_Compare_Versions_OFF.py")
 
     def execute_RevealInExplorer(self):
-        self.execute_external_script('LGA_NKS_RevealInExplorer.py')
+        self.execute_external_script("LGA_NKS_RevealInExplorer.py")
 
     def execute_RevealNKSProject(self):
-        self.execute_external_script('LGA_NKS_RevealNKS_Project.py')
+        self.execute_external_script("LGA_NKS_RevealNKS_Project.py")
 
     def execute_RevealNKScript(self):
-        self.execute_external_script('LGA_NKS_RevealNK_Script.py')
+        self.execute_external_script("LGA_NKS_RevealNK_Script.py")
 
     def execute_OpenInNukeX(self):
-        self.execute_external_script('LGA_NKS_OpenInNukeX.py')
+        self.execute_external_script("LGA_NKS_OpenInNukeX.py")
 
     def execute_DisableEXR(self):
-        self.execute_external_script('LGA_NKS_Clip_DisableEXR.py')
-        
+        self.execute_external_script("LGA_NKS_Clip_DisableEXR.py")
+
     def execute_CheckProjectVersions(self):
-        self.execute_external_script('LGA_NKS_CheckProjectVersions.py')
+        self.execute_external_script("LGA_NKS_CheckProjectVersions.py")
 
 
 # Crear la instancia del widget y anadirlo al gestor de ventanas de Hiero
