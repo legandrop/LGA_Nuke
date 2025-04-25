@@ -1,7 +1,7 @@
 """
 __________________________________________________________
 
-  LGA_build_iteration v1.21 | 2025 | Lega
+  LGA_build_iteration v1.21 | Lega
   Genera un arbol de nodos usado para generar variaciones
   de una imagen.
 

@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-  LGA_RnW_ColorSpace_Favs v1.41 | 2024 | Lega
+  LGA_RnW_ColorSpace_Favs v1.41 | Lega
   Tool for applying OCIO color spaces to selected Read and Write nodes
 ________________________________________________________________________
 

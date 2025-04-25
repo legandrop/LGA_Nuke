@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________________________________
 
-  LGA_showInFlow v2.3 | 2024 | Lega
+  LGA_showInFlow v2.3 | Lega
   Abre la URL de la task Comp del shot, tomando la informacion del nombre del script
 
 

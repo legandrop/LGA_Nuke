@@ -1,7 +1,7 @@
 """
 _____________________________________
 
-  LGA_ToolPack v2.3 | 2024 | Lega
+  LGA_ToolPack v2.3 | Lega
   Colección de herramientas de Nuke
 _____________________________________
 

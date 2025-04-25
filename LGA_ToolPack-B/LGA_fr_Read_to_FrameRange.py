@@ -1,13 +1,14 @@
 """
 ______________________________________________________________________________________________
 
-  LGA_fr_Read_to_FrameRange v1.0 | 2024 | Lega    
-  Sets the frame range of the Frame Range node to match the frame range of the selected Read  
+  LGA_fr_Read_to_FrameRange v1.0 | Lega
+  Sets the frame range of the Frame Range node to match the frame range of the selected Read
 ______________________________________________________________________________________________
 
 """
 
 import nuke
+
 
 def set_frame_range_from_read():
     # Obtener nodos seleccionados
@@ -31,13 +32,14 @@ def set_frame_range_from_read():
     read_node = read_nodes[0]
 
     # Obtener el rango de frames del nodo Read
-    read_first = read_node['first'].value()
-    read_last = read_node['last'].value()
+    read_first = read_node["first"].value()
+    read_last = read_node["last"].value()
 
     # Establecer el rango de frames en cada nodo FrameRange seleccionado
     for fr_node in framerange_nodes:
-        fr_node['first_frame'].setValue(read_first)
-        fr_node['last_frame'].setValue(read_last)
+        fr_node["first_frame"].setValue(read_first)
+        fr_node["last_frame"].setValue(read_last)
+
 
 # Ejecutar la funcion
-#set_frame_range_from_read()
+# set_frame_range_from_read()

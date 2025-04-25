@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_build_Grade v1.61 | 2024 | Lega
+  LGA_build_Grade v1.61 | Lega
 
   Crea nodos Grade con diferentes configuraciones de máscaras.
   Soporta creación desde un nodo seleccionado o desde la posición del cursor.

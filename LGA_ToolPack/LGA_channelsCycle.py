@@ -1,36 +1,41 @@
 """
 _____________________________________________________________________________________________________
 
-  LGA_channelsCycle v1.1 - 2024 - Lega
+  LGA_channelsCycle v1.1 - Lega
   Cambia el valor del knob 'channels' de un nodo seleccionado rotando entre 'rgb', 'alpha' y 'rgba'
 _____________________________________________________________________________________________________
 
 """
+
 import nuke
 
 # Variable global para activar o desactivar los prints
 DEBUG = False
 
+
 def debug_print(*message):
     if DEBUG:
         print(*message)
 
+
 def main():
     def change_channels_knob(node):
         if "channels" in node.knobs():
-            channels_knob = node['channels']
+            channels_knob = node["channels"]
             current_value = channels_knob.value()
 
             # Lista de valores permitidos
-            channels_values = ['rgb', 'alpha', 'rgba']
+            channels_values = ["rgb", "alpha", "rgba"]
 
             # Determina el siguiente valor en la rotacion
             if current_value in channels_values:
-                next_value_index = (channels_values.index(current_value) + 1) % len(channels_values)
+                next_value_index = (channels_values.index(current_value) + 1) % len(
+                    channels_values
+                )
                 next_value = channels_values[next_value_index]
             else:
                 # Si el valor actual no esta en la lista, se resetea a 'rgb'
-                next_value = 'rgb'
+                next_value = "rgb"
 
             # Asigna el siguiente valor
             channels_knob.setValue(next_value)
@@ -58,7 +63,10 @@ def main():
             if change_channels_knob(node):
                 return
 
-    debug_print("No se encontro ningun nodo con un knob 'channels' abierto en el panel de propiedades.")
+    debug_print(
+        "No se encontro ningun nodo con un knob 'channels' abierto en el panel de propiedades."
+    )
+
 
 # Ejecuta la funcion
-#main()
+# main()

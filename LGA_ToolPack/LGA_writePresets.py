@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_writePresets v1.93 | 2025 | Lega
+  LGA_writePresets v1.93 | Lega
 
   Creates Write nodes with predefined settings for different purposes.
   Supports both script-based and Read node-based path generation.

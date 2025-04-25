@@ -1,14 +1,14 @@
 """
 _____________________________________________________________________________________________
 
-  LGA_fr_TimeClip_to_Write v1.0 | 2023 | Lega    
-  Sets the frame range of the write noded to match the frame range of the selected TimeClip  
+  LGA_fr_TimeClip_to_Write v1.0 | Lega
+  Sets the frame range of the write noded to match the frame range of the selected TimeClip
 _____________________________________________________________________________________________
 
 """
 
-
 import nuke
+
 
 def set_write_from_timeclip():
     # Obtener nodos seleccionados
@@ -36,10 +36,9 @@ def set_write_from_timeclip():
         return
 
     # Copiar el rango de frames del TimeClip al Write
-    write_node['use_limit'].setValue(True)
-    write_node['first'].setValue(timeclip_node['first'].value())
-    write_node['last'].setValue(timeclip_node['last'].value())
+    write_node["use_limit"].setValue(True)
+    write_node["first"].setValue(timeclip_node["first"].value())
+    write_node["last"].setValue(timeclip_node["last"].value())
 
 
-
-#set_write_from_timeclip()
+# set_write_from_timeclip()
