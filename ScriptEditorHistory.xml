@@ -2071,4 +2071,29 @@ class AssigneePanel(QWidget):
 assigneePanel = AssigneePanel()
 wm = hiero.ui.windowManager()
 wm.addWindow(assigneePanel)
+&quot;&quot;&quot;
+_______________________________________________________________________________________________________________
+
+  LGA_Render_Complete v1.2 | Lega
+  Este script solo lee las variables de entorno necesarias para el envío de correo y las imprime por consola.
+_______________________________________________________________________________________________________________
+&quot;&quot;&quot;
+
+import os
+
+
+def print_env_mail_vars():
+    # Leer variables de entorno
+    mail_from = os.getenv(&quot;Nuke_Write_Mail_From&quot;, &quot;No definida&quot;)
+    mail_pass = os.getenv(&quot;Nuke_Write_Mail_Pass&quot;, &quot;No definida&quot;)
+    mail_to = os.getenv(&quot;Nuke_Write_Mail_To&quot;, &quot;No definida&quot;)
+
+    # Imprimir valores
+    print(&quot;Nuke_Write_Mail_From:&quot;, mail_from)
+    print(&quot;Nuke_Write_Mail_Pass:&quot;, mail_pass)
+    print(&quot;Nuke_Write_Mail_To:&quot;, mail_to)
+
+
+if __name__ == &quot;__main__&quot;:
+    print_env_mail_vars()
 </script>

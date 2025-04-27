@@ -169,7 +169,7 @@ class SettingsWindow(QWidget):
         self.password_input.setEchoMode(QLineEdit.Password)
         self.site_input = QLineEdit()
         show_flow_form_layout.addRow(
-            "ShotGrid URL (e.g., https://yourstudio.shotgrid.autodesk.com):",
+            "ShotGrid URL:",
             self.site_input,
         )
         show_flow_form_layout.addRow("ShotGrid Login:", self.username_input)

@@ -1,0 +1,25 @@
+"""
+_______________________________________________________________________________________________________________
+
+  LGA_Render_Complete v1.2 | Lega
+  Este script solo lee las variables de entorno necesarias para el envío de correo y las imprime por consola.
+_______________________________________________________________________________________________________________
+"""
+
+import os
+
+
+def print_env_mail_vars():
+    # Leer variables de entorno
+    mail_from = os.getenv("Nuke_Write_Mail_From", "No definida")
+    mail_pass = os.getenv("Nuke_Write_Mail_Pass", "No definida")
+    mail_to = os.getenv("Nuke_Write_Mail_To", "No definida")
+
+    # Imprimir valores
+    print("Nuke_Write_Mail_From:", mail_from)
+    print("Nuke_Write_Mail_Pass:", mail_pass)
+    print("Nuke_Write_Mail_To:", mail_to)
+
+
+if __name__ == "__main__":
+    print_env_mail_vars()
