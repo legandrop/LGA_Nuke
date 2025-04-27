@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________________________________
 
-  LGA_showInFlow v2.4 | Lega
+  LGA_showInFlow v2.41 | Lega
   Abre la URL de la task Comp del shot, tomando la informacion del nombre del script
 _____________________________________________________________________________________________________
 """
@@ -160,12 +160,17 @@ def save_credentials_to_config(url, login, password):
         login_encoded = base64.b64encode(login.encode("utf-8")).decode("utf-8")
         password_encoded = base64.b64encode(password.encode("utf-8")).decode("utf-8")
 
-        # Escribir las lineas codificadas
+        # Escribir las lineas codificadas usando writelines
+        lines_to_write = [
+            f"{url_encoded}\n",
+            f"{login_encoded}\n",
+            f"{password_encoded}\n",
+        ]
         with open(config_file_path, "w", encoding="utf-8") as configfile:
-            configfile.write(f"{url_encoded}\\n")
-            configfile.write(f"{login_encoded}\\n")
-            configfile.write(f"{password_encoded}\\n")
-        debug_print("Credenciales de ShowInFlow guardadas de forma segura.")
+            configfile.writelines(lines_to_write)
+        debug_print(
+            "Credenciales de ShowInFlow guardadas de forma segura (writelines)."
+        )
         return True
     except Exception as e:
         debug_print(f"Error al guardar la configuración codificada: {e}")
@@ -311,7 +316,7 @@ def threaded_function():
         # Si fallo, get_credentials_from_config ya imprimio el error.
         # Preparar mensaje de error para devolver.
         config_path = get_config_path() or "AppData\\LGA\\ToolPack\\ShowInFlow.dat"
-        error_message = f"No se pudieron leer las credenciales de ShotGrid desde:\n{config_path}\\n\\nRevise la consola para detalles y asegúrese de que el archivo esté completo."
+        error_message = f"No se pudieron leer las credenciales de ShotGrid desde:\n{config_path}\n\nRevise la consola para detalles y asegúrese de que el archivo esté completo."
         # debug_print(f"Debug: Devolviendo error - {error_message}") # Mantener este comentado
         return error_message  # Devolver el mensaje de error
 

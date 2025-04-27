@@ -1,7 +1,7 @@
 """
 _______________________________________________________________________________________________________________
 
-  LGA_Render_Complete v1.3 | Lega
+  LGA_Render_Complete v1.31 | Lega
   Calcula la duracion al finalizar el render y la agrega en un knob en el tab User del nodo write
   Reproduce un sonido y envia un correo con los detalles del render si la opcion 'Send Mail' esta activada
 _______________________________________________________________________________________________________________
@@ -155,13 +155,16 @@ def save_mail_settings_to_config(from_email, from_password, to_email):
         )
         to_email_encoded = base64.b64encode(to_email.encode("utf-8")).decode("utf-8")
 
-        # Escribir las lineas codificadas
+        # Escribir las lineas codificadas usando writelines
+        lines_to_write = [
+            f"{from_email_encoded}\n",
+            f"{password_encoded}\n",
+            f"{to_email_encoded}\n",
+        ]
         with open(config_file_path, "w", encoding="utf-8") as configfile:
-            configfile.write(f"{from_email_encoded}\\n")
-            configfile.write(f"{password_encoded}\\n")
-            configfile.write(f"{to_email_encoded}\\n")
+            configfile.writelines(lines_to_write)
 
-        debug_print("Configuración de mail guardada de forma segura.")
+        debug_print("Configuración de mail guardada de forma segura (writelines).")
         return True
     except Exception as e:
         debug_print(f"Error al guardar la configuración de mail codificada: {e}")
