@@ -31,6 +31,17 @@ CONFIG_SECTION = "Mail"
 CONFIG_FROM_KEY = "from_email"
 CONFIG_PASS_KEY = "from_password"
 CONFIG_TO_KEY = "to_email"
+# Exportar constantes para uso externo
+__all__ = [
+    "get_config_path",
+    "ensure_config_exists",
+    "get_mail_settings_from_config",
+    "save_mail_settings_to_config",
+    "CONFIG_SECTION",
+    "CONFIG_FROM_KEY",
+    "CONFIG_PASS_KEY",
+    "CONFIG_TO_KEY",
+]
 
 
 def get_config_path():
@@ -126,21 +137,52 @@ def get_mail_settings_from_config():
         return None, None, None
 
 
+def save_mail_settings_to_config(from_email, from_password, to_email):
+    """
+    Guarda los datos de mail en el archivo .ini.
+    """
+    config_file_path = get_config_path()
+    if not config_file_path:
+        print("No se pudo obtener la ruta del archivo de configuración de mail.")
+        return False
+    try:
+        config = configparser.ConfigParser()
+        if os.path.exists(config_file_path):
+            config.read(config_file_path, encoding="utf-8")
+        if not config.has_section(CONFIG_SECTION):
+            config.add_section(CONFIG_SECTION)
+        config.set(CONFIG_SECTION, CONFIG_FROM_KEY, from_email)
+        config.set(CONFIG_SECTION, CONFIG_PASS_KEY, from_password)
+        config.set(CONFIG_SECTION, CONFIG_TO_KEY, to_email)
+        with open(config_file_path, "w", encoding="utf-8") as configfile:
+            config.write(configfile)
+        print("Configuración de mail guardada correctamente.")
+        return True
+    except Exception as e:
+        print(f"Error al guardar la configuración de mail: {e}")
+        return False
+
+
 # Asegurarse de que el archivo de configuración existe al iniciar
 ensure_config_exists()
 
 
 def start_time():
-    if not nuke.root().knob("Km_Render_Start_Time"):
+    knob = nuke.root().knob("Km_Render_Start_Time")
+    if not knob:
         nuke.root().addKnob(nuke.EvalString_Knob("Km_Render_Start_Time"))
-        nuke.root().knob("Km_Render_Start_Time").setVisible(False)
-
-    Current_time_str = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    nuke.root().knob("Km_Render_Start_Time").setValue(Current_time_str)
+        knob = nuke.root().knob("Km_Render_Start_Time")
+    if knob:
+        knob.setVisible(False)
+        current_time_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        knob.setValue(current_time_str)
 
 
 def total_time():
-    time1_str = nuke.root().knob("Km_Render_Start_Time").getValue()
+    knob = nuke.root().knob("Km_Render_Start_Time")
+    if not knob:
+        return "00:00:00"
+    time1_str = knob.getValue()
     time1 = datetime.datetime.strptime(time1_str, "%Y-%m-%d %H:%M:%S")
     time2 = datetime.datetime.now()
     duration = time2 - time1
@@ -205,8 +247,13 @@ def Render_Complete():
 
         # Formatear el cuerpo del correo
         script_name = os.path.basename(nuke.root().name())
-        render_directory = os.path.dirname(write_node.knob("file").value())
-        render_file = write_node.knob("file").getEvaluatedValue()
+        file_knob = write_node.knob("file")
+        render_directory = os.path.dirname(file_knob.value()) if file_knob else ""
+        # Usar nuke.filename(write_node) si es posible, sino fallback a file_knob.value()
+        try:
+            render_file = nuke.filename(write_node) if file_knob else ""
+        except Exception:
+            render_file = file_knob.value() if file_knob else ""
         body = (
             f"Script Name: {script_name}\n"
             f"Render Directory: {render_directory}\n"
