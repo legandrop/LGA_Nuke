@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________________________________
 
-  LGA_ToolPack_settings v0.3 | Lega
+  LGA_ToolPack_settings v0.4 | Lega
   Configuracion de la herramienta LGA_ToolPack
 _____________________________________________________________________________________________________
 """
@@ -24,6 +24,8 @@ from PySide2.QtWidgets import (
     QPushButton,
     QTextEdit,  # Importar QTextEdit
     QMessageBox,  # Importar QMessageBox
+    QCheckBox,
+    QFileDialog,
 )
 from PySide2.QtCore import Qt
 
@@ -300,6 +302,24 @@ class SettingsWindow(QWidget):
         render_mail_form_layout.addRow("Password:", self.render_mail_pass_input)
         render_mail_form_layout.addRow("To (Recipient):", self.render_mail_to_input)
         render_mail_layout_container.addLayout(render_mail_form_layout)
+        # --- NUEVOS SETTINGS ---
+        self.cb_enable_mail = QCheckBox("Enable mail sending")
+        self.cb_enable_render_time = QCheckBox("Enable render time calculation")
+        self.cb_enable_sound = QCheckBox("Enable sound notification")
+        render_mail_layout_container.addWidget(self.cb_enable_mail)
+        render_mail_layout_container.addWidget(self.cb_enable_render_time)
+        render_mail_layout_container.addWidget(self.cb_enable_sound)
+        # Selector de archivo .wav
+        wav_layout = QHBoxLayout()
+        self.wav_path_input = QLineEdit()
+        self.wav_path_input.setPlaceholderText("Select .wav file...")
+        self.wav_browse_btn = QPushButton("Browse")
+        self.wav_browse_btn.clicked.connect(self.browse_wav_file)
+        wav_layout.addWidget(self.wav_path_input)
+        wav_layout.addWidget(self.wav_browse_btn)
+        render_mail_layout_container.addLayout(wav_layout)
+        # ---
+
         self.save_render_mail_button = QPushButton("Save")
         self.save_render_mail_button.clicked.connect(self.save_render_mail_settings)
         render_mail_layout_container.addWidget(
@@ -502,6 +522,14 @@ class SettingsWindow(QWidget):
                 "Save Error",
                 f"Could not save Render Complete Mail settings:\n{e}",
             )
+
+    def browse_wav_file(self):
+        """Abre un diálogo para seleccionar un archivo .wav y lo pone en el QLineEdit."""
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Select WAV file", "", "WAV Files (*.wav)"
+        )
+        if file_path:
+            self.wav_path_input.setText(file_path)
 
 
 # --- Main Execution ---
