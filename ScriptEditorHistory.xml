@@ -2136,10 +2136,7 @@ try:
         get_config_path as sif_get_config_path,
         ensure_config_exists as sif_ensure_config_exists,
         get_credentials_from_config as sif_get_credentials_from_config,
-        CONFIG_SECTION as SIF_CONFIG_SECTION,
-        CONFIG_URL_KEY as SIF_CONFIG_URL_KEY,
-        CONFIG_LOGIN_KEY as SIF_CONFIG_LOGIN_KEY,
-        CONFIG_PASSWORD_KEY as SIF_CONFIG_PASSWORD_KEY,
+        save_credentials_to_config as sif_save_credentials_to_config,
     )
 except ImportError as e_sif:
     print(f&quot;Error al importar LGA_showInlFlow.py: {e_sif}. Funcionalidad limitada.&quot;)
@@ -2156,10 +2153,13 @@ except ImportError as e_sif:
     def sif_get_config_path() -&gt; typing.Optional[str]:
         return None
 
-    SIF_CONFIG_SECTION = &quot;Credentials&quot;
-    SIF_CONFIG_URL_KEY = &quot;shotgrid_url&quot;
-    SIF_CONFIG_LOGIN_KEY = &quot;shotgrid_login&quot;
-    SIF_CONFIG_PASSWORD_KEY = &quot;shotgrid_password&quot;
+    # Funcion save dummy
+    def sif_save_credentials_to_config(url, login, password) -&gt; bool:
+        print(
+            &quot;Error: LGA_showInlFlow.py no encontrado, no se pueden guardar credenciales.&quot;
+        )
+        return False
+
 
 # --- Importaciones de LGA_RnW_ColorSpace_Favs --- Nuevo
 try:
@@ -2195,7 +2195,6 @@ try:
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
         save_mail_settings_to_config as rc_save_mail_settings_to_config,
-        CONFIG_SECTION as RC_CONFIG_SECTION,
         CONFIG_FROM_KEY as RC_CONFIG_FROM_KEY,
         CONFIG_PASS_KEY as RC_CONFIG_PASS_KEY,
         CONFIG_TO_KEY as RC_CONFIG_TO_KEY,
@@ -2217,7 +2216,6 @@ except ImportError as e_rc:
     def rc_get_config_path() -&gt; Optional[str]:
         return None
 
-    RC_CONFIG_SECTION = &quot;Mail&quot;
     RC_CONFIG_FROM_KEY = &quot;from_email&quot;
     RC_CONFIG_PASS_KEY = &quot;from_password&quot;
     RC_CONFIG_TO_KEY = &quot;to_email&quot;
@@ -2478,29 +2476,25 @@ class SettingsWindow(QWidget):
             # No revertimos aqui, dejamos que el usuario corrija
             return
 
-        config = configparser.ConfigParser()
+        # Llamar a la nueva funcion de guardado que maneja la codificacion
         try:
-            # Leer existente
-            if os.path.exists(config_file_path):
-                config.read(config_file_path, encoding=&quot;utf-8&quot;)
-
-            if not config.has_section(SIF_CONFIG_SECTION):
-                config.add_section(SIF_CONFIG_SECTION)
-
-            config.set(SIF_CONFIG_SECTION, SIF_CONFIG_URL_KEY, new_url)
-            config.set(SIF_CONFIG_SECTION, SIF_CONFIG_LOGIN_KEY, new_login)
-            config.set(SIF_CONFIG_SECTION, SIF_CONFIG_PASSWORD_KEY, new_password)
-
-            with open(config_file_path, &quot;w&quot;, encoding=&quot;utf-8&quot;) as configfile:
-                config.write(configfile)
-
-            print(&quot;Configuracion de Show in Flow guardada.&quot;)
-            QMessageBox.information(self, &quot;Success&quot;, &quot;Show in Flow settings saved.&quot;)
-
+            success = sif_save_credentials_to_config(new_url, new_login, new_password)
+            if success:
+                # El mensaje de exito ya se imprime en la funcion save
+                QMessageBox.information(self, &quot;Success&quot;, &quot;Show in Flow settings saved.&quot;)
+            else:
+                # El error especifico ya deberia haberse impreso
+                QMessageBox.critical(
+                    self,
+                    &quot;Save Error&quot;,
+                    &quot;Could not save Show in Flow settings. Check console for details.&quot;,
+                )
         except Exception as e:
-            print(f&quot;Error al guardar la configuracion de Show in Flow: {e}&quot;)
+            print(f&quot;Error al llamar a save_credentials_to_config: {e}&quot;)
             QMessageBox.critical(
-                self, &quot;Save Error&quot;, f&quot;Could not save Show in Flow settings:\n{e}&quot;
+                self,
+                &quot;Save Error&quot;,
+                f&quot;Unexpected error saving Show in Flow settings:\n{e}&quot;,
             )
 
     def save_color_space_settings(self):  # Nuevo metodo
@@ -2574,26 +2568,1112 @@ class SettingsWindow(QWidget):
             # No revertimos, dejamos que el usuario corrija
             return
         try:
+            # La funcion rc_save_mail_settings_to_config ahora maneja la codificacion interna
             success = rc_save_mail_settings_to_config(
                 from_email, from_password, to_email
             )
             if success:
-                print(&quot;Configuracion de Render Complete Mail guardada.&quot;)
+                # El mensaje de exito ya se imprime en la funcion save
                 QMessageBox.information(
                     self, &quot;Success&quot;, &quot;Render Complete Mail settings saved.&quot;
                 )
             else:
+                # El error especifico ya deberia haberse impreso
                 QMessageBox.critical(
                     self,
                     &quot;Save Error&quot;,
                     &quot;Could not save Render Complete Mail settings. Check console for details.&quot;,
                 )
         except Exception as e:
-            print(f&quot;Error al guardar la configuracion de Render Complete Mail: {e}&quot;)
+            print(f&quot;Error al llamar a save_mail_settings_to_config: {e}&quot;)
             QMessageBox.critical(
                 self,
                 &quot;Save Error&quot;,
-                f&quot;Could not save Render Complete Mail settings:\n{e}&quot;,
+                f&quot;Unexpected error saving Render Complete Mail settings:\n{e}&quot;,
+            )
+
+    def browse_wav_file(self):
+        &quot;&quot;&quot;Abre un diálogo para seleccionar un archivo .wav y lo pone en el QLineEdit.&quot;&quot;&quot;
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, &quot;Select WAV file&quot;, &quot;&quot;, &quot;WAV Files (*.wav)&quot;
+        )
+        if file_path:
+            self.wav_path_input.setText(file_path)
+
+
+# --- Main Execution ---
+if __name__ == &quot;__main__&quot;:
+    # Necesario para ejecucion standalone fuera de Nuke
+    app = QApplication.instance() or QApplication(sys.argv)
+
+    settings_window = SettingsWindow()
+    settings_window.show()
+
+    # Mantener el bucle para ejecucion standalone
+    if not QApplication.instance():  # Solo si no estamos en Nuke
+        sys.exit(app.exec_())
+    # Si estamos en Nuke, no llamamos a sys.exit()
+&quot;&quot;&quot;
+_____________________________________________________________________________________________________
+
+  LGA_ToolPack_settings v0.4 | Lega
+  Configuracion de la herramienta LGA_ToolPack
+_____________________________________________________________________________________________________
+&quot;&quot;&quot;
+
+import sys
+import os
+import configparser
+import typing  # Importar typing
+from typing import Optional, Tuple
+
+from PySide2.QtWidgets import (
+    QApplication,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QGroupBox,
+    QLabel,
+    QLineEdit,
+    QFormLayout,
+    QPushButton,
+    QTextEdit,  # Importar QTextEdit
+    QMessageBox,  # Importar QMessageBox
+    QCheckBox,
+    QFileDialog,
+)
+from PySide2.QtCore import Qt
+
+# Importar funciones y constantes desde LGA_Write_Focus
+# Asumiendo que ambos scripts estan en el mismo directorio o en el sys.path
+try:
+    from LGA_Write_Focus import (
+        get_config_path as wf_get_config_path,  # Renombrar para claridad
+        ensure_config_exists as wf_ensure_config_exists,
+        get_node_name_from_config as wf_get_node_name_from_config,
+        DEFAULT_NODE_NAME as WF_DEFAULT_NODE_NAME,  # Renombrar constante
+        CONFIG_SECTION as WF_CONFIG_SECTION,  # Renombrar constante
+        CONFIG_NODE_NAME_KEY as WF_CONFIG_NODE_NAME_KEY,  # Renombrar constante
+    )
+except ImportError as e_wf:
+    print(f&quot;Error al importar LGA_Write_Focus.py: {e_wf}. Funcionalidad limitada.&quot;)
+
+    # Definir funciones dummy y valores por defecto
+    def wf_ensure_config_exists():
+        pass
+
+    def wf_get_node_name_from_config() -&gt; str:
+        return &quot;Write_Pub&quot;
+
+    def wf_get_config_path() -&gt; typing.Optional[str]:
+        return None
+
+    WF_DEFAULT_NODE_NAME = &quot;Write_Pub&quot;
+    WF_CONFIG_SECTION = &quot;Settings&quot;
+    WF_CONFIG_NODE_NAME_KEY = &quot;node_name&quot;
+
+# --- Importaciones de LGA_showInlFlow ---
+try:
+    from LGA_showInlFlow import (
+        get_config_path as sif_get_config_path,
+        ensure_config_exists as sif_ensure_config_exists,
+        get_credentials_from_config as sif_get_credentials_from_config,
+        save_credentials_to_config as sif_save_credentials_to_config,
+    )
+except ImportError as e_sif:
+    print(f&quot;Error al importar LGA_showInlFlow.py: {e_sif}. Funcionalidad limitada.&quot;)
+
+    # Definir funciones dummy y valores por defecto
+    def sif_ensure_config_exists():
+        pass
+
+    def sif_get_credentials_from_config() -&gt; (
+        typing.Tuple[typing.Optional[str], typing.Optional[str], typing.Optional[str]]
+    ):
+        return None, None, None
+
+    def sif_get_config_path() -&gt; typing.Optional[str]:
+        return None
+
+    # Funcion save dummy
+    def sif_save_credentials_to_config(url, login, password) -&gt; bool:
+        print(
+            &quot;Error: LGA_showInlFlow.py no encontrado, no se pueden guardar credenciales.&quot;
+        )
+        return False
+
+
+# --- Importaciones de LGA_RnW_ColorSpace_Favs --- Nuevo
+try:
+    from LGA_RnW_ColorSpace_Favs import (
+        get_colorspace_ini_path,
+        read_colorspaces_from_ini,
+        save_colorspaces_to_ini,
+        COLORSPACE_SECTION,  # Importar tambien la constante de seccion
+    )
+except ImportError as e_csf:
+    print(
+        f&quot;Error al importar LGA_RnW_ColorSpace_Favs.py: {e_csf}. Funcionalidad limitada.&quot;
+    )
+
+    # Definir funciones dummy
+    def get_colorspace_ini_path(create_if_missing: bool = True) -&gt; typing.Optional[str]:
+        return None
+
+    def read_colorspaces_from_ini(ini_path: typing.Optional[str]) -&gt; typing.List[str]:
+        return []
+
+    def save_colorspaces_to_ini(
+        ini_path: typing.Optional[str], colorspaces_list: typing.List[str]
+    ) -&gt; bool:
+        return False
+
+    COLORSPACE_SECTION = &quot;ColorSpaces&quot;
+
+# --- Importaciones de LGA_Render_Complete --- NUEVO
+try:
+    from LGA_Render_Complete import (
+        get_config_path as rc_get_config_path,
+        ensure_config_exists as rc_ensure_config_exists,
+        get_mail_settings_from_config as rc_get_mail_settings_from_config,
+        save_mail_settings_to_config as rc_save_mail_settings_to_config,
+        CONFIG_FROM_KEY as RC_CONFIG_FROM_KEY,
+        CONFIG_PASS_KEY as RC_CONFIG_PASS_KEY,
+        CONFIG_TO_KEY as RC_CONFIG_TO_KEY,
+    )
+except ImportError as e_rc:
+    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+
+    def rc_ensure_config_exists() -&gt; None:
+        pass
+
+    def rc_get_mail_settings_from_config() -&gt; (
+        Tuple[Optional[str], Optional[str], Optional[str]]
+    ):
+        return None, None, None
+
+    def rc_save_mail_settings_to_config(from_email, from_password, to_email) -&gt; bool:
+        return False
+
+    def rc_get_config_path() -&gt; Optional[str]:
+        return None
+
+    RC_CONFIG_FROM_KEY = &quot;from_email&quot;
+    RC_CONFIG_PASS_KEY = &quot;from_password&quot;
+    RC_CONFIG_TO_KEY = &quot;to_email&quot;
+
+
+class SettingsWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle(&quot;LGA ToolPack Settings&quot;)
+        self.setMinimumWidth(450)  # Un poco mas ancho para el QTextEdit
+        self.initUI()
+
+    def initUI(self):
+        main_layout = QVBoxLayout(self)
+
+        # --- Write Presets Section (Placeholder) ---
+        write_presets_group = QGroupBox(&quot;Write Presets&quot;)
+        write_presets_layout = QVBoxLayout()
+        write_presets_layout.addWidget(
+            QLabel(&quot;(Placeholder for Write Presets functionality)&quot;)
+        )
+        self.save_write_presets_button = QPushButton(&quot;Save&quot;)
+        # self.save_write_presets_button.clicked.connect(self.save_write_presets) # Placeholder
+        write_presets_layout.addWidget(self.save_write_presets_button, 0, Qt.AlignRight)
+        write_presets_group.setLayout(write_presets_layout)
+        main_layout.addWidget(write_presets_group)
+
+        # --- Write Focus Section ---
+        write_focus_group = QGroupBox(&quot;Write Focus&quot;)
+        write_focus_layout_container = QVBoxLayout()
+        write_focus_form_layout = QFormLayout()
+        self.write_focus_input = QLineEdit()
+        try:
+            wf_ensure_config_exists()  # Usar funcion importada
+            current_node_name = wf_get_node_name_from_config()  # Usar funcion importada
+            self.write_focus_input.setText(current_node_name or WF_DEFAULT_NODE_NAME)
+        except Exception as e:
+            print(f&quot;Error al cargar config de Write Focus: {e}&quot;)
+            self.write_focus_input.setText(WF_DEFAULT_NODE_NAME)
+
+        write_focus_form_layout.addRow(
+            &quot;Name of the Write Node to Focus:&quot;, self.write_focus_input
+        )
+        write_focus_layout_container.addLayout(write_focus_form_layout)
+        self.save_write_focus_button = QPushButton(&quot;Save&quot;)
+        self.save_write_focus_button.clicked.connect(self.save_write_focus_settings)
+        write_focus_layout_container.addWidget(
+            self.save_write_focus_button, 0, Qt.AlignRight
+        )
+        write_focus_group.setLayout(write_focus_layout_container)
+        main_layout.addWidget(write_focus_group)
+
+        # --- Show in Flow Section ---
+        show_flow_group = QGroupBox(&quot;Show in Flow&quot;)
+        show_flow_layout_container = QVBoxLayout()
+        show_flow_form_layout = QFormLayout()
+        self.username_input = QLineEdit()
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Password)
+        self.site_input = QLineEdit()
+        # Placeholders para los campos de ShotGrid
+        self.site_input.setPlaceholderText(&quot;e.g., https://studio.shotgrid.autodesk.com&quot;)
+        self.username_input.setPlaceholderText(&quot;e.g., artist@studio.com&quot;)
+        self.password_input.setPlaceholderText(&quot;&quot;)
+        show_flow_form_layout.addRow(
+            &quot;ShotGrid URL:&quot;,
+            self.site_input,
+        )
+        show_flow_form_layout.addRow(&quot;ShotGrid Login:&quot;, self.username_input)
+        show_flow_form_layout.addRow(&quot;ShotGrid Password:&quot;, self.password_input)
+
+        try:
+            sif_ensure_config_exists()  # Usar funcion importada
+            sif_url, sif_login, sif_password = (
+                sif_get_credentials_from_config()
+            )  # Usar funcion importada
+            self.site_input.setText(sif_url or &quot;&quot;)
+            self.username_input.setText(sif_login or &quot;&quot;)
+            self.password_input.setText(sif_password or &quot;&quot;)
+        except Exception as e:
+            print(f&quot;Error al cargar credenciales de Show in Flow: {e}&quot;)
+
+        show_flow_layout_container.addLayout(show_flow_form_layout)
+        self.save_show_flow_button = QPushButton(&quot;Save&quot;)
+        self.save_show_flow_button.clicked.connect(self.save_show_flow_settings)
+        show_flow_layout_container.addWidget(
+            self.save_show_flow_button, 0, Qt.AlignRight
+        )
+        show_flow_group.setLayout(show_flow_layout_container)
+        main_layout.addWidget(show_flow_group)
+
+        # --- Color Space Favs Section --- Modificado
+        color_space_group = QGroupBox(&quot;Color Space Favorites&quot;)  # Titulo mas descriptivo
+        color_space_layout = QVBoxLayout()
+        color_space_layout.addWidget(
+            QLabel(
+                &quot;Enter favorite OCIO color spaces (one per line):&quot;
+            )  # Label explicativo
+        )
+        # Crear el QTextEdit
+        self.color_space_edit = QTextEdit()
+        self.color_space_edit.setPlaceholderText(
+            &quot;e.g.,\nOutput - sRGB\nUtility - Raw\nACES - ACEScg&quot;
+        )
+        self.color_space_edit.setMinimumHeight(80)  # Altura minima
+        color_space_layout.addWidget(self.color_space_edit)
+
+        # --- Cargar favoritos existentes --- Nuevo
+        try:
+            self.colorspace_ini_path = get_colorspace_ini_path(create_if_missing=True)
+            if self.colorspace_ini_path:
+                fav_list = read_colorspaces_from_ini(self.colorspace_ini_path)
+                self.color_space_edit.setText(&quot;\n&quot;.join(fav_list))
+            else:
+                print(&quot;Advertencia: No se pudo obtener la ruta del INI de ColorSpaces.&quot;)
+                # Podriamos deshabilitar el campo/boton si no hay ruta
+                # self.color_space_edit.setEnabled(False)
+        except Exception as e:
+            print(f&quot;Error al cargar Color Space Favs: {e}&quot;)
+            QMessageBox.warning(
+                self, &quot;Error&quot;, f&quot;Could not load Color Space Favorites:\n{e}&quot;
+            )
+        # ---------------------------------
+
+        self.save_color_space_button = QPushButton(&quot;Save&quot;)
+        self.save_color_space_button.clicked.connect(
+            self.save_color_space_settings
+        )  # Conectar al nuevo metodo
+        color_space_layout.addWidget(self.save_color_space_button, 0, Qt.AlignRight)
+        color_space_group.setLayout(color_space_layout)
+        main_layout.addWidget(color_space_group)
+
+        # --- Render Complete Mail Settings Section --- NUEVO
+        render_mail_group = QGroupBox(&quot;Render Complete Mail Settings&quot;)
+        render_mail_layout_container = QVBoxLayout()
+        render_mail_form_layout = QFormLayout()
+        self.render_mail_from_input = QLineEdit()
+        self.render_mail_pass_input = QLineEdit()
+        self.render_mail_pass_input.setEchoMode(QLineEdit.Password)
+        self.render_mail_to_input = QLineEdit()
+        # Placeholders para los campos de mail
+        self.render_mail_from_input.setPlaceholderText(&quot;e.g., tuMail@outlook.com&quot;)
+        self.render_mail_pass_input.setPlaceholderText(&quot;&quot;)
+        self.render_mail_to_input.setPlaceholderText(&quot;e.g., tuMail@gmail.com&quot;)
+        # Cargar valores actuales
+        try:
+            rc_ensure_config_exists()
+            from_email, from_password, to_email = rc_get_mail_settings_from_config()
+            self.render_mail_from_input.setText(from_email or &quot;&quot;)
+            self.render_mail_pass_input.setText(from_password or &quot;&quot;)
+            self.render_mail_to_input.setText(to_email or &quot;&quot;)
+        except Exception as e:
+            print(f&quot;Error al cargar config de Render Complete Mail: {e}&quot;)
+        render_mail_form_layout.addRow(&quot;From (Outlook):&quot;, self.render_mail_from_input)
+        render_mail_form_layout.addRow(&quot;Password:&quot;, self.render_mail_pass_input)
+        render_mail_form_layout.addRow(&quot;To (Recipient):&quot;, self.render_mail_to_input)
+        render_mail_layout_container.addLayout(render_mail_form_layout)
+        # --- NUEVOS SETTINGS ---
+        self.cb_enable_mail = QCheckBox(&quot;Enable mail sending&quot;)
+        self.cb_enable_render_time = QCheckBox(&quot;Enable render time calculation&quot;)
+        self.cb_enable_sound = QCheckBox(&quot;Enable sound notification&quot;)
+        render_mail_layout_container.addWidget(self.cb_enable_mail)
+        render_mail_layout_container.addWidget(self.cb_enable_render_time)
+        render_mail_layout_container.addWidget(self.cb_enable_sound)
+        # Selector de archivo .wav
+        wav_layout = QHBoxLayout()
+        self.wav_path_input = QLineEdit()
+        self.wav_path_input.setPlaceholderText(&quot;Select .wav file...&quot;)
+        self.wav_browse_btn = QPushButton(&quot;Browse&quot;)
+        self.wav_browse_btn.clicked.connect(self.browse_wav_file)
+        wav_layout.addWidget(self.wav_path_input)
+        wav_layout.addWidget(self.wav_browse_btn)
+        render_mail_layout_container.addLayout(wav_layout)
+        # ---
+
+        self.save_render_mail_button = QPushButton(&quot;Save&quot;)
+        self.save_render_mail_button.clicked.connect(self.save_render_mail_settings)
+        render_mail_layout_container.addWidget(
+            self.save_render_mail_button, 0, Qt.AlignRight
+        )
+        render_mail_group.setLayout(render_mail_layout_container)
+        main_layout.addWidget(render_mail_group)
+        # ---
+        main_layout.addStretch()
+
+    def save_write_focus_settings(self):
+        &quot;&quot;&quot;Guarda el nombre del nodo de Write Focus en su archivo .ini.&quot;&quot;&quot;
+        config_file_path = wf_get_config_path()
+        if not config_file_path:
+            print(&quot;Error: No se pudo obtener la ruta para guardar Write Focus.&quot;)
+            QMessageBox.critical(
+                self,
+                &quot;Error&quot;,
+                &quot;Could not determine the configuration file path for Write Focus.&quot;,
+            )
+            return
+
+        new_node_name = self.write_focus_input.text().strip()
+        if not new_node_name:
+            QMessageBox.warning(
+                self, &quot;Input Error&quot;, &quot;Write Focus node name cannot be empty.&quot;
+            )
+            # Revertir al valor anterior o al por defecto
+            try:
+                current_node_name = wf_get_node_name_from_config()
+                self.write_focus_input.setText(
+                    current_node_name or WF_DEFAULT_NODE_NAME
+                )
+            except Exception:
+                self.write_focus_input.setText(WF_DEFAULT_NODE_NAME)
+            return
+
+        config = configparser.ConfigParser()
+        try:
+            # Leer existente para preservar otras secciones/claves
+            if os.path.exists(config_file_path):
+                config.read(config_file_path)
+
+            if not config.has_section(WF_CONFIG_SECTION):
+                config.add_section(WF_CONFIG_SECTION)
+
+            config.set(WF_CONFIG_SECTION, WF_CONFIG_NODE_NAME_KEY, new_node_name)
+
+            with open(config_file_path, &quot;w&quot;) as configfile:
+                config.write(configfile)
+
+            print(f&quot;Configuracion de Write Focus guardada: {new_node_name}&quot;)
+            QMessageBox.information(self, &quot;Success&quot;, &quot;Write Focus settings saved.&quot;)
+
+        except Exception as e:
+            print(f&quot;Error al guardar la configuracion de Write Focus: {e}&quot;)
+            QMessageBox.critical(
+                self, &quot;Save Error&quot;, f&quot;Could not save Write Focus settings:\n{e}&quot;
+            )
+
+    def save_show_flow_settings(self):
+        &quot;&quot;&quot;Guarda las credenciales de Show in Flow en su archivo .ini.&quot;&quot;&quot;
+        config_file_path = sif_get_config_path()
+        if not config_file_path:
+            print(&quot;Error: No se pudo obtener la ruta para guardar Show in Flow.&quot;)
+            QMessageBox.critical(
+                self,
+                &quot;Error&quot;,
+                &quot;Could not determine the configuration file path for Show in Flow.&quot;,
+            )
+            return
+
+        new_url = self.site_input.text().strip()
+        new_login = self.username_input.text().strip()
+        new_password = self.password_input.text()  # No hacer strip a la password
+
+        if not new_url or not new_login or not new_password:
+            QMessageBox.warning(
+                self,
+                &quot;Input Error&quot;,
+                &quot;Show in Flow URL, Login, and Password cannot be empty.&quot;,
+            )
+            # No revertimos aqui, dejamos que el usuario corrija
+            return
+
+        # Llamar a la nueva funcion de guardado que maneja la codificacion
+        try:
+            success = sif_save_credentials_to_config(new_url, new_login, new_password)
+            if success:
+                # El mensaje de exito ya se imprime en la funcion save
+                QMessageBox.information(self, &quot;Success&quot;, &quot;Show in Flow settings saved.&quot;)
+            else:
+                # El error especifico ya deberia haberse impreso
+                QMessageBox.critical(
+                    self,
+                    &quot;Save Error&quot;,
+                    &quot;Could not save Show in Flow settings. Check console for details.&quot;,
+                )
+        except Exception as e:
+            print(f&quot;Error al llamar a save_credentials_to_config: {e}&quot;)
+            QMessageBox.critical(
+                self,
+                &quot;Save Error&quot;,
+                f&quot;Unexpected error saving Show in Flow settings:\n{e}&quot;,
+            )
+
+    def save_color_space_settings(self):  # Nuevo metodo
+        &quot;&quot;&quot;Guarda la lista de Color Space Favorites en su archivo .ini.&quot;&quot;&quot;
+        # Re-obtener la ruta por si acaso, pero no forzar creacion/copia aqui
+        ini_path = getattr(
+            self,
+            &quot;colorspace_ini_path&quot;,
+            get_colorspace_ini_path(create_if_missing=False),
+        )
+
+        if not ini_path:
+            print(&quot;Error: No se pudo obtener la ruta para guardar Color Space Favs.&quot;)
+            QMessageBox.critical(
+                self,
+                &quot;Error&quot;,
+                &quot;Could not determine the configuration file path for Color Space Favorites.&quot;,
+            )
+            return
+
+        # Obtener texto del QTextEdit
+        text = self.color_space_edit.toPlainText()
+        # Dividir en lineas, quitar espacios y filtrar vacias/solo espacios
+        favorites_list = [line.strip() for line in text.split(&quot;\n&quot;) if line.strip()]
+
+        # Usar la funcion importada para guardar
+        try:
+            success = save_colorspaces_to_ini(ini_path, favorites_list)
+            if success:
+                print(&quot;Configuracion de Color Space Favorites guardada.&quot;)
+                QMessageBox.information(self, &quot;Success&quot;, &quot;Color Space Favorites saved.&quot;)
+            else:
+                # El error especifico ya deberia haberse impreso en la funcion save_colorspaces_to_ini
+                QMessageBox.critical(
+                    self,
+                    &quot;Save Error&quot;,
+                    &quot;Could not save Color Space Favorites. Check console for details.&quot;,
+                )
+
+        except Exception as e:
+            # Captura por si save_colorspaces_to_ini lanza una excepcion inesperada
+            print(f&quot;Error inesperado al llamar a save_colorspaces_to_ini: {e}&quot;)
+            QMessageBox.critical(
+                self,
+                &quot;Save Error&quot;,
+                f&quot;Unexpected error saving Color Space Favorites:\n{e}&quot;,
+            )
+
+    def save_render_mail_settings(self):
+        &quot;&quot;&quot;Guarda los datos de mail de Render Complete en su archivo .ini.&quot;&quot;&quot;
+        config_file_path = rc_get_config_path()
+        if not config_file_path:
+            print(
+                &quot;Error: No se pudo obtener la ruta para guardar Render Complete Mail.&quot;
+            )
+            QMessageBox.critical(
+                self,
+                &quot;Error&quot;,
+                &quot;Could not determine the configuration file path for Render Complete Mail.&quot;,
+            )
+            return
+        from_email = self.render_mail_from_input.text().strip()
+        from_password = self.render_mail_pass_input.text()
+        to_email = self.render_mail_to_input.text().strip()
+        if not from_email or not from_password or not to_email:
+            QMessageBox.warning(
+                self,
+                &quot;Input Error&quot;,
+                &quot;All mail fields must be filled (From, Password, To).&quot;,
+            )
+            # No revertimos, dejamos que el usuario corrija
+            return
+        try:
+            # La funcion rc_save_mail_settings_to_config ahora maneja la codificacion interna
+            success = rc_save_mail_settings_to_config(
+                from_email, from_password, to_email
+            )
+            if success:
+                # El mensaje de exito ya se imprime en la funcion save
+                QMessageBox.information(
+                    self, &quot;Success&quot;, &quot;Render Complete Mail settings saved.&quot;
+                )
+            else:
+                # El error especifico ya deberia haberse impreso
+                QMessageBox.critical(
+                    self,
+                    &quot;Save Error&quot;,
+                    &quot;Could not save Render Complete Mail settings. Check console for details.&quot;,
+                )
+        except Exception as e:
+            print(f&quot;Error al llamar a save_mail_settings_to_config: {e}&quot;)
+            QMessageBox.critical(
+                self,
+                &quot;Save Error&quot;,
+                f&quot;Unexpected error saving Render Complete Mail settings:\n{e}&quot;,
+            )
+
+    def browse_wav_file(self):
+        &quot;&quot;&quot;Abre un diálogo para seleccionar un archivo .wav y lo pone en el QLineEdit.&quot;&quot;&quot;
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, &quot;Select WAV file&quot;, &quot;&quot;, &quot;WAV Files (*.wav)&quot;
+        )
+        if file_path:
+            self.wav_path_input.setText(file_path)
+
+
+# --- Main Execution ---
+if __name__ == &quot;__main__&quot;:
+    # Necesario para ejecucion standalone fuera de Nuke
+    app = QApplication.instance() or QApplication(sys.argv)
+
+    settings_window = SettingsWindow()
+    settings_window.show()
+
+    # Mantener el bucle para ejecucion standalone
+    if not QApplication.instance():  # Solo si no estamos en Nuke
+        sys.exit(app.exec_())
+    # Si estamos en Nuke, no llamamos a sys.exit()
+&quot;&quot;&quot;
+_____________________________________________________________________________________________________
+
+  LGA_ToolPack_settings v0.4 | Lega
+  Configuracion de la herramienta LGA_ToolPack
+_____________________________________________________________________________________________________
+&quot;&quot;&quot;
+
+import sys
+import os
+import configparser
+import typing  # Importar typing
+from typing import Optional, Tuple
+
+from PySide2.QtWidgets import (
+    QApplication,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QGroupBox,
+    QLabel,
+    QLineEdit,
+    QFormLayout,
+    QPushButton,
+    QTextEdit,  # Importar QTextEdit
+    QMessageBox,  # Importar QMessageBox
+    QCheckBox,
+    QFileDialog,
+)
+from PySide2.QtCore import Qt
+
+# Importar funciones y constantes desde LGA_Write_Focus
+# Asumiendo que ambos scripts estan en el mismo directorio o en el sys.path
+try:
+    from LGA_Write_Focus import (
+        get_config_path as wf_get_config_path,  # Renombrar para claridad
+        ensure_config_exists as wf_ensure_config_exists,
+        get_node_name_from_config as wf_get_node_name_from_config,
+        DEFAULT_NODE_NAME as WF_DEFAULT_NODE_NAME,  # Renombrar constante
+        CONFIG_SECTION as WF_CONFIG_SECTION,  # Renombrar constante
+        CONFIG_NODE_NAME_KEY as WF_CONFIG_NODE_NAME_KEY,  # Renombrar constante
+    )
+except ImportError as e_wf:
+    print(f&quot;Error al importar LGA_Write_Focus.py: {e_wf}. Funcionalidad limitada.&quot;)
+
+    # Definir funciones dummy y valores por defecto
+    def wf_ensure_config_exists():
+        pass
+
+    def wf_get_node_name_from_config() -&gt; str:
+        return &quot;Write_Pub&quot;
+
+    def wf_get_config_path() -&gt; typing.Optional[str]:
+        return None
+
+    WF_DEFAULT_NODE_NAME = &quot;Write_Pub&quot;
+    WF_CONFIG_SECTION = &quot;Settings&quot;
+    WF_CONFIG_NODE_NAME_KEY = &quot;node_name&quot;
+
+# --- Importaciones de LGA_showInlFlow ---
+try:
+    from LGA_showInlFlow import (
+        get_config_path as sif_get_config_path,
+        ensure_config_exists as sif_ensure_config_exists,
+        get_credentials_from_config as sif_get_credentials_from_config,
+        save_credentials_to_config as sif_save_credentials_to_config,
+    )
+except ImportError as e_sif:
+    print(f&quot;Error al importar LGA_showInlFlow.py: {e_sif}. Funcionalidad limitada.&quot;)
+
+    # Definir funciones dummy y valores por defecto
+    def sif_ensure_config_exists():
+        pass
+
+    def sif_get_credentials_from_config() -&gt; (
+        typing.Tuple[typing.Optional[str], typing.Optional[str], typing.Optional[str]]
+    ):
+        return None, None, None
+
+    def sif_get_config_path() -&gt; typing.Optional[str]:
+        return None
+
+    # Funcion save dummy
+    def sif_save_credentials_to_config(url, login, password) -&gt; bool:
+        print(
+            &quot;Error: LGA_showInlFlow.py no encontrado, no se pueden guardar credenciales.&quot;
+        )
+        return False
+
+
+# --- Importaciones de LGA_RnW_ColorSpace_Favs --- Nuevo
+try:
+    from LGA_RnW_ColorSpace_Favs import (
+        get_colorspace_ini_path,
+        read_colorspaces_from_ini,
+        save_colorspaces_to_ini,
+        COLORSPACE_SECTION,  # Importar tambien la constante de seccion
+    )
+except ImportError as e_csf:
+    print(
+        f&quot;Error al importar LGA_RnW_ColorSpace_Favs.py: {e_csf}. Funcionalidad limitada.&quot;
+    )
+
+    # Definir funciones dummy
+    def get_colorspace_ini_path(create_if_missing: bool = True) -&gt; typing.Optional[str]:
+        return None
+
+    def read_colorspaces_from_ini(ini_path: typing.Optional[str]) -&gt; typing.List[str]:
+        return []
+
+    def save_colorspaces_to_ini(
+        ini_path: typing.Optional[str], colorspaces_list: typing.List[str]
+    ) -&gt; bool:
+        return False
+
+    COLORSPACE_SECTION = &quot;ColorSpaces&quot;
+
+# --- Importaciones de LGA_Render_Complete --- NUEVO
+try:
+    from LGA_Render_Complete import (
+        get_config_path as rc_get_config_path,
+        ensure_config_exists as rc_ensure_config_exists,
+        get_mail_settings_from_config as rc_get_mail_settings_from_config,
+        save_mail_settings_to_config as rc_save_mail_settings_to_config,
+        CONFIG_FROM_KEY as RC_CONFIG_FROM_KEY,
+        CONFIG_PASS_KEY as RC_CONFIG_PASS_KEY,
+        CONFIG_TO_KEY as RC_CONFIG_TO_KEY,
+    )
+except ImportError as e_rc:
+    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+
+    def rc_ensure_config_exists() -&gt; None:
+        pass
+
+    def rc_get_mail_settings_from_config() -&gt; (
+        Tuple[Optional[str], Optional[str], Optional[str]]
+    ):
+        return None, None, None
+
+    def rc_save_mail_settings_to_config(from_email, from_password, to_email) -&gt; bool:
+        return False
+
+    def rc_get_config_path() -&gt; Optional[str]:
+        return None
+
+    RC_CONFIG_FROM_KEY = &quot;from_email&quot;
+    RC_CONFIG_PASS_KEY = &quot;from_password&quot;
+    RC_CONFIG_TO_KEY = &quot;to_email&quot;
+
+
+class SettingsWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle(&quot;LGA ToolPack Settings&quot;)
+        self.setMinimumWidth(450)  # Un poco mas ancho para el QTextEdit
+        self.initUI()
+
+    def initUI(self):
+        main_layout = QVBoxLayout(self)
+
+        # --- Write Presets Section (Placeholder) ---
+        write_presets_group = QGroupBox(&quot;Write Presets&quot;)
+        write_presets_layout = QVBoxLayout()
+        write_presets_layout.addWidget(
+            QLabel(&quot;(Placeholder for Write Presets functionality)&quot;)
+        )
+        self.save_write_presets_button = QPushButton(&quot;Save&quot;)
+        # self.save_write_presets_button.clicked.connect(self.save_write_presets) # Placeholder
+        write_presets_layout.addWidget(self.save_write_presets_button, 0, Qt.AlignRight)
+        write_presets_group.setLayout(write_presets_layout)
+        main_layout.addWidget(write_presets_group)
+
+        # --- Write Focus Section ---
+        write_focus_group = QGroupBox(&quot;Write Focus&quot;)
+        write_focus_layout_container = QVBoxLayout()
+        write_focus_form_layout = QFormLayout()
+        self.write_focus_input = QLineEdit()
+        try:
+            wf_ensure_config_exists()  # Usar funcion importada
+            current_node_name = wf_get_node_name_from_config()  # Usar funcion importada
+            self.write_focus_input.setText(current_node_name or WF_DEFAULT_NODE_NAME)
+        except Exception as e:
+            print(f&quot;Error al cargar config de Write Focus: {e}&quot;)
+            self.write_focus_input.setText(WF_DEFAULT_NODE_NAME)
+
+        write_focus_form_layout.addRow(
+            &quot;Name of the Write Node to Focus:&quot;, self.write_focus_input
+        )
+        write_focus_layout_container.addLayout(write_focus_form_layout)
+        self.save_write_focus_button = QPushButton(&quot;Save&quot;)
+        self.save_write_focus_button.clicked.connect(self.save_write_focus_settings)
+        write_focus_layout_container.addWidget(
+            self.save_write_focus_button, 0, Qt.AlignRight
+        )
+        write_focus_group.setLayout(write_focus_layout_container)
+        main_layout.addWidget(write_focus_group)
+
+        # --- Show in Flow Section ---
+        show_flow_group = QGroupBox(&quot;Show in Flow&quot;)
+        show_flow_layout_container = QVBoxLayout()
+        show_flow_form_layout = QFormLayout()
+        self.username_input = QLineEdit()
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Password)
+        self.site_input = QLineEdit()
+        # Placeholders para los campos de ShotGrid
+        self.site_input.setPlaceholderText(&quot;e.g., https://studio.shotgrid.autodesk.com&quot;)
+        self.username_input.setPlaceholderText(&quot;e.g., artist@studio.com&quot;)
+        self.password_input.setPlaceholderText(&quot;&quot;)
+        show_flow_form_layout.addRow(
+            &quot;ShotGrid URL:&quot;,
+            self.site_input,
+        )
+        show_flow_form_layout.addRow(&quot;ShotGrid Login:&quot;, self.username_input)
+        show_flow_form_layout.addRow(&quot;ShotGrid Password:&quot;, self.password_input)
+
+        try:
+            sif_ensure_config_exists()  # Usar funcion importada
+            sif_url, sif_login, sif_password = (
+                sif_get_credentials_from_config()
+            )  # Usar funcion importada
+            self.site_input.setText(sif_url or &quot;&quot;)
+            self.username_input.setText(sif_login or &quot;&quot;)
+            self.password_input.setText(sif_password or &quot;&quot;)
+        except Exception as e:
+            print(f&quot;Error al cargar credenciales de Show in Flow: {e}&quot;)
+
+        show_flow_layout_container.addLayout(show_flow_form_layout)
+        self.save_show_flow_button = QPushButton(&quot;Save&quot;)
+        self.save_show_flow_button.clicked.connect(self.save_show_flow_settings)
+        show_flow_layout_container.addWidget(
+            self.save_show_flow_button, 0, Qt.AlignRight
+        )
+        show_flow_group.setLayout(show_flow_layout_container)
+        main_layout.addWidget(show_flow_group)
+
+        # --- Color Space Favs Section --- Modificado
+        color_space_group = QGroupBox(&quot;Color Space Favorites&quot;)  # Titulo mas descriptivo
+        color_space_layout = QVBoxLayout()
+        color_space_layout.addWidget(
+            QLabel(
+                &quot;Enter favorite OCIO color spaces (one per line):&quot;
+            )  # Label explicativo
+        )
+        # Crear el QTextEdit
+        self.color_space_edit = QTextEdit()
+        self.color_space_edit.setPlaceholderText(
+            &quot;e.g.,\nOutput - sRGB\nUtility - Raw\nACES - ACEScg&quot;
+        )
+        self.color_space_edit.setMinimumHeight(80)  # Altura minima
+        color_space_layout.addWidget(self.color_space_edit)
+
+        # --- Cargar favoritos existentes --- Nuevo
+        try:
+            self.colorspace_ini_path = get_colorspace_ini_path(create_if_missing=True)
+            if self.colorspace_ini_path:
+                fav_list = read_colorspaces_from_ini(self.colorspace_ini_path)
+                self.color_space_edit.setText(&quot;\n&quot;.join(fav_list))
+            else:
+                print(&quot;Advertencia: No se pudo obtener la ruta del INI de ColorSpaces.&quot;)
+                # Podriamos deshabilitar el campo/boton si no hay ruta
+                # self.color_space_edit.setEnabled(False)
+        except Exception as e:
+            print(f&quot;Error al cargar Color Space Favs: {e}&quot;)
+            QMessageBox.warning(
+                self, &quot;Error&quot;, f&quot;Could not load Color Space Favorites:\n{e}&quot;
+            )
+        # ---------------------------------
+
+        self.save_color_space_button = QPushButton(&quot;Save&quot;)
+        self.save_color_space_button.clicked.connect(
+            self.save_color_space_settings
+        )  # Conectar al nuevo metodo
+        color_space_layout.addWidget(self.save_color_space_button, 0, Qt.AlignRight)
+        color_space_group.setLayout(color_space_layout)
+        main_layout.addWidget(color_space_group)
+
+        # --- Render Complete Mail Settings Section --- NUEVO
+        render_mail_group = QGroupBox(&quot;Render Complete Mail Settings&quot;)
+        render_mail_layout_container = QVBoxLayout()
+        render_mail_form_layout = QFormLayout()
+        self.render_mail_from_input = QLineEdit()
+        self.render_mail_pass_input = QLineEdit()
+        self.render_mail_pass_input.setEchoMode(QLineEdit.Password)
+        self.render_mail_to_input = QLineEdit()
+        # Placeholders para los campos de mail
+        self.render_mail_from_input.setPlaceholderText(&quot;e.g., tuMail@outlook.com&quot;)
+        self.render_mail_pass_input.setPlaceholderText(&quot;&quot;)
+        self.render_mail_to_input.setPlaceholderText(&quot;e.g., tuMail@gmail.com&quot;)
+        # Cargar valores actuales
+        try:
+            rc_ensure_config_exists()
+            from_email, from_password, to_email = rc_get_mail_settings_from_config()
+            self.render_mail_from_input.setText(from_email or &quot;&quot;)
+            self.render_mail_pass_input.setText(from_password or &quot;&quot;)
+            self.render_mail_to_input.setText(to_email or &quot;&quot;)
+        except Exception as e:
+            print(f&quot;Error al cargar config de Render Complete Mail: {e}&quot;)
+        render_mail_form_layout.addRow(&quot;From (Outlook):&quot;, self.render_mail_from_input)
+        render_mail_form_layout.addRow(&quot;Password:&quot;, self.render_mail_pass_input)
+        render_mail_form_layout.addRow(&quot;To (Recipient):&quot;, self.render_mail_to_input)
+        render_mail_layout_container.addLayout(render_mail_form_layout)
+        # --- NUEVOS SETTINGS ---
+        self.cb_enable_mail = QCheckBox(&quot;Enable mail sending&quot;)
+        self.cb_enable_render_time = QCheckBox(&quot;Enable render time calculation&quot;)
+        self.cb_enable_sound = QCheckBox(&quot;Enable sound notification&quot;)
+        render_mail_layout_container.addWidget(self.cb_enable_mail)
+        render_mail_layout_container.addWidget(self.cb_enable_render_time)
+        render_mail_layout_container.addWidget(self.cb_enable_sound)
+        # Selector de archivo .wav
+        wav_layout = QHBoxLayout()
+        self.wav_path_input = QLineEdit()
+        self.wav_path_input.setPlaceholderText(&quot;Select .wav file...&quot;)
+        self.wav_browse_btn = QPushButton(&quot;Browse&quot;)
+        self.wav_browse_btn.clicked.connect(self.browse_wav_file)
+        wav_layout.addWidget(self.wav_path_input)
+        wav_layout.addWidget(self.wav_browse_btn)
+        render_mail_layout_container.addLayout(wav_layout)
+        # ---
+
+        self.save_render_mail_button = QPushButton(&quot;Save&quot;)
+        self.save_render_mail_button.clicked.connect(self.save_render_mail_settings)
+        render_mail_layout_container.addWidget(
+            self.save_render_mail_button, 0, Qt.AlignRight
+        )
+        render_mail_group.setLayout(render_mail_layout_container)
+        main_layout.addWidget(render_mail_group)
+        # ---
+        main_layout.addStretch()
+
+    def save_write_focus_settings(self):
+        &quot;&quot;&quot;Guarda el nombre del nodo de Write Focus en su archivo .ini.&quot;&quot;&quot;
+        config_file_path = wf_get_config_path()
+        if not config_file_path:
+            print(&quot;Error: No se pudo obtener la ruta para guardar Write Focus.&quot;)
+            QMessageBox.critical(
+                self,
+                &quot;Error&quot;,
+                &quot;Could not determine the configuration file path for Write Focus.&quot;,
+            )
+            return
+
+        new_node_name = self.write_focus_input.text().strip()
+        if not new_node_name:
+            QMessageBox.warning(
+                self, &quot;Input Error&quot;, &quot;Write Focus node name cannot be empty.&quot;
+            )
+            # Revertir al valor anterior o al por defecto
+            try:
+                current_node_name = wf_get_node_name_from_config()
+                self.write_focus_input.setText(
+                    current_node_name or WF_DEFAULT_NODE_NAME
+                )
+            except Exception:
+                self.write_focus_input.setText(WF_DEFAULT_NODE_NAME)
+            return
+
+        config = configparser.ConfigParser()
+        try:
+            # Leer existente para preservar otras secciones/claves
+            if os.path.exists(config_file_path):
+                config.read(config_file_path)
+
+            if not config.has_section(WF_CONFIG_SECTION):
+                config.add_section(WF_CONFIG_SECTION)
+
+            config.set(WF_CONFIG_SECTION, WF_CONFIG_NODE_NAME_KEY, new_node_name)
+
+            with open(config_file_path, &quot;w&quot;) as configfile:
+                config.write(configfile)
+
+            print(f&quot;Configuracion de Write Focus guardada: {new_node_name}&quot;)
+            QMessageBox.information(self, &quot;Success&quot;, &quot;Write Focus settings saved.&quot;)
+
+        except Exception as e:
+            print(f&quot;Error al guardar la configuracion de Write Focus: {e}&quot;)
+            QMessageBox.critical(
+                self, &quot;Save Error&quot;, f&quot;Could not save Write Focus settings:\n{e}&quot;
+            )
+
+    def save_show_flow_settings(self):
+        &quot;&quot;&quot;Guarda las credenciales de Show in Flow en su archivo .ini.&quot;&quot;&quot;
+        config_file_path = sif_get_config_path()
+        if not config_file_path:
+            print(&quot;Error: No se pudo obtener la ruta para guardar Show in Flow.&quot;)
+            QMessageBox.critical(
+                self,
+                &quot;Error&quot;,
+                &quot;Could not determine the configuration file path for Show in Flow.&quot;,
+            )
+            return
+
+        new_url = self.site_input.text().strip()
+        new_login = self.username_input.text().strip()
+        new_password = self.password_input.text()  # No hacer strip a la password
+
+        if not new_url or not new_login or not new_password:
+            QMessageBox.warning(
+                self,
+                &quot;Input Error&quot;,
+                &quot;Show in Flow URL, Login, and Password cannot be empty.&quot;,
+            )
+            # No revertimos aqui, dejamos que el usuario corrija
+            return
+
+        # Llamar a la nueva funcion de guardado que maneja la codificacion
+        try:
+            success = sif_save_credentials_to_config(new_url, new_login, new_password)
+            if success:
+                # El mensaje de exito ya se imprime en la funcion save
+                QMessageBox.information(self, &quot;Success&quot;, &quot;Show in Flow settings saved.&quot;)
+            else:
+                # El error especifico ya deberia haberse impreso
+                QMessageBox.critical(
+                    self,
+                    &quot;Save Error&quot;,
+                    &quot;Could not save Show in Flow settings. Check console for details.&quot;,
+                )
+        except Exception as e:
+            print(f&quot;Error al llamar a save_credentials_to_config: {e}&quot;)
+            QMessageBox.critical(
+                self,
+                &quot;Save Error&quot;,
+                f&quot;Unexpected error saving Show in Flow settings:\n{e}&quot;,
+            )
+
+    def save_color_space_settings(self):  # Nuevo metodo
+        &quot;&quot;&quot;Guarda la lista de Color Space Favorites en su archivo .ini.&quot;&quot;&quot;
+        # Re-obtener la ruta por si acaso, pero no forzar creacion/copia aqui
+        ini_path = getattr(
+            self,
+            &quot;colorspace_ini_path&quot;,
+            get_colorspace_ini_path(create_if_missing=False),
+        )
+
+        if not ini_path:
+            print(&quot;Error: No se pudo obtener la ruta para guardar Color Space Favs.&quot;)
+            QMessageBox.critical(
+                self,
+                &quot;Error&quot;,
+                &quot;Could not determine the configuration file path for Color Space Favorites.&quot;,
+            )
+            return
+
+        # Obtener texto del QTextEdit
+        text = self.color_space_edit.toPlainText()
+        # Dividir en lineas, quitar espacios y filtrar vacias/solo espacios
+        favorites_list = [line.strip() for line in text.split(&quot;\n&quot;) if line.strip()]
+
+        # Usar la funcion importada para guardar
+        try:
+            success = save_colorspaces_to_ini(ini_path, favorites_list)
+            if success:
+                print(&quot;Configuracion de Color Space Favorites guardada.&quot;)
+                QMessageBox.information(self, &quot;Success&quot;, &quot;Color Space Favorites saved.&quot;)
+            else:
+                # El error especifico ya deberia haberse impreso en la funcion save_colorspaces_to_ini
+                QMessageBox.critical(
+                    self,
+                    &quot;Save Error&quot;,
+                    &quot;Could not save Color Space Favorites. Check console for details.&quot;,
+                )
+
+        except Exception as e:
+            # Captura por si save_colorspaces_to_ini lanza una excepcion inesperada
+            print(f&quot;Error inesperado al llamar a save_colorspaces_to_ini: {e}&quot;)
+            QMessageBox.critical(
+                self,
+                &quot;Save Error&quot;,
+                f&quot;Unexpected error saving Color Space Favorites:\n{e}&quot;,
+            )
+
+    def save_render_mail_settings(self):
+        &quot;&quot;&quot;Guarda los datos de mail de Render Complete en su archivo .ini.&quot;&quot;&quot;
+        config_file_path = rc_get_config_path()
+        if not config_file_path:
+            print(
+                &quot;Error: No se pudo obtener la ruta para guardar Render Complete Mail.&quot;
+            )
+            QMessageBox.critical(
+                self,
+                &quot;Error&quot;,
+                &quot;Could not determine the configuration file path for Render Complete Mail.&quot;,
+            )
+            return
+        from_email = self.render_mail_from_input.text().strip()
+        from_password = self.render_mail_pass_input.text()
+        to_email = self.render_mail_to_input.text().strip()
+        if not from_email or not from_password or not to_email:
+            QMessageBox.warning(
+                self,
+                &quot;Input Error&quot;,
+                &quot;All mail fields must be filled (From, Password, To).&quot;,
+            )
+            # No revertimos, dejamos que el usuario corrija
+            return
+        try:
+            # La funcion rc_save_mail_settings_to_config ahora maneja la codificacion interna
+            success = rc_save_mail_settings_to_config(
+                from_email, from_password, to_email
+            )
+            if success:
+                # El mensaje de exito ya se imprime en la funcion save
+                QMessageBox.information(
+                    self, &quot;Success&quot;, &quot;Render Complete Mail settings saved.&quot;
+                )
+            else:
+                # El error especifico ya deberia haberse impreso
+                QMessageBox.critical(
+                    self,
+                    &quot;Save Error&quot;,
+                    &quot;Could not save Render Complete Mail settings. Check console for details.&quot;,
+                )
+        except Exception as e:
+            print(f&quot;Error al llamar a save_mail_settings_to_config: {e}&quot;)
+            QMessageBox.critical(
+                self,
+                &quot;Save Error&quot;,
+                f&quot;Unexpected error saving Render Complete Mail settings:\n{e}&quot;,
             )
 
     def browse_wav_file(self):

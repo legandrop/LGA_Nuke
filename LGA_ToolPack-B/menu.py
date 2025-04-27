@@ -45,24 +45,6 @@ n2.addCommand(
 )
 
 
-# Importar el LGA_Render_Complete y el LGA_Write_SendMail
-import LGA_Render_Complete
-import LGA_Write_SendMail
-
-
-def add_send_mail_to_all_writes():
-    LGA_Write_SendMail.add_send_mail_checkbox()
-
-
-n2.addCommand(
-    "  Write Send Mail",
-    "add_send_mail_to_all_writes()",
-    "ctrl+shift+w",
-    shortcutContext=2,
-    icon=icon_RnW,
-)
-
-
 # Importar el LGA_reloadAllReads
 import LGA_reloadAllReads
 

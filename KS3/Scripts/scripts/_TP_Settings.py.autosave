@@ -63,10 +63,7 @@ try:
         get_config_path as sif_get_config_path,
         ensure_config_exists as sif_ensure_config_exists,
         get_credentials_from_config as sif_get_credentials_from_config,
-        CONFIG_SECTION as SIF_CONFIG_SECTION,
-        CONFIG_URL_KEY as SIF_CONFIG_URL_KEY,
-        CONFIG_LOGIN_KEY as SIF_CONFIG_LOGIN_KEY,
-        CONFIG_PASSWORD_KEY as SIF_CONFIG_PASSWORD_KEY,
+        save_credentials_to_config as sif_save_credentials_to_config,
     )
 except ImportError as e_sif:
     print(f"Error al importar LGA_showInlFlow.py: {e_sif}. Funcionalidad limitada.")
@@ -83,10 +80,13 @@ except ImportError as e_sif:
     def sif_get_config_path() -> typing.Optional[str]:
         return None
 
-    SIF_CONFIG_SECTION = "Credentials"
-    SIF_CONFIG_URL_KEY = "shotgrid_url"
-    SIF_CONFIG_LOGIN_KEY = "shotgrid_login"
-    SIF_CONFIG_PASSWORD_KEY = "shotgrid_password"
+    # Funcion save dummy
+    def sif_save_credentials_to_config(url, login, password) -> bool:
+        print(
+            "Error: LGA_showInlFlow.py no encontrado, no se pueden guardar credenciales."
+        )
+        return False
+
 
 # --- Importaciones de LGA_RnW_ColorSpace_Favs --- Nuevo
 try:
@@ -122,7 +122,6 @@ try:
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
         save_mail_settings_to_config as rc_save_mail_settings_to_config,
-        CONFIG_SECTION as RC_CONFIG_SECTION,
         CONFIG_FROM_KEY as RC_CONFIG_FROM_KEY,
         CONFIG_PASS_KEY as RC_CONFIG_PASS_KEY,
         CONFIG_TO_KEY as RC_CONFIG_TO_KEY,
@@ -144,7 +143,6 @@ except ImportError as e_rc:
     def rc_get_config_path() -> Optional[str]:
         return None
 
-    RC_CONFIG_SECTION = "Mail"
     RC_CONFIG_FROM_KEY = "from_email"
     RC_CONFIG_PASS_KEY = "from_password"
     RC_CONFIG_TO_KEY = "to_email"
@@ -405,29 +403,25 @@ class SettingsWindow(QWidget):
             # No revertimos aqui, dejamos que el usuario corrija
             return
 
-        config = configparser.ConfigParser()
+        # Llamar a la nueva funcion de guardado que maneja la codificacion
         try:
-            # Leer existente
-            if os.path.exists(config_file_path):
-                config.read(config_file_path, encoding="utf-8")
-
-            if not config.has_section(SIF_CONFIG_SECTION):
-                config.add_section(SIF_CONFIG_SECTION)
-
-            config.set(SIF_CONFIG_SECTION, SIF_CONFIG_URL_KEY, new_url)
-            config.set(SIF_CONFIG_SECTION, SIF_CONFIG_LOGIN_KEY, new_login)
-            config.set(SIF_CONFIG_SECTION, SIF_CONFIG_PASSWORD_KEY, new_password)
-
-            with open(config_file_path, "w", encoding="utf-8") as configfile:
-                config.write(configfile)
-
-            print("Configuracion de Show in Flow guardada.")
-            QMessageBox.information(self, "Success", "Show in Flow settings saved.")
-
+            success = sif_save_credentials_to_config(new_url, new_login, new_password)
+            if success:
+                # El mensaje de exito ya se imprime en la funcion save
+                QMessageBox.information(self, "Success", "Show in Flow settings saved.")
+            else:
+                # El error especifico ya deberia haberse impreso
+                QMessageBox.critical(
+                    self,
+                    "Save Error",
+                    "Could not save Show in Flow settings. Check console for details.",
+                )
         except Exception as e:
-            print(f"Error al guardar la configuracion de Show in Flow: {e}")
+            print(f"Error al llamar a save_credentials_to_config: {e}")
             QMessageBox.critical(
-                self, "Save Error", f"Could not save Show in Flow settings:\n{e}"
+                self,
+                "Save Error",
+                f"Unexpected error saving Show in Flow settings:\n{e}",
             )
 
     def save_color_space_settings(self):  # Nuevo metodo
@@ -501,26 +495,28 @@ class SettingsWindow(QWidget):
             # No revertimos, dejamos que el usuario corrija
             return
         try:
+            # La funcion rc_save_mail_settings_to_config ahora maneja la codificacion interna
             success = rc_save_mail_settings_to_config(
                 from_email, from_password, to_email
             )
             if success:
-                print("Configuracion de Render Complete Mail guardada.")
+                # El mensaje de exito ya se imprime en la funcion save
                 QMessageBox.information(
                     self, "Success", "Render Complete Mail settings saved."
                 )
             else:
+                # El error especifico ya deberia haberse impreso
                 QMessageBox.critical(
                     self,
                     "Save Error",
                     "Could not save Render Complete Mail settings. Check console for details.",
                 )
         except Exception as e:
-            print(f"Error al guardar la configuracion de Render Complete Mail: {e}")
+            print(f"Error al llamar a save_mail_settings_to_config: {e}")
             QMessageBox.critical(
                 self,
                 "Save Error",
-                f"Could not save Render Complete Mail settings:\n{e}",
+                f"Unexpected error saving Render Complete Mail settings:\n{e}",
             )
 
     def browse_wav_file(self):

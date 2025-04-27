@@ -1,16 +1,9 @@
 """
 _______________________________________________________________________________________________________________
 
-  LGA_Render_Complete v1.2 | Lega
+  LGA_Render_Complete v1.3 | Lega
   Calcula la duracion al finalizar el render y la agrega en un knob en el tab User del nodo write
   Reproduce un sonido y envia un correo con los detalles del render si la opcion 'Send Mail' esta activada
-
-  Para enviar mail hay que crear 3 variables de entorno con la informacion del mail que envia y el que recibe
-  el que envia tiene que ser de Outlook.
-  Las tres variables se crean asi:
-  setx Nuke_Write_Mail_From "tuMail@outlook.com"
-  setx Nuke_Write_Mail_Pass "tuPass"
-  setx Nuke_Write_Mail_To "tuMail@gmail.com"
 _______________________________________________________________________________________________________________
 
 """
@@ -22,12 +15,22 @@ from PySide2.QtMultimedia import QSound
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import configparser
+import base64
+import binascii
 import platform
 
-# --- Configuración de archivo INI para settings de mail ---
-CONFIG_FILE_NAME = "RenderComplete.ini"
-CONFIG_SECTION = "Mail"
+# Variable global para controlar el debug
+DEBUG = False  # Poner en False para desactivar los mensajes de debug
+
+
+# Funcion debug_print
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+
+# --- Configuración de archivo DAT para settings de mail ---
+CONFIG_FILE_NAME = "RenderComplete.dat"
 CONFIG_FROM_KEY = "from_email"
 CONFIG_PASS_KEY = "from_password"
 CONFIG_TO_KEY = "to_email"
@@ -37,7 +40,6 @@ __all__ = [
     "ensure_config_exists",
     "get_mail_settings_from_config",
     "save_mail_settings_to_config",
-    "CONFIG_SECTION",
     "CONFIG_FROM_KEY",
     "CONFIG_PASS_KEY",
     "CONFIG_TO_KEY",
@@ -45,23 +47,23 @@ __all__ = [
 
 
 def get_config_path():
-    """Devuelve la ruta completa al archivo de configuración de mail."""
+    """Devuelve la ruta completa al archivo de configuración de mail (.dat)."""
     try:
         appdata_path = os.getenv("APPDATA")
         if not appdata_path:
-            print("Error: No se pudo encontrar la variable de entorno APPDATA.")
+            debug_print("Error: No se pudo encontrar la variable de entorno APPDATA.")
             return None
         config_dir = os.path.join(appdata_path, "LGA", "ToolPack")
         return os.path.join(config_dir, CONFIG_FILE_NAME)
     except Exception as e:
-        print(f"Error al obtener la ruta de configuración: {e}")
+        debug_print(f"Error al obtener la ruta de configuración: {e}")
         return None
 
 
 def ensure_config_exists():
     """
-    Asegura que el directorio de configuración y el archivo .ini existan.
-    Si no existen, los crea con valores vacíos.
+    Asegura que el directorio de configuración y el archivo .dat existan.
+    Si no existen, los crea con valores vacíos codificados.
     """
     config_file_path = get_config_path()
     if not config_file_path:
@@ -70,96 +72,99 @@ def ensure_config_exists():
     try:
         if not os.path.exists(config_dir):
             os.makedirs(config_dir)
-            print(f"Directorio de configuración creado: {config_dir}")
+            debug_print(f"Directorio de configuración creado: {config_dir}")
         if not os.path.exists(config_file_path):
-            config = configparser.ConfigParser()
-            config[CONFIG_SECTION] = {
-                CONFIG_FROM_KEY: "",
-                CONFIG_PASS_KEY: "",
-                CONFIG_TO_KEY: "",
-            }
+            # Crear archivo .dat con lineas vacias codificadas
+            empty_encoded = base64.b64encode("".encode("utf-8")).decode("utf-8")
             with open(config_file_path, "w", encoding="utf-8") as configfile:
-                config.write(configfile)
-            print(
-                f"Archivo de configuración creado: {config_file_path}. Por favor, complételo con sus datos de mail."
+                configfile.write(f"{empty_encoded}\\n")  # From Email
+                configfile.write(f"{empty_encoded}\\n")  # Password
+                configfile.write(f"{empty_encoded}\\n")  # To Email
+            debug_print(
+                f"Archivo de configuración de mail creado: {config_file_path}. Complételo usando LGA_ToolPack_settings."
             )
     except Exception as e:
-        print(f"Error al asegurar la configuración: {e}")
+        debug_print(f"Error al asegurar la configuración de mail: {e}")
 
 
 def get_mail_settings_from_config():
     """
-    Lee los datos de mail desde el archivo .ini.
-    Devuelve (from_email, from_password, to_email) o (None, None, None) si hay errores o faltan datos.
+    Lee los datos de mail desde el archivo .dat codificado.
+    Devuelve (from_email, from_password, to_email) decodificados o (None, None, None).
     """
     config_file_path = get_config_path()
     if not config_file_path or not os.path.exists(config_file_path):
-        print(
-            f"Archivo de configuración no encontrado en la ruta esperada: {config_file_path}"
+        debug_print(
+            f"Archivo de configuración de mail (.dat) no encontrado: {config_file_path}"
         )
         return None, None, None
     try:
-        config = configparser.ConfigParser()
-        config.read(config_file_path, encoding="utf-8")
-        if (
-            config.has_section(CONFIG_SECTION)
-            and config.has_option(CONFIG_SECTION, CONFIG_FROM_KEY)
-            and config.has_option(CONFIG_SECTION, CONFIG_PASS_KEY)
-            and config.has_option(CONFIG_SECTION, CONFIG_TO_KEY)
-        ):
-            from_email = config.get(CONFIG_SECTION, CONFIG_FROM_KEY).strip()
-            from_password = config.get(CONFIG_SECTION, CONFIG_PASS_KEY).strip()
-            to_email = config.get(CONFIG_SECTION, CONFIG_TO_KEY).strip()
-            if from_email and from_password and to_email:
-                return from_email, from_password, to_email
-            else:
-                print(f"Uno o más datos de mail en {config_file_path} están vacíos.")
-                return None, None, None
-        else:
-            missing = []
-            if not config.has_section(CONFIG_SECTION):
-                missing.append(f"Sección [{CONFIG_SECTION}]")
-            if not config.has_option(CONFIG_SECTION, CONFIG_FROM_KEY):
-                missing.append(f"Clave {CONFIG_FROM_KEY}")
-            if not config.has_option(CONFIG_SECTION, CONFIG_PASS_KEY):
-                missing.append(f"Clave {CONFIG_PASS_KEY}")
-            if not config.has_option(CONFIG_SECTION, CONFIG_TO_KEY):
-                missing.append(f"Clave {CONFIG_TO_KEY}")
-            print(
-                f"Configuración incompleta en {config_file_path}. Falta: {', '.join(missing)}"
+        with open(config_file_path, "r", encoding="utf-8") as configfile:
+            lines = configfile.readlines()
+
+        if len(lines) < 3:
+            debug_print(
+                f"Archivo de configuración de mail {config_file_path} está incompleto o corrupto."
             )
             return None, None, None
-    except configparser.Error as e:
-        print(f"Error al leer el archivo de configuración {config_file_path}: {e}.")
+
+        # Decodificar cada linea
+        from_email_encoded = lines[0].strip()
+        from_password_encoded = lines[1].strip()
+        to_email_encoded = lines[2].strip()
+
+        from_email = base64.b64decode(from_email_encoded).decode("utf-8")
+        from_password = base64.b64decode(from_password_encoded).decode("utf-8")
+        to_email = base64.b64decode(to_email_encoded).decode("utf-8")
+
+        if from_email and from_password and to_email:
+            return from_email, from_password, to_email
+        else:
+            debug_print(
+                f"Uno o más datos de mail en {config_file_path} están vacíos (después de decodificar)."
+            )
+            return None, None, None
+
+    except (binascii.Error, UnicodeDecodeError) as e:  # Usar binascii.Error
+        debug_print(
+            f"Error al decodificar el archivo de configuración de mail {config_file_path}: {e}"
+        )
         return None, None, None
     except Exception as e:
-        print(f"Error inesperado al leer la configuración: {e}.")
+        debug_print(
+            f"Error inesperado al leer la configuración de mail codificada: {e}"
+        )
         return None, None, None
 
 
 def save_mail_settings_to_config(from_email, from_password, to_email):
     """
-    Guarda los datos de mail en el archivo .ini.
+    Guarda los datos de mail codificados en base64 en el archivo .dat.
     """
     config_file_path = get_config_path()
     if not config_file_path:
-        print("No se pudo obtener la ruta del archivo de configuración de mail.")
+        debug_print("No se pudo obtener la ruta del archivo de configuración de mail.")
         return False
     try:
-        config = configparser.ConfigParser()
-        if os.path.exists(config_file_path):
-            config.read(config_file_path, encoding="utf-8")
-        if not config.has_section(CONFIG_SECTION):
-            config.add_section(CONFIG_SECTION)
-        config.set(CONFIG_SECTION, CONFIG_FROM_KEY, from_email)
-        config.set(CONFIG_SECTION, CONFIG_PASS_KEY, from_password)
-        config.set(CONFIG_SECTION, CONFIG_TO_KEY, to_email)
+        # Codificar los valores
+        from_email_encoded = base64.b64encode(from_email.encode("utf-8")).decode(
+            "utf-8"
+        )
+        password_encoded = base64.b64encode(from_password.encode("utf-8")).decode(
+            "utf-8"
+        )
+        to_email_encoded = base64.b64encode(to_email.encode("utf-8")).decode("utf-8")
+
+        # Escribir las lineas codificadas
         with open(config_file_path, "w", encoding="utf-8") as configfile:
-            config.write(configfile)
-        print("Configuración de mail guardada correctamente.")
+            configfile.write(f"{from_email_encoded}\\n")
+            configfile.write(f"{password_encoded}\\n")
+            configfile.write(f"{to_email_encoded}\\n")
+
+        debug_print("Configuración de mail guardada de forma segura.")
         return True
     except Exception as e:
-        print(f"Error al guardar la configuración de mail: {e}")
+        debug_print(f"Error al guardar la configuración de mail codificada: {e}")
         return False
 
 
@@ -195,8 +200,8 @@ def total_time():
 def send_email(subject, body, to_email=None):
     from_email, password, default_to_email = get_mail_settings_from_config()
     if not from_email or not password or not default_to_email:
-        config_path = get_config_path() or "AppData\\LGA\\ToolPack\\RenderComplete.ini"
-        print(
+        config_path = get_config_path() or "AppData\\LGA\\ToolPack\\RenderComplete.dat"
+        debug_print(
             f"No se pudieron leer los datos de mail desde: {config_path}\nRevise la consola para detalles y asegúrese de que el archivo esté completo."
         )
         return
@@ -213,9 +218,9 @@ def send_email(subject, body, to_email=None):
         server.login(from_email, password)
         server.sendmail(from_email, to_email, msg.as_string())
         server.close()
-        print("Correo enviado exitosamente.")
+        debug_print("Correo enviado exitosamente.")
     except Exception as e:
-        print(f"Error al enviar correo: {e}")
+        debug_print(f"Error al enviar correo: {e}")
 
 
 def add_render_time_knob(write_node, render_time):

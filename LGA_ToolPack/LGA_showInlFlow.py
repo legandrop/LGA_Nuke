@@ -1,10 +1,8 @@
 """
 _____________________________________________________________________________________________________
 
-  LGA_showInFlow v2.3 | Lega
+  LGA_showInFlow v2.4 | Lega
   Abre la URL de la task Comp del shot, tomando la informacion del nombre del script
-
-
 _____________________________________________________________________________________________________
 """
 
@@ -16,7 +14,8 @@ import nuke
 import webbrowser
 import threading
 import subprocess
-import configparser
+import base64  # Importar base64
+import binascii  # Importar binascii para la excepcion
 
 # Agregar la ruta de la carpeta shotgun_api3 al sys.path
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -26,14 +25,23 @@ sys.path.append(shotgun_api_path)
 # Ahora importamos shotgun_api3
 import shotgun_api3
 
-# Constantes para el archivo de configuracion (adaptadas del ejemplo)
-CONFIG_FILE_NAME = "ShowInFlow.ini"
-CONFIG_SECTION = "Credentials"
-CONFIG_URL_KEY = "shotgrid_url"
+DEBUG = False
+
+
+# Definir debug_print aqui para que siempre exista
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+
+# Constantes para el archivo de configuracion
+CONFIG_FILE_NAME = "ShowInFlow.dat"  # Cambiar extension a .dat
+# Ya no se necesita CONFIG_SECTION
+CONFIG_URL_KEY = "shotgrid_url"  # Mantener nombres de clave conceptualmente
 CONFIG_LOGIN_KEY = "shotgrid_login"
 CONFIG_PASSWORD_KEY = "shotgrid_password"
 
-# --- Inicio: Funciones de manejo de configuracion (basadas en LGA_Write_Focus.py) ---
+# --- Inicio: Funciones de manejo de configuracion (modificadas para base64) ---
 
 
 def get_config_path():
@@ -41,23 +49,23 @@ def get_config_path():
     try:
         appdata_path = os.getenv("APPDATA")
         if not appdata_path:
-            print("Error: No se pudo encontrar la variable de entorno APPDATA.")
+            debug_print("Error: No se pudo encontrar la variable de entorno APPDATA.")
             return None
         config_dir = os.path.join(appdata_path, "LGA", "ToolPack")
         return os.path.join(config_dir, CONFIG_FILE_NAME)
     except Exception as e:
-        print(f"Error al obtener la ruta de configuracion: {e}")
+        debug_print(f"Error al obtener la ruta de configuracion: {e}")
         return None
 
 
 def ensure_config_exists():
     """
-    Asegura que el directorio de configuracion y el archivo .ini existan.
-    Si no existen, los crea con valores vacios.
+    Asegura que el directorio de configuracion y el archivo .dat existan.
+    Si no existen, los crea con valores vacios codificados.
     """
     config_file_path = get_config_path()
     if not config_file_path:
-        return  # Salir si no se pudo obtener la ruta
+        return
 
     config_dir = os.path.dirname(config_file_path)
 
@@ -65,89 +73,118 @@ def ensure_config_exists():
         # Crear el directorio si no existe
         if not os.path.exists(config_dir):
             os.makedirs(config_dir)
-            print(f"Directorio de configuracion creado: {config_dir}")
+            debug_print(f"Directorio de configuracion creado: {config_dir}")
 
-        # Crear el archivo .ini si no existe
+        # Crear el archivo .dat si no existe, con lineas vacias codificadas
         if not os.path.exists(config_file_path):
-            config = configparser.ConfigParser()
-            config[CONFIG_SECTION] = {
-                CONFIG_URL_KEY: "",
-                CONFIG_LOGIN_KEY: "",
-                CONFIG_PASSWORD_KEY: "",
-            }
+            # Escribir lineas vacias codificadas para mantener estructura
+            empty_encoded = base64.b64encode("".encode("utf-8")).decode("utf-8")
             with open(config_file_path, "w", encoding="utf-8") as configfile:
-                config.write(configfile)
-            print(
-                f"Archivo de configuración creado: {config_file_path}. Por favor, complételo con sus credenciales."
+                configfile.write(f"{empty_encoded}\\n")  # URL
+                configfile.write(f"{empty_encoded}\\n")  # Login
+                configfile.write(f"{empty_encoded}\\n")  # Password
+            debug_print(
+                f"Archivo de configuración creado: {config_file_path}. Por favor, complételo usando LGA_ToolPack_settings."
             )
-        # else: # Debugging opcional como en el ejemplo
-        #     print(f"Archivo de configuración ya existe: {config_file_path}")
+        # else: # Debugging opcional
+        #     debug_print(f"Archivo de configuración ya existe: {config_file_path}")
 
     except Exception as e:
-        print(f"Error al asegurar la configuración: {e}")
+        debug_print(f"Error al asegurar la configuración: {e}")
 
 
 def get_credentials_from_config():
     """
-    Lee las credenciales de ShotGrid desde el archivo .ini.
-    Devuelve (url, login, password) o (None, None, None) si hay errores o faltan datos.
-    Usa print para errores internos, similar al ejemplo.
+    Lee las credenciales de ShotGrid desde el archivo .dat codificado.
+    Devuelve (url, login, password) decodificados o (None, None, None) si hay errores.
     """
     config_file_path = get_config_path()
     if not config_file_path or not os.path.exists(config_file_path):
-        print(
-            f"Archivo de configuración no encontrado en la ruta esperada: {config_file_path}"
+        debug_print(
+            f"Archivo de configuración (.dat) no encontrado en la ruta esperada: {config_file_path}"
         )
         return None, None, None
 
     try:
-        config = configparser.ConfigParser()
-        config.read(config_file_path, encoding="utf-8")
+        with open(config_file_path, "r", encoding="utf-8") as configfile:
+            lines = configfile.readlines()
 
-        # Verificar si la seccion y las claves existen
-        if (
-            config.has_section(CONFIG_SECTION)
-            and config.has_option(CONFIG_SECTION, CONFIG_URL_KEY)
-            and config.has_option(CONFIG_SECTION, CONFIG_LOGIN_KEY)
-            and config.has_option(CONFIG_SECTION, CONFIG_PASSWORD_KEY)
-        ):
-
-            sg_url = config.get(CONFIG_SECTION, CONFIG_URL_KEY).strip()
-            sg_login = config.get(CONFIG_SECTION, CONFIG_LOGIN_KEY).strip()
-            sg_password = config.get(CONFIG_SECTION, CONFIG_PASSWORD_KEY).strip()
-
-            # Validar que los valores no esten vacios
-            if sg_url and sg_login and sg_password:
-                return sg_url, sg_login, sg_password
-            else:
-                print(f"Una o más credenciales en {config_file_path} están vacías.")
-                return None, None, None
-        else:
-            missing = []
-            if not config.has_section(CONFIG_SECTION):
-                missing.append(f"Seccion [{CONFIG_SECTION}]")
-            if not config.has_option(CONFIG_SECTION, CONFIG_URL_KEY):
-                missing.append(f"Clave {CONFIG_URL_KEY}")
-            if not config.has_option(CONFIG_SECTION, CONFIG_LOGIN_KEY):
-                missing.append(f"Clave {CONFIG_LOGIN_KEY}")
-            if not config.has_option(CONFIG_SECTION, CONFIG_PASSWORD_KEY):
-                missing.append(f"Clave {CONFIG_PASSWORD_KEY}")
-            print(
-                f"Configuración incompleta en {config_file_path}. Falta: {', '.join(missing)}"
+        if len(lines) < 3:
+            debug_print(
+                f"Archivo de configuración {config_file_path} está incompleto o corrupto."
             )
             return None, None, None
 
-    except configparser.Error as e:
-        print(f"Error al leer el archivo de configuración {config_file_path}: {e}.")
+        # Decodificar cada linea
+        sg_url_encoded = lines[0].strip()
+        sg_login_encoded = lines[1].strip()
+        sg_password_encoded = lines[2].strip()
+
+        sg_url = base64.b64decode(sg_url_encoded).decode("utf-8")
+        sg_login = base64.b64decode(sg_login_encoded).decode("utf-8")
+        sg_password = base64.b64decode(sg_password_encoded).decode("utf-8")
+
+        # Validar que los valores no esten vacios despues de decodificar
+        # (La contraseña podria ser valida aunque este vacia conceptualmente,
+        # pero usualmente requerimos los tres)
+        if sg_url and sg_login and sg_password:
+            return sg_url, sg_login, sg_password
+        else:
+            debug_print(
+                f"Una o más credenciales en {config_file_path} están vacías (después de decodificar)."
+            )
+            return None, None, None
+
+    except (binascii.Error, UnicodeDecodeError) as e:  # Usar binascii.Error
+        debug_print(
+            f"Error al decodificar el archivo de configuración {config_file_path}: {e}"
+        )
         return None, None, None
     except Exception as e:
-        print(f"Error inesperado al leer la configuración: {e}.")
+        debug_print(f"Error inesperado al leer la configuración codificada: {e}")
         return None, None, None
+
+
+def save_credentials_to_config(url, login, password):
+    """
+    Guarda las credenciales codificadas en base64 en el archivo .dat.
+    Devuelve True si exito, False si falla.
+    """
+    config_file_path = get_config_path()
+    if not config_file_path:
+        debug_print("No se pudo obtener la ruta del archivo de configuración.")
+        return False
+    try:
+        # Codificar los valores
+        url_encoded = base64.b64encode(url.encode("utf-8")).decode("utf-8")
+        login_encoded = base64.b64encode(login.encode("utf-8")).decode("utf-8")
+        password_encoded = base64.b64encode(password.encode("utf-8")).decode("utf-8")
+
+        # Escribir las lineas codificadas
+        with open(config_file_path, "w", encoding="utf-8") as configfile:
+            configfile.write(f"{url_encoded}\\n")
+            configfile.write(f"{login_encoded}\\n")
+            configfile.write(f"{password_encoded}\\n")
+        debug_print("Credenciales de ShowInFlow guardadas de forma segura.")
+        return True
+    except Exception as e:
+        debug_print(f"Error al guardar la configuración codificada: {e}")
+        return False
+
+
+# Exportar la nueva funcion de guardado
+__all__ = [
+    "get_config_path",
+    "ensure_config_exists",
+    "get_credentials_from_config",
+    "save_credentials_to_config",  # Exportar nueva funcion
+    # Ya no se exportan las constantes de seccion/clave de configparser
+]
 
 
 # --- Fin: Funciones de manejo de configuracion ---
 
-# Asegurarse de que el archivo de configuracion existe al iniciar (como en el ejemplo)
+# Asegurarse de que el archivo de configuracion existe al iniciar
 ensure_config_exists()
 
 # Verificacion del sistema operativo y configuracion de la ruta del navegador
@@ -162,14 +199,6 @@ else:
     # debug_print ("No se detecto el OS") # Corregido: Eliminado/Comentado
 
 use_default_browser = False  # Si esta en True, usa el navegador por defecto, si esta en False, usa browser_path
-
-DEBUG = True
-
-
-# Definir debug_print aqui para que siempre exista
-def debug_print(*message):
-    if DEBUG:
-        print(*message)
 
 
 class ShotGridManager:
@@ -274,16 +303,16 @@ class NukeOperations:
 
 
 def threaded_function():
-    # Leer credenciales desde el archivo .ini usando la funcion adaptada
+    # Leer credenciales desde el archivo .dat usando la funcion adaptada
     sg_url, sg_login, sg_password = get_credentials_from_config()
 
     # Verificar si las credenciales se leyeron correctamente
     if not sg_url or not sg_login or not sg_password:
         # Si fallo, get_credentials_from_config ya imprimio el error.
         # Preparar mensaje de error para devolver.
-        config_path = get_config_path() or "AppData\\LGA\\ToolPack\\ShowInFlow.ini"
-        error_message = f"No se pudieron leer las credenciales de ShotGrid desde:\n{config_path}\n\nRevise la consola para detalles y asegúrese de que el archivo esté completo."
-        # print(f"Debug: Devolviendo error - {error_message}") # Debug opcional
+        config_path = get_config_path() or "AppData\\LGA\\ToolPack\\ShowInFlow.dat"
+        error_message = f"No se pudieron leer las credenciales de ShotGrid desde:\n{config_path}\\n\\nRevise la consola para detalles y asegúrese de que el archivo esté completo."
+        # debug_print(f"Debug: Devolviendo error - {error_message}") # Mantener este comentado
         return error_message  # Devolver el mensaje de error
 
     # Si las credenciales son validas, proceder con la logica original
