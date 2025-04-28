@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-  LGA_RnW_ColorSpace_Favs v1.41 | Lega
+  LGA_RnW_ColorSpace_Favs v1.42 | Lega
   Tool for applying OCIO color spaces to selected Read and Write nodes
 ________________________________________________________________________
 
@@ -25,6 +25,15 @@ import os
 import shutil
 import typing  # Importar typing para compatibilidad < 3.10
 
+# --- Debug print estilo LGA_Render_Complete ---
+DEBUG = False  # Cambiar a True para debug
+
+
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+
 # --- Constantes ---
 CONFIG_DIR_NAME = "LGA"
 TOOLPACK_SUBDIR_NAME = "ToolPack"
@@ -44,7 +53,7 @@ def get_lga_toolpack_config_dir() -> typing.Optional[str]:
     """
     app_data_path = os.getenv("APPDATA")
     if not app_data_path:
-        print("Error: Variable de entorno APPDATA no encontrada.")
+        debug_print("Error: Variable de entorno APPDATA no encontrada.")
         return None
 
     config_dir = os.path.join(app_data_path, CONFIG_DIR_NAME, TOOLPACK_SUBDIR_NAME)
@@ -52,9 +61,9 @@ def get_lga_toolpack_config_dir() -> typing.Optional[str]:
     if not os.path.exists(config_dir):
         try:
             os.makedirs(config_dir)
-            print(f"Directorio de configuracion creado: {config_dir}")
+            debug_print(f"Directorio de configuracion creado: {config_dir}")
         except OSError as e:
-            print(f"Error al crear el directorio {config_dir}: {e}")
+            debug_print(f"Error al crear el directorio {config_dir}: {e}")
             return None
     return config_dir
 
@@ -75,18 +84,18 @@ def get_colorspace_ini_path(create_if_missing: bool = True) -> typing.Optional[s
     local_ini_path = os.path.join(local_script_dir, COLORSPACE_INI_LOCALNAME)
 
     if not os.path.exists(ini_path_appdata) and create_if_missing:
-        print(f"Archivo INI no encontrado en AppData: {ini_path_appdata}")
+        debug_print(f"Archivo INI no encontrado en AppData: {ini_path_appdata}")
         if os.path.exists(local_ini_path):
             try:
                 shutil.copy2(local_ini_path, ini_path_appdata)
-                print(
+                debug_print(
                     f"Archivo INI copiado desde {local_ini_path} a {ini_path_appdata}"
                 )
             except Exception as e:
-                print(f"Error al copiar el archivo INI local a AppData: {e}")
+                debug_print(f"Error al copiar el archivo INI local a AppData: {e}")
                 # Continuamos, pero es posible que la lectura falle si el archivo no se copio
         else:
-            print(
+            debug_print(
                 f"Archivo INI local ({local_ini_path}) tampoco encontrado. No se pudo copiar a AppData."
             )
             # El archivo no existira en AppData, la funcion read fallara o devolvera lista vacia
@@ -102,27 +111,27 @@ def read_colorspaces_from_ini(ini_path: typing.Optional[str]) -> typing.List[str
     """
     fallback_list: typing.List[str] = []
     if not ini_path or not os.path.exists(ini_path):
-        print(f"Error: Archivo INI no encontrado o ruta invalida: {ini_path}")
+        debug_print(f"Error: Archivo INI no encontrado o ruta invalida: {ini_path}")
         return fallback_list
 
     config = configparser.ConfigParser(allow_no_value=True)
     try:
-        print(f"Leyendo configuracion desde: {ini_path}")
+        debug_print(f"Leyendo configuracion desde: {ini_path}")
         config.optionxform = str  # Mantener mayusculas/minusculas
         config.read(ini_path)
         if config.has_section(COLORSPACE_SECTION):
             # Devolver solo las claves de la seccion
             return list(config[COLORSPACE_SECTION].keys())
         else:
-            print(
+            debug_print(
                 f"Advertencia: Seccion '{COLORSPACE_SECTION}' no encontrada en {ini_path}."
             )
             return fallback_list
     except configparser.Error as e:
-        print(f"Error al leer el archivo INI {ini_path}: {e}")
+        debug_print(f"Error al leer el archivo INI {ini_path}: {e}")
         return fallback_list
     except Exception as e:
-        print(f"Error inesperado al leer {ini_path}: {e}")
+        debug_print(f"Error inesperado al leer {ini_path}: {e}")
         return fallback_list
 
 
@@ -134,7 +143,9 @@ def save_colorspaces_to_ini(
     Sobrescribe la seccion existente.
     """
     if not ini_path:
-        print("Error: No se proporciono una ruta valida para guardar el archivo INI.")
+        debug_print(
+            "Error: No se proporciono una ruta valida para guardar el archivo INI."
+        )
         return False  # Indicar fallo
 
     config = configparser.ConfigParser(allow_no_value=True)
@@ -160,17 +171,17 @@ def save_colorspaces_to_ini(
         # Escribir el archivo
         with open(ini_path, "w") as configfile:
             config.write(configfile)
-        print(f"Configuracion de ColorSpaces guardada en: {ini_path}")
+        debug_print(f"Configuracion de ColorSpaces guardada en: {ini_path}")
         return True  # Indicar exito
 
     except configparser.Error as e:
-        print(f"Error de ConfigParser al guardar en {ini_path}: {e}")
+        debug_print(f"Error de ConfigParser al guardar en {ini_path}: {e}")
         return False  # Indicar fallo
     except IOError as e:
-        print(f"Error de I/O al guardar en {ini_path}: {e}")
+        debug_print(f"Error de I/O al guardar en {ini_path}: {e}")
         return False  # Indicar fallo
     except Exception as e:
-        print(f"Error inesperado al guardar en {ini_path}: {e}")
+        debug_print(f"Error inesperado al guardar en {ini_path}: {e}")
         return False  # Indicar fallo
 
 
@@ -190,7 +201,9 @@ class SelectedNodeInfo(QWidget):
         if self.color_spaces:  # initUI solo si hay color spaces
             self.initUI()
         else:
-            print("Error interno: No se pudieron cargar los color spaces para la UI.")
+            debug_print(
+                "Error interno: No se pudieron cargar los color spaces para la UI."
+            )
             # Considerar no mostrar la ventana o cerrarla inmediatamente
             # self.close()
 
@@ -384,7 +397,7 @@ class SelectedNodeInfo(QWidget):
         # Asegurarse de que el indice de fila sea valido
         if 0 <= row < len(self.color_spaces):
             selected_color_space = self.color_spaces[row]
-            print(f"Aplicando colorspace: {selected_color_space}")  # Debug
+            debug_print(f"Aplicando colorspace: {selected_color_space}")  # Debug
 
             # Volver a obtener nodos seleccionados por si cambio
             selected_nodes = nuke.selectedNodes()
@@ -396,9 +409,9 @@ class SelectedNodeInfo(QWidget):
                         try:
                             node["colorspace"].setValue(selected_color_space)
                             nodes_changed += 1
-                            print(f"  - Aplicado a {node.name()}")
+                            debug_print(f"  - Aplicado a {node.name()}")
                         except Exception as e:
-                            print(
+                            debug_print(
                                 f"  - Error al cambiar colorspace en {node.name()}: {e}"
                             )
                             nuke.message(
@@ -407,17 +420,19 @@ class SelectedNodeInfo(QWidget):
                             return  # Salir
 
                 if nodes_changed > 0:
-                    print(f"Colorspace aplicado a {nodes_changed} nodo(s).")
+                    debug_print(f"Colorspace aplicado a {nodes_changed} nodo(s).")
                 else:
-                    print("No se aplico el colorspace a ningun nodo valido.")
+                    debug_print("No se aplico el colorspace a ningun nodo valido.")
 
             else:
-                print("No hay nodos Read/Write seleccionados al momento de aplicar.")
+                debug_print(
+                    "No hay nodos Read/Write seleccionados al momento de aplicar."
+                )
 
             # Cerrar la ventana despues de intentar aplicar los cambios (incluso si hubo errores parciales)
             self.close()
         else:
-            print(f"Error: Fila invalida seleccionada ({row}).")
+            debug_print(f"Error: Fila invalida seleccionada ({row}).")
 
 
 app = None
@@ -461,8 +476,5 @@ def main():
         nuke.message("Por favor seleccione al menos un nodo Read o Write.")
 
 
-# Comentar la llamada a main si este script se importa como modulo
-# if __name__ == "__main__":
-#     main()
-# else:
-#     print(f"{__name__} importado como modulo.")
+if __name__ == "__main__":
+    main()
