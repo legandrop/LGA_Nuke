@@ -7658,6 +7658,7 @@ from PySide2.QtWidgets import (
     QMessageBox,  # Importar QMessageBox
     QCheckBox,
     QFileDialog,
+    QDesktopWidget,
 )
 from PySide2.QtCore import Qt
 
@@ -7803,37 +7804,34 @@ class SettingsWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle(&quot;LGA ToolPack Settings&quot;)
-        self.setMinimumWidth(450)  # Un poco mas ancho para el QTextEdit
+        self.setMinimumWidth(570)  # Más ancho para la ventana
         self.initUI()
+        # Centrar la ventana en la pantalla (horizontal y vertical) DESPUES de show()
+        self.show()
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+        self.hide()
 
     def initUI(self):
         main_layout = QVBoxLayout(self)
 
-        # --- Write Presets Section (Placeholder) ---
-        write_presets_group = QGroupBox(&quot;Write Presets&quot;)
-        write_presets_layout = QVBoxLayout()
-        write_presets_layout.addWidget(
-            QLabel(&quot;(Placeholder for Write Presets functionality)&quot;)
-        )
-        self.save_write_presets_button = QPushButton(&quot;Save&quot;)
-        # self.save_write_presets_button.clicked.connect(self.save_write_presets) # Placeholder
-        write_presets_layout.addWidget(self.save_write_presets_button, 0, Qt.AlignRight)
-        write_presets_group.setLayout(write_presets_layout)
-        main_layout.addWidget(write_presets_group)
-
         # --- Write Focus Section ---
-        write_focus_group = QGroupBox(&quot;Write Focus&quot;)
+        write_focus_group = QGroupBox()
         write_focus_layout_container = QVBoxLayout()
+        write_focus_title = QLabel(&quot;Write Focus&quot;)
+        write_focus_title.setStyleSheet(&quot;font-weight: bold; font-size: 11pt;&quot;)
+        write_focus_layout_container.addWidget(write_focus_title)
         write_focus_form_layout = QFormLayout()
         self.write_focus_input = QLineEdit()
         try:
-            wf_ensure_config_exists()  # Usar funcion importada
-            current_node_name = wf_get_node_name_from_config()  # Usar funcion importada
+            wf_ensure_config_exists()
+            current_node_name = wf_get_node_name_from_config()
             self.write_focus_input.setText(current_node_name or WF_DEFAULT_NODE_NAME)
         except Exception as e:
             debug_print(f&quot;Error al cargar config de Write Focus: {e}&quot;)
             self.write_focus_input.setText(WF_DEFAULT_NODE_NAME)
-
         write_focus_form_layout.addRow(
             &quot;Name of the Write Node to Focus:&quot;, self.write_focus_input
         )
@@ -7845,102 +7843,22 @@ class SettingsWindow(QWidget):
         )
         write_focus_group.setLayout(write_focus_layout_container)
         main_layout.addWidget(write_focus_group)
+        main_layout.addSpacing(12)
 
-        # --- Show in Flow Section ---
-        show_flow_group = QGroupBox(&quot;Show in Flow&quot;)
-        show_flow_layout_container = QVBoxLayout()
-        show_flow_form_layout = QFormLayout()
-        self.username_input = QLineEdit()
-        self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Password)
-        self.site_input = QLineEdit()
-        # Placeholders para los campos de ShotGrid
-        self.site_input.setPlaceholderText(&quot;e.g., https://studio.shotgrid.autodesk.com&quot;)
-        self.username_input.setPlaceholderText(&quot;e.g., artist@studio.com&quot;)
-        self.password_input.setPlaceholderText(&quot;&quot;)
-        show_flow_form_layout.addRow(
-            &quot;ShotGrid URL:&quot;,
-            self.site_input,
-        )
-        show_flow_form_layout.addRow(&quot;ShotGrid Login:&quot;, self.username_input)
-        show_flow_form_layout.addRow(&quot;ShotGrid Password:&quot;, self.password_input)
-
-        try:
-            sif_ensure_config_exists()  # Usar funcion importada
-            sif_url, sif_login, sif_password = (
-                sif_get_credentials_from_config()
-            )  # Usar funcion importada
-            self.site_input.setText(sif_url or &quot;&quot;)
-            self.username_input.setText(sif_login or &quot;&quot;)
-            self.password_input.setText(sif_password or &quot;&quot;)
-        except Exception as e:
-            debug_print(f&quot;Error al cargar credenciales de Show in Flow: {e}&quot;)
-
-        show_flow_layout_container.addLayout(show_flow_form_layout)
-        self.save_show_flow_button = QPushButton(&quot;Save&quot;)
-        self.save_show_flow_button.clicked.connect(self.save_show_flow_settings)
-        show_flow_layout_container.addWidget(
-            self.save_show_flow_button, 0, Qt.AlignRight
-        )
-        show_flow_group.setLayout(show_flow_layout_container)
-        main_layout.addWidget(show_flow_group)
-
-        # --- Color Space Favs Section --- Modificado
-        color_space_group = QGroupBox(&quot;Color Space Favorites&quot;)  # Titulo mas descriptivo
-        color_space_layout = QVBoxLayout()
-        color_space_layout.addWidget(
-            QLabel(
-                &quot;Enter favorite OCIO color spaces (one per line):&quot;
-            )  # Label explicativo
-        )
-        # Crear el QTextEdit
-        self.color_space_edit = QTextEdit()
-        self.color_space_edit.setPlaceholderText(
-            &quot;e.g.,\nOutput - sRGB\nUtility - Raw\nACES - ACEScg&quot;
-        )
-        self.color_space_edit.setMinimumHeight(80)  # Altura minima
-        color_space_layout.addWidget(self.color_space_edit)
-
-        # --- Cargar favoritos existentes --- Nuevo
-        try:
-            self.colorspace_ini_path = get_colorspace_ini_path(create_if_missing=True)
-            if self.colorspace_ini_path:
-                fav_list = read_colorspaces_from_ini(self.colorspace_ini_path)
-                self.color_space_edit.setText(&quot;\n&quot;.join(fav_list))
-            else:
-                debug_print(
-                    &quot;Advertencia: No se pudo obtener la ruta del INI de ColorSpaces.&quot;
-                )
-                # Podriamos deshabilitar el campo/boton si no hay ruta
-                # self.color_space_edit.setEnabled(False)
-        except Exception as e:
-            debug_print(f&quot;Error al cargar Color Space Favs: {e}&quot;)
-            QMessageBox.warning(
-                self, &quot;Error&quot;, f&quot;Could not load Color Space Favorites:\n{e}&quot;
-            )
-        # ---------------------------------
-
-        self.save_color_space_button = QPushButton(&quot;Save&quot;)
-        self.save_color_space_button.clicked.connect(
-            self.save_color_space_settings
-        )  # Conectar al nuevo metodo
-        color_space_layout.addWidget(self.save_color_space_button, 0, Qt.AlignRight)
-        color_space_group.setLayout(color_space_layout)
-        main_layout.addWidget(color_space_group)
-
-        # --- Render Complete Mail Settings Section --- NUEVO
-        render_mail_group = QGroupBox(&quot;Render Complete Mail Settings&quot;)
+        # --- Render Complete Mail Settings Section ---
+        render_mail_group = QGroupBox()
         render_mail_layout_container = QVBoxLayout()
+        render_mail_title = QLabel(&quot;Render Complete&quot;)
+        render_mail_title.setStyleSheet(&quot;font-weight: bold; font-size: 11pt;&quot;)
+        render_mail_layout_container.addWidget(render_mail_title)
         render_mail_form_layout = QFormLayout()
         self.render_mail_from_input = QLineEdit()
         self.render_mail_pass_input = QLineEdit()
         self.render_mail_pass_input.setEchoMode(QLineEdit.Password)
         self.render_mail_to_input = QLineEdit()
-        # Placeholders para los campos de mail
         self.render_mail_from_input.setPlaceholderText(&quot;e.g., tuMail@outlook.com&quot;)
         self.render_mail_pass_input.setPlaceholderText(&quot;&quot;)
         self.render_mail_to_input.setPlaceholderText(&quot;e.g., tuMail@gmail.com&quot;)
-        # Cargar valores actuales
         try:
             rc_ensure_config_exists()
             from_email, from_password, to_email = rc_get_mail_settings_from_config()
@@ -7949,20 +7867,14 @@ class SettingsWindow(QWidget):
             self.render_mail_to_input.setText(to_email or &quot;&quot;)
         except Exception as e:
             debug_print(f&quot;Error al cargar config de Render Complete Mail: {e}&quot;)
-        render_mail_form_layout.addRow(&quot;From (Outlook):&quot;, self.render_mail_from_input)
-        render_mail_form_layout.addRow(&quot;Password:&quot;, self.render_mail_pass_input)
-        render_mail_form_layout.addRow(&quot;To (Recipient):&quot;, self.render_mail_to_input)
-        render_mail_layout_container.addLayout(render_mail_form_layout)
         # --- NUEVOS SETTINGS ---
         self.cb_enable_render_time = QCheckBox(&quot;Enable render time calculation&quot;)
         self.cb_enable_sound = QCheckBox(&quot;Enable sound notification&quot;)
-        # Inicializar el checkbox segun el setting guardado (ON por defecto)
         try:
             self.cb_enable_render_time.setChecked(get_render_time_enabled_from_config())
         except Exception as e:
             debug_print(f&quot;Error al leer setting de render time: {e}&quot;)
             self.cb_enable_render_time.setChecked(True)
-        # Inicializar el checkbox segun el setting guardado (ON por defecto)
         try:
             self.cb_enable_sound.setChecked(get_sound_enabled_from_config())
         except Exception as e:
@@ -7970,11 +7882,9 @@ class SettingsWindow(QWidget):
             self.cb_enable_sound.setChecked(True)
         render_mail_layout_container.addWidget(self.cb_enable_render_time)
         render_mail_layout_container.addWidget(self.cb_enable_sound)
-        # Selector de archivo .wav
         wav_layout = QHBoxLayout()
         self.wav_path_input = QLineEdit()
         self.wav_path_input.setPlaceholderText(&quot;Select .wav file...&quot;)
-        # Inicializar con el valor guardado o el default
         try:
             wav_path = get_wav_path_from_config()
             self.wav_path_input.setText(wav_path)
@@ -7986,8 +7896,11 @@ class SettingsWindow(QWidget):
         wav_layout.addWidget(self.wav_path_input)
         wav_layout.addWidget(self.wav_browse_btn)
         render_mail_layout_container.addLayout(wav_layout)
-        # ---
-
+        # Ahora agrego los campos de mail al final
+        render_mail_form_layout.addRow(&quot;From (Outlook):&quot;, self.render_mail_from_input)
+        render_mail_form_layout.addRow(&quot;Password:&quot;, self.render_mail_pass_input)
+        render_mail_form_layout.addRow(&quot;To (Recipient):&quot;, self.render_mail_to_input)
+        render_mail_layout_container.addLayout(render_mail_form_layout)
         self.save_render_mail_button = QPushButton(&quot;Save&quot;)
         self.save_render_mail_button.clicked.connect(self.save_render_mail_settings)
         render_mail_layout_container.addWidget(
@@ -7995,6 +7908,96 @@ class SettingsWindow(QWidget):
         )
         render_mail_group.setLayout(render_mail_layout_container)
         main_layout.addWidget(render_mail_group)
+        main_layout.addSpacing(12)
+
+        # --- Show in Flow Section ---
+        show_flow_group = QGroupBox()
+        show_flow_layout_container = QVBoxLayout()
+        show_flow_title = QLabel(&quot;Show in Flow&quot;)
+        show_flow_title.setStyleSheet(&quot;font-weight: bold; font-size: 11pt;&quot;)
+        show_flow_layout_container.addWidget(show_flow_title)
+        show_flow_form_layout = QFormLayout()
+        self.username_input = QLineEdit()
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Password)
+        self.site_input = QLineEdit()
+        self.site_input.setPlaceholderText(&quot;e.g., https://studio.shotgrid.autodesk.com&quot;)
+        self.username_input.setPlaceholderText(&quot;e.g., artist@studio.com&quot;)
+        self.password_input.setPlaceholderText(&quot;&quot;)
+        show_flow_form_layout.addRow(
+            &quot;ShotGrid URL:&quot;,
+            self.site_input,
+        )
+        show_flow_form_layout.addRow(&quot;ShotGrid Login:&quot;, self.username_input)
+        show_flow_form_layout.addRow(&quot;ShotGrid Password:&quot;, self.password_input)
+        try:
+            sif_ensure_config_exists()
+            sif_url, sif_login, sif_password = sif_get_credentials_from_config()
+            self.site_input.setText(sif_url or &quot;&quot;)
+            self.username_input.setText(sif_login or &quot;&quot;)
+            self.password_input.setText(sif_password or &quot;&quot;)
+        except Exception as e:
+            debug_print(f&quot;Error al cargar credenciales de Show in Flow: {e}&quot;)
+        show_flow_layout_container.addLayout(show_flow_form_layout)
+        self.save_show_flow_button = QPushButton(&quot;Save&quot;)
+        self.save_show_flow_button.clicked.connect(self.save_show_flow_settings)
+        show_flow_layout_container.addWidget(
+            self.save_show_flow_button, 0, Qt.AlignRight
+        )
+        show_flow_group.setLayout(show_flow_layout_container)
+        main_layout.addWidget(show_flow_group)
+        main_layout.addSpacing(12)
+
+        # --- Color Space Favs Section ---
+        color_space_group = QGroupBox()
+        color_space_layout = QVBoxLayout()
+        color_space_title = QLabel(&quot;Color Space Favorites&quot;)
+        color_space_title.setStyleSheet(&quot;font-weight: bold; font-size: 11pt;&quot;)
+        color_space_layout.addWidget(color_space_title)
+        color_space_layout.addWidget(
+            QLabel(&quot;Enter favorite OCIO color spaces (one per line):&quot;)
+        )
+        self.color_space_edit = QTextEdit()
+        self.color_space_edit.setPlaceholderText(
+            &quot;e.g.,\nOutput - sRGB\nUtility - Raw\nACES - ACEScg&quot;
+        )
+        self.color_space_edit.setMinimumHeight(80)
+        color_space_layout.addWidget(self.color_space_edit)
+        try:
+            self.colorspace_ini_path = get_colorspace_ini_path(create_if_missing=True)
+            if self.colorspace_ini_path:
+                fav_list = read_colorspaces_from_ini(self.colorspace_ini_path)
+                self.color_space_edit.setText(&quot;\n&quot;.join(fav_list))
+            else:
+                debug_print(
+                    &quot;Advertencia: No se pudo obtener la ruta del INI de ColorSpaces.&quot;
+                )
+        except Exception as e:
+            debug_print(f&quot;Error al cargar Color Space Favs: {e}&quot;)
+            QMessageBox.warning(
+                self, &quot;Error&quot;, f&quot;Could not load Color Space Favorites:\n{e}&quot;
+            )
+        self.save_color_space_button = QPushButton(&quot;Save&quot;)
+        self.save_color_space_button.clicked.connect(self.save_color_space_settings)
+        color_space_layout.addWidget(self.save_color_space_button, 0, Qt.AlignRight)
+        color_space_group.setLayout(color_space_layout)
+        main_layout.addWidget(color_space_group)
+        main_layout.addSpacing(12)
+
+        # --- Write Presets Section (Placeholder) ---
+        write_presets_group = QGroupBox()
+        write_presets_layout = QVBoxLayout()
+        write_presets_title = QLabel(&quot;Write Presets&quot;)
+        write_presets_title.setStyleSheet(&quot;font-weight: bold; font-size: 11pt;&quot;)
+        write_presets_layout.addWidget(write_presets_title)
+        # Botón Open Editor
+        self.open_write_presets_btn = QPushButton(&quot;Open Editor&quot;)
+        self.open_write_presets_btn.clicked.connect(
+            self.show_write_presets_not_implemented
+        )
+        write_presets_layout.addWidget(self.open_write_presets_btn, 0, Qt.AlignHCenter)
+        write_presets_group.setLayout(write_presets_layout)
+        main_layout.addWidget(write_presets_group)
         # ---
         main_layout.addStretch()
 
@@ -8211,6 +8214,14 @@ class SettingsWindow(QWidget):
             self.wav_path_input.setText(file_path)
             # Guardar inmediatamente el nuevo path seleccionado
             save_wav_path_to_config(file_path)
+
+    def show_write_presets_not_implemented(self):
+        &quot;&quot;&quot;Muestra un mensaje indicando que la función aún no está implementada.&quot;&quot;&quot;
+        QMessageBox.information(
+            self,
+            &quot;Not Implemented&quot;,
+            &quot;The Write Presets editor is not yet implemented.\nComing soon!&quot;,
+        )
 
 
 # --- Main Execution ---
