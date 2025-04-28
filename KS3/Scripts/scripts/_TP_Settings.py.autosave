@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________________________________
 
-  LGA_ToolPack_settings v0.42 | Lega
+  LGA_ToolPack_settings v0.43 | Lega
   Configuracion de la herramienta LGA_ToolPack
 _____________________________________________________________________________________________________
 """
@@ -27,11 +27,15 @@ from PySide2.QtWidgets import (
     QCheckBox,
     QFileDialog,
     QDesktopWidget,
+    QFrame,  # <--- Importar QFrame para divisores
 )
 from PySide2.QtCore import Qt
 
 # Variable global para controlar el debug
 DEBUG = False
+
+# Espaciado vertical para divisores horizontales (en pixeles)
+LINE_SPACING = 10
 
 
 # Funcion debug_print
@@ -186,11 +190,10 @@ class SettingsWindow(QWidget):
         main_layout = QVBoxLayout(self)
 
         # --- Write Focus Section ---
-        write_focus_group = QGroupBox()
-        write_focus_layout_container = QVBoxLayout()
+        write_focus_layout = QVBoxLayout()
         write_focus_title = QLabel("Write Focus")
         write_focus_title.setStyleSheet("font-weight: bold; font-size: 11pt;")
-        write_focus_layout_container.addWidget(write_focus_title)
+        write_focus_layout.addWidget(write_focus_title)
         write_focus_form_layout = QFormLayout()
         self.write_focus_input = QLineEdit()
         try:
@@ -203,22 +206,27 @@ class SettingsWindow(QWidget):
         write_focus_form_layout.addRow(
             "Name of the Write Node to Focus:", self.write_focus_input
         )
-        write_focus_layout_container.addLayout(write_focus_form_layout)
+        write_focus_layout.addLayout(write_focus_form_layout)
         self.save_write_focus_button = QPushButton("Save")
         self.save_write_focus_button.clicked.connect(self.save_write_focus_settings)
-        write_focus_layout_container.addWidget(
-            self.save_write_focus_button, 0, Qt.AlignRight
-        )
-        write_focus_group.setLayout(write_focus_layout_container)
-        main_layout.addWidget(write_focus_group)
-        main_layout.addSpacing(12)
+        write_focus_layout.addWidget(self.save_write_focus_button, 0, Qt.AlignRight)
+        main_layout.addLayout(write_focus_layout)
+
+        # Espaciado antes del divisor
+        main_layout.addSpacing(LINE_SPACING)
+        # Divisor
+        line1 = QFrame()
+        line1.setFrameShape(QFrame.HLine)
+        line1.setFrameShadow(QFrame.Sunken)
+        main_layout.addWidget(line1)
+        # Espaciado después del divisor
+        main_layout.addSpacing(LINE_SPACING)
 
         # --- Render Complete Mail Settings Section ---
-        render_mail_group = QGroupBox()
-        render_mail_layout_container = QVBoxLayout()
+        render_mail_layout = QVBoxLayout()
         render_mail_title = QLabel("Render Complete")
         render_mail_title.setStyleSheet("font-weight: bold; font-size: 11pt;")
-        render_mail_layout_container.addWidget(render_mail_title)
+        render_mail_layout.addWidget(render_mail_title)
         render_mail_form_layout = QFormLayout()
         self.render_mail_from_input = QLineEdit()
         self.render_mail_pass_input = QLineEdit()
@@ -235,7 +243,6 @@ class SettingsWindow(QWidget):
             self.render_mail_to_input.setText(to_email or "")
         except Exception as e:
             debug_print(f"Error al cargar config de Render Complete Mail: {e}")
-        # --- NUEVOS SETTINGS ---
         self.cb_enable_render_time = QCheckBox("Enable render time calculation")
         self.cb_enable_sound = QCheckBox("Enable sound notification")
         try:
@@ -248,8 +255,8 @@ class SettingsWindow(QWidget):
         except Exception as e:
             debug_print(f"Error al leer setting de sonido: {e}")
             self.cb_enable_sound.setChecked(True)
-        render_mail_layout_container.addWidget(self.cb_enable_render_time)
-        render_mail_layout_container.addWidget(self.cb_enable_sound)
+        render_mail_layout.addWidget(self.cb_enable_render_time)
+        render_mail_layout.addWidget(self.cb_enable_sound)
         wav_layout = QHBoxLayout()
         self.wav_path_input = QLineEdit()
         self.wav_path_input.setPlaceholderText("Select .wav file...")
@@ -263,27 +270,30 @@ class SettingsWindow(QWidget):
         self.wav_browse_btn.clicked.connect(self.browse_wav_file)
         wav_layout.addWidget(self.wav_path_input)
         wav_layout.addWidget(self.wav_browse_btn)
-        render_mail_layout_container.addLayout(wav_layout)
-        # Ahora agrego los campos de mail al final
+        render_mail_layout.addLayout(wav_layout)
+        # Espaciado antes del primer campo de mail
+        render_mail_layout.addSpacing(5)
         render_mail_form_layout.addRow("From (Outlook):", self.render_mail_from_input)
         render_mail_form_layout.addRow("Password:", self.render_mail_pass_input)
         render_mail_form_layout.addRow("To (Recipient):", self.render_mail_to_input)
-        render_mail_layout_container.addLayout(render_mail_form_layout)
+        render_mail_layout.addLayout(render_mail_form_layout)
         self.save_render_mail_button = QPushButton("Save")
         self.save_render_mail_button.clicked.connect(self.save_render_mail_settings)
-        render_mail_layout_container.addWidget(
-            self.save_render_mail_button, 0, Qt.AlignRight
-        )
-        render_mail_group.setLayout(render_mail_layout_container)
-        main_layout.addWidget(render_mail_group)
-        main_layout.addSpacing(12)
+        render_mail_layout.addWidget(self.save_render_mail_button, 0, Qt.AlignRight)
+        main_layout.addLayout(render_mail_layout)
+
+        main_layout.addSpacing(LINE_SPACING)
+        line2 = QFrame()
+        line2.setFrameShape(QFrame.HLine)
+        line2.setFrameShadow(QFrame.Sunken)
+        main_layout.addWidget(line2)
+        main_layout.addSpacing(LINE_SPACING)
 
         # --- Show in Flow Section ---
-        show_flow_group = QGroupBox()
-        show_flow_layout_container = QVBoxLayout()
+        show_flow_layout = QVBoxLayout()
         show_flow_title = QLabel("Show in Flow")
         show_flow_title.setStyleSheet("font-weight: bold; font-size: 11pt;")
-        show_flow_layout_container.addWidget(show_flow_title)
+        show_flow_layout.addWidget(show_flow_title)
         show_flow_form_layout = QFormLayout()
         self.username_input = QLineEdit()
         self.password_input = QLineEdit()
@@ -306,18 +316,20 @@ class SettingsWindow(QWidget):
             self.password_input.setText(sif_password or "")
         except Exception as e:
             debug_print(f"Error al cargar credenciales de Show in Flow: {e}")
-        show_flow_layout_container.addLayout(show_flow_form_layout)
+        show_flow_layout.addLayout(show_flow_form_layout)
         self.save_show_flow_button = QPushButton("Save")
         self.save_show_flow_button.clicked.connect(self.save_show_flow_settings)
-        show_flow_layout_container.addWidget(
-            self.save_show_flow_button, 0, Qt.AlignRight
-        )
-        show_flow_group.setLayout(show_flow_layout_container)
-        main_layout.addWidget(show_flow_group)
-        main_layout.addSpacing(12)
+        show_flow_layout.addWidget(self.save_show_flow_button, 0, Qt.AlignRight)
+        main_layout.addLayout(show_flow_layout)
+
+        main_layout.addSpacing(LINE_SPACING)
+        line3 = QFrame()
+        line3.setFrameShape(QFrame.HLine)
+        line3.setFrameShadow(QFrame.Sunken)
+        main_layout.addWidget(line3)
+        main_layout.addSpacing(LINE_SPACING)
 
         # --- Color Space Favs Section ---
-        color_space_group = QGroupBox()
         color_space_layout = QVBoxLayout()
         color_space_title = QLabel("Color Space Favorites")
         color_space_title.setStyleSheet("font-weight: bold; font-size: 11pt;")
@@ -348,25 +360,26 @@ class SettingsWindow(QWidget):
         self.save_color_space_button = QPushButton("Save")
         self.save_color_space_button.clicked.connect(self.save_color_space_settings)
         color_space_layout.addWidget(self.save_color_space_button, 0, Qt.AlignRight)
-        color_space_group.setLayout(color_space_layout)
-        main_layout.addWidget(color_space_group)
-        main_layout.addSpacing(12)
+        main_layout.addLayout(color_space_layout)
+
+        main_layout.addSpacing(LINE_SPACING)
+        line4 = QFrame()
+        line4.setFrameShape(QFrame.HLine)
+        line4.setFrameShadow(QFrame.Sunken)
+        main_layout.addWidget(line4)
+        main_layout.addSpacing(LINE_SPACING)
 
         # --- Write Presets Section (Placeholder) ---
-        write_presets_group = QGroupBox()
         write_presets_layout = QVBoxLayout()
         write_presets_title = QLabel("Write Presets")
         write_presets_title.setStyleSheet("font-weight: bold; font-size: 11pt;")
         write_presets_layout.addWidget(write_presets_title)
-        # Botón Open Editor
         self.open_write_presets_btn = QPushButton("Open Editor")
         self.open_write_presets_btn.clicked.connect(
             self.show_write_presets_not_implemented
         )
         write_presets_layout.addWidget(self.open_write_presets_btn, 0, Qt.AlignHCenter)
-        write_presets_group.setLayout(write_presets_layout)
-        main_layout.addWidget(write_presets_group)
-        # ---
+        main_layout.addLayout(write_presets_layout)
         main_layout.addStretch()
 
     def save_write_focus_settings(self):

@@ -85,7 +85,7 @@ n.addCommand(
 import LGA_Write_Focus
 
 n.addCommand(
-    "  Write Pub Focus",
+    "  Write Focus",
     "LGA_Write_Focus.main()",
     "ctrl+alt+shift+w",
     shortcutContext=2,

@@ -5,11 +5,11 @@ nuke.pluginAddPath("./LGA_ToolPack-Layout")
 
 
 # Importar menu LGA_ToolPack
-nuke.pluginAddPath("./LGA_ToolPack")
+nuke.pluginAddPath("./LGA_ToolPack-B")
 
 
 # Importar menu LGA_ToolPack
-nuke.pluginAddPath("./LGA_ToolPack-B")
+nuke.pluginAddPath("./LGA_ToolPack")
 
 
 # Importar menu LGA_NodePack
