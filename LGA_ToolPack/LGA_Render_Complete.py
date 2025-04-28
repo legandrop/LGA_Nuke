@@ -1,7 +1,7 @@
 """
 _______________________________________________________________________________________________________________
 
-  LGA_Render_Complete v1.31 | Lega
+  LGA_Render_Complete v1.32 | Lega
   Calcula la duracion al finalizar el render y la agrega en un knob en el tab User del nodo write
   Reproduce un sonido y envia un correo con los detalles del render si la opcion 'Send Mail' esta activada
 _______________________________________________________________________________________________________________
@@ -34,15 +34,27 @@ CONFIG_FILE_NAME = "RenderComplete.dat"
 CONFIG_FROM_KEY = "from_email"
 CONFIG_PASS_KEY = "from_password"
 CONFIG_TO_KEY = "to_email"
+CONFIG_WAV_KEY = "sound_wav_path"  # Nueva clave para referencia
+CONFIG_SOUND_ENABLED_KEY = "sound_enabled"  # Nuevo setting para ON/OFF
+CONFIG_RENDER_TIME_ENABLED_KEY = "render_time_enabled"  # Nuevo setting para ON/OFF
 # Exportar constantes para uso externo
 __all__ = [
     "get_config_path",
     "ensure_config_exists",
     "get_mail_settings_from_config",
     "save_mail_settings_to_config",
+    "get_wav_path_from_config",
+    "save_wav_path_to_config",
+    "get_sound_enabled_from_config",
+    "save_sound_enabled_to_config",
+    "get_render_time_enabled_from_config",
+    "save_render_time_enabled_to_config",
     "CONFIG_FROM_KEY",
     "CONFIG_PASS_KEY",
     "CONFIG_TO_KEY",
+    "CONFIG_WAV_KEY",
+    "CONFIG_SOUND_ENABLED_KEY",
+    "CONFIG_RENDER_TIME_ENABLED_KEY",
 ]
 
 
@@ -171,6 +183,186 @@ def save_mail_settings_to_config(from_email, from_password, to_email):
         return False
 
 
+def get_wav_path_from_config():
+    """
+    Lee la ruta del wav desde el archivo .dat codificado. Si no existe, devuelve la ruta por defecto (en la carpeta del script).
+    """
+    config_file_path = get_config_path()
+    default_wav_path = os.path.join(
+        os.path.dirname(__file__), "LGA_Render_Complete.wav"
+    )
+    if not config_file_path or not os.path.exists(config_file_path):
+        return default_wav_path
+    try:
+        with open(config_file_path, "r", encoding="utf-8") as configfile:
+            lines = configfile.readlines()
+        if len(lines) < 4:
+            # No hay setting guardado, usar default
+            return default_wav_path
+        wav_path_encoded = lines[3].strip()
+        wav_path = base64.b64decode(wav_path_encoded).decode("utf-8")
+        if wav_path:
+            return wav_path
+        return default_wav_path
+    except Exception as e:
+        debug_print(f"Error al leer la ruta del wav: {e}")
+        return default_wav_path
+
+
+def save_wav_path_to_config(wav_path):
+    """
+    Guarda la ruta del wav codificada en base64 en el archivo .dat (cuarta línea).
+    Si el archivo no existe, lo crea con los otros campos vacíos.
+    """
+    config_file_path = get_config_path()
+    if not config_file_path:
+        debug_print(
+            "No se pudo obtener la ruta del archivo de configuración de mail para guardar wav."
+        )
+        return False
+    try:
+        # Leer las líneas existentes (o crear vacías si no existen)
+        if os.path.exists(config_file_path):
+            with open(config_file_path, "r", encoding="utf-8") as configfile:
+                lines = configfile.readlines()
+        else:
+            empty_encoded = base64.b64encode("".encode("utf-8")).decode("utf-8")
+            lines = [f"{empty_encoded}\n" for _ in range(3)]
+        # Asegurar que hay al menos 3 líneas para mail
+        while len(lines) < 3:
+            empty_encoded = base64.b64encode("".encode("utf-8")).decode("utf-8")
+            lines.append(f"{empty_encoded}\n")
+        # Codificar la ruta del wav
+        wav_path_encoded = base64.b64encode(wav_path.encode("utf-8")).decode("utf-8")
+        if len(lines) >= 4:
+            lines[3] = f"{wav_path_encoded}\n"
+        else:
+            lines.append(f"{wav_path_encoded}\n")
+        with open(config_file_path, "w", encoding="utf-8") as configfile:
+            configfile.writelines(lines)
+        debug_print(f"Ruta del wav guardada en config: {wav_path}")
+        return True
+    except Exception as e:
+        debug_print(f"Error al guardar la ruta del wav: {e}")
+        return False
+
+
+def get_sound_enabled_from_config():
+    """
+    Lee el setting de sonido habilitado desde el archivo .dat (quinta línea, ON/OFF, base64). Por defecto ON si no existe.
+    """
+    config_file_path = get_config_path()
+    if not config_file_path or not os.path.exists(config_file_path):
+        return True  # Por defecto ON
+    try:
+        with open(config_file_path, "r", encoding="utf-8") as configfile:
+            lines = configfile.readlines()
+        if len(lines) < 5:
+            return True  # Por defecto ON
+        enabled_encoded = lines[4].strip()
+        enabled_str = base64.b64decode(enabled_encoded).decode("utf-8")
+        return enabled_str.upper() == "ON"
+    except Exception as e:
+        debug_print(f"Error al leer el setting de sonido: {e}")
+        return True
+
+
+def save_sound_enabled_to_config(enabled):
+    """
+    Guarda el setting de sonido habilitado (ON/OFF, base64) en la quinta línea del .dat.
+    """
+    config_file_path = get_config_path()
+    if not config_file_path:
+        debug_print(
+            "No se pudo obtener la ruta del archivo de configuración para guardar sound_enabled."
+        )
+        return False
+    try:
+        # Leer las líneas existentes (o crear vacías si no existen)
+        if os.path.exists(config_file_path):
+            with open(config_file_path, "r", encoding="utf-8") as configfile:
+                lines = configfile.readlines()
+        else:
+            empty_encoded = base64.b64encode("".encode("utf-8")).decode("utf-8")
+            lines = [f"{empty_encoded}\n" for _ in range(4)]
+        # Asegurar que hay al menos 4 líneas para los otros settings
+        while len(lines) < 4:
+            empty_encoded = base64.b64encode("".encode("utf-8")).decode("utf-8")
+            lines.append(f"{empty_encoded}\n")
+        # Codificar el valor ON/OFF
+        value = "ON" if enabled else "OFF"
+        value_encoded = base64.b64encode(value.encode("utf-8")).decode("utf-8")
+        if len(lines) >= 5:
+            lines[4] = f"{value_encoded}\n"
+        else:
+            lines.append(f"{value_encoded}\n")
+        with open(config_file_path, "w", encoding="utf-8") as configfile:
+            configfile.writelines(lines)
+        debug_print(f"Sound enabled guardado en config: {value}")
+        return True
+    except Exception as e:
+        debug_print(f"Error al guardar el setting de sonido: {e}")
+        return False
+
+
+def get_render_time_enabled_from_config():
+    """
+    Lee el setting de render time habilitado desde el archivo .dat (sexta línea, ON/OFF, base64). Por defecto ON si no existe.
+    """
+    config_file_path = get_config_path()
+    if not config_file_path or not os.path.exists(config_file_path):
+        return True  # Por defecto ON
+    try:
+        with open(config_file_path, "r", encoding="utf-8") as configfile:
+            lines = configfile.readlines()
+        if len(lines) < 6:
+            return True  # Por defecto ON
+        enabled_encoded = lines[5].strip()
+        enabled_str = base64.b64decode(enabled_encoded).decode("utf-8")
+        return enabled_str.upper() == "ON"
+    except Exception as e:
+        debug_print(f"Error al leer el setting de render time: {e}")
+        return True
+
+
+def save_render_time_enabled_to_config(enabled):
+    """
+    Guarda el setting de render time habilitado (ON/OFF, base64) en la sexta línea del .dat.
+    """
+    config_file_path = get_config_path()
+    if not config_file_path:
+        debug_print(
+            "No se pudo obtener la ruta del archivo de configuración para guardar render_time_enabled."
+        )
+        return False
+    try:
+        # Leer las líneas existentes (o crear vacías si no existen)
+        if os.path.exists(config_file_path):
+            with open(config_file_path, "r", encoding="utf-8") as configfile:
+                lines = configfile.readlines()
+        else:
+            empty_encoded = base64.b64encode("".encode("utf-8")).decode("utf-8")
+            lines = [f"{empty_encoded}\n" for _ in range(5)]
+        # Asegurar que hay al menos 5 líneas para los otros settings
+        while len(lines) < 5:
+            empty_encoded = base64.b64encode("".encode("utf-8")).decode("utf-8")
+            lines.append(f"{empty_encoded}\n")
+        # Codificar el valor ON/OFF
+        value = "ON" if enabled else "OFF"
+        value_encoded = base64.b64encode(value.encode("utf-8")).decode("utf-8")
+        if len(lines) >= 6:
+            lines[5] = f"{value_encoded}\n"
+        else:
+            lines.append(f"{value_encoded}\n")
+        with open(config_file_path, "w", encoding="utf-8") as configfile:
+            configfile.writelines(lines)
+        debug_print(f"Render time enabled guardado en config: {value}")
+        return True
+    except Exception as e:
+        debug_print(f"Error al guardar el setting de render time: {e}")
+        return False
+
+
 # Asegurarse de que el archivo de configuración existe al iniciar
 ensure_config_exists()
 
@@ -236,9 +428,10 @@ def add_render_time_knob(write_node, render_time):
 def Render_Complete():
     render_time = total_time()
 
-    # Reproducir el sonido
-    sound_file_path = os.path.join(os.path.dirname(__file__), "LGA_Render_Complete.wav")
-    QSound.play(sound_file_path)
+    # Reproducir el sonido solo si el setting está en ON
+    if get_sound_enabled_from_config():
+        sound_file_path = get_wav_path_from_config()
+        QSound.play(sound_file_path)
 
     # Verificar si el knob "send_mail" existe y esta activado
     write_node = nuke.thisNode()
@@ -246,8 +439,9 @@ def Render_Complete():
     if "send_mail" in write_node.knobs():
         send_mail_state = write_node["send_mail"].value()
 
-    # Agregar o actualizar el knob con el tiempo de render
-    add_render_time_knob(write_node, render_time)
+    # Agregar o actualizar el knob con el tiempo de render solo si el setting está en ON
+    if get_render_time_enabled_from_config():
+        add_render_time_knob(write_node, render_time)
 
     if send_mail_state:
         # Obtener el destinatario del correo electronico de las variables de entorno

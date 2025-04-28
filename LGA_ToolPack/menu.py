@@ -103,7 +103,7 @@ def add_send_mail_to_all_writes():
 
 
 n.addCommand(
-    "  Write Send Mail",
+    "  Write - Add Send Mail option",
     "add_send_mail_to_all_writes()",
     "ctrl+shift+w",
     shortcutContext=2,

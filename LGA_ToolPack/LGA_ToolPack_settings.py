@@ -135,6 +135,12 @@ try:
         CONFIG_FROM_KEY as RC_CONFIG_FROM_KEY,
         CONFIG_PASS_KEY as RC_CONFIG_PASS_KEY,
         CONFIG_TO_KEY as RC_CONFIG_TO_KEY,
+        get_wav_path_from_config,
+        save_wav_path_to_config,
+        get_sound_enabled_from_config,
+        save_sound_enabled_to_config,
+        get_render_time_enabled_from_config,
+        save_render_time_enabled_to_config,
     )
 except ImportError as e_rc:
     print(f"Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.")
@@ -316,16 +322,33 @@ class SettingsWindow(QWidget):
         render_mail_form_layout.addRow("To (Recipient):", self.render_mail_to_input)
         render_mail_layout_container.addLayout(render_mail_form_layout)
         # --- NUEVOS SETTINGS ---
-        self.cb_enable_mail = QCheckBox("Enable mail sending")
         self.cb_enable_render_time = QCheckBox("Enable render time calculation")
         self.cb_enable_sound = QCheckBox("Enable sound notification")
-        render_mail_layout_container.addWidget(self.cb_enable_mail)
+        # Inicializar el checkbox segun el setting guardado (ON por defecto)
+        try:
+            self.cb_enable_render_time.setChecked(get_render_time_enabled_from_config())
+        except Exception as e:
+            debug_print(f"Error al leer setting de render time: {e}")
+            self.cb_enable_render_time.setChecked(True)
+        # Inicializar el checkbox segun el setting guardado (ON por defecto)
+        try:
+            self.cb_enable_sound.setChecked(get_sound_enabled_from_config())
+        except Exception as e:
+            debug_print(f"Error al leer setting de sonido: {e}")
+            self.cb_enable_sound.setChecked(True)
         render_mail_layout_container.addWidget(self.cb_enable_render_time)
         render_mail_layout_container.addWidget(self.cb_enable_sound)
         # Selector de archivo .wav
         wav_layout = QHBoxLayout()
         self.wav_path_input = QLineEdit()
         self.wav_path_input.setPlaceholderText("Select .wav file...")
+        # Inicializar con el valor guardado o el default
+        try:
+            wav_path = get_wav_path_from_config()
+            self.wav_path_input.setText(wav_path)
+        except Exception as e:
+            debug_print(f"Error al cargar ruta wav: {e}")
+            self.wav_path_input.setText("")
         self.wav_browse_btn = QPushButton("Browse")
         self.wav_browse_btn.clicked.connect(self.browse_wav_file)
         wav_layout.addWidget(self.wav_path_input)
@@ -503,6 +526,9 @@ class SettingsWindow(QWidget):
         from_email = self.render_mail_from_input.text().strip()
         from_password = self.render_mail_pass_input.text()
         to_email = self.render_mail_to_input.text().strip()
+        wav_path = self.wav_path_input.text().strip()
+        sound_enabled = self.cb_enable_sound.isChecked()
+        render_time_enabled = self.cb_enable_render_time.isChecked()
         if not from_email or not from_password or not to_email:
             QMessageBox.warning(
                 self,
@@ -516,7 +542,15 @@ class SettingsWindow(QWidget):
             success = rc_save_mail_settings_to_config(
                 from_email, from_password, to_email
             )
-            if success:
+            # Guardar el path del wav
+            wav_success = save_wav_path_to_config(wav_path)
+            # Guardar el setting de sonido
+            sound_success = save_sound_enabled_to_config(sound_enabled)
+            # Guardar el setting de render time
+            render_time_success = save_render_time_enabled_to_config(
+                render_time_enabled
+            )
+            if success and wav_success and sound_success and render_time_success:
                 # El mensaje de exito ya se imprime en la funcion save
                 QMessageBox.information(
                     self, "Success", "Render Complete Mail settings saved."
@@ -543,6 +577,8 @@ class SettingsWindow(QWidget):
         )
         if file_path:
             self.wav_path_input.setText(file_path)
+            # Guardar inmediatamente el nuevo path seleccionado
+            save_wav_path_to_config(file_path)
 
 
 # --- Main Execution ---

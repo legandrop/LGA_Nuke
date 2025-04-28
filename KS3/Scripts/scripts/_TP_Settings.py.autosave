@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________________________________
 
-  LGA_ToolPack_settings v0.4 | Lega
+  LGA_ToolPack_settings v0.42 | Lega
   Configuracion de la herramienta LGA_ToolPack
 _____________________________________________________________________________________________________
 """
@@ -28,6 +28,16 @@ from PySide2.QtWidgets import (
     QFileDialog,
 )
 from PySide2.QtCore import Qt
+
+# Variable global para controlar el debug
+DEBUG = False
+
+
+# Funcion debug_print
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
 
 # Importar funciones y constantes desde LGA_Write_Focus
 # Asumiendo que ambos scripts estan en el mismo directorio o en el sys.path
@@ -82,7 +92,7 @@ except ImportError as e_sif:
 
     # Funcion save dummy
     def sif_save_credentials_to_config(url, login, password) -> bool:
-        print(
+        debug_print(
             "Error: LGA_showInlFlow.py no encontrado, no se pueden guardar credenciales."
         )
         return False
@@ -125,6 +135,12 @@ try:
         CONFIG_FROM_KEY as RC_CONFIG_FROM_KEY,
         CONFIG_PASS_KEY as RC_CONFIG_PASS_KEY,
         CONFIG_TO_KEY as RC_CONFIG_TO_KEY,
+        get_wav_path_from_config,
+        save_wav_path_to_config,
+        get_sound_enabled_from_config,
+        save_sound_enabled_to_config,
+        get_render_time_enabled_from_config,
+        save_render_time_enabled_to_config,
     )
 except ImportError as e_rc:
     print(f"Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.")
@@ -138,6 +154,9 @@ except ImportError as e_rc:
         return None, None, None
 
     def rc_save_mail_settings_to_config(from_email, from_password, to_email) -> bool:
+        debug_print(
+            "Error: LGA_Render_Complete.py no encontrado, no se pueden guardar settings de mail."
+        )
         return False
 
     def rc_get_config_path() -> Optional[str]:
@@ -180,7 +199,7 @@ class SettingsWindow(QWidget):
             current_node_name = wf_get_node_name_from_config()  # Usar funcion importada
             self.write_focus_input.setText(current_node_name or WF_DEFAULT_NODE_NAME)
         except Exception as e:
-            print(f"Error al cargar config de Write Focus: {e}")
+            debug_print(f"Error al cargar config de Write Focus: {e}")
             self.write_focus_input.setText(WF_DEFAULT_NODE_NAME)
 
         write_focus_form_layout.addRow(
@@ -223,7 +242,7 @@ class SettingsWindow(QWidget):
             self.username_input.setText(sif_login or "")
             self.password_input.setText(sif_password or "")
         except Exception as e:
-            print(f"Error al cargar credenciales de Show in Flow: {e}")
+            debug_print(f"Error al cargar credenciales de Show in Flow: {e}")
 
         show_flow_layout_container.addLayout(show_flow_form_layout)
         self.save_show_flow_button = QPushButton("Save")
@@ -257,11 +276,13 @@ class SettingsWindow(QWidget):
                 fav_list = read_colorspaces_from_ini(self.colorspace_ini_path)
                 self.color_space_edit.setText("\n".join(fav_list))
             else:
-                print("Advertencia: No se pudo obtener la ruta del INI de ColorSpaces.")
+                debug_print(
+                    "Advertencia: No se pudo obtener la ruta del INI de ColorSpaces."
+                )
                 # Podriamos deshabilitar el campo/boton si no hay ruta
                 # self.color_space_edit.setEnabled(False)
         except Exception as e:
-            print(f"Error al cargar Color Space Favs: {e}")
+            debug_print(f"Error al cargar Color Space Favs: {e}")
             QMessageBox.warning(
                 self, "Error", f"Could not load Color Space Favorites:\n{e}"
             )
@@ -295,22 +316,39 @@ class SettingsWindow(QWidget):
             self.render_mail_pass_input.setText(from_password or "")
             self.render_mail_to_input.setText(to_email or "")
         except Exception as e:
-            print(f"Error al cargar config de Render Complete Mail: {e}")
+            debug_print(f"Error al cargar config de Render Complete Mail: {e}")
         render_mail_form_layout.addRow("From (Outlook):", self.render_mail_from_input)
         render_mail_form_layout.addRow("Password:", self.render_mail_pass_input)
         render_mail_form_layout.addRow("To (Recipient):", self.render_mail_to_input)
         render_mail_layout_container.addLayout(render_mail_form_layout)
         # --- NUEVOS SETTINGS ---
-        self.cb_enable_mail = QCheckBox("Enable mail sending")
         self.cb_enable_render_time = QCheckBox("Enable render time calculation")
         self.cb_enable_sound = QCheckBox("Enable sound notification")
-        render_mail_layout_container.addWidget(self.cb_enable_mail)
+        # Inicializar el checkbox segun el setting guardado (ON por defecto)
+        try:
+            self.cb_enable_render_time.setChecked(get_render_time_enabled_from_config())
+        except Exception as e:
+            debug_print(f"Error al leer setting de render time: {e}")
+            self.cb_enable_render_time.setChecked(True)
+        # Inicializar el checkbox segun el setting guardado (ON por defecto)
+        try:
+            self.cb_enable_sound.setChecked(get_sound_enabled_from_config())
+        except Exception as e:
+            debug_print(f"Error al leer setting de sonido: {e}")
+            self.cb_enable_sound.setChecked(True)
         render_mail_layout_container.addWidget(self.cb_enable_render_time)
         render_mail_layout_container.addWidget(self.cb_enable_sound)
         # Selector de archivo .wav
         wav_layout = QHBoxLayout()
         self.wav_path_input = QLineEdit()
         self.wav_path_input.setPlaceholderText("Select .wav file...")
+        # Inicializar con el valor guardado o el default
+        try:
+            wav_path = get_wav_path_from_config()
+            self.wav_path_input.setText(wav_path)
+        except Exception as e:
+            debug_print(f"Error al cargar ruta wav: {e}")
+            self.wav_path_input.setText("")
         self.wav_browse_btn = QPushButton("Browse")
         self.wav_browse_btn.clicked.connect(self.browse_wav_file)
         wav_layout.addWidget(self.wav_path_input)
@@ -332,7 +370,7 @@ class SettingsWindow(QWidget):
         """Guarda el nombre del nodo de Write Focus en su archivo .ini."""
         config_file_path = wf_get_config_path()
         if not config_file_path:
-            print("Error: No se pudo obtener la ruta para guardar Write Focus.")
+            debug_print("Error: No se pudo obtener la ruta para guardar Write Focus.")
             QMessageBox.critical(
                 self,
                 "Error",
@@ -369,11 +407,11 @@ class SettingsWindow(QWidget):
             with open(config_file_path, "w") as configfile:
                 config.write(configfile)
 
-            print(f"Configuracion de Write Focus guardada: {new_node_name}")
+            debug_print(f"Configuracion de Write Focus guardada: {new_node_name}")
             QMessageBox.information(self, "Success", "Write Focus settings saved.")
 
         except Exception as e:
-            print(f"Error al guardar la configuracion de Write Focus: {e}")
+            debug_print(f"Error al guardar la configuracion de Write Focus: {e}")
             QMessageBox.critical(
                 self, "Save Error", f"Could not save Write Focus settings:\n{e}"
             )
@@ -382,7 +420,7 @@ class SettingsWindow(QWidget):
         """Guarda las credenciales de Show in Flow en su archivo .ini."""
         config_file_path = sif_get_config_path()
         if not config_file_path:
-            print("Error: No se pudo obtener la ruta para guardar Show in Flow.")
+            debug_print("Error: No se pudo obtener la ruta para guardar Show in Flow.")
             QMessageBox.critical(
                 self,
                 "Error",
@@ -417,7 +455,7 @@ class SettingsWindow(QWidget):
                     "Could not save Show in Flow settings. Check console for details.",
                 )
         except Exception as e:
-            print(f"Error al llamar a save_credentials_to_config: {e}")
+            debug_print(f"Error al llamar a save_credentials_to_config: {e}")
             QMessageBox.critical(
                 self,
                 "Save Error",
@@ -434,7 +472,9 @@ class SettingsWindow(QWidget):
         )
 
         if not ini_path:
-            print("Error: No se pudo obtener la ruta para guardar Color Space Favs.")
+            debug_print(
+                "Error: No se pudo obtener la ruta para guardar Color Space Favs."
+            )
             QMessageBox.critical(
                 self,
                 "Error",
@@ -451,7 +491,7 @@ class SettingsWindow(QWidget):
         try:
             success = save_colorspaces_to_ini(ini_path, favorites_list)
             if success:
-                print("Configuracion de Color Space Favorites guardada.")
+                debug_print("Configuracion de Color Space Favorites guardada.")
                 QMessageBox.information(self, "Success", "Color Space Favorites saved.")
             else:
                 # El error especifico ya deberia haberse impreso en la funcion save_colorspaces_to_ini
@@ -463,7 +503,7 @@ class SettingsWindow(QWidget):
 
         except Exception as e:
             # Captura por si save_colorspaces_to_ini lanza una excepcion inesperada
-            print(f"Error inesperado al llamar a save_colorspaces_to_ini: {e}")
+            debug_print(f"Error inesperado al llamar a save_colorspaces_to_ini: {e}")
             QMessageBox.critical(
                 self,
                 "Save Error",
@@ -474,7 +514,7 @@ class SettingsWindow(QWidget):
         """Guarda los datos de mail de Render Complete en su archivo .ini."""
         config_file_path = rc_get_config_path()
         if not config_file_path:
-            print(
+            debug_print(
                 "Error: No se pudo obtener la ruta para guardar Render Complete Mail."
             )
             QMessageBox.critical(
@@ -486,6 +526,9 @@ class SettingsWindow(QWidget):
         from_email = self.render_mail_from_input.text().strip()
         from_password = self.render_mail_pass_input.text()
         to_email = self.render_mail_to_input.text().strip()
+        wav_path = self.wav_path_input.text().strip()
+        sound_enabled = self.cb_enable_sound.isChecked()
+        render_time_enabled = self.cb_enable_render_time.isChecked()
         if not from_email or not from_password or not to_email:
             QMessageBox.warning(
                 self,
@@ -499,7 +542,15 @@ class SettingsWindow(QWidget):
             success = rc_save_mail_settings_to_config(
                 from_email, from_password, to_email
             )
-            if success:
+            # Guardar el path del wav
+            wav_success = save_wav_path_to_config(wav_path)
+            # Guardar el setting de sonido
+            sound_success = save_sound_enabled_to_config(sound_enabled)
+            # Guardar el setting de render time
+            render_time_success = save_render_time_enabled_to_config(
+                render_time_enabled
+            )
+            if success and wav_success and sound_success and render_time_success:
                 # El mensaje de exito ya se imprime en la funcion save
                 QMessageBox.information(
                     self, "Success", "Render Complete Mail settings saved."
@@ -512,7 +563,7 @@ class SettingsWindow(QWidget):
                     "Could not save Render Complete Mail settings. Check console for details.",
                 )
         except Exception as e:
-            print(f"Error al llamar a save_mail_settings_to_config: {e}")
+            debug_print(f"Error al llamar a save_mail_settings_to_config: {e}")
             QMessageBox.critical(
                 self,
                 "Save Error",
@@ -526,6 +577,8 @@ class SettingsWindow(QWidget):
         )
         if file_path:
             self.wav_path_input.setText(file_path)
+            # Guardar inmediatamente el nuevo path seleccionado
+            save_wav_path_to_config(file_path)
 
 
 # --- Main Execution ---
