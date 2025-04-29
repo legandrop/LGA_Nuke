@@ -414,6 +414,19 @@ n.addCommand(
 
 
 # -----------------------------------------------------------------------------
+#                                 Settings
+# -----------------------------------------------------------------------------
+n.addSeparator()
+import LGA_ToolPack_settings
+
+try:
+    icon_Settings = _get_icon("TP_Settings")
+except Exception:
+    icon_Settings = ""
+n.addCommand("Settings", "LGA_ToolPack_settings.main()", icon=icon_Settings)
+
+
+# -----------------------------------------------------------------------------
 #                                 Version
 # -----------------------------------------------------------------------------
 # Crea separador y titulo

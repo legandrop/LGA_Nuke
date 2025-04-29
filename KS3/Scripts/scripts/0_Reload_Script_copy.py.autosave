@@ -3,5 +3,5 @@ undo = nuke.Undo()
 undo.end()
 
 import importlib
-import LGA_Render_Complete
-importlib.reload(LGA_Render_Complete)
+import LGA_ToolPack_settings
+importlib.reload(LGA_ToolPack_settings)
