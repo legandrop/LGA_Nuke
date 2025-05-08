@@ -9716,4 +9716,10 @@ def main(parent=None):
 if __name__ == &quot;__main__&quot;:
     # Necesario para ejecucion standalone fuera de Nuke
     main()
-</script>
+import nuke
+undo = nuke.Undo()
+undo.end()
+
+import importlib
+import LGA_writePresets
+importlib.reload(LGA_writePresets)</script>

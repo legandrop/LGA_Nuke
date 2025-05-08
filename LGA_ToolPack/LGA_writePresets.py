@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_writePresets v1.93 | Lega
+  LGA_writePresets v1.95 | Lega
 
   Creates Write nodes with predefined settings for different purposes.
   Supports both script-based and Read node-based path generation.
@@ -343,10 +343,34 @@ def create_write_from_preset(preset, user_text=None):
 
     else:
         # Crear solo Write
+        print(
+            "[DEBUG] Nodo seleccionado:",
+            selected_node.name() if selected_node else None,
+        )
+        print(
+            "[DEBUG] Tipo de nodo seleccionado:",
+            selected_node.Class() if selected_node else None,
+        )
+        print(
+            "[DEBUG] Posicion X nodo seleccionado:",
+            selected_node.xpos() if selected_node else None,
+        )
+        print(
+            "[DEBUG] screenWidth nodo seleccionado:",
+            selected_node.screenWidth() if selected_node else None,
+        )
+
         write_node = nuke.nodes.Write()
         write_node.setInput(0, current_node)
-        write_node.setXpos(current_node.xpos())
+        write_x = (
+            current_node.xpos()
+            + (current_node.screenWidth() // 2)
+            - (write_node.screenWidth() // 2)
+        )
+        print("[DEBUG] Posicion X a setear para Write:", write_x)
+        write_node.setXpos(write_x)
         write_node.setYpos(current_node.ypos() + 100)
+        print("[DEBUG] Posicion X real del Write luego de crearlo:", write_node.xpos())
 
         # Reconectar nodos descendentes al Write
         if selected_node:
