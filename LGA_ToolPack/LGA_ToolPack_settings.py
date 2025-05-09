@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________________________________
 
-  LGA_ToolPack_settings v0.44 | Lega
+  LGA_ToolPack_settings v0.45 | Lega
   Configuracion de la herramienta LGA_ToolPack
 _____________________________________________________________________________________________________
 """
@@ -50,10 +50,12 @@ try:
     from LGA_Write_Focus import (
         get_config_path as wf_get_config_path,  # Renombrar para claridad
         ensure_config_exists as wf_ensure_config_exists,
-        get_node_name_from_config as wf_get_node_name_from_config,
+        get_node_names_from_config as wf_get_node_names_from_config,
         DEFAULT_NODE_NAME as WF_DEFAULT_NODE_NAME,  # Renombrar constante
+        DEFAULT_SECONDARY_NODE_NAME as WF_DEFAULT_SECONDARY_NODE_NAME,
         CONFIG_SECTION as WF_CONFIG_SECTION,  # Renombrar constante
         CONFIG_NODE_NAME_KEY as WF_CONFIG_NODE_NAME_KEY,  # Renombrar constante
+        CONFIG_SECONDARY_NODE_NAME_KEY as WF_CONFIG_SECONDARY_NODE_NAME_KEY,
     )
 except ImportError as e_wf:
     print(f"Error al importar LGA_Write_Focus.py: {e_wf}. Funcionalidad limitada.")
@@ -62,15 +64,17 @@ except ImportError as e_wf:
     def wf_ensure_config_exists():
         pass
 
-    def wf_get_node_name_from_config() -> str:
-        return "Write_Pub"
+    def wf_get_node_names_from_config() -> typing.Tuple[str, str]:
+        return ("Write_Pub", "Write_EXR Publish DWAA")
 
     def wf_get_config_path() -> typing.Optional[str]:
         return None
 
     WF_DEFAULT_NODE_NAME = "Write_Pub"
+    WF_DEFAULT_SECONDARY_NODE_NAME = "Write_EXR Publish DWAA"
     WF_CONFIG_SECTION = "Settings"
     WF_CONFIG_NODE_NAME_KEY = "node_name"
+    WF_CONFIG_SECONDARY_NODE_NAME_KEY = "secondary_node_name"
 
 # --- Importaciones de LGA_showInlFlow ---
 try:
@@ -196,15 +200,23 @@ class SettingsWindow(QWidget):
         write_focus_layout.addWidget(write_focus_title)
         write_focus_form_layout = QFormLayout()
         self.write_focus_input = QLineEdit()
+        self.write_focus_secondary_input = QLineEdit()
         try:
             wf_ensure_config_exists()
-            current_node_name = wf_get_node_name_from_config()
-            self.write_focus_input.setText(current_node_name or WF_DEFAULT_NODE_NAME)
+            node_name, secondary_node_name = wf_get_node_names_from_config()
+            self.write_focus_input.setText(node_name or WF_DEFAULT_NODE_NAME)
+            self.write_focus_secondary_input.setText(
+                secondary_node_name or WF_DEFAULT_SECONDARY_NODE_NAME
+            )
         except Exception as e:
             debug_print(f"Error al cargar config de Write Focus: {e}")
             self.write_focus_input.setText(WF_DEFAULT_NODE_NAME)
+            self.write_focus_secondary_input.setText(WF_DEFAULT_SECONDARY_NODE_NAME)
         write_focus_form_layout.addRow(
             "Name of the Write Node to Focus:", self.write_focus_input
+        )
+        write_focus_form_layout.addRow(
+            "Secondary Write Node Name:", self.write_focus_secondary_input
         )
         write_focus_layout.addLayout(write_focus_form_layout)
         self.save_write_focus_button = QPushButton("Save")
@@ -404,7 +416,7 @@ class SettingsWindow(QWidget):
         main_layout.addStretch()
 
     def save_write_focus_settings(self):
-        """Guarda el nombre del nodo de Write Focus en su archivo .ini."""
+        """Guarda los nombres de los nodos de Write Focus en su archivo .ini."""
         config_file_path = wf_get_config_path()
         if not config_file_path:
             debug_print("Error: No se pudo obtener la ruta para guardar Write Focus.")
@@ -416,37 +428,47 @@ class SettingsWindow(QWidget):
             return
 
         new_node_name = self.write_focus_input.text().strip()
+        new_secondary_node_name = self.write_focus_secondary_input.text().strip()
         if not new_node_name:
             QMessageBox.warning(
                 self, "Input Error", "Write Focus node name cannot be empty."
             )
-            # Revertir al valor anterior o al por defecto
             try:
-                current_node_name = wf_get_node_name_from_config()
-                self.write_focus_input.setText(
-                    current_node_name or WF_DEFAULT_NODE_NAME
-                )
+                node_name, _ = wf_get_node_names_from_config()
+                self.write_focus_input.setText(node_name or WF_DEFAULT_NODE_NAME)
             except Exception:
                 self.write_focus_input.setText(WF_DEFAULT_NODE_NAME)
             return
-
+        if not new_secondary_node_name:
+            QMessageBox.warning(
+                self, "Input Error", "Secondary Write node name cannot be empty."
+            )
+            try:
+                _, secondary_node_name = wf_get_node_names_from_config()
+                self.write_focus_secondary_input.setText(
+                    secondary_node_name or WF_DEFAULT_SECONDARY_NODE_NAME
+                )
+            except Exception:
+                self.write_focus_secondary_input.setText(WF_DEFAULT_SECONDARY_NODE_NAME)
+            return
         config = configparser.ConfigParser()
         try:
-            # Leer existente para preservar otras secciones/claves
             if os.path.exists(config_file_path):
                 config.read(config_file_path)
-
             if not config.has_section(WF_CONFIG_SECTION):
                 config.add_section(WF_CONFIG_SECTION)
-
             config.set(WF_CONFIG_SECTION, WF_CONFIG_NODE_NAME_KEY, new_node_name)
-
+            config.set(
+                WF_CONFIG_SECTION,
+                WF_CONFIG_SECONDARY_NODE_NAME_KEY,
+                new_secondary_node_name,
+            )
             with open(config_file_path, "w") as configfile:
                 config.write(configfile)
-
-            debug_print(f"Configuracion de Write Focus guardada: {new_node_name}")
+            debug_print(
+                f"Configuracion de Write Focus guardada: {new_node_name}, {new_secondary_node_name}"
+            )
             QMessageBox.information(self, "Success", "Write Focus settings saved.")
-
         except Exception as e:
             debug_print(f"Error al guardar la configuracion de Write Focus: {e}")
             QMessageBox.critical(
