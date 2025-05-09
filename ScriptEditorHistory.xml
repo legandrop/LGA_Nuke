@@ -9722,4 +9722,182 @@ undo.end()
 
 import importlib
 import LGA_writePresets
-importlib.reload(LGA_writePresets)</script>
+importlib.reload(LGA_writePresets)# Version que descarga todas las versiones y notas asociadas a las tareas asignadas al usuario
+# v03: solo muestra las que tuvieron cambios desde una fecha determinada
+
+import os
+import shotgun_api3
+
+# Recuperar datos de autenticacion de las variables de entorno
+url = os.environ.get(&quot;SHOTGRID_URL&quot;)
+login = os.environ.get(&quot;SHOTGRID_LOGIN&quot;)
+password = os.environ.get(&quot;SHOTGRID_PASSWORD&quot;)
+
+# Crear una instancia de la API de ShotGrid usando login y password
+sg = shotgun_api3.Shotgun(url, login=login, password=password)
+
+
+def get_assigned_tasks(sg, user_login, min_date=None):
+    filters = [
+        [&quot;task_assignees.HumanUser.login&quot;, &quot;is&quot;, user_login],
+        [&quot;sg_status_list&quot;, &quot;is_not&quot;, &quot;fin&quot;],
+    ]
+
+    # Añadir filtros de fecha si se especifica una fecha mínima
+    if min_date:
+        date_filter = {
+            &quot;filter_operator&quot;: &quot;any&quot;,
+            &quot;filters&quot;: [
+                [&quot;created_at&quot;, &quot;greater_than&quot;, min_date],
+                [&quot;updated_at&quot;, &quot;greater_than&quot;, min_date],
+            ],
+        }
+        filters.append(date_filter)
+
+    # Añadir campos para versiones y notas
+    fields = [
+        &quot;id&quot;,
+        &quot;content&quot;,
+        &quot;sg_description&quot;,
+        &quot;sg_status_list&quot;,
+        &quot;entity&quot;,
+        &quot;entity.Shot.code&quot;,
+        &quot;entity.Shot.description&quot;,
+        &quot;entity.Shot.sg_status_list&quot;,
+        &quot;project.Project.name&quot;,
+        &quot;project.Project.sg_status&quot;,
+        &quot;versions&quot;,  # Versiones asociadas a la tarea
+        &quot;notes&quot;,  # Notas asociadas a la tarea
+        &quot;task_assignees&quot;,
+        &quot;task_reviewers&quot;,  # Campo para reviewers
+    ]
+    tasks = sg.find(&quot;Task&quot;, filters, fields)
+    for t in tasks:
+        t[&quot;user_role&quot;] = &quot;Artista&quot;
+    return tasks
+
+
+def get_reviewer_tasks(sg, user_login, min_date=None):
+    filters = [
+        [&quot;task_reviewers.HumanUser.login&quot;, &quot;is&quot;, user_login],
+        [&quot;sg_status_list&quot;, &quot;is_not&quot;, &quot;fin&quot;],
+    ]
+    if min_date:
+        date_filter = {
+            &quot;filter_operator&quot;: &quot;any&quot;,
+            &quot;filters&quot;: [
+                [&quot;created_at&quot;, &quot;greater_than&quot;, min_date],
+                [&quot;updated_at&quot;, &quot;greater_than&quot;, min_date],
+            ],
+        }
+        filters.append(date_filter)
+    fields = [
+        &quot;id&quot;,
+        &quot;content&quot;,
+        &quot;sg_description&quot;,
+        &quot;sg_status_list&quot;,
+        &quot;entity&quot;,
+        &quot;entity.Shot.code&quot;,
+        &quot;entity.Shot.description&quot;,
+        &quot;entity.Shot.sg_status_list&quot;,
+        &quot;project.Project.name&quot;,
+        &quot;project.Project.sg_status&quot;,
+        &quot;versions&quot;,
+        &quot;notes&quot;,
+        &quot;task_assignees&quot;,
+        &quot;task_reviewers&quot;,
+    ]
+    tasks = sg.find(&quot;Task&quot;, filters, fields)
+    for t in tasks:
+        t[&quot;user_role&quot;] = &quot;Reviewer&quot;
+    return tasks
+
+
+def find_latest_version_for_shot(sg, shot_id):
+    # Buscar la última versión asociada al shot
+    filters = [[&quot;entity&quot;, &quot;is&quot;, {&quot;type&quot;: &quot;Shot&quot;, &quot;id&quot;: shot_id}]]
+    fields = [&quot;id&quot;, &quot;code&quot;, &quot;sg_status_list&quot;, &quot;description&quot;, &quot;created_at&quot;, &quot;user&quot;]
+    # Ordenar por fecha de creación descendente y limitar a 1 resultado
+    return sg.find_one(
+        &quot;Version&quot;, filters, fields, [{&quot;field_name&quot;: &quot;created_at&quot;, &quot;direction&quot;: &quot;desc&quot;}]
+    )
+
+
+def print_task_info(task, sg):
+    print(f&quot;\nProject: {task.get('project.Project.name', 'No project available')}&quot;)
+    print(
+        f&quot;Project Status: {task.get('project.Project.sg_status', 'No status available')}&quot;
+    )
+    print(f&quot;Shot: {task.get('entity.Shot.code', 'No shot available')}&quot;)
+    print(
+        f&quot;Shot Status: {task.get('entity.Shot.sg_status_list', 'No status available')}&quot;
+    )
+    print(f&quot;Task: {task['content']}&quot;)
+    print(f&quot;Task Status: {task['sg_status_list']}&quot;)
+    print(
+        f&quot;Description: {task.get('entity.Shot.description', 'No description available')}&quot;
+    )
+    print(f&quot;Rol: {task.get('user_role', 'Desconocido')}&quot;)
+
+    # Obtener la última versión asociada al shot
+    if task.get(&quot;entity&quot;):
+        shot_id = task[&quot;entity&quot;][&quot;id&quot;]
+        version = find_latest_version_for_shot(sg, shot_id)
+
+        if version:
+            print(&quot;\nÚltima versión:&quot;)
+            print(f&quot;  - Version SG: {version.get('code', 'No version code')}&quot;)
+            print(f&quot;    Status: {version.get('sg_status_list', 'No status')}&quot;)
+            print(f&quot;    Description: {version.get('description', 'No description')}&quot;)
+            print(f&quot;    Created At: {version.get('created_at', 'No date available')}&quot;)
+            print(
+                f&quot;    User: {version['user']['name'] if version.get('user') else 'No user available'}&quot;
+            )
+
+            # Obtener notas de la versión
+            notes = sg.find(
+                &quot;Note&quot;,
+                [[&quot;note_links&quot;, &quot;in&quot;, {&quot;type&quot;: &quot;Version&quot;, &quot;id&quot;: version[&quot;id&quot;]}]],
+                [&quot;content&quot;, &quot;user&quot;],
+            )
+            if notes:
+                print(&quot;    Comments:&quot;)
+                for note in notes:
+                    print(f&quot;      - {note['content']} (User: {note['user']['name']})&quot;)
+            else:
+                print(&quot;    No comments found.&quot;)
+        else:
+            print(&quot;\nNo se encontraron versiones asociadas en ShotGrid.&quot;)
+
+    # Generar URL de la tarea usando la base URL de ShotGrid
+    task_url = f&quot;{sg.base_url}/detail/Task/{task['id']}&quot;
+    print(f&quot;\nTask URL: {task_url}&quot;)
+
+
+def main():
+    try:
+        # Especificar fecha mínima con formato completo (ejemplo: 1 de marzo de 2025 a las 00:00 UTC)
+        min_date = &quot;2025-03-01T00:00:00Z&quot;
+        tasks_artist = get_assigned_tasks(sg, login, min_date)
+        tasks_reviewer = get_reviewer_tasks(sg, login, min_date)
+        # Unificar por id, priorizando el rol de artista si está en ambos
+        tasks_dict = {}
+        for t in tasks_reviewer:
+            tasks_dict[t[&quot;id&quot;]] = t
+        for t in tasks_artist:
+            tasks_dict[t[&quot;id&quot;]] = t  # Sobrescribe si ya estaba como reviewer
+        all_tasks = list(tasks_dict.values())
+        if all_tasks:
+            print(f&quot;\nTareas asignadas o como reviewer:&quot;)
+            for task in all_tasks:
+                print_task_info(task, sg)
+        else:
+            print(&quot;No se encontraron tareas asignadas ni como reviewer&quot;)
+
+    except Exception as e:
+        print(f&quot;Error al obtener tareas: {e}&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</script>

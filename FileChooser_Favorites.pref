@@ -7,5 +7,6 @@ add_favorite_dir -image -script -project -python -font -geo -misc -sequence VFX-
 add_favorite_dir -image -script -project -python -font -geo -misc -sequence VFX-EE VFX-EE "" T:/VFX-EE/
 add_favorite_dir -image -script -project -python -font -geo -misc -sequence VFX-TOC VFX-TOC "" T:/VFX-TOC/
 add_favorite_dir -image -script -project -python -font -geo -misc -sequence VFX-ETDM VFX-ETDM "" T:/VFX-ETDM/
+add_favorite_dir -image -script -project -python -font -geo -misc -sequence VFX-LC VFX-LC "" T:/VFX-LC/
 
 # End of generated file.
