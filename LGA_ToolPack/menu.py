@@ -1,7 +1,7 @@
 """
 _____________________________________
 
-  LGA_ToolPack v2.3 | Lega
+  LGA_ToolPack v2.37 | Lega
   Colección de herramientas de Nuke
 _____________________________________
 
@@ -298,7 +298,7 @@ n.addCommand(
 import LGA_build_Roto
 
 n.addCommand(
-    "  Build Roto Chain",
+    "  Build Roto in mask input",
     "LGA_build_Roto.main()",
     "shift+o",
     shortcutContext=2,
@@ -322,14 +322,14 @@ n.addCommand(
 import LGA_build_Grade
 
 n.addCommand(
-    "  Build Grade | Mask",
+    "  Build Grade",
     "LGA_build_Grade.gradeMask()",
     "shift+G",
     shortcutContext=2,
     icon=icon_Knobs,
 )
 n.addCommand(
-    "  Build Grade | Highlights",
+    "  Build Grade Highlights",
     "LGA_build_Grade.gradeHI()",
     "ctrl+shift+G",
     shortcutContext=2,
@@ -437,4 +437,4 @@ import nuke
 TP_script_dir = os.path.dirname(os.path.realpath(__file__))
 TP_pdf_path = os.path.join(TP_script_dir, "LGA_ToolPack.pdf")
 
-n.addCommand("v2.3", lambda: webbrowser.open("file://" + TP_pdf_path))
+n.addCommand("v2.37", lambda: webbrowser.open("file://" + TP_pdf_path))

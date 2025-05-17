@@ -219,6 +219,6 @@ import webbrowser
 import nuke
 
 TP_script_dir = os.path.dirname(os.path.realpath(__file__))
-TP_pdf_path = os.path.join(TP_script_dir, "LGA_ToolPack.pdf")
+TP_pdf_path = os.path.join(TP_script_dir, "LGA_ToolPack-B.pdf")
 
 n2.addCommand("v2.3", lambda: webbrowser.open("file://" + TP_pdf_path))
