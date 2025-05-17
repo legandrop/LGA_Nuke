@@ -1,0 +1,697 @@
+set cut_paste_input [stack 0]
+version 15.1 v3
+BackdropNode {
+inputs 0
+name BackdropNode28
+knobChanged "try:\n    node=nuke.thisNode()\n    knob=nuke.thisKnob()\n    name=knob.name()\n\n    def updateKnobs():\n        nodeWidth=node\['bdwidth'].getValue()\n        nodeHeight=node\['bdheight'].getValue()\n        node\['sizeNode'].setValue(\[int(nodeWidth),int(nodeHeight)])\n        node\['node_position_x'].setValue(int(node\['xpos'].value()))\n        node\['node_position_y'].setValue(int(node\['ypos'].value()))\n        node\['zorder'].setValue(int(node\['z_order'].getValue()))\n        node\['font_size'].setValue(int(node\['note_font_size'].getValue()))\n        node\['oz_appearance'].setValue( node\['appearance'].value() )\n        node\['oz_border_width'].setValue( node\['border_width'].value() )\n        #node\['fontColor'].setValue(int(node\['note_font_color'].getValue()))\n\n    def updateLabelKnob():\n        curLabel = node\['label'].getValue()\n        # Eliminar cualquier etiqueta HTML en el label (por si existen)\n        curLabel = curLabel.replace('<p align=center>', '').replace('<p align=right>', '').replace('</p>', '').replace('<center>', '').replace('</center>', '')\n        node\['text'].setValue(curLabel)\n        # Obtener la alineacion actual desde note_font_align\n        alignment = int(node\['note_font_align'].value())\n        node\['alignment'].setValue(alignment)\n\n\n    ### OPENING SETUP\n    if name=='showPanel':\n        updateKnobs()\n        updateLabelKnob()\n\n    ### UPDATE STYLE\n    if name in \['oz_appearance', 'oz_border_width']:\n        node\['appearance'].setValue( node\['oz_appearance'].value() )\n        node\['border_width'].setValue( node\['oz_border_width'].value() )\n\n    ### CHANGE THE SIZE OF THE NODE\n    if name=='sizeNode':\n        node\['bdwidth'].setValue(int(node\['sizeNode'].getValue()\[0]))\n        node\['bdheight'].setValue(int(node\['sizeNode'].getValue()\[1]))\n\n    ### POSITION\n    if name=='node_position_x' or name=='node_position_y':\n        node.setXYpos(int(node\['node_position_x'].getValue()),int(node\['node_position_y'].getValue()))\n\n    ### ZORDER\n    if name=='zorder':\n        node\['z_order'].setValue(node\['zorder'].getValue())\n\n    ### UPDATE THE 'CURRENT SIZE' AND ORDER\n    #if name=='bdwidth' or name=='bdheight' or name=='z_order':\n    if name in \['bdwidth', 'bdheight', 'z_order']:\n        updateKnobs()\n\n    ### UPDATE LABEL\n    title = node\['name'].value()\n    text = node\['text'].value()\n\n    if name in \['text', 'alignment', 'title', 'Oz_Backdrop_bold', 'note_font_color']:\n        text = node\['text'].value()\n        alignment = node\['alignment'].getValue()\n        is_bold = node\['Oz_Backdrop_bold'].value()\n\n        # Establece el texto del label sin etiquetas HTML\n        node\['label'].setValue(text)\n\n        # Establece la alineacion del texto usando la propiedad note_font_align\n        node\['note_font_align'].setValue(alignment)  # 0: izquierda, 1: centro, 2: derecha\n\n        # Captura la fuente actual y muestra en consola\n        current_font = node\['note_font'].value()\n        #print(f\"Fuente antes de cambiar: \{current_font\}\")\n\n        # Solo proceder si current_font tiene un valor valido\n        if current_font:\n            font_family = current_font.replace(\" Bold\", \"\").strip()\n\n            # Modifica la fuente segun el estado del checkbox de bold\n            if is_bold:\n                new_font = f\"\{font_family\} Bold\"\n            else:\n                new_font = font_family\n\n            # Aplicar el nuevo valor de la fuente\n            node\['note_font'].setValue(new_font)\n            #print(f\"Fuente despues de cambiar: \{new_font\}\")\n\n        # Ya no es necesario actualizar el label nuevamente con newLabel\n        # node\['label'].setValue(newLabel)\n\n\n\n\n\n    if name==\"font_size\":\n        new_font_size = node\[\"font_size\"].value()\n        node\['note_font_size'].setValue(new_font_size)\n\n\n\n    del newLabel\n\nexcept:\n    pass\n"
+tile_color 0x404942ff
+label CopyCat
+note_font "Verdana Bold"
+note_font_size 50
+selected true
+xpos 5506
+ypos -1112
+bdwidth 2055
+bdheight 1906
+z_order 1
+addUserKnob {20 Settings}
+addUserKnob {43 text l Text}
+text CopyCat
+addUserKnob {7 font_size l "Font Size" R 10 100}
+font_size 50
+addUserKnob {6 Oz_Backdrop_bold l Bold -STARTLINE}
+addUserKnob {4 alignment l "" -STARTLINE M {left center right}}
+addUserKnob {22 font_color_toggle l B/W -STARTLINE T "\nnode = nuke.thisNode()\n\n# Obtiene el color actual desde note_font_color\ncurrent_font_color = node\['note_font_color'].value()\n\n# Definir los valores\nwhite_color = 4294967295  # Blanco que funciona\nblack_color = 0x000000  # Negro que funciona\n\n# Alterna entre blanco y negro\nif current_font_color == white_color:\n    new_font_color = black_color\nelse:\n    new_font_color = white_color\n\n# Establece el nuevo color en note_font_color\nnode\['note_font_color'].setValue(new_font_color)\n\nprint(f\"Boton B/W: Cambiado color a \{'Blanco' if new_font_color == white_color else 'Negro'\}\")\n"}
+addUserKnob {26 divider1 l "" +STARTLINE}
+addUserKnob {26 S01 l " " T " "}
+addUserKnob {22 "Random Color" l " <img src=\"ColorBars.png\">" t "Generates a random color for the Backdrop (dark shades)" -STARTLINE T "import random\nn=nuke.thisNode()\nr,g,b=\[(float(random.randint( 20, 40)))/100,(float(random.randint( 10, 50)))/100,(float(random.randint( 15, 60)))/100]\nn\['tile_color'].setValue( int('%02x%02x%02x%02x' % (int(r*255),int(g*255),int(b*255),1),16) )\n"}
+addUserKnob {22 Red l "<div style=\"background-color: #54352e; color: #54352e; font-size: 7px;\">______</div><div style=\"background-color: #70544e; color: #70544e; font-size: 7px;\">______</div><div style=\"background-color: #9b5647; color: #9b5647; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of red to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.03, 0.45, 0.33], \[0.03, 0.3, 0.44], \[0.03, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Orange l "<div style=\"background-color: #54472e; color: #54472e; font-size: 7px;\">______</div><div style=\"background-color: #70644e; color: #70644e; font-size: 7px;\">______</div><div style=\"background-color: #9b7e47; color: #9b7e47; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of orange to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.11, 0.45, 0.33], \[0.11, 0.3, 0.44], \[0.11, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Yellow l "<div style=\"background-color: #54522e; color: #54522e; font-size: 7px;\">______</div><div style=\"background-color: #706e4e; color: #706e4e; font-size: 7px;\">______</div><div style=\"background-color: #9b9847; color: #9b9847; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of yellow to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.16, 0.45, 0.33], \[0.16, 0.3, 0.44], \[0.16, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Green l "<div style=\"background-color: #31542e; color: #31542e; font-size: 7px;\">______</div><div style=\"background-color: #51704e; color: #51704e; font-size: 7px;\">______</div><div style=\"background-color: #4e9b47; color: #4e9b47; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of green to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.32, 0.45, 0.33], \[0.32, 0.3, 0.44], \[0.32, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Cyan l "<div style=\"background-color: #2e5451; color: #2e5451; font-size: 7px;\">______</div><div style=\"background-color: #4e706e; color: #4e706e; font-size: 7px;\">______</div><div style=\"background-color: #479b96; color: #479b96; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of cyan to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.49, 0.45, 0.33], \[0.49, 0.3, 0.44], \[0.49, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Blue l "<div style=\"background-color: #2e4854; color: #2e4854; font-size: 7px;\">______</div><div style=\"background-color: #4e6670; color: #4e6670; font-size: 7px;\">______</div><div style=\"background-color: #47829b; color: #47829b; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of blue to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.55, 0.45, 0.33], \[0.55, 0.3, 0.44], \[0.55, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Dark_blue l "<div style=\"background-color: #3a2e54; color: #3a2e54; font-size: 7px;\">______</div><div style=\"background-color: #4e4f70; color: #4e4f70; font-size: 7px;\">______</div><div style=\"background-color: #474a9b; color: #474a9b; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of dark_blue to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.72, 0.45, 0.33], \[0.66, 0.3, 0.44], \[0.66, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Magenta l "<div style=\"background-color: #4a2e54; color: #4a2e54; font-size: 7px;\">______</div><div style=\"background-color: #674e70; color: #674e70; font-size: 7px;\">______</div><div style=\"background-color: #85479b; color: #85479b; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of magenta to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.79, 0.45, 0.33], \[0.79, 0.3, 0.44], \[0.79, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Pink l "<div style=\"background-color: #542e49; color: #542e49; font-size: 7px;\">______</div><div style=\"background-color: #704e66; color: #704e66; font-size: 7px;\">______</div><div style=\"background-color: #9b4784; color: #9b4784; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of pink to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.88, 0.45, 0.33], \[0.88, 0.3, 0.44], \[0.88, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {26 space l " " T " "}
+addUserKnob {22 Input l "<div style=\"background-color: #999999; color: #999999; font-size: 7px;\">______</div><div style=\"background-color: #999999; color: #999999; font-size: 7px;\">______</div><div style=\"background-color: #999999; color: #999999; font-size: 7px;\">______</div><div>Input</div>" t "Quickly apply a Backdrop for Cam" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.0, 0.0, 0.6], \[0.0, 0.0, 0.6], \[0.0, 0.0, 0.6]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Aovs l "<div style=\"background-color: #666666; color: #666666; font-size: 7px;\">______</div><div style=\"background-color: #666666; color: #666666; font-size: 7px;\">______</div><div style=\"background-color: #666666; color: #666666; font-size: 7px;\">______</div><div>Aovs</div>" t "Quickly apply a Backdrop for Elements" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.0, 0.0, 0.4], \[0.0, 0.0, 0.4], \[0.0, 0.0, 0.4]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Mattee l "<div style=\"background-color: #767f75; color: #767f75; font-size: 7px;\">______</div><div style=\"background-color: #767f75; color: #767f75; font-size: 7px;\">______</div><div style=\"background-color: #767f75; color: #767f75; font-size: 7px;\">______</div><div>Mattee</div>" t "Quickly apply a Backdrop for Key" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.32, 0.08, 0.5], \[0.32, 0.08, 0.5], \[0.32, 0.08, 0.5]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Crypt l "<div style=\"background-color: #34662f; color: #34662f; font-size: 7px;\">______</div><div style=\"background-color: #34662f; color: #34662f; font-size: 7px;\">______</div><div style=\"background-color: #34662f; color: #34662f; font-size: 7px;\">______</div><div>Crypt</div>" t "Quickly apply a Backdrop for Cleanup" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.32, 0.53, 0.4], \[0.32, 0.53, 0.4], \[0.32, 0.53, 0.4]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Refe l "<div style=\"background-color: #273c56; color: #273c56; font-size: 7px;\">______</div><div style=\"background-color: #273c56; color: #273c56; font-size: 7px;\">______</div><div style=\"background-color: #273c56; color: #273c56; font-size: 7px;\">______</div>" t "Quickly apply a Backdrop for Ref" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.59, 0.55, 0.34], \[0.59, 0.55, 0.34], \[0.59, 0.55, 0.34]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Otro l "<div style=\"background-color: #465177; color: #465177; font-size: 7px;\">______</div><div style=\"background-color: #465177; color: #465177; font-size: 7px;\">______</div><div style=\"background-color: #465177; color: #465177; font-size: 7px;\">______</div>" t "Quickly apply a Backdrop for Pub" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.63, 0.41, 0.47], \[0.63, 0.41, 0.47], \[0.63, 0.41, 0.47]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {26 S08 l " " -STARTLINE T " "}
+addUserKnob {22 copy_color l "   Copy Color   " -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\ntile_color = node\['tile_color'].value()\ntile_color_hex = '\{:08x\}'.format(tile_color)  # Convertir a cadena hexadecimal de 8 digitos\n\n# Copiar al portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'echo ' + tile_color_hex + '| clip'\n    subprocess.run(cmd, shell=True)\nelif platform.system() == 'Darwin':\n    cmd = 'echo ' + tile_color_hex + ' | pbcopy'\n    subprocess.run(cmd, shell=True)\nelse:\n    print(\"Sistema operativo no soportado para copiar al portapapeles\")\n\n#print(\"Color copiado al portapapeles:\", tile_color_hex)\n"}
+addUserKnob {22 paste_color l "   Paste Color   " -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n# Obtener el valor del portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'powershell Get-Clipboard'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    tile_color_hex = result.stdout.strip()\nelif platform.system() == 'Darwin':\n    cmd = 'pbpaste'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    tile_color_hex = result.stdout.strip()\nelse:\n    print(\"Sistema operativo no soportado para pegar desde el portapapeles\")\n    tile_color_hex = None\n\nif tile_color_hex:\n    try:\n        tile_color = int(tile_color_hex, 16)\n        node\['tile_color'].setValue(tile_color)\n        #print(\"Color pegado desde el portapapeles:\", tile_color_hex)\n    except ValueError:\n        print(\"El valor en el portapapeles no es un color valido\")\n"}
+addUserKnob {26 S07 l " " T " "}
+addUserKnob {4 oz_appearance l " Appearance      " -STARTLINE M {Fill Border}}
+addUserKnob {7 oz_border_width l Border t "Border width for Border appearence" -STARTLINE R 0 30}
+oz_border_width 2
+addUserKnob {26 divider2 l "" +STARTLINE}
+addUserKnob {26 S02 l " " T " "}
+addUserKnob {22 grow l " <img src=\"MergeMin.png\">" t "Grows the size of the Backdrop by 50pt in every direction" -STARTLINE T "n=nuke.thisNode()\n\ndef grow(node=None,step=50):\n    try:\n        if not node:\n            n=nuke.selectedNode()\n        else:\n            n=node\n            n\['xpos'].setValue(n\['xpos'].getValue()-step)\n            n\['ypos'].setValue(n\['ypos'].getValue()-step)\n            n\['bdwidth'].setValue(n\['bdwidth'].getValue()+step*2)\n            n\['bdheight'].setValue(n\['bdheight'].getValue()+step*2)\n    except e:\n        print('Error:: %s' % e)\n\ngrow(n,50)"}
+addUserKnob {22 shrink l " <img src=\"MergeMax.png\">" t "Shrinks the size of the Backdrop by 50pt in every direction" -STARTLINE T "n=nuke.thisNode()\n\ndef shrink(node=None,step=50):\n    try:\n        if not node:\n            n=nuke.selectedNode()\n        else:\n            n=node\n            n\['xpos'].setValue(n\['xpos'].getValue()+step)\n            n\['ypos'].setValue(n\['ypos'].getValue()+step)\n            n\['bdwidth'].setValue(n\['bdwidth'].getValue()-step*2)\n            n\['bdheight'].setValue(n\['bdheight'].getValue()-step*2)\n    except e:\n        print('Error:: %s' % e)\n\nshrink(n,50)"}
+addUserKnob {26 S03 l " " -STARTLINE T "     "}
+addUserKnob {22 encompassSelectedNodes l " <img src=\"ContactSheet.png\">" t "Will resize the backdrop to encompass every selected nodes plus a padding number (the number next to the button)" -STARTLINE T "\nimport oz_encompassScript\noz_encompassScript.encompass_selected_nodes()\n"}
+addUserKnob {26 S04 l " " -STARTLINE T " "}
+addUserKnob {3 sides l "" t "When encompassing nodes this number of pt will be added to the Backdrop size in every direction" -STARTLINE}
+sides 100
+addUserKnob {26 divider3 l "" +STARTLINE}
+addUserKnob {26 S05 l " " -STARTLINE T " "}
+addUserKnob {26 pos_text l Position -STARTLINE T " "}
+addUserKnob {3 node_position_x l x -STARTLINE}
+node_position_x 5506
+addUserKnob {3 node_position_y l y -STARTLINE}
+node_position_y -1112
+addUserKnob {26 S06 l " " T " "}
+addUserKnob {14 sizeNode l "Size       " -STARTLINE R 0 100}
+sizeNode {2055 1906}
+addUserKnob {26 S09 l " " T " "}
+addUserKnob {22 copy_width l "Copy W" t "Copy the width of this backdrop to use in another backdrop" -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n# Funcion updateKnobs para actualizar todos los valores para hacer un refresh antes del copy\ndef updateKnobs(node):\n    nodeWidth = node\['bdwidth'].getValue()\n    nodeHeight = node\['bdheight'].getValue()\n    node\['sizeNode'].setValue(\[int(nodeWidth), int(nodeHeight)])\n    node\['zorder'].setValue(int(node\['z_order'].getValue()))\n    node\['font_size'].setValue(int(node\['note_font_size'].getValue()))\n    node\['oz_appearance'].setValue(node\['appearance'].value())\n    node\['oz_border_width'].setValue(node\['border_width'].value())\n\nupdateKnobs(node)\n\nsize_w = node\['sizeNode'].getValue()\[0]\n\n# Copiar al portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'echo ' + str(size_w).strip() + '| clip'\n    subprocess.run(cmd, shell=True)\nelif platform.system() == 'Darwin':\n    cmd = 'echo ' + str(size_w).strip() + ' | pbcopy'\n    subprocess.run(cmd, shell=True)\nelse:\n    print(\"Sistema operativo no soportado para copiar al portapapeles\")\n\n#print(\"Size W copiado al portapapeles:\", size_w)\n"}
+addUserKnob {22 paste_width l "Paste W" t "Set this backdrop's width using the value copied from another backdrop" -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n# Obtener el valor del portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'powershell Get-Clipboard'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    size_w = result.stdout.strip()\nelif platform.system() == 'Darwin':\n    cmd = 'pbpaste'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    size_w = result.stdout.strip()\nelse:\n    print(\"Sistema operativo no soportado para pegar desde el portapapeles\")\n    size_w = None\n\nif size_w:\n    try:\n        size_w = float(size_w)\n        node\['bdwidth'].setValue(size_w)\n        node\['sizeNode'].setValue(\[size_w, node\['sizeNode'].getValue()\[1]])\n        #print(\"Size W pegado desde el portapapeles:\", size_w)\n    except ValueError:\n        print(\"El valor en el portapapeles no es un numero valido\")\n"}
+addUserKnob {22 copy_height l "Copy H" t "Copy the height of this backdrop to use in another backdrop" -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n\n# Funcion updateKnobs para actualizar todos los valores para hacer un refresh antes del copy\ndef updateKnobs(node):\n    nodeWidth = node\['bdwidth'].getValue()\n    nodeHeight = node\['bdheight'].getValue()\n    node\['sizeNode'].setValue(\[int(nodeWidth), int(nodeHeight)])\n    node\['zorder'].setValue(int(node\['z_order'].getValue()))\n    node\['font_size'].setValue(int(node\['note_font_size'].getValue()))\n    node\['oz_appearance'].setValue(node\['appearance'].value())\n    node\['oz_border_width'].setValue(node\['border_width'].value())\n\nupdateKnobs(node)\n\nsize_h = node\['sizeNode'].getValue()\[1]\n\n# Copiar al portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'echo ' + str(size_h).strip() + '| clip'\n    subprocess.run(cmd, shell=True)\nelif platform.system() == 'Darwin':\n    cmd = 'echo ' + str(size_h).strip() + ' | pbcopy'\n    subprocess.run(cmd, shell=True)\nelse:\n    print(\"Sistema operativo no soportado para copiar al portapapeles\")\n\nprint(\"Size H copiado al portapapeles:\", size_h)\n"}
+addUserKnob {22 paste_height l "Paste H" t "Set this backdrop's height using the value copied from another backdrop" -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n# Obtener el valor del portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'powershell Get-Clipboard'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    size_h = result.stdout.strip()\nelif platform.system() == 'Darwin':\n    cmd = 'pbpaste'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    size_h = result.stdout.strip()\nelse:\n    print(\"Sistema operativo no soportado para pegar desde el portapapeles\")\n    size_h = None\n\nif size_h:\n    try:\n        size_h = float(size_h)\n        node\['bdheight'].setValue(size_h)\n        node\['sizeNode'].setValue(\[node\['sizeNode'].getValue()\[0], size_h])\n        #print(\"Size H pegado desde el portapapeles:\", size_h)\n    except ValueError:\n        print(\"El valor en el portapapeles no es un numero valido\")\n"}
+addUserKnob {26 divider4 l "" +STARTLINE}
+addUserKnob {26 z_order_label l "" -STARTLINE T "Z Order     "}
+addUserKnob {26 "" -STARTLINE T "Back "}
+addUserKnob {7 zorder l "" -STARTLINE R -5 5}
+zorder 1
+addUserKnob {26 "" -STARTLINE T " Front"}
+}
+BackdropNode {
+inputs 0
+name BackdropNode29
+knobChanged "try:\n    node=nuke.thisNode()\n    knob=nuke.thisKnob()\n    name=knob.name()\n\n    def updateKnobs():\n        nodeWidth=node\['bdwidth'].getValue()\n        nodeHeight=node\['bdheight'].getValue()\n        node\['sizeNode'].setValue(\[int(nodeWidth),int(nodeHeight)])\n        node\['node_position_x'].setValue(int(node\['xpos'].value()))\n        node\['node_position_y'].setValue(int(node\['ypos'].value()))\n        node\['zorder'].setValue(int(node\['z_order'].getValue()))\n        node\['font_size'].setValue(int(node\['note_font_size'].getValue()))\n        node\['oz_appearance'].setValue( node\['appearance'].value() )\n        node\['oz_border_width'].setValue( node\['border_width'].value() )\n        #node\['fontColor'].setValue(int(node\['note_font_color'].getValue()))\n\n    def updateLabelKnob():\n        curLabel = node\['label'].getValue()\n        # Eliminar cualquier etiqueta HTML en el label (por si existen)\n        curLabel = curLabel.replace('<p align=center>', '').replace('<p align=right>', '').replace('</p>', '').replace('<center>', '').replace('</center>', '')\n        node\['text'].setValue(curLabel)\n        # Obtener la alineacion actual desde note_font_align\n        alignment = int(node\['note_font_align'].value())\n        node\['alignment'].setValue(alignment)\n\n\n    ### OPENING SETUP\n    if name=='showPanel':\n        updateKnobs()\n        updateLabelKnob()\n\n    ### UPDATE STYLE\n    if name in \['oz_appearance', 'oz_border_width']:\n        node\['appearance'].setValue( node\['oz_appearance'].value() )\n        node\['border_width'].setValue( node\['oz_border_width'].value() )\n\n    ### CHANGE THE SIZE OF THE NODE\n    if name=='sizeNode':\n        node\['bdwidth'].setValue(int(node\['sizeNode'].getValue()\[0]))\n        node\['bdheight'].setValue(int(node\['sizeNode'].getValue()\[1]))\n\n    ### POSITION\n    if name=='node_position_x' or name=='node_position_y':\n        node.setXYpos(int(node\['node_position_x'].getValue()),int(node\['node_position_y'].getValue()))\n\n    ### ZORDER\n    if name=='zorder':\n        node\['z_order'].setValue(node\['zorder'].getValue())\n\n    ### UPDATE THE 'CURRENT SIZE' AND ORDER\n    #if name=='bdwidth' or name=='bdheight' or name=='z_order':\n    if name in \['bdwidth', 'bdheight', 'z_order']:\n        updateKnobs()\n\n    ### UPDATE LABEL\n    title = node\['name'].value()\n    text = node\['text'].value()\n\n    if name in \['text', 'alignment', 'title', 'Oz_Backdrop_bold', 'note_font_color']:\n        text = node\['text'].value()\n        alignment = node\['alignment'].getValue()\n        is_bold = node\['Oz_Backdrop_bold'].value()\n\n        # Establece el texto del label sin etiquetas HTML\n        node\['label'].setValue(text)\n\n        # Establece la alineacion del texto usando la propiedad note_font_align\n        node\['note_font_align'].setValue(alignment)  # 0: izquierda, 1: centro, 2: derecha\n\n        # Captura la fuente actual y muestra en consola\n        current_font = node\['note_font'].value()\n        #print(f\"Fuente antes de cambiar: \{current_font\}\")\n\n        # Solo proceder si current_font tiene un valor valido\n        if current_font:\n            font_family = current_font.replace(\" Bold\", \"\").strip()\n\n            # Modifica la fuente segun el estado del checkbox de bold\n            if is_bold:\n                new_font = f\"\{font_family\} Bold\"\n            else:\n                new_font = font_family\n\n            # Aplicar el nuevo valor de la fuente\n            node\['note_font'].setValue(new_font)\n            #print(f\"Fuente despues de cambiar: \{new_font\}\")\n\n        # Ya no es necesario actualizar el label nuevamente con newLabel\n        # node\['label'].setValue(newLabel)\n\n\n\n\n\n    if name==\"font_size\":\n        new_font_size = node\[\"font_size\"].value()\n        node\['note_font_size'].setValue(new_font_size)\n\n\n\n    del newLabel\n\nexcept:\n    pass\n"
+tile_color 0x2b2f29ff
+label Input
+note_font "Verdana Bold"
+note_font_size 50
+selected true
+xpos 5548
+ypos -900
+bdwidth 938
+bdheight 1217
+z_order 2
+addUserKnob {20 Settings}
+addUserKnob {43 text l Text}
+text Input
+addUserKnob {7 font_size l "Font Size" R 10 100}
+font_size 50
+addUserKnob {6 Oz_Backdrop_bold l Bold -STARTLINE}
+addUserKnob {4 alignment l "" -STARTLINE M {left center right}}
+addUserKnob {22 font_color_toggle l B/W -STARTLINE T "\nnode = nuke.thisNode()\n\n# Obtiene el color actual desde note_font_color\ncurrent_font_color = node\['note_font_color'].value()\n\n# Definir los valores\nwhite_color = 4294967295  # Blanco que funciona\nblack_color = 0x000000  # Negro que funciona\n\n# Alterna entre blanco y negro\nif current_font_color == white_color:\n    new_font_color = black_color\nelse:\n    new_font_color = white_color\n\n# Establece el nuevo color en note_font_color\nnode\['note_font_color'].setValue(new_font_color)\n\nprint(f\"Boton B/W: Cambiado color a \{'Blanco' if new_font_color == white_color else 'Negro'\}\")\n"}
+addUserKnob {26 divider1 l "" +STARTLINE}
+addUserKnob {26 S01 l " " T " "}
+addUserKnob {22 "Random Color" l " <img src=\"ColorBars.png\">" t "Generates a random color for the Backdrop (dark shades)" -STARTLINE T "import random\nn=nuke.thisNode()\nr,g,b=\[(float(random.randint( 20, 40)))/100,(float(random.randint( 10, 50)))/100,(float(random.randint( 15, 60)))/100]\nn\['tile_color'].setValue( int('%02x%02x%02x%02x' % (int(r*255),int(g*255),int(b*255),1),16) )\n"}
+addUserKnob {22 Red l "<div style=\"background-color: #54352e; color: #54352e; font-size: 7px;\">______</div><div style=\"background-color: #70544e; color: #70544e; font-size: 7px;\">______</div><div style=\"background-color: #9b5647; color: #9b5647; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of red to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.03, 0.45, 0.33], \[0.03, 0.3, 0.44], \[0.03, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Orange l "<div style=\"background-color: #54472e; color: #54472e; font-size: 7px;\">______</div><div style=\"background-color: #70644e; color: #70644e; font-size: 7px;\">______</div><div style=\"background-color: #9b7e47; color: #9b7e47; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of orange to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.11, 0.45, 0.33], \[0.11, 0.3, 0.44], \[0.11, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Yellow l "<div style=\"background-color: #54522e; color: #54522e; font-size: 7px;\">______</div><div style=\"background-color: #706e4e; color: #706e4e; font-size: 7px;\">______</div><div style=\"background-color: #9b9847; color: #9b9847; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of yellow to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.16, 0.45, 0.33], \[0.16, 0.3, 0.44], \[0.16, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Green l "<div style=\"background-color: #31542e; color: #31542e; font-size: 7px;\">______</div><div style=\"background-color: #51704e; color: #51704e; font-size: 7px;\">______</div><div style=\"background-color: #4e9b47; color: #4e9b47; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of green to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.32, 0.45, 0.33], \[0.32, 0.3, 0.44], \[0.32, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Cyan l "<div style=\"background-color: #2e5451; color: #2e5451; font-size: 7px;\">______</div><div style=\"background-color: #4e706e; color: #4e706e; font-size: 7px;\">______</div><div style=\"background-color: #479b96; color: #479b96; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of cyan to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.49, 0.45, 0.33], \[0.49, 0.3, 0.44], \[0.49, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Blue l "<div style=\"background-color: #2e4854; color: #2e4854; font-size: 7px;\">______</div><div style=\"background-color: #4e6670; color: #4e6670; font-size: 7px;\">______</div><div style=\"background-color: #47829b; color: #47829b; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of blue to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.55, 0.45, 0.33], \[0.55, 0.3, 0.44], \[0.55, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Dark_blue l "<div style=\"background-color: #3a2e54; color: #3a2e54; font-size: 7px;\">______</div><div style=\"background-color: #4e4f70; color: #4e4f70; font-size: 7px;\">______</div><div style=\"background-color: #474a9b; color: #474a9b; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of dark_blue to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.72, 0.45, 0.33], \[0.66, 0.3, 0.44], \[0.66, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Magenta l "<div style=\"background-color: #4a2e54; color: #4a2e54; font-size: 7px;\">______</div><div style=\"background-color: #674e70; color: #674e70; font-size: 7px;\">______</div><div style=\"background-color: #85479b; color: #85479b; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of magenta to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.79, 0.45, 0.33], \[0.79, 0.3, 0.44], \[0.79, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Pink l "<div style=\"background-color: #542e49; color: #542e49; font-size: 7px;\">______</div><div style=\"background-color: #704e66; color: #704e66; font-size: 7px;\">______</div><div style=\"background-color: #9b4784; color: #9b4784; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of pink to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.88, 0.45, 0.33], \[0.88, 0.3, 0.44], \[0.88, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {26 space l " " T " "}
+addUserKnob {22 Input l "<div style=\"background-color: #999999; color: #999999; font-size: 7px;\">______</div><div style=\"background-color: #999999; color: #999999; font-size: 7px;\">______</div><div style=\"background-color: #999999; color: #999999; font-size: 7px;\">______</div><div>Input</div>" t "Quickly apply a Backdrop for Cam" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.0, 0.0, 0.6], \[0.0, 0.0, 0.6], \[0.0, 0.0, 0.6]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Aovs l "<div style=\"background-color: #666666; color: #666666; font-size: 7px;\">______</div><div style=\"background-color: #666666; color: #666666; font-size: 7px;\">______</div><div style=\"background-color: #666666; color: #666666; font-size: 7px;\">______</div><div>Aovs</div>" t "Quickly apply a Backdrop for Elements" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.0, 0.0, 0.4], \[0.0, 0.0, 0.4], \[0.0, 0.0, 0.4]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Mattee l "<div style=\"background-color: #767f75; color: #767f75; font-size: 7px;\">______</div><div style=\"background-color: #767f75; color: #767f75; font-size: 7px;\">______</div><div style=\"background-color: #767f75; color: #767f75; font-size: 7px;\">______</div><div>Mattee</div>" t "Quickly apply a Backdrop for Key" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.32, 0.08, 0.5], \[0.32, 0.08, 0.5], \[0.32, 0.08, 0.5]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Crypt l "<div style=\"background-color: #34662f; color: #34662f; font-size: 7px;\">______</div><div style=\"background-color: #34662f; color: #34662f; font-size: 7px;\">______</div><div style=\"background-color: #34662f; color: #34662f; font-size: 7px;\">______</div><div>Crypt</div>" t "Quickly apply a Backdrop for Cleanup" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.32, 0.53, 0.4], \[0.32, 0.53, 0.4], \[0.32, 0.53, 0.4]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Refe l "<div style=\"background-color: #273c56; color: #273c56; font-size: 7px;\">______</div><div style=\"background-color: #273c56; color: #273c56; font-size: 7px;\">______</div><div style=\"background-color: #273c56; color: #273c56; font-size: 7px;\">______</div>" t "Quickly apply a Backdrop for Ref" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.59, 0.55, 0.34], \[0.59, 0.55, 0.34], \[0.59, 0.55, 0.34]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Otro l "<div style=\"background-color: #465177; color: #465177; font-size: 7px;\">______</div><div style=\"background-color: #465177; color: #465177; font-size: 7px;\">______</div><div style=\"background-color: #465177; color: #465177; font-size: 7px;\">______</div>" t "Quickly apply a Backdrop for Pub" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.63, 0.41, 0.47], \[0.63, 0.41, 0.47], \[0.63, 0.41, 0.47]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {26 S08 l " " -STARTLINE T " "}
+addUserKnob {22 copy_color l "   Copy Color   " -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\ntile_color = node\['tile_color'].value()\ntile_color_hex = '\{:08x\}'.format(tile_color)  # Convertir a cadena hexadecimal de 8 digitos\n\n# Copiar al portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'echo ' + tile_color_hex + '| clip'\n    subprocess.run(cmd, shell=True)\nelif platform.system() == 'Darwin':\n    cmd = 'echo ' + tile_color_hex + ' | pbcopy'\n    subprocess.run(cmd, shell=True)\nelse:\n    print(\"Sistema operativo no soportado para copiar al portapapeles\")\n\n#print(\"Color copiado al portapapeles:\", tile_color_hex)\n"}
+addUserKnob {22 paste_color l "   Paste Color   " -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n# Obtener el valor del portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'powershell Get-Clipboard'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    tile_color_hex = result.stdout.strip()\nelif platform.system() == 'Darwin':\n    cmd = 'pbpaste'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    tile_color_hex = result.stdout.strip()\nelse:\n    print(\"Sistema operativo no soportado para pegar desde el portapapeles\")\n    tile_color_hex = None\n\nif tile_color_hex:\n    try:\n        tile_color = int(tile_color_hex, 16)\n        node\['tile_color'].setValue(tile_color)\n        #print(\"Color pegado desde el portapapeles:\", tile_color_hex)\n    except ValueError:\n        print(\"El valor en el portapapeles no es un color valido\")\n"}
+addUserKnob {26 S07 l " " T " "}
+addUserKnob {4 oz_appearance l " Appearance      " -STARTLINE M {Fill Border}}
+addUserKnob {7 oz_border_width l Border t "Border width for Border appearence" -STARTLINE R 0 30}
+oz_border_width 2
+addUserKnob {26 divider2 l "" +STARTLINE}
+addUserKnob {26 S02 l " " T " "}
+addUserKnob {22 grow l " <img src=\"MergeMin.png\">" t "Grows the size of the Backdrop by 50pt in every direction" -STARTLINE T "n=nuke.thisNode()\n\ndef grow(node=None,step=50):\n    try:\n        if not node:\n            n=nuke.selectedNode()\n        else:\n            n=node\n            n\['xpos'].setValue(n\['xpos'].getValue()-step)\n            n\['ypos'].setValue(n\['ypos'].getValue()-step)\n            n\['bdwidth'].setValue(n\['bdwidth'].getValue()+step*2)\n            n\['bdheight'].setValue(n\['bdheight'].getValue()+step*2)\n    except e:\n        print('Error:: %s' % e)\n\ngrow(n,50)"}
+addUserKnob {22 shrink l " <img src=\"MergeMax.png\">" t "Shrinks the size of the Backdrop by 50pt in every direction" -STARTLINE T "n=nuke.thisNode()\n\ndef shrink(node=None,step=50):\n    try:\n        if not node:\n            n=nuke.selectedNode()\n        else:\n            n=node\n            n\['xpos'].setValue(n\['xpos'].getValue()+step)\n            n\['ypos'].setValue(n\['ypos'].getValue()+step)\n            n\['bdwidth'].setValue(n\['bdwidth'].getValue()-step*2)\n            n\['bdheight'].setValue(n\['bdheight'].getValue()-step*2)\n    except e:\n        print('Error:: %s' % e)\n\nshrink(n,50)"}
+addUserKnob {26 S03 l " " -STARTLINE T "     "}
+addUserKnob {22 encompassSelectedNodes l " <img src=\"ContactSheet.png\">" t "Will resize the backdrop to encompass every selected nodes plus a padding number (the number next to the button)" -STARTLINE T "\nimport oz_encompassScript\noz_encompassScript.encompass_selected_nodes()\n"}
+addUserKnob {26 S04 l " " -STARTLINE T " "}
+addUserKnob {3 sides l "" t "When encompassing nodes this number of pt will be added to the Backdrop size in every direction" -STARTLINE}
+sides 100
+addUserKnob {26 divider3 l "" +STARTLINE}
+addUserKnob {26 S05 l " " -STARTLINE T " "}
+addUserKnob {26 pos_text l Position -STARTLINE T " "}
+addUserKnob {3 node_position_x l x -STARTLINE}
+node_position_x -13040
+addUserKnob {3 node_position_y l y -STARTLINE}
+node_position_y -1671
+addUserKnob {26 S06 l " " T " "}
+addUserKnob {14 sizeNode l "Size       " -STARTLINE R 0 100}
+sizeNode {938 1217}
+addUserKnob {26 S09 l " " T " "}
+addUserKnob {22 copy_width l "Copy W" t "Copy the width of this backdrop to use in another backdrop" -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n# Funcion updateKnobs para actualizar todos los valores para hacer un refresh antes del copy\ndef updateKnobs(node):\n    nodeWidth = node\['bdwidth'].getValue()\n    nodeHeight = node\['bdheight'].getValue()\n    node\['sizeNode'].setValue(\[int(nodeWidth), int(nodeHeight)])\n    node\['zorder'].setValue(int(node\['z_order'].getValue()))\n    node\['font_size'].setValue(int(node\['note_font_size'].getValue()))\n    node\['oz_appearance'].setValue(node\['appearance'].value())\n    node\['oz_border_width'].setValue(node\['border_width'].value())\n\nupdateKnobs(node)\n\nsize_w = node\['sizeNode'].getValue()\[0]\n\n# Copiar al portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'echo ' + str(size_w).strip() + '| clip'\n    subprocess.run(cmd, shell=True)\nelif platform.system() == 'Darwin':\n    cmd = 'echo ' + str(size_w).strip() + ' | pbcopy'\n    subprocess.run(cmd, shell=True)\nelse:\n    print(\"Sistema operativo no soportado para copiar al portapapeles\")\n\n#print(\"Size W copiado al portapapeles:\", size_w)\n"}
+addUserKnob {22 paste_width l "Paste W" t "Set this backdrop's width using the value copied from another backdrop" -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n# Obtener el valor del portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'powershell Get-Clipboard'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    size_w = result.stdout.strip()\nelif platform.system() == 'Darwin':\n    cmd = 'pbpaste'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    size_w = result.stdout.strip()\nelse:\n    print(\"Sistema operativo no soportado para pegar desde el portapapeles\")\n    size_w = None\n\nif size_w:\n    try:\n        size_w = float(size_w)\n        node\['bdwidth'].setValue(size_w)\n        node\['sizeNode'].setValue(\[size_w, node\['sizeNode'].getValue()\[1]])\n        #print(\"Size W pegado desde el portapapeles:\", size_w)\n    except ValueError:\n        print(\"El valor en el portapapeles no es un numero valido\")\n"}
+addUserKnob {22 copy_height l "Copy H" t "Copy the height of this backdrop to use in another backdrop" -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n\n# Funcion updateKnobs para actualizar todos los valores para hacer un refresh antes del copy\ndef updateKnobs(node):\n    nodeWidth = node\['bdwidth'].getValue()\n    nodeHeight = node\['bdheight'].getValue()\n    node\['sizeNode'].setValue(\[int(nodeWidth), int(nodeHeight)])\n    node\['zorder'].setValue(int(node\['z_order'].getValue()))\n    node\['font_size'].setValue(int(node\['note_font_size'].getValue()))\n    node\['oz_appearance'].setValue(node\['appearance'].value())\n    node\['oz_border_width'].setValue(node\['border_width'].value())\n\nupdateKnobs(node)\n\nsize_h = node\['sizeNode'].getValue()\[1]\n\n# Copiar al portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'echo ' + str(size_h).strip() + '| clip'\n    subprocess.run(cmd, shell=True)\nelif platform.system() == 'Darwin':\n    cmd = 'echo ' + str(size_h).strip() + ' | pbcopy'\n    subprocess.run(cmd, shell=True)\nelse:\n    print(\"Sistema operativo no soportado para copiar al portapapeles\")\n\nprint(\"Size H copiado al portapapeles:\", size_h)\n"}
+addUserKnob {22 paste_height l "Paste H" t "Set this backdrop's height using the value copied from another backdrop" -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n# Obtener el valor del portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'powershell Get-Clipboard'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    size_h = result.stdout.strip()\nelif platform.system() == 'Darwin':\n    cmd = 'pbpaste'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    size_h = result.stdout.strip()\nelse:\n    print(\"Sistema operativo no soportado para pegar desde el portapapeles\")\n    size_h = None\n\nif size_h:\n    try:\n        size_h = float(size_h)\n        node\['bdheight'].setValue(size_h)\n        node\['sizeNode'].setValue(\[node\['sizeNode'].getValue()\[0], size_h])\n        #print(\"Size H pegado desde el portapapeles:\", size_h)\n    except ValueError:\n        print(\"El valor en el portapapeles no es un numero valido\")\n"}
+addUserKnob {26 divider4 l "" +STARTLINE}
+addUserKnob {26 z_order_label l "" -STARTLINE T "Z Order     "}
+addUserKnob {26 "" -STARTLINE T "Back "}
+addUserKnob {7 zorder l "" -STARTLINE R -5 5}
+zorder 2
+addUserKnob {26 "" -STARTLINE T " Front"}
+}
+BackdropNode {
+inputs 0
+name BackdropNode30
+knobChanged "try:\n    node=nuke.thisNode()\n    knob=nuke.thisKnob()\n    name=knob.name()\n\n    def updateKnobs():\n        nodeWidth=node\['bdwidth'].getValue()\n        nodeHeight=node\['bdheight'].getValue()\n        node\['sizeNode'].setValue(\[int(nodeWidth),int(nodeHeight)])\n        node\['node_position_x'].setValue(int(node\['xpos'].value()))\n        node\['node_position_y'].setValue(int(node\['ypos'].value()))\n        node\['zorder'].setValue(int(node\['z_order'].getValue()))\n        node\['font_size'].setValue(int(node\['note_font_size'].getValue()))\n        node\['oz_appearance'].setValue( node\['appearance'].value() )\n        node\['oz_border_width'].setValue( node\['border_width'].value() )\n        #node\['fontColor'].setValue(int(node\['note_font_color'].getValue()))\n\n    def updateLabelKnob():\n        curLabel = node\['label'].getValue()\n        # Eliminar cualquier etiqueta HTML en el label (por si existen)\n        curLabel = curLabel.replace('<p align=center>', '').replace('<p align=right>', '').replace('</p>', '').replace('<center>', '').replace('</center>', '')\n        node\['text'].setValue(curLabel)\n        # Obtener la alineacion actual desde note_font_align\n        alignment = int(node\['note_font_align'].value())\n        node\['alignment'].setValue(alignment)\n\n\n    ### OPENING SETUP\n    if name=='showPanel':\n        updateKnobs()\n        updateLabelKnob()\n\n    ### UPDATE STYLE\n    if name in \['oz_appearance', 'oz_border_width']:\n        node\['appearance'].setValue( node\['oz_appearance'].value() )\n        node\['border_width'].setValue( node\['oz_border_width'].value() )\n\n    ### CHANGE THE SIZE OF THE NODE\n    if name=='sizeNode':\n        node\['bdwidth'].setValue(int(node\['sizeNode'].getValue()\[0]))\n        node\['bdheight'].setValue(int(node\['sizeNode'].getValue()\[1]))\n\n    ### POSITION\n    if name=='node_position_x' or name=='node_position_y':\n        node.setXYpos(int(node\['node_position_x'].getValue()),int(node\['node_position_y'].getValue()))\n\n    ### ZORDER\n    if name=='zorder':\n        node\['z_order'].setValue(node\['zorder'].getValue())\n\n    ### UPDATE THE 'CURRENT SIZE' AND ORDER\n    #if name=='bdwidth' or name=='bdheight' or name=='z_order':\n    if name in \['bdwidth', 'bdheight', 'z_order']:\n        updateKnobs()\n\n    ### UPDATE LABEL\n    title = node\['name'].value()\n    text = node\['text'].value()\n\n    if name in \['text', 'alignment', 'title', 'Oz_Backdrop_bold', 'note_font_color']:\n        text = node\['text'].value()\n        alignment = node\['alignment'].getValue()\n        is_bold = node\['Oz_Backdrop_bold'].value()\n\n        # Establece el texto del label sin etiquetas HTML\n        node\['label'].setValue(text)\n\n        # Establece la alineacion del texto usando la propiedad note_font_align\n        node\['note_font_align'].setValue(alignment)  # 0: izquierda, 1: centro, 2: derecha\n\n        # Captura la fuente actual y muestra en consola\n        current_font = node\['note_font'].value()\n        #print(f\"Fuente antes de cambiar: \{current_font\}\")\n\n        # Solo proceder si current_font tiene un valor valido\n        if current_font:\n            font_family = current_font.replace(\" Bold\", \"\").strip()\n\n            # Modifica la fuente segun el estado del checkbox de bold\n            if is_bold:\n                new_font = f\"\{font_family\} Bold\"\n            else:\n                new_font = font_family\n\n            # Aplicar el nuevo valor de la fuente\n            node\['note_font'].setValue(new_font)\n            #print(f\"Fuente despues de cambiar: \{new_font\}\")\n\n        # Ya no es necesario actualizar el label nuevamente con newLabel\n        # node\['label'].setValue(newLabel)\n\n\n\n\n\n    if name==\"font_size\":\n        new_font_size = node\[\"font_size\"].value()\n        node\['note_font_size'].setValue(new_font_size)\n\n\n\n    del newLabel\n\nexcept:\n    pass\n"
+tile_color 0x36313aff
+label "Ground\nTruth"
+note_font "Verdana Bold"
+note_font_size 50
+selected true
+xpos 6640
+ypos -885
+bdwidth 860
+bdheight 1218
+z_order 4
+addUserKnob {20 Settings}
+addUserKnob {43 text l Text}
+text "Ground\nTruth"
+addUserKnob {7 font_size l "Font Size" R 10 100}
+font_size 50
+addUserKnob {6 Oz_Backdrop_bold l Bold -STARTLINE}
+addUserKnob {4 alignment l "" -STARTLINE M {left center right}}
+addUserKnob {22 font_color_toggle l B/W -STARTLINE T "\nnode = nuke.thisNode()\n\n# Obtiene el color actual desde note_font_color\ncurrent_font_color = node\['note_font_color'].value()\n\n# Definir los valores\nwhite_color = 4294967295  # Blanco que funciona\nblack_color = 0x000000  # Negro que funciona\n\n# Alterna entre blanco y negro\nif current_font_color == white_color:\n    new_font_color = black_color\nelse:\n    new_font_color = white_color\n\n# Establece el nuevo color en note_font_color\nnode\['note_font_color'].setValue(new_font_color)\n\nprint(f\"Boton B/W: Cambiado color a \{'Blanco' if new_font_color == white_color else 'Negro'\}\")\n"}
+addUserKnob {26 divider1 l "" +STARTLINE}
+addUserKnob {26 S01 l " " T " "}
+addUserKnob {22 "Random Color" l " <img src=\"ColorBars.png\">" t "Generates a random color for the Backdrop (dark shades)" -STARTLINE T "import random\nn=nuke.thisNode()\nr,g,b=\[(float(random.randint( 20, 40)))/100,(float(random.randint( 10, 50)))/100,(float(random.randint( 15, 60)))/100]\nn\['tile_color'].setValue( int('%02x%02x%02x%02x' % (int(r*255),int(g*255),int(b*255),1),16) )\n"}
+addUserKnob {22 Red l "<div style=\"background-color: #54352e; color: #54352e; font-size: 7px;\">______</div><div style=\"background-color: #70544e; color: #70544e; font-size: 7px;\">______</div><div style=\"background-color: #9b5647; color: #9b5647; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of red to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.03, 0.45, 0.33], \[0.03, 0.3, 0.44], \[0.03, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Orange l "<div style=\"background-color: #54472e; color: #54472e; font-size: 7px;\">______</div><div style=\"background-color: #70644e; color: #70644e; font-size: 7px;\">______</div><div style=\"background-color: #9b7e47; color: #9b7e47; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of orange to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.11, 0.45, 0.33], \[0.11, 0.3, 0.44], \[0.11, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Yellow l "<div style=\"background-color: #54522e; color: #54522e; font-size: 7px;\">______</div><div style=\"background-color: #706e4e; color: #706e4e; font-size: 7px;\">______</div><div style=\"background-color: #9b9847; color: #9b9847; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of yellow to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.16, 0.45, 0.33], \[0.16, 0.3, 0.44], \[0.16, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Green l "<div style=\"background-color: #31542e; color: #31542e; font-size: 7px;\">______</div><div style=\"background-color: #51704e; color: #51704e; font-size: 7px;\">______</div><div style=\"background-color: #4e9b47; color: #4e9b47; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of green to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.32, 0.45, 0.33], \[0.32, 0.3, 0.44], \[0.32, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Cyan l "<div style=\"background-color: #2e5451; color: #2e5451; font-size: 7px;\">______</div><div style=\"background-color: #4e706e; color: #4e706e; font-size: 7px;\">______</div><div style=\"background-color: #479b96; color: #479b96; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of cyan to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.49, 0.45, 0.33], \[0.49, 0.3, 0.44], \[0.49, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Blue l "<div style=\"background-color: #2e4854; color: #2e4854; font-size: 7px;\">______</div><div style=\"background-color: #4e6670; color: #4e6670; font-size: 7px;\">______</div><div style=\"background-color: #47829b; color: #47829b; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of blue to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.55, 0.45, 0.33], \[0.55, 0.3, 0.44], \[0.55, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Dark_blue l "<div style=\"background-color: #3a2e54; color: #3a2e54; font-size: 7px;\">______</div><div style=\"background-color: #4e4f70; color: #4e4f70; font-size: 7px;\">______</div><div style=\"background-color: #474a9b; color: #474a9b; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of dark_blue to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.72, 0.45, 0.33], \[0.66, 0.3, 0.44], \[0.66, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Magenta l "<div style=\"background-color: #4a2e54; color: #4a2e54; font-size: 7px;\">______</div><div style=\"background-color: #674e70; color: #674e70; font-size: 7px;\">______</div><div style=\"background-color: #85479b; color: #85479b; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of magenta to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.79, 0.45, 0.33], \[0.79, 0.3, 0.44], \[0.79, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Pink l "<div style=\"background-color: #542e49; color: #542e49; font-size: 7px;\">______</div><div style=\"background-color: #704e66; color: #704e66; font-size: 7px;\">______</div><div style=\"background-color: #9b4784; color: #9b4784; font-size: 7px;\">______</div>" t "Quickly apply between 3 shades of pink to the Backdrop" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.88, 0.45, 0.33], \[0.88, 0.3, 0.44], \[0.88, 0.54, 0.61]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {26 space l " " T " "}
+addUserKnob {22 Input l "<div style=\"background-color: #999999; color: #999999; font-size: 7px;\">______</div><div style=\"background-color: #999999; color: #999999; font-size: 7px;\">______</div><div style=\"background-color: #999999; color: #999999; font-size: 7px;\">______</div><div>Input</div>" t "Quickly apply a Backdrop for Cam" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.0, 0.0, 0.6], \[0.0, 0.0, 0.6], \[0.0, 0.0, 0.6]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Aovs l "<div style=\"background-color: #666666; color: #666666; font-size: 7px;\">______</div><div style=\"background-color: #666666; color: #666666; font-size: 7px;\">______</div><div style=\"background-color: #666666; color: #666666; font-size: 7px;\">______</div><div>Aovs</div>" t "Quickly apply a Backdrop for Elements" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.0, 0.0, 0.4], \[0.0, 0.0, 0.4], \[0.0, 0.0, 0.4]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Mattee l "<div style=\"background-color: #767f75; color: #767f75; font-size: 7px;\">______</div><div style=\"background-color: #767f75; color: #767f75; font-size: 7px;\">______</div><div style=\"background-color: #767f75; color: #767f75; font-size: 7px;\">______</div><div>Mattee</div>" t "Quickly apply a Backdrop for Key" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.32, 0.08, 0.5], \[0.32, 0.08, 0.5], \[0.32, 0.08, 0.5]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Crypt l "<div style=\"background-color: #34662f; color: #34662f; font-size: 7px;\">______</div><div style=\"background-color: #34662f; color: #34662f; font-size: 7px;\">______</div><div style=\"background-color: #34662f; color: #34662f; font-size: 7px;\">______</div><div>Crypt</div>" t "Quickly apply a Backdrop for Cleanup" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.32, 0.53, 0.4], \[0.32, 0.53, 0.4], \[0.32, 0.53, 0.4]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Refe l "<div style=\"background-color: #273c56; color: #273c56; font-size: 7px;\">______</div><div style=\"background-color: #273c56; color: #273c56; font-size: 7px;\">______</div><div style=\"background-color: #273c56; color: #273c56; font-size: 7px;\">______</div>" t "Quickly apply a Backdrop for Ref" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.59, 0.55, 0.34], \[0.59, 0.55, 0.34], \[0.59, 0.55, 0.34]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {22 Otro l "<div style=\"background-color: #465177; color: #465177; font-size: 7px;\">______</div><div style=\"background-color: #465177; color: #465177; font-size: 7px;\">______</div><div style=\"background-color: #465177; color: #465177; font-size: 7px;\">______</div>" t "Quickly apply a Backdrop for Pub" -STARTLINE T "import colorsys\nn=nuke.thisNode()\ndef clamp(x):\n    return int(max(0, min(x, 255)))\ntile_color=n\['tile_color'].value()\ncolors=\[\[0.63, 0.41, 0.47], \[0.63, 0.41, 0.47], \[0.63, 0.41, 0.47]]\n#converting colors\ncolors_hex=\[colorsys.hsv_to_rgb(color\[0],color\[1],color\[2]) for color in colors]\ncolors_int=\[int('%02x%02x%02x%02x' % (clamp(color\[0]*255),clamp(color\[1]*255),clamp(color\[2]*255),255), 16) for color in colors_hex]\n#selecting color logic\nif tile_color in colors_int:\n    current_index=colors_int.index(tile_color)\n    if current_index >= (len(colors_int)-1):\n        new_color = colors_int\[0]\n    else:\n        new_color = colors_int\[current_index+1]\nelse:\n    new_color = colors_int\[0]\n#apply color\nn\['tile_color'].setValue(new_color)"}
+addUserKnob {26 S08 l " " -STARTLINE T " "}
+addUserKnob {22 copy_color l "   Copy Color   " -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\ntile_color = node\['tile_color'].value()\ntile_color_hex = '\{:08x\}'.format(tile_color)  # Convertir a cadena hexadecimal de 8 digitos\n\n# Copiar al portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'echo ' + tile_color_hex + '| clip'\n    subprocess.run(cmd, shell=True)\nelif platform.system() == 'Darwin':\n    cmd = 'echo ' + tile_color_hex + ' | pbcopy'\n    subprocess.run(cmd, shell=True)\nelse:\n    print(\"Sistema operativo no soportado para copiar al portapapeles\")\n\n#print(\"Color copiado al portapapeles:\", tile_color_hex)\n"}
+addUserKnob {22 paste_color l "   Paste Color   " -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n# Obtener el valor del portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'powershell Get-Clipboard'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    tile_color_hex = result.stdout.strip()\nelif platform.system() == 'Darwin':\n    cmd = 'pbpaste'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    tile_color_hex = result.stdout.strip()\nelse:\n    print(\"Sistema operativo no soportado para pegar desde el portapapeles\")\n    tile_color_hex = None\n\nif tile_color_hex:\n    try:\n        tile_color = int(tile_color_hex, 16)\n        node\['tile_color'].setValue(tile_color)\n        #print(\"Color pegado desde el portapapeles:\", tile_color_hex)\n    except ValueError:\n        print(\"El valor en el portapapeles no es un color valido\")\n"}
+addUserKnob {26 S07 l " " T " "}
+addUserKnob {4 oz_appearance l " Appearance      " -STARTLINE M {Fill Border}}
+addUserKnob {7 oz_border_width l Border t "Border width for Border appearence" -STARTLINE R 0 30}
+oz_border_width 2
+addUserKnob {26 divider2 l "" +STARTLINE}
+addUserKnob {26 S02 l " " T " "}
+addUserKnob {22 grow l " <img src=\"MergeMin.png\">" t "Grows the size of the Backdrop by 50pt in every direction" -STARTLINE T "n=nuke.thisNode()\n\ndef grow(node=None,step=50):\n    try:\n        if not node:\n            n=nuke.selectedNode()\n        else:\n            n=node\n            n\['xpos'].setValue(n\['xpos'].getValue()-step)\n            n\['ypos'].setValue(n\['ypos'].getValue()-step)\n            n\['bdwidth'].setValue(n\['bdwidth'].getValue()+step*2)\n            n\['bdheight'].setValue(n\['bdheight'].getValue()+step*2)\n    except e:\n        print('Error:: %s' % e)\n\ngrow(n,50)"}
+addUserKnob {22 shrink l " <img src=\"MergeMax.png\">" t "Shrinks the size of the Backdrop by 50pt in every direction" -STARTLINE T "n=nuke.thisNode()\n\ndef shrink(node=None,step=50):\n    try:\n        if not node:\n            n=nuke.selectedNode()\n        else:\n            n=node\n            n\['xpos'].setValue(n\['xpos'].getValue()+step)\n            n\['ypos'].setValue(n\['ypos'].getValue()+step)\n            n\['bdwidth'].setValue(n\['bdwidth'].getValue()-step*2)\n            n\['bdheight'].setValue(n\['bdheight'].getValue()-step*2)\n    except e:\n        print('Error:: %s' % e)\n\nshrink(n,50)"}
+addUserKnob {26 S03 l " " -STARTLINE T "     "}
+addUserKnob {22 encompassSelectedNodes l " <img src=\"ContactSheet.png\">" t "Will resize the backdrop to encompass every selected nodes plus a padding number (the number next to the button)" -STARTLINE T "\nimport oz_encompassScript\noz_encompassScript.encompass_selected_nodes()\n"}
+addUserKnob {26 S04 l " " -STARTLINE T " "}
+addUserKnob {3 sides l "" t "When encompassing nodes this number of pt will be added to the Backdrop size in every direction" -STARTLINE}
+sides 100
+addUserKnob {26 divider3 l "" +STARTLINE}
+addUserKnob {26 S05 l " " -STARTLINE T " "}
+addUserKnob {26 pos_text l Position -STARTLINE T " "}
+addUserKnob {3 node_position_x l x -STARTLINE}
+node_position_x -11948
+addUserKnob {3 node_position_y l y -STARTLINE}
+node_position_y -1656
+addUserKnob {26 S06 l " " T " "}
+addUserKnob {14 sizeNode l "Size       " -STARTLINE R 0 100}
+sizeNode {860 1218}
+addUserKnob {26 S09 l " " T " "}
+addUserKnob {22 copy_width l "Copy W" t "Copy the width of this backdrop to use in another backdrop" -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n# Funcion updateKnobs para actualizar todos los valores para hacer un refresh antes del copy\ndef updateKnobs(node):\n    nodeWidth = node\['bdwidth'].getValue()\n    nodeHeight = node\['bdheight'].getValue()\n    node\['sizeNode'].setValue(\[int(nodeWidth), int(nodeHeight)])\n    node\['zorder'].setValue(int(node\['z_order'].getValue()))\n    node\['font_size'].setValue(int(node\['note_font_size'].getValue()))\n    node\['oz_appearance'].setValue(node\['appearance'].value())\n    node\['oz_border_width'].setValue(node\['border_width'].value())\n\nupdateKnobs(node)\n\nsize_w = node\['sizeNode'].getValue()\[0]\n\n# Copiar al portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'echo ' + str(size_w).strip() + '| clip'\n    subprocess.run(cmd, shell=True)\nelif platform.system() == 'Darwin':\n    cmd = 'echo ' + str(size_w).strip() + ' | pbcopy'\n    subprocess.run(cmd, shell=True)\nelse:\n    print(\"Sistema operativo no soportado para copiar al portapapeles\")\n\n#print(\"Size W copiado al portapapeles:\", size_w)\n"}
+addUserKnob {22 paste_width l "Paste W" t "Set this backdrop's width using the value copied from another backdrop" -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n# Obtener el valor del portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'powershell Get-Clipboard'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    size_w = result.stdout.strip()\nelif platform.system() == 'Darwin':\n    cmd = 'pbpaste'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    size_w = result.stdout.strip()\nelse:\n    print(\"Sistema operativo no soportado para pegar desde el portapapeles\")\n    size_w = None\n\nif size_w:\n    try:\n        size_w = float(size_w)\n        node\['bdwidth'].setValue(size_w)\n        node\['sizeNode'].setValue(\[size_w, node\['sizeNode'].getValue()\[1]])\n        #print(\"Size W pegado desde el portapapeles:\", size_w)\n    except ValueError:\n        print(\"El valor en el portapapeles no es un numero valido\")\n"}
+addUserKnob {22 copy_height l "Copy H" t "Copy the height of this backdrop to use in another backdrop" -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n\n# Funcion updateKnobs para actualizar todos los valores para hacer un refresh antes del copy\ndef updateKnobs(node):\n    nodeWidth = node\['bdwidth'].getValue()\n    nodeHeight = node\['bdheight'].getValue()\n    node\['sizeNode'].setValue(\[int(nodeWidth), int(nodeHeight)])\n    node\['zorder'].setValue(int(node\['z_order'].getValue()))\n    node\['font_size'].setValue(int(node\['note_font_size'].getValue()))\n    node\['oz_appearance'].setValue(node\['appearance'].value())\n    node\['oz_border_width'].setValue(node\['border_width'].value())\n\nupdateKnobs(node)\n\nsize_h = node\['sizeNode'].getValue()\[1]\n\n# Copiar al portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'echo ' + str(size_h).strip() + '| clip'\n    subprocess.run(cmd, shell=True)\nelif platform.system() == 'Darwin':\n    cmd = 'echo ' + str(size_h).strip() + ' | pbcopy'\n    subprocess.run(cmd, shell=True)\nelse:\n    print(\"Sistema operativo no soportado para copiar al portapapeles\")\n\nprint(\"Size H copiado al portapapeles:\", size_h)\n"}
+addUserKnob {22 paste_height l "Paste H" t "Set this backdrop's height using the value copied from another backdrop" -STARTLINE T "\nimport subprocess\nimport platform\n\nnode = nuke.thisNode()\n\n# Obtener el valor del portapapeles segun el sistema operativo\nif platform.system() == 'Windows':\n    cmd = 'powershell Get-Clipboard'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    size_h = result.stdout.strip()\nelif platform.system() == 'Darwin':\n    cmd = 'pbpaste'\n    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\n    size_h = result.stdout.strip()\nelse:\n    print(\"Sistema operativo no soportado para pegar desde el portapapeles\")\n    size_h = None\n\nif size_h:\n    try:\n        size_h = float(size_h)\n        node\['bdheight'].setValue(size_h)\n        node\['sizeNode'].setValue(\[node\['sizeNode'].getValue()\[0], size_h])\n        #print(\"Size H pegado desde el portapapeles:\", size_h)\n    except ValueError:\n        print(\"El valor en el portapapeles no es un numero valido\")\n"}
+addUserKnob {26 divider4 l "" +STARTLINE}
+addUserKnob {26 z_order_label l "" -STARTLINE T "Z Order     "}
+addUserKnob {26 "" -STARTLINE T "Back "}
+addUserKnob {7 zorder l "" -STARTLINE R -5 5}
+zorder 4
+addUserKnob {26 "" -STARTLINE T " Front"}
+}
+Read {
+inputs 0
+file T:/VFX-LC/000/LC_000_020_DeAging_Cena/Comp/2_prerenders/
+origset true
+name Read23
+selected true
+xpos 7208
+ypos -541
+bookmark true
+}
+Dot {
+name Dot54
+selected true
+xpos 7242
+ypos -399
+}
+Read {
+inputs 0
+file T:/VFX-LC/000/LC_000_020_DeAging_Cena/Comp/2_prerenders/
+origset true
+name Read24
+selected true
+xpos 6853
+ypos -541
+bookmark true
+}
+Dot {
+name Dot55
+selected true
+xpos 6887
+ypos -399
+}
+AppendClip {
+inputs 2
+meta_from_first false
+time ""
+name AppendClip1
+selected true
+xpos 7041
+ypos -402
+}
+Crop {
+box {{parent.Crop5.box.x} {parent.Crop5.box.y} {parent.Crop5.box.r} {parent.Crop5.box.t}}
+name Crop6
+selected true
+xpos 7041
+ypos -239
+}
+Dot {
+name Dot56
+selected true
+xpos 7075
+ypos -74
+}
+set Ncdd29000 [stack 0]
+Dot {
+name Dot57
+selected true
+xpos 6888
+ypos -74
+}
+Grade {
+white 1.6
+gamma 0.66
+name Grade6
+selected true
+xpos 6854
+ypos -25
+}
+Dot {
+name Dot58
+selected true
+xpos 6888
+ypos 59
+}
+push $Ncdd29000
+ColorCorrect {
+midtones.saturation 0.72
+midtones.gamma 0.76
+midtones.gain 1.5
+name ColorCorrect1
+selected true
+xpos 7041
+ypos -28
+}
+push $Ncdd29000
+Dot {
+name Dot59
+selected true
+xpos 7243
+ypos -74
+}
+Dot {
+name Dot60
+selected true
+xpos 7243
+ypos 59
+}
+AppendClip {
+inputs 3
+meta_from_first false
+time ""
+name AppendClip2
+selected true
+xpos 7041
+ypos 56
+}
+Remove {
+channels alpha
+name Remove1
+selected true
+xpos 7041
+ypos 122
+}
+Dot {
+name Dot61
+selected true
+xpos 7075
+ypos 466
+}
+push $cut_paste_input
+PostageStamp {
+name Stamp34
+help "Stamps by Adrian Pueyo and Alexey Kuchinski.\nUpdated May 18 2021"
+onCreate "if nuke.GUI:\n    try:\n        import stamps; stamps.wiredOnCreate()\n    except:\n        pass\n"
+knobChanged "import stamps; stamps.wiredKnobChanged()"
+autolabel "nuke.thisNode().knob(\"title\").value()"
+tile_color 0x1000001
+note_font Verdana
+note_font_size 20
+selected true
+xpos 5967
+ypos -817
+hide_input true
+addUserKnob {20 wired_tab l "Wired Stamp"}
+addUserKnob {26 identifier -STARTLINE +HIDDEN T wired}
+addUserKnob {3 lockCallbacks l "" +STARTLINE +HIDDEN}
+addUserKnob {6 toReconnect -STARTLINE +HIDDEN}
+addUserKnob {1 title l Title: t "Displayed name on the Node Graph for this Stamp and its Anchor.\nIMPORTANT: This is only for display purposes, and is different from the real/internal name of the Stamps."}
+title denoised
+addUserKnob {26 prev_title l "" +STARTLINE +HIDDEN T denoised}
+addUserKnob {26 tags l Tags: t "Tags of this stamp's Anchor, for information purpose only.\nClick \"show anchor\" to change them." T <i>2D</i>}
+addUserKnob {26 backdrops l Backdrops: t "Labels of backdrop nodes which contain this stamp's Anchor." T <i>denoised</i>}
+addUserKnob {26 line1 l "" +STARTLINE}
+addUserKnob {6 postageStamp_show l "postage stamp" t "Enable the postage stamp thumbnail in this node.\nYou're seeing this because the class of this node includes the postage_stamp knob." +STARTLINE}
+addUserKnob {26 anchor_label l Anchor: T " "}
+addUserKnob {22 show_anchor l " show anchor " t "Show the properties panel for this Stamp's Anchor." -STARTLINE T stamps.wiredShowAnchor()}
+addUserKnob {22 zoom_anchor l "zoom anchor" t "Navigate to this Stamp's Anchor on the Node Graph." -STARTLINE T stamps.wiredZoomAnchor()}
+addUserKnob {26 stamps_label l Stamps: T " "}
+addUserKnob {22 zoomNext l " zoom next " t "Navigate to this Stamp's next sibling on the Node Graph." -STARTLINE T stamps.wiredZoomNext()}
+addUserKnob {22 selectSimilar l " select similar " t "Select all similar Stamps to this one on the Node Graph." -STARTLINE T stamps.wiredSelectSimilar()}
+addUserKnob {26 space_1 l "" +STARTLINE T " "}
+addUserKnob {26 reconnect_label l Reconnect: t "Reconnect by the stored Anchor name." T " "}
+addUserKnob {22 reconnect_this l this t "Reconnect this Stamp to its Anchor, by its stored Anchor name." -STARTLINE T "n = nuke.thisNode()\ntry:\n    n.setInput(0,nuke.toNode(n.knob(\"anchor\").value()))\nexcept:\n    nuke.message(\"Unable to reconnect.\")\ntry:\n    import stamps\n    stamps.wiredGetStyle(n)\nexcept:\n    pass\n"}
+addUserKnob {22 reconnect_similar l similar t "Reconnect this Stamp and similar ones to their Anchor, by their stored anchor name." -STARTLINE T stamps.wiredReconnectSimilar()}
+addUserKnob {22 reconnect_all l all t "Reconnect all the Stamps to their Anchors, by their stored anchor names." -STARTLINE T stamps.wiredReconnectAll()}
+addUserKnob {26 space_2 l "" +STARTLINE T " "}
+addUserKnob {20 advanced_reconnection l "Advanced Reconnection" n 2}
+addUserKnob {26 reconnect_by_title_label l "<font color=gold>By Title:" t "Reconnect by searching for a matching title." T " "}
+addUserKnob {22 reconnect_by_title_this l this t "Look for an Anchor that shares this Stamp's title, and connect this Stamp to it.\nIMPORTANT: Use this carefully, and only when the normal reconnection doesn't work." -STARTLINE T stamps.wiredReconnectByTitle()}
+addUserKnob {22 reconnect_by_title_similar l similar t "Look for an Anchor that shares this Stamp's title, and connect this Stamp and similar ones to it.\nIMPORTANT: Use this carefully, and only when the normal reconnection doesn't work." -STARTLINE T stamps.wiredReconnectByTitleSimilar()}
+addUserKnob {22 reconnect_by_title_selected l selected t "For each Stamp selected, look for an Anchor that shares its title, and connect to it.\nIMPORTANT: Use this carefully, and only when the normal reconnection doesn't work." -STARTLINE T stamps.wiredReconnectByTitleSelected()}
+addUserKnob {26 reconnect_by_selection_label l "<font color=orangered>By Selection:" t "Force reconnect to a selected Anchor." T " "}
+addUserKnob {22 reconnect_by_selection_this l this t "Force reconnect this Stamp to a selected Anchor, whatever its name or title.\nIMPORTANT: Use this carefully, and only when the normal reconnection doesn't work." -STARTLINE T stamps.wiredReconnectBySelection()}
+addUserKnob {22 reconnect_by_selection_similar l similar t "Force reconnect this Stamp and similar ones to a selected Anchor, whatever its name or title.\nIMPORTANT: Use this carefully, and only when the normal reconnection doesn't work." -STARTLINE T stamps.wiredReconnectBySelectionSimilar()}
+addUserKnob {22 reconnect_by_selection_selected l selected t "Force reconnect all selected Stamps to an also selected Anchor, whatever its name or title.\nIMPORTANT: Use this carefully, and only when the normal reconnection doesn't work." -STARTLINE T stamps.wiredReconnectBySelectionSelected()}
+addUserKnob {1 anchor l Anchor}
+anchor Anchor_191bcc1e1
+addUserKnob {6 auto_reconnect_by_title l "<font color=#ED9977>&nbsp; auto-reconnect by title" t "When creating this stamp again (like on copy-paste), auto-reconnect it by title instead of doing it by the saved anchor's name, and auto-turn this off immediately.\nIMPORTANT: Should be off by default. Only use this for setting up templates." +STARTLINE}
+addUserKnob {26 line2 l "" +STARTLINE}
+addUserKnob {22 buttonHelp l Help -STARTLINE T stamps.showHelp()}
+addUserKnob {26 version l " " t "Stamps by Adrian Pueyo and Alexey Kuchinski.\nUpdated May 18 2021." -STARTLINE T "<a href=\"http://www.nukepedia.com/gizmos/other/stamps\" style=\"color:#666;text-decoration: none;\"><span style=\"color:#666\"> <big>Stamps v1.1</big></b></a>"}
+}
+FrameRange {
+first_frame 1
+last_frame 1
+time ""
+name FrameRange6
+selected true
+xpos 5967
+ypos -702
+}
+Dot {
+name Dot48
+selected true
+xpos 6001
+ypos -602
+}
+set N9bf78800 [stack 0]
+Dot {
+name Dot52
+selected true
+xpos 6185
+ypos -602
+}
+FrameHold {
+firstFrame 1100
+name FrameHold10
+selected true
+xpos 6151
+ypos -515
+}
+Dot {
+name Dot53
+selected true
+xpos 6185
+ypos -396
+}
+set Na204e400 [stack 0]
+push $N9bf78800
+Dot {
+name Dot50
+selected true
+xpos 5822
+ypos -602
+}
+FrameHold {
+firstFrame 1001
+name FrameHold4
+selected true
+xpos 5788
+ypos -514
+}
+Dot {
+name Dot51
+selected true
+xpos 5822
+ypos -396
+}
+set N9bf78400 [stack 0]
+AppendClip {
+inputs 2
+meta_from_first false
+time ""
+name AppendClip3
+selected true
+xpos 5972
+ypos -399
+}
+Crop {
+box {0 0 3840 2160}
+name Crop5
+selected true
+xpos 5972
+ypos -239
+}
+Dot {
+name Dot62
+selected true
+xpos 6006
+ypos -105
+}
+set Nf7b69400 [stack 0]
+Dot {
+name Dot63
+selected true
+xpos 5822
+ypos -105
+}
+Grade {
+white 1.6
+gamma 0.66
+name Grade7
+selected true
+xpos 5788
+ypos -56
+}
+Dot {
+name Dot64
+selected true
+xpos 5822
+ypos 28
+}
+push $Nf7b69400
+ColorCorrect {
+midtones.saturation 0.72
+midtones.gamma 0.76
+midtones.gain 1.5
+name ColorCorrect2
+selected true
+xpos 5972
+ypos -59
+}
+push $Nf7b69400
+Dot {
+name Dot65
+selected true
+xpos 6185
+ypos -105
+}
+Dot {
+name Dot66
+selected true
+xpos 6185
+ypos 28
+}
+AppendClip {
+inputs 3
+meta_from_first false
+time ""
+name AppendClip6
+selected true
+xpos 5972
+ypos 25
+}
+Remove {
+channels alpha
+name Remove4
+selected true
+xpos 5972
+ypos 127
+}
+Dot {
+name Dot67
+selected true
+xpos 6006
+ypos 466
+}
+CopyCat {
+inputs 2
+dataDirectory T:/VFX-ETDM/101/ETDM_1000_0060_DeAging_Atropella/Comp/2_prerenders/copycat_v01/
+epochs 80000
+totalSteps 80000
+Advanced 1
+checkpointFile T:/VFX-LC/000/LC_000_020_DeAging_Cena/Comp/2_prerenders/copycat_amelia_cuello_v01/Training_250509_044855.40000.cat
+modelSize Large
+previousModelSize Large
+autoBatchSize 6
+useMultiResolution false
+runTable { { 1 6 1 } 
+{ { 4 1 20 visibleCol  1 } 
+{ 7 1 20 activeCol  1 } 
+{ 3 1 80 nameCol Name 1 } 
+{ 3 0 50 stepsCol Steps 1 } 
+{ 3 0 160 timeCol Time 1 } 
+{ 6 0 50 colourCol Colour 1 } 
+} 
+{ 
+ { 1 1 "Training_250514_122312" "80000" "Thu May 15 16:58:57 2025" "#ff4500"  } 
+} 
+}
+
+logScale true
+preview_group 0
+name CopyCat2
+selected true
+xpos 6548
+ypos 463
+}
+push $N9bf78400
+Write {
+file "\[file dir \[value root.name]]/../2_prerenders/\[join \[lrange \[split \[file tail \[knob \[topnode].file]] _ ] 0 5 ] _]_Matte_r709_COPYCAT-1001_v01.tif"
+file_type tiff
+datatype "16 bit"
+colorspace "Output - Rec.709"
+create_directories true
+checkHashOnRead false
+version 5
+ocioColorspace "ACES - ACES2065-1"
+display ACES
+view sRGB
+name Write_Matte_r709_1
+selected true
+xpos 5626
+ypos -411
+addUserKnob {20 User}
+addUserKnob {1 render_time l "Render Time"}
+render_time 00:18:27
+}
+push $Na204e400
+Write {
+file "\[file dir \[value root.name]]/../2_prerenders/\[join \[lrange \[split \[file tail \[knob \[topnode].file]] _ ] 0 5 ] _]_Matte_r709_COPYCAT-1100_v01.tif"
+file_type tiff
+datatype "16 bit"
+colorspace "Output - Rec.709"
+create_directories true
+checkHashOnRead false
+version 6
+ocioColorspace "ACES - ACES2065-1"
+display ACES
+view sRGB
+name Write_Matte_r709_4
+selected true
+xpos 6309
+ypos -411
+addUserKnob {20 User}
+addUserKnob {1 render_time l "Render Time"}
+render_time 00:18:27
+}
+StickyNote {
+inputs 0
+name StickyNote15
+tile_color 0xffffffff
+label "WRITE A"
+note_font_size 20
+selected true
+xpos 5621
+ypos -471
+}
+StickyNote {
+inputs 0
+name StickyNote17
+tile_color 0xffffffff
+label "WRITE B"
+note_font_size 20
+selected true
+xpos 6304
+ypos -472
+}
+StickyNote {
+inputs 0
+name StickyNote16
+tile_color 0xffffffff
+label "READ B"
+note_font_size 20
+selected true
+xpos 7208
+ypos -646
+}
+StickyNote {
+inputs 0
+name StickyNote14
+tile_color 0xffffffff
+label "READ A"
+note_font_size 20
+selected true
+xpos 6853
+ypos -646
+}
+Crop {
+inputs 0
+box {{curve x2 1355 x1001 314 x1001 1474.5 x1080 1776} {curve x2 409 x1001 406 x1001 785.5 x1080 1015} {curve x2 2305 x1001 1264 x1001 2062 x1080 2208} {curve x2 1655 x1001 1652 x1001 1398 x1080 1594.21131}}
+name Crop8
+selected true
+xpos 6544
+ypos 585
+}
+Crop {
+box {{parent.Crop8.box.x+Margen} {parent.Crop8.box.y+Margen} {parent.Crop8.box.r-Margen} {parent.Crop8.box.t-Margen}}
+softness 19
+name Crop9
+selected true
+xpos 6544
+ypos 718
+addUserKnob {20 User}
+addUserKnob {7 Margen R 0 30}
+Margen 13
+}
+StickyNote {
+inputs 0
+name StickyNote18
+tile_color 0xffffffff
+label INFERENCE
+note_font_size 20
+selected true
+xpos 6525
+ypos 646
+}
