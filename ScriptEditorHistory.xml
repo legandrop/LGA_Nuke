@@ -9918,4 +9918,179 @@ undo.end()
 
 import importlib
 import LGA_build_Roto
-importlib.reload(LGA_build_Roto)</script>
+importlib.reload(LGA_build_Roto)# Script para listar todos los campos de Task en ShotGrid
+# Con énfasis en campos de estimación de tiempo/duración
+
+import os
+import shotgun_api3
+import pprint
+
+# Recuperar datos de autenticación de las variables de entorno
+url = os.environ.get(&quot;SHOTGRID_URL&quot;)
+login = os.environ.get(&quot;SHOTGRID_LOGIN&quot;)
+password = os.environ.get(&quot;SHOTGRID_PASSWORD&quot;)
+
+# Crear una instancia de la API de ShotGrid usando login y password
+sg = shotgun_api3.Shotgun(url, login=login, password=password)
+
+
+def listar_campos_task():
+    &quot;&quot;&quot;
+    Lista todos los campos de la entidad Task en ShotGrid,
+    con énfasis en campos relacionados con estimaciones.
+    &quot;&quot;&quot;
+    print(&quot;\n=== CAMPOS DE TASK EN SHOTGRID ===\n&quot;)
+
+    # Obtener todos los campos de Task
+    fields = sg.schema_field_read(&quot;Task&quot;)
+
+    # Primero mostrar campos relacionados con estimaciones
+    print(&quot;--- CAMPOS RELACIONADOS CON ESTIMACIONES ---&quot;)
+    estimation_fields = {}
+    keywords = [&quot;estimat&quot;, &quot;duration&quot;, &quot;time&quot;, &quot;hour&quot;, &quot;día&quot;, &quot;day&quot;, &quot;week&quot;, &quot;fecha&quot;]
+
+    for field_name, field_data in fields.items():
+        field_display = field_data.get(&quot;name&quot;, {}).get(&quot;value&quot;, &quot;Sin nombre&quot;)
+
+        # Buscar campos relacionados con estimaciones
+        if any(
+            keyword.lower() in field_name.lower()
+            or keyword.lower() in field_display.lower()
+            for keyword in keywords
+        ):
+            estimation_fields[field_name] = field_data
+            print(f&quot;Campo: {field_name}&quot;)
+            print(f&quot;  Nombre visible: {field_display}&quot;)
+            print(f&quot;  Editable: {field_data.get('editable', False)}&quot;)
+            print(
+                f&quot;  Tipo: {field_data.get('data_type', {}).get('value', 'Desconocido')}&quot;
+            )
+
+            # Si es una lista, mostrar valores posibles
+            if field_data.get(&quot;data_type&quot;, {}).get(&quot;value&quot;) == &quot;list&quot;:
+                valores = (
+                    field_data.get(&quot;properties&quot;, {})
+                    .get(&quot;valid_values&quot;, {})
+                    .get(&quot;value&quot;, [])
+                )
+                print(
+                    f&quot;  Valores permitidos: {', '.join(valores) if valores else 'Ninguno'}&quot;
+                )
+            print()
+
+    # Mostrar resto de campos
+    print(&quot;\n--- TODOS LOS CAMPOS DE TASK ---&quot;)
+    for field_name, field_data in fields.items():
+        if field_name not in estimation_fields:
+            field_display = field_data.get(&quot;name&quot;, {}).get(&quot;value&quot;, &quot;Sin nombre&quot;)
+            print(
+                f&quot;{field_name} → {field_display} | Editable: {field_data.get('editable', False)}&quot;
+            )
+
+
+def ver_ejemplo_tarea(task_id=None):
+    &quot;&quot;&quot;
+    Muestra un ejemplo de una tarea para ver sus valores actuales.
+    Si no se proporciona task_id, busca la primera tarea disponible.
+    &quot;&quot;&quot;
+    print(&quot;\n=== EJEMPLO DE TAREA ===\n&quot;)
+
+    if not task_id:
+        # Obtener una tarea cualquiera como ejemplo
+        result = sg.find_one(&quot;Task&quot;, [], [&quot;id&quot;])
+        if result:
+            task_id = result[&quot;id&quot;]
+        else:
+            print(&quot;No se encontró ninguna tarea en el proyecto.&quot;)
+            return
+
+    # Obtener todos los campos de la tarea
+    task = sg.find_one(&quot;Task&quot;, [[&quot;id&quot;, &quot;is&quot;, task_id]], fields=None)
+
+    if task:
+        print(f&quot;Tarea ID: {task.get('id')}&quot;)
+        print(f&quot;Nombre: {task.get('content')}&quot;)
+
+        # Mostrar campos relacionados con estimaciones
+        keywords = [
+            &quot;estimat&quot;,
+            &quot;duration&quot;,
+            &quot;time&quot;,
+            &quot;hour&quot;,
+            &quot;día&quot;,
+            &quot;day&quot;,
+            &quot;week&quot;,
+            &quot;fecha&quot;,
+        ]
+        estimation_data = {}
+
+        for field, value in task.items():
+            if (
+                any(keyword.lower() in field.lower() for keyword in keywords)
+                and value is not None
+            ):
+                estimation_data[field] = value
+
+        if estimation_data:
+            print(&quot;\nCampos de estimación:&quot;)
+            for field, value in estimation_data.items():
+                print(f&quot;  {field}: {value}&quot;)
+        else:
+            print(&quot;\nNo se encontraron campos de estimación con valores.&quot;)
+
+        # Opcional: Mostrar los primeros 5 campos genéricos
+        print(&quot;\nOtros campos de ejemplo:&quot;)
+        count = 0
+        for field, value in task.items():
+            if (
+                field not in estimation_data
+                and field not in [&quot;type&quot;, &quot;id&quot;]
+                and value is not None
+            ):
+                print(f&quot;  {field}: {value}&quot;)
+                count += 1
+                if count &gt;= 5:
+                    break
+    else:
+        print(f&quot;No se encontró ninguna tarea con ID {task_id}&quot;)
+
+
+def actualizar_campo_estimacion(task_id, campo, valor):
+    &quot;&quot;&quot;
+    Actualiza un campo de estimación para una tarea específica.
+
+    Args:
+        task_id (int): ID de la tarea a actualizar
+        campo (str): Nombre del campo a actualizar (ej: 'sg_estimated_time')
+        valor: Valor a asignar al campo
+    &quot;&quot;&quot;
+    try:
+        result = sg.update(&quot;Task&quot;, task_id, {campo: valor})
+        print(f&quot;\nCampo '{campo}' de Tarea {task_id} actualizado con valor: {valor}&quot;)
+        return result
+    except Exception as e:
+        print(f&quot;\nError al actualizar el campo '{campo}': {e}&quot;)
+        return None
+
+
+def main():
+    # Mostrar todos los campos de Task en ShotGrid
+    listar_campos_task()
+
+    # Mostrar ejemplo de una tarea (opcional)
+    # Descomenta la siguiente línea para ver un ejemplo de tarea
+    # ver_ejemplo_tarea()
+
+    # Ejemplo de cómo actualizar un campo de estimación
+    # (descomenta y modifica para probar)
+    &quot;&quot;&quot;
+    task_id = 123  # Reemplaza con un ID de tarea válido
+    campo_estimacion = &quot;sg_estimated_time&quot;  # Reemplaza con el nombre correcto del campo
+    nuevo_valor = 2.5  # Reemplaza con el valor deseado
+    actualizar_campo_estimacion(task_id, campo_estimacion, nuevo_valor)
+    &quot;&quot;&quot;
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</script>
