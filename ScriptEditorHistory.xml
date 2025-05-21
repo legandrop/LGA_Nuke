@@ -10093,4 +10093,170 @@ def main():
 
 if __name__ == &quot;__main__&quot;:
     main()
-</script>
+import nuke
+
+# Variable global para activar o desactivar los prints
+DEBUG = True
+
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+def Dots():
+    dotList, dotListX = [], []
+    Dsize = int(nuke.toNode(&quot;preferences&quot;)['dot_node_scale'].value() * 12)
+    nodes = nuke.selectedNodes()
+    count = 0
+    same = 1
+    old = &quot;&quot;
+    for selected in nodes:
+        selectedX, selectedY = int(selected.xpos()), int(selected.ypos())
+        selectedW, selectedH = int(selected.screenWidth()), int(selected.screenHeight())
+
+        # checking inputs and assigning variables
+        inputs_connected = False
+        input_nodes = [None, None, None]  # Track inputs A, B, and C
+
+        try:  # check if input 0 exists
+            A = selected.input(0)
+            input_nodes[0] = A
+            AX = int(A.xpos())
+            AY = int(A.ypos())
+            AW = int(A.screenWidth())
+            AH = int(A.screenHeight())
+            AClass = A.Class()
+            inputs_connected = True
+            debug_print(&quot;Input 0 found:&quot;, A['name'].value())
+            if count == 0:
+                old = A
+                count += 1
+            else:
+                if old != A:
+                    same = 0
+        except:
+            AX, AY = int(selected.xpos()), int(selected.ypos())
+            AW, AH = int(selected.screenWidth()), int(selected.screenHeight())
+            AClass = &quot;no class&quot;
+            debug_print(&quot;No input 0 found&quot;)
+
+        try:  # check if input 1 exists
+            B = selected.input(1)
+            input_nodes[1] = B
+            BX = int(B.xpos())
+            BY = int(B.ypos())
+            BW = int(B.screenWidth())
+            BH = int(B.screenHeight())
+            BClass = B.Class()
+            inputs_connected = True
+            debug_print(&quot;Input 1 found:&quot;, B['name'].value())
+        except:
+            BX, BY = int(selected.xpos()), int(selected.ypos())
+            BW, BH = int(selected.screenWidth()), int(selected.screenHeight())
+            BClass = &quot;no class&quot;
+            debug_print(&quot;No input 1 found&quot;)
+
+        try:  # check if input 2 exists
+            C = selected.input(2)
+            input_nodes[2] = C
+            CX = int(C.xpos())
+            CY = int(C.ypos())
+            CW = int(C.screenWidth())
+            CH = int(C.screenHeight())
+            CClass = C.Class()
+            inputs_connected = True
+            debug_print(&quot;Input 2 found:&quot;, C['name'].value())
+        except:
+            debug_print(&quot;No input 2 found&quot;)
+
+        # No need to proceed if no inputs are connected
+        if not inputs_connected:
+            debug_print(&quot;No inputs connected, skipping node:&quot;, selected['name'].value())
+            continue
+
+        # setting position
+        if B and not C:  # two inputs found
+            create_dot_for_B = True
+            if B is not None:
+                BY = int(B.ypos())
+                BH = int(B.screenHeight())
+                if B.Class() == &quot;Dot&quot; and BY == selectedY + selectedH / 2 - Dsize / 2:
+                    create_dot_for_B = False
+                elif BY + BH / 2 == selectedY + selectedH / 2:
+                    create_dot_for_B = False
+
+            if create_dot_for_B:
+                Dot = nuke.nodes.Dot()
+                Dot.setInput(0, B)
+                selected.setInput(1, Dot)
+                Dot.setXYpos(int(BX + BW / 2 - Dsize / 2), int(selectedY + selectedH / 2 - Dsize / 2))
+
+            debug_print('Two inputs found')
+
+        elif C:  # three inputs found
+            if &quot;Scanline&quot; in selected.Class():
+                create_dot_for_C = True
+                if C is not None:
+                    CY = int(C.ypos())
+                    CH = int(C.screenHeight())
+                    if C.Class() == &quot;Dot&quot; and CY == selectedY + selectedH / 2 - Dsize / 2:
+                        create_dot_for_C = False
+                    elif CY + CH / 2 == selectedY + selectedH / 2:
+                        create_dot_for_C = False
+
+                if create_dot_for_C:
+                    dot = nuke.nodes.Dot(xpos=CX + CW / 2 - Dsize / 2, ypos=selectedY + selectedH / 2 - Dsize / 2)
+                    dot.setInput(0, C)
+                    selected.setInput(2, dot)
+
+                create_dot_for_A = True
+                if A is not None and AClass != &quot;no class&quot;:
+                    AY = int(A.ypos())
+                    AH = int(A.screenHeight())
+                    if A.Class() == &quot;Dot&quot; and AY == selectedY + selectedH / 2 - Dsize / 2:
+                        create_dot_for_A = False
+                    elif AY + AH / 2 == selectedY + selectedH / 2:
+                        create_dot_for_A = False
+
+                if create_dot_for_A:
+                    dot = nuke.nodes.Dot(xpos=AX + AW / 2 - Dsize / 2, ypos=selectedY + selectedH / 2 - Dsize / 2)
+                    dot.setInput(0, A)
+                    selected.setInput(0, dot)
+
+                debug_print(&quot;Scanline node processed&quot;)
+
+            if &quot;Merge&quot; in selected.Class() or &quot;Roto&quot; in selected.Class() or &quot;Keymix&quot; in selected.Class():
+                create_dot_for_C = True
+                if C.Class() == &quot;Dot&quot; and CY == selectedY + selectedH / 2 - Dsize / 2:
+                    create_dot_for_C = False
+                elif CY + CH / 2 == selectedY + selectedH / 2:
+                    create_dot_for_C = False
+
+                if create_dot_for_C:
+                    dot = nuke.nodes.Dot(xpos=CX + CW / 2 - Dsize / 2, ypos=selectedY + selectedH / 2 - Dsize / 2)
+                    dot.setInput(0, C)
+                    selected.setInput(2, dot)
+
+                create_dot_for_B = True
+                if B.Class() == &quot;Dot&quot; and BY == selectedY + selectedH / 2 - Dsize / 2:
+                    create_dot_for_B = False
+                elif BY + BH / 2 == selectedY + selectedH / 2:
+                    create_dot_for_B = False
+
+                if create_dot_for_B:
+                    dot = nuke.nodes.Dot(xpos=BX + BW / 2 - Dsize / 2, ypos=selectedY + selectedH / 2 - Dsize / 2)
+                    dot.setInput(0, B)
+                    selected.setInput(1, dot)
+
+                debug_print('Three inputs found')
+
+        else:  # one input found
+            debug_print('One input found')
+            Dot = nuke.nodes.Dot()
+            Dot.setInput(0, A)
+            selected.setInput(0, Dot)
+            Dot.setXYpos(int(selectedX + selectedW / 2 - Dsize / 2), int(AY + AH / 2 - Dsize / 2))
+            dotList.append(Dot)
+            dotListX.append(Dot.xpos())
+
+
+Dots()</script>

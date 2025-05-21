@@ -1,175 +1,167 @@
-# Script para listar todos los campos de Task en ShotGrid
-# Con énfasis en campos de estimación de tiempo/duración
+import nuke
 
-import os
-import shotgun_api3
-import pprint
+# Variable global para activar o desactivar los prints
+DEBUG = True
 
-# Recuperar datos de autenticación de las variables de entorno
-url = os.environ.get("SHOTGRID_URL")
-login = os.environ.get("SHOTGRID_LOGIN")
-password = os.environ.get("SHOTGRID_PASSWORD")
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
 
-# Crear una instancia de la API de ShotGrid usando login y password
-sg = shotgun_api3.Shotgun(url, login=login, password=password)
+def Dots():
+    dotList, dotListX = [], []
+    Dsize = int(nuke.toNode("preferences")['dot_node_scale'].value() * 12)
+    nodes = nuke.selectedNodes()
+    count = 0
+    same = 1
+    old = ""
+    for selected in nodes:
+        selectedX, selectedY = int(selected.xpos()), int(selected.ypos())
+        selectedW, selectedH = int(selected.screenWidth()), int(selected.screenHeight())
 
+        # checking inputs and assigning variables
+        inputs_connected = False
+        input_nodes = [None, None, None]  # Track inputs A, B, and C
 
-def listar_campos_task():
-    """
-    Lista todos los campos de la entidad Task en ShotGrid,
-    con énfasis en campos relacionados con estimaciones.
-    """
-    print("\n=== CAMPOS DE TASK EN SHOTGRID ===\n")
-
-    # Obtener todos los campos de Task
-    fields = sg.schema_field_read("Task")
-
-    # Primero mostrar campos relacionados con estimaciones
-    print("--- CAMPOS RELACIONADOS CON ESTIMACIONES ---")
-    estimation_fields = {}
-    keywords = ["estimat", "duration", "time", "hour", "día", "day", "week", "fecha"]
-
-    for field_name, field_data in fields.items():
-        field_display = field_data.get("name", {}).get("value", "Sin nombre")
-
-        # Buscar campos relacionados con estimaciones
-        if any(
-            keyword.lower() in field_name.lower()
-            or keyword.lower() in field_display.lower()
-            for keyword in keywords
-        ):
-            estimation_fields[field_name] = field_data
-            print(f"Campo: {field_name}")
-            print(f"  Nombre visible: {field_display}")
-            print(f"  Editable: {field_data.get('editable', False)}")
-            print(
-                f"  Tipo: {field_data.get('data_type', {}).get('value', 'Desconocido')}"
-            )
-
-            # Si es una lista, mostrar valores posibles
-            if field_data.get("data_type", {}).get("value") == "list":
-                valores = (
-                    field_data.get("properties", {})
-                    .get("valid_values", {})
-                    .get("value", [])
-                )
-                print(
-                    f"  Valores permitidos: {', '.join(valores) if valores else 'Ninguno'}"
-                )
-            print()
-
-    # Mostrar resto de campos
-    print("\n--- TODOS LOS CAMPOS DE TASK ---")
-    for field_name, field_data in fields.items():
-        if field_name not in estimation_fields:
-            field_display = field_data.get("name", {}).get("value", "Sin nombre")
-            print(
-                f"{field_name} → {field_display} | Editable: {field_data.get('editable', False)}"
-            )
-
-
-def ver_ejemplo_tarea(task_id=None):
-    """
-    Muestra un ejemplo de una tarea para ver sus valores actuales.
-    Si no se proporciona task_id, busca la primera tarea disponible.
-    """
-    print("\n=== EJEMPLO DE TAREA ===\n")
-
-    if not task_id:
-        # Obtener una tarea cualquiera como ejemplo
-        result = sg.find_one("Task", [], ["id"])
-        if result:
-            task_id = result["id"]
-        else:
-            print("No se encontró ninguna tarea en el proyecto.")
-            return
-
-    # Obtener todos los campos de la tarea
-    task = sg.find_one("Task", [["id", "is", task_id]], fields=None)
-
-    if task:
-        print(f"Tarea ID: {task.get('id')}")
-        print(f"Nombre: {task.get('content')}")
-
-        # Mostrar campos relacionados con estimaciones
-        keywords = [
-            "estimat",
-            "duration",
-            "time",
-            "hour",
-            "día",
-            "day",
-            "week",
-            "fecha",
-        ]
-        estimation_data = {}
-
-        for field, value in task.items():
-            if (
-                any(keyword.lower() in field.lower() for keyword in keywords)
-                and value is not None
-            ):
-                estimation_data[field] = value
-
-        if estimation_data:
-            print("\nCampos de estimación:")
-            for field, value in estimation_data.items():
-                print(f"  {field}: {value}")
-        else:
-            print("\nNo se encontraron campos de estimación con valores.")
-
-        # Opcional: Mostrar los primeros 5 campos genéricos
-        print("\nOtros campos de ejemplo:")
-        count = 0
-        for field, value in task.items():
-            if (
-                field not in estimation_data
-                and field not in ["type", "id"]
-                and value is not None
-            ):
-                print(f"  {field}: {value}")
+        try:  # check if input 0 exists
+            A = selected.input(0)
+            input_nodes[0] = A
+            AX = int(A.xpos())
+            AY = int(A.ypos())
+            AW = int(A.screenWidth())
+            AH = int(A.screenHeight())
+            AClass = A.Class()
+            inputs_connected = True
+            debug_print("Input 0 found:", A['name'].value())
+            if count == 0:
+                old = A
                 count += 1
-                if count >= 5:
-                    break
-    else:
-        print(f"No se encontró ninguna tarea con ID {task_id}")
+            else:
+                if old != A:
+                    same = 0
+        except:
+            AX, AY = int(selected.xpos()), int(selected.ypos())
+            AW, AH = int(selected.screenWidth()), int(selected.screenHeight())
+            AClass = "no class"
+            debug_print("No input 0 found")
+
+        try:  # check if input 1 exists
+            B = selected.input(1)
+            input_nodes[1] = B
+            BX = int(B.xpos())
+            BY = int(B.ypos())
+            BW = int(B.screenWidth())
+            BH = int(B.screenHeight())
+            BClass = B.Class()
+            inputs_connected = True
+            debug_print("Input 1 found:", B['name'].value())
+        except:
+            BX, BY = int(selected.xpos()), int(selected.ypos())
+            BW, BH = int(selected.screenWidth()), int(selected.screenHeight())
+            BClass = "no class"
+            debug_print("No input 1 found")
+
+        try:  # check if input 2 exists
+            C = selected.input(2)
+            input_nodes[2] = C
+            CX = int(C.xpos())
+            CY = int(C.ypos())
+            CW = int(C.screenWidth())
+            CH = int(C.screenHeight())
+            CClass = C.Class()
+            inputs_connected = True
+            debug_print("Input 2 found:", C['name'].value())
+        except:
+            debug_print("No input 2 found")
+
+        # No need to proceed if no inputs are connected
+        if not inputs_connected:
+            debug_print("No inputs connected, skipping node:", selected['name'].value())
+            continue
+
+        # setting position
+        if B and not C:  # two inputs found
+            create_dot_for_B = True
+            if B is not None:
+                BY = int(B.ypos())
+                BH = int(B.screenHeight())
+                if B.Class() == "Dot" and BY == selectedY + selectedH / 2 - Dsize / 2:
+                    create_dot_for_B = False
+                elif BY + BH / 2 == selectedY + selectedH / 2:
+                    create_dot_for_B = False
+
+            if create_dot_for_B:
+                Dot = nuke.nodes.Dot()
+                Dot.setInput(0, B)
+                selected.setInput(1, Dot)
+                Dot.setXYpos(int(BX + BW / 2 - Dsize / 2), int(selectedY + selectedH / 2 - Dsize / 2))
+
+            debug_print('Two inputs found')
+
+        elif C:  # three inputs found
+            if "Scanline" in selected.Class():
+                create_dot_for_C = True
+                if C is not None:
+                    CY = int(C.ypos())
+                    CH = int(C.screenHeight())
+                    if C.Class() == "Dot" and CY == selectedY + selectedH / 2 - Dsize / 2:
+                        create_dot_for_C = False
+                    elif CY + CH / 2 == selectedY + selectedH / 2:
+                        create_dot_for_C = False
+
+                if create_dot_for_C:
+                    dot = nuke.nodes.Dot(xpos=CX + CW / 2 - Dsize / 2, ypos=selectedY + selectedH / 2 - Dsize / 2)
+                    dot.setInput(0, C)
+                    selected.setInput(2, dot)
+
+                create_dot_for_A = True
+                if A is not None and AClass != "no class":
+                    AY = int(A.ypos())
+                    AH = int(A.screenHeight())
+                    if A.Class() == "Dot" and AY == selectedY + selectedH / 2 - Dsize / 2:
+                        create_dot_for_A = False
+                    elif AY + AH / 2 == selectedY + selectedH / 2:
+                        create_dot_for_A = False
+
+                if create_dot_for_A:
+                    dot = nuke.nodes.Dot(xpos=AX + AW / 2 - Dsize / 2, ypos=selectedY + selectedH / 2 - Dsize / 2)
+                    dot.setInput(0, A)
+                    selected.setInput(0, dot)
+
+                debug_print("Scanline node processed")
+
+            if "Merge" in selected.Class() or "Roto" in selected.Class() or "Keymix" in selected.Class():
+                create_dot_for_C = True
+                if C.Class() == "Dot" and CY == selectedY + selectedH / 2 - Dsize / 2:
+                    create_dot_for_C = False
+                elif CY + CH / 2 == selectedY + selectedH / 2:
+                    create_dot_for_C = False
+
+                if create_dot_for_C:
+                    dot = nuke.nodes.Dot(xpos=CX + CW / 2 - Dsize / 2, ypos=selectedY + selectedH / 2 - Dsize / 2)
+                    dot.setInput(0, C)
+                    selected.setInput(2, dot)
+
+                create_dot_for_B = True
+                if B.Class() == "Dot" and BY == selectedY + selectedH / 2 - Dsize / 2:
+                    create_dot_for_B = False
+                elif BY + BH / 2 == selectedY + selectedH / 2:
+                    create_dot_for_B = False
+
+                if create_dot_for_B:
+                    dot = nuke.nodes.Dot(xpos=BX + BW / 2 - Dsize / 2, ypos=selectedY + selectedH / 2 - Dsize / 2)
+                    dot.setInput(0, B)
+                    selected.setInput(1, dot)
+
+                debug_print('Three inputs found')
+
+        else:  # one input found
+            debug_print('One input found')
+            Dot = nuke.nodes.Dot()
+            Dot.setInput(0, A)
+            selected.setInput(0, Dot)
+            Dot.setXYpos(int(selectedX + selectedW / 2 - Dsize / 2), int(AY + AH / 2 - Dsize / 2))
+            dotList.append(Dot)
+            dotListX.append(Dot.xpos())
 
 
-def actualizar_campo_estimacion(task_id, campo, valor):
-    """
-    Actualiza un campo de estimación para una tarea específica.
-
-    Args:
-        task_id (int): ID de la tarea a actualizar
-        campo (str): Nombre del campo a actualizar (ej: 'sg_estimated_time')
-        valor: Valor a asignar al campo
-    """
-    try:
-        result = sg.update("Task", task_id, {campo: valor})
-        print(f"\nCampo '{campo}' de Tarea {task_id} actualizado con valor: {valor}")
-        return result
-    except Exception as e:
-        print(f"\nError al actualizar el campo '{campo}': {e}")
-        return None
-
-
-def main():
-    # Mostrar todos los campos de Task en ShotGrid
-    listar_campos_task()
-
-    # Mostrar ejemplo de una tarea (opcional)
-    # Descomenta la siguiente línea para ver un ejemplo de tarea
-    # ver_ejemplo_tarea()
-
-    # Ejemplo de cómo actualizar un campo de estimación
-    # (descomenta y modifica para probar)
-    """
-    task_id = 123  # Reemplaza con un ID de tarea válido
-    campo_estimacion = "sg_estimated_time"  # Reemplaza con el nombre correcto del campo
-    nuevo_valor = 2.5  # Reemplaza con el valor deseado
-    actualizar_campo_estimacion(task_id, campo_estimacion, nuevo_valor)
-    """
-
-
-if __name__ == "__main__":
-    main()
+Dots()

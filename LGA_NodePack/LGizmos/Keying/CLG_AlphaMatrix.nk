@@ -1,0 +1,279 @@
+Group {
+ name CLG_AlphaMatrix
+ help "CLG_AlphaMatrix v1.2 by Claudio Greco\n\nGenerates an alpha channel using only convolution matrix operations."
+ inputs 2
+ tile_color 0xff00ff
+ note_font_color 0xff
+ addUserKnob {20 CLG_AlphaMatrix}
+ addUserKnob {6 BW l "invert B/W" t "invert rgba output" +STARTLINE}
+ addUserKnob {41 operation t "Determinate the operation used by merging multiple matrix operations." T Merge1.operation}
+ addUserKnob {41 mode l "luminance math" t "Standard is Rec 709, try other to gain different results" T Saturation1.mode}
+ addUserKnob {41 range t "Determinate the Matrix Expansion.\n\nTry -3 and +3 changing \"invert B/W\" checkbox for testing." T Multiply1.value}
+ addUserKnob {18 influence t "You can gain or reduce influence of red, green or blue in the matrix process by changing the corresponding parameter"}
+ influence {1 1 1}
+ addUserKnob {6 influence_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {6 color_rgb_panelDropped l "panel dropped state" +HIDDEN +STARTLINE}
+ addUserKnob {26 ""}
+ addUserKnob {41 output_1 l output T Remove1.channels}
+ addUserKnob {26 ""}
+ addUserKnob {26 gizmo l "" +STARTLINE T "<span style='color:#666;'><br/><b>CLG_AlphaMatrix</b> v1.2 - 2025<br/><i>by <span style='color:yellow;'>Claudio Greco</span><br/>claudio.greco.vfx@gmail.com</span></i>"}
+ addUserKnob {6 exclusion_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+}
+ Multiply {
+  inputs 0
+  name Multiply1
+  xpos 911
+  ypos -33
+ }
+ Input {
+  inputs 0
+  name InputSource
+  xpos 501
+  ypos -114
+ }
+ Dot {
+  name Dot1
+  xpos 535
+  ypos -74
+ }
+set Nab469000 [stack 0]
+ Dot {
+  name Dot10
+  xpos 263
+  ypos -74
+  addUserKnob {20 User}
+  addUserKnob {22 Toggle_Input l "TOGGLE INPUT" -STARTLINE T "n = nuke.thisNode()\nx = n.input(0).xpos()\ny = n.input(0).ypos()\nnuke.zoom(2,(x,y))\nn.input(0)\[\"selected\"].setValue(True)"}
+ }
+ Dot {
+  name Dot2
+  xpos 263
+  ypos 563
+  addUserKnob {20 User}
+  addUserKnob {22 Toggle_Input l "TOGGLE INPUT" -STARTLINE T "n = nuke.thisNode()\nx = n.input(0).xpos()\ny = n.input(0).ypos()\nnuke.zoom(2,(x,y))\nn.input(0)\[\"selected\"].setValue(True)"}
+ }
+ Input {
+  inputs 0
+  name InputMask
+  xpos 326
+  ypos 418
+  number 1
+ }
+ Invert {
+  channels alpha
+  name Invert1
+  xpos 326
+  ypos 481
+ }
+push $Nab469000
+ Dot {
+  name Dot3
+  xpos 645
+  ypos -74
+ }
+set Nab427800 [stack 0]
+ Dot {
+  name Dot4
+  xpos 762
+  ypos -74
+ }
+set Nab427400 [stack 0]
+ Dot {
+  name Dot5
+  xpos 891
+  ypos -74
+ }
+set Nab427000 [stack 0]
+ Dot {
+  name Dot6
+  xpos 1000
+  ypos -74
+ }
+set Nab426c00 [stack 0]
+ Dot {
+  name Dot9
+  xpos 1123
+  ypos -74
+ }
+set Nab426800 [stack 0]
+ Dot {
+  name Dot8
+  xpos 1229
+  ypos -74
+ }
+set Nab426400 [stack 0]
+ Dot {
+  name Dot7
+  xpos 1367
+  ypos -75
+ }
+ Matrix {
+  matrix {
+      {0 0 0}
+      {0 1 0}
+      {0 0 {-Multiply1.value}}
+    }
+  name Matrix8
+  xpos 1333
+  ypos 44
+ }
+push $Nab426400
+ Matrix {
+  matrix {
+      {0 0 {-Multiply1.value}}
+      {0 1 0}
+      {0 0 0}
+    }
+  name Matrix7
+  xpos 1195
+  ypos 45
+ }
+push $Nab426800
+ Matrix {
+  matrix {
+      {{-Multiply1.value} 0 0}
+      {0 1 0}
+      {0 0 0}
+    }
+  name Matrix6
+  xpos 1089
+  ypos 45
+ }
+push $Nab426c00
+ Matrix {
+  matrix {
+      {0 0 0}
+      {0 1 0}
+      {{-Multiply1.value} 0 0}
+    }
+  name Matrix5
+  xpos 966
+  ypos 45
+ }
+push $Nab427000
+ Matrix {
+  matrix {
+      {0 0 0}
+      {{-Multiply1.value} 1 0}
+      {0 0 0}
+    }
+  name Matrix4
+  xpos 857
+  ypos 45
+ }
+push $Nab427400
+ Matrix {
+  matrix {
+      {0 0 0}
+      {0 1 {-Multiply1.value}}
+      {0 0 0}
+    }
+  name Matrix3
+  xpos 728
+  ypos 45
+ }
+push 0
+push $Nab427800
+ Matrix {
+  matrix {
+      {0 0 0}
+      {0 1 0}
+      {0 {-Multiply1.value} 0}
+    }
+  name Matrix2
+  xpos 611
+  ypos 45
+ }
+push $Nab469000
+ Matrix {
+  matrix {
+      {0 {-Multiply1.value} 0}
+      {0 1 0}
+      {0 0 0}
+    }
+  name Matrix1
+  xpos 501
+  ypos 45
+ }
+ Merge2 {
+  inputs 8+1
+  operation screen
+  name Merge1
+  xpos 501
+  ypos 174
+ }
+ Multiply {
+  channels {rgba.red -rgba.green -rgba.blue none}
+  value {{parent.influence.r}}
+  name Multiply2
+  xpos 501
+  ypos 214
+ }
+ Multiply {
+  channels {-rgba.red rgba.green -rgba.blue none}
+  value {{parent.influence.g}}
+  name Multiply3
+  xpos 501
+  ypos 250
+ }
+ Multiply {
+  channels {-rgba.red -rgba.green rgba.blue none}
+  value {{parent.influence.b}}
+  name Multiply4
+  xpos 501
+  ypos 286
+ }
+ Saturation {
+  saturation 0
+  name Saturation1
+  xpos 501
+  ypos 333
+ }
+ Clamp {
+  channels rgba
+  MinClampTo_enable true
+  MaxClampTo_enable true
+  name Clamp1
+  xpos 501
+  ypos 369
+ }
+ Invert {
+  name Invert2
+  xpos 501
+  ypos 418
+  disable {{parent.BW-1}}
+ }
+ Merge2 {
+  inputs 2
+  operation stencil
+  bbox B
+  name Merge2
+  xpos 501
+  ypos 487
+ }
+ CopyBBox {
+  inputs 2
+  name CopyBBox1
+  xpos 501
+  ypos 560
+ }
+ Shuffle {
+  green red
+  blue red
+  alpha red
+  name Shuffle1
+  xpos 501
+  ypos 607
+ }
+ Remove {
+  operation keep
+  channels rgba
+  name Remove1
+  xpos 501
+  ypos 631
+ }
+ Output {
+  name Output1
+  xpos 501
+  ypos 666
+ }
+end_group
