@@ -811,8 +811,14 @@ def FPT_Hiero(force_all_clips=False):
                                de la selección actual.
     """
     global app, window, hiero_ops
-    # Usar la ruta hardcodeada de la base de datos
-    db_path = r"C:/Portable/LGA/PipeSync/cache/pipesync.db"
+    # Selecciona la ruta de la base de datos segun el sistema operativo
+    if platform.system() == "Windows":
+        db_path = r"C:/Portable/LGA/PipeSync/cache/pipesync.db"
+    elif platform.system() == "Darwin":
+        db_path = "/Users/leg4/Library/Caches/LGA/PipeSync/pipesync.db"
+    else:
+        debug_print(f"Sistema operativo no soportado: {platform.system()}")
+        return
     if not os.path.exists(db_path):
         debug_print(f"DB file not found at path: {db_path}")
         return
