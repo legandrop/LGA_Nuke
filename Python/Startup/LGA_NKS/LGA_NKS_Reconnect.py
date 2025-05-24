@@ -1,8 +1,8 @@
 """
 ______________________________________________________________________
 
-  LGA_NKS_Reconnect v1.0 - 2025 - Lega
-  Reconecta clips seleccionados a diferentes rutas
+  LGA_NKS_Reconnect v1.1 - 2025 - Lega
+  Reconecta clips seleccionados a diferentes rutas, manteniendo el color original.
 ______________________________________________________________________
 
 """
@@ -10,6 +10,7 @@ ______________________________________________________________________
 import hiero.core
 import hiero.ui
 import os
+from PySide2.QtGui import QColor
 
 # Eliminamos la importación del SelfReplace
 # import LGA_NKS_SelfReplaceClip as self_replace
@@ -56,6 +57,29 @@ def print_clip_info(shot, prefix=""):
         debug_print(f"Format: {format_obj.name()}")
         debug_print(f"Resolution: {format_obj.width()}x{format_obj.height()}")
 
+def get_clip_color(clip):
+    """
+    Devuelve el color actual del BinItem asociado al clip.
+    """
+    try:
+        bin_item = clip.source().binItem()
+        return bin_item.color()
+    except Exception as e:
+        debug_print(f"No se pudo obtener el color del clip: {e}")
+        return None
+
+def set_clip_color(clip, color):
+    """
+    Asigna un color al BinItem asociado al clip.
+    """
+    try:
+        bin_item = clip.source().binItem()
+        if color:
+            bin_item.setColor(color)
+            debug_print(f"Color restaurado para el clip: {clip.name()}")
+    except Exception as e:
+        debug_print(f"No se pudo asignar el color al clip: {e}")
+
 def main():
     debug_print("\n==== INICIANDO SCRIPT DE RECONNECT ====")
     try:
@@ -80,6 +104,8 @@ def main():
                     debug_print(f"Salteando {len(skipped_clips)} efectos: {', '.join(skipped_clips)}")
                 
                 for shot in valid_clips:
+                    # Leer color original antes de reconectar
+                    original_color = get_clip_color(shot)
                     # Imprimir información del clip antes del reemplazo
                     print_clip_info(shot, "BEFORE")
 
@@ -115,18 +141,8 @@ def main():
                         # Reconectar el clip
                         shot.reconnectMedia(directory_path)
                         debug_print("\nClip reconnected successfully.")
-                        
-                        # Comentamos la corrección de frames
-                        # new_source_in = original_source_in + frame_offset
-                        # new_source_out = original_source_out + frame_offset
-                        
-                        # shot.setSourceIn(new_source_in)
-                        # shot.setSourceOut(new_source_out)
-                        
-                        # debug_print("\nFrame correction applied:")
-                        # debug_print(f"Source In adjusted: {original_source_in} -> {new_source_in}")
-                        # debug_print(f"Source Out adjusted: {original_source_out} -> {new_source_out}")
-                        
+                        # Restaurar el color original
+                        set_clip_color(shot, original_color)
                         # Imprimir información del clip después del reemplazo
                         print_clip_info(shot, "AFTER RECONNECT")
                     except Exception as e:

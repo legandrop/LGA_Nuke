@@ -1,9 +1,9 @@
 """
 ______________________________________________________________________
 
-  LGA_NKS_SelfReplaceClip v1.1 - 2025 - Lega
-  Reconnect automático con el mismo clip, corrige desplazamiento de frames
-  y mueve versión original al bin 'Conform' 
+  LGA_NKS_SelfReplaceClip v1.2 - 2025 - Lega
+  Reconnect automático con el mismo clip, corrige desplazamiento de frames,
+  mueve versión original al bin 'Conform' y restaura color original.
 ______________________________________________________________________
 
 """
@@ -12,6 +12,7 @@ import hiero.core
 import hiero.ui
 import os
 import re
+from PySide2.QtGui import QColor
 
 DEBUG = False
 
@@ -126,6 +127,29 @@ def move_clip_to_bin(project, clip_name, source_bin_name, target_bin_path, shot)
     else:
         debug_print(f"No se encontro el bin de origen '{source_bin_name}'.")
 
+def get_clip_color(clip):
+    """
+    Devuelve el color actual del BinItem asociado al clip.
+    """
+    try:
+        bin_item = clip.source().binItem()
+        return bin_item.color()
+    except Exception as e:
+        debug_print(f"No se pudo obtener el color del clip: {e}")
+        return None
+
+def set_clip_color(clip, color):
+    """
+    Asigna un color al BinItem asociado al clip.
+    """
+    try:
+        bin_item = clip.source().binItem()
+        if color:
+            bin_item.setColor(color)
+            debug_print(f"Color restaurado para el clip: {clip.name()}")
+    except Exception as e:
+        debug_print(f"No se pudo asignar el color al clip: {e}")
+
 def main():
     debug_print("\n==== INICIANDO SCRIPT DE SELFREPLACE ====")
     try:
@@ -150,6 +174,8 @@ def main():
                     debug_print(f"Salteando {len(skipped_clips)} efectos: {', '.join(skipped_clips)}")
                 
                 for shot in valid_clips:
+                    # Leer color original antes del replace
+                    original_color = get_clip_color(shot)
                     # Imprimir información del clip antes del reemplazo
                     print_clip_info(shot, "BEFORE")
                     
@@ -191,6 +217,9 @@ def main():
                             debug_print(f"Source Out adjusted: {shot.sourceOut()} -> {new_source_out}")
                         else:
                             debug_print("\nLos frames están correctos, no se requiere corrección.")
+                        
+                        # Restaurar el color original
+                        set_clip_color(shot, original_color)
                         
                         # Imprimir información del clip después del reemplazo
                         print_clip_info(shot, "AFTER")
