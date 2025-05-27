@@ -19,7 +19,7 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QApplication, QSh
 
 
 # Variable global para activar o desactivar los prints
-DEBUG = True
+DEBUG = False
 
 
 def debug_print(*message):
