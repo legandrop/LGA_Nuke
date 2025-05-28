@@ -1,6 +1,6 @@
 """
 ____________________________________________________________________________
-  LGA_NKS_Flow_Pull v3.0 - Lega Pugliese
+  LGA_NKS_Flow_Pull v3.1 - Lega Pugliese
   Compara los estados de las task Comp de los shots del timeline de Hiero
   con los estados registrados en un archivo JSON basado en Flow PT
   Tambien aplica tags con los colores de los estados en xyplorer
@@ -172,6 +172,10 @@ class ShotGridManager:
             }
         return None
 
+    def close(self):
+        if hasattr(self, "conn") and self.conn:
+            self.conn.close()
+
 
 class GUI_Table(QWidget):
     def __init__(self, sg_manager, parent=None):
@@ -281,6 +285,12 @@ class GUI_Table(QWidget):
             self.close()
         else:
             super(GUI_Table, self).keyPressEvent(event)
+
+    def closeEvent(self, event):
+        if self.sg_manager:
+            self.sg_manager.close()
+            self.sg_manager = None
+        super(GUI_Table, self).closeEvent(event)
 
 
 class ColorMixDelegate(QStyledItemDelegate):
@@ -828,9 +838,3 @@ def FPT_Hiero(force_all_clips=False):
     hiero_ops = HieroOperations(sg_manager, window)
     window.force_all_clips = force_all_clips
     window.set_hiero_ops(hiero_ops)
-
-
-"""
-if __name__ == "__FPT_Hiero__":
-    FPT_Hiero()
-"""

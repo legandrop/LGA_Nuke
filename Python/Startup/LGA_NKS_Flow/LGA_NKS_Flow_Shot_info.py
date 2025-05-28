@@ -1,7 +1,7 @@
 """
 __________________________________________________________________
 
-  LGA_NKS_Flow_Shot_info v1.6 - 2025 - Lega Pugliese
+  LGA_NKS_Flow_Shot_info v1.7 - Lega Pugliese
   Imprime informacion del shot y las versiones de la task comp
 __________________________________________________________________
 
@@ -122,6 +122,10 @@ class ShotGridManager:
                 return t
         return None
 
+    def close(self):
+        if hasattr(self, "conn") and self.conn:
+            self.conn.close()
+
 
 class HieroOperations:
     """Clase para manejar operaciones en Hiero."""
@@ -224,6 +228,13 @@ class GUIWindow(QWidget):
         # Anadir evento para cerrar la ventana con la tecla ESC
         shortcut = QShortcut(QKeySequence(Qt.Key_Escape), self)
         shortcut.activated.connect(self.close)
+
+    def closeEvent(self, event):
+        # Cerrar la conexión de sg_manager si existe
+        if hasattr(self.hiero_ops, "sg_manager") and self.hiero_ops.sg_manager:
+            self.hiero_ops.sg_manager.close()
+            self.hiero_ops.sg_manager = None
+        super(GUIWindow, self).closeEvent(event)
 
     def display_results(self, results):
         """Muestra los resultados recopilados en una ventana independiente."""
