@@ -1,7 +1,7 @@
 """
 ____________________________________________________________________________________
 
-  LGA_Write_Focus v1.5 | Lega
+  LGA_Write_Focus v1.52 | Lega
   Script para buscar, enfocar, centrar y hacer zoom a un nodo con nombre definido
   en el archivo de configuracion. Por defecto es Write_Pub.
 ____________________________________________________________________________________
@@ -11,6 +11,7 @@ import nuke
 import time
 import os
 import configparser
+import platform
 
 # Variable global para activar o desactivar los prints de depuracion
 DEBUG = False  # Cambiar a True para ver los mensajes detallados
@@ -20,6 +21,30 @@ DEBUG = False  # Cambiar a True para ver los mensajes detallados
 def debug_print(*message):
     if DEBUG:
         print(*message)
+
+
+def get_user_config_dir():
+    """
+    Obtiene el directorio de configuracion del usuario segun el sistema operativo.
+    Windows: %APPDATA%
+    Mac: ~/Library/Application Support
+    """
+    system = platform.system()
+    if system == "Windows":
+        config_path = os.getenv("APPDATA")
+        if not config_path:
+            debug_print("Error: No se pudo encontrar la variable de entorno APPDATA.")
+            return None
+    elif system == "Darwin":  # macOS
+        config_path = os.path.expanduser("~/Library/Application Support")
+    else:
+        # Para otros sistemas, usar el directorio home como fallback
+        config_path = os.path.expanduser("~/.config")
+        debug_print(
+            f"Sistema no reconocido ({system}), usando ~/.config como fallback."
+        )
+
+    return config_path
 
 
 # Constante para el nombre del archivo de configuracion
@@ -39,15 +64,12 @@ DEFAULT_SECONDARY_NODE_NAME = "Write_EXR Publish DWAA"
 def get_config_path():
     """Devuelve la ruta completa al archivo de configuracion."""
     try:
-        appdata_path = os.getenv("APPDATA")
-        if not appdata_path:
-
-            debug_print("Error: No se pudo encontrar la variable de entorno APPDATA.")
+        user_config_dir = get_user_config_dir()
+        if not user_config_dir:
             return None
-        config_dir = os.path.join(appdata_path, "LGA", "ToolPack")
+        config_dir = os.path.join(user_config_dir, "LGA", "ToolPack")
         return os.path.join(config_dir, CONFIG_FILE_NAME)
     except Exception as e:
-
         debug_print(f"Error al obtener la ruta de configuracion: {e}")
         return None
 

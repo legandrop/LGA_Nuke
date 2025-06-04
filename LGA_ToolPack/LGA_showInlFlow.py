@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________________________________
 
-  LGA_showInFlow v2.41 | Lega
+  LGA_showInFlow v2.42 | Lega
   Abre la URL de la task Comp del shot, tomando la informacion del nombre del script
 _____________________________________________________________________________________________________
 """
@@ -17,6 +17,40 @@ import subprocess
 import base64  # Importar base64
 import binascii  # Importar binascii para la excepcion
 
+# Variable global para controlar el debug
+DEBUG = False  # Poner en False para desactivar los mensajes de debug
+
+
+# Funcion debug_print
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+
+def get_user_config_dir():
+    """
+    Obtiene el directorio de configuracion del usuario segun el sistema operativo.
+    Windows: %APPDATA%
+    Mac: ~/Library/Application Support
+    """
+    system = platform.system()
+    if system == "Windows":
+        config_path = os.getenv("APPDATA")
+        if not config_path:
+            debug_print("Error: No se pudo encontrar la variable de entorno APPDATA.")
+            return None
+    elif system == "Darwin":  # macOS
+        config_path = os.path.expanduser("~/Library/Application Support")
+    else:
+        # Para otros sistemas, usar el directorio home como fallback
+        config_path = os.path.expanduser("~/.config")
+        debug_print(
+            f"Sistema no reconocido ({system}), usando ~/.config como fallback."
+        )
+
+    return config_path
+
+
 # Agregar la ruta de la carpeta shotgun_api3 al sys.path
 script_dir = os.path.dirname(os.path.abspath(__file__))
 shotgun_api_path = os.path.join(script_dir, "shotgun_api3")
@@ -24,15 +58,6 @@ sys.path.append(shotgun_api_path)
 
 # Ahora importamos shotgun_api3
 import shotgun_api3
-
-DEBUG = False
-
-
-# Definir debug_print aqui para que siempre exista
-def debug_print(*message):
-    if DEBUG:
-        print(*message)
-
 
 # Constantes para el archivo de configuracion
 CONFIG_FILE_NAME = "ShowInFlow.dat"  # Cambiar extension a .dat
@@ -47,11 +72,10 @@ CONFIG_PASSWORD_KEY = "shotgrid_password"
 def get_config_path():
     """Devuelve la ruta completa al archivo de configuracion."""
     try:
-        appdata_path = os.getenv("APPDATA")
-        if not appdata_path:
-            debug_print("Error: No se pudo encontrar la variable de entorno APPDATA.")
+        user_config_dir = get_user_config_dir()
+        if not user_config_dir:
             return None
-        config_dir = os.path.join(appdata_path, "LGA", "ToolPack")
+        config_dir = os.path.join(user_config_dir, "LGA", "ToolPack")
         return os.path.join(config_dir, CONFIG_FILE_NAME)
     except Exception as e:
         debug_print(f"Error al obtener la ruta de configuracion: {e}")
@@ -309,21 +333,18 @@ class NukeOperations:
 
 def threaded_function():
     # Leer credenciales desde el archivo .dat usando la funcion adaptada
-    sg_url, sg_login, sg_password = get_credentials_from_config()
-
-    # Verificar si las credenciales se leyeron correctamente
-    if not sg_url or not sg_login or not sg_password:
-        # Si fallo, get_credentials_from_config ya imprimio el error.
-        # Preparar mensaje de error para devolver.
-        config_path = get_config_path() or "AppData\\LGA\\ToolPack\\ShowInFlow.dat"
-        error_message = f"No se pudieron leer las credenciales de ShotGrid desde:\n{config_path}\n\nRevise la consola para detalles y asegúrese de que el archivo esté completo."
-        # debug_print(f"Debug: Devolviendo error - {error_message}") # Mantener este comentado
-        return error_message  # Devolver el mensaje de error
+    url, login, password = get_credentials_from_config()
+    if not url or not login or not password:
+        config_path = get_config_path() or "LGA/ToolPack/ShowInFlow.dat"
+        nuke.message(
+            f"No se pudieron leer las credenciales desde: {config_path}\nRevise la consola para detalles y asegúrese de que el archivo esté completo usando LGA_ToolPack_settings."
+        )
+        return
 
     # Si las credenciales son validas, proceder con la logica original
     try:
-        debug_print(f"Conectando a ShotGrid URL: {sg_url} con login: {sg_login}")
-        sg_manager = ShotGridManager(sg_url, sg_login, sg_password)
+        debug_print(f"Conectando a ShotGrid URL: {url} con login: {login}")
+        sg_manager = ShotGridManager(url, login, password)
         nuke_ops = NukeOperations(sg_manager)
         nuke_ops.process_current_script()  # Ejecutar la lógica principal
         return None  # Indicar éxito

@@ -1,7 +1,7 @@
 """
 _______________________________________________________________________________________________________________
 
-  LGA_Render_Complete v1.32 | Lega
+  LGA_Render_Complete v1.33 | Lega
   Calcula la duracion al finalizar el render y la agrega en un knob en el tab User del nodo write
   Reproduce un sonido y envia un correo con los detalles del render si la opcion 'Send Mail' esta activada
 _______________________________________________________________________________________________________________
@@ -27,6 +27,30 @@ DEBUG = False  # Poner en False para desactivar los mensajes de debug
 def debug_print(*message):
     if DEBUG:
         print(*message)
+
+
+def get_user_config_dir():
+    """
+    Obtiene el directorio de configuracion del usuario segun el sistema operativo.
+    Windows: %APPDATA%
+    Mac: ~/Library/Application Support
+    """
+    system = platform.system()
+    if system == "Windows":
+        config_path = os.getenv("APPDATA")
+        if not config_path:
+            debug_print("Error: No se pudo encontrar la variable de entorno APPDATA.")
+            return None
+    elif system == "Darwin":  # macOS
+        config_path = os.path.expanduser("~/Library/Application Support")
+    else:
+        # Para otros sistemas, usar el directorio home como fallback
+        config_path = os.path.expanduser("~/.config")
+        debug_print(
+            f"Sistema no reconocido ({system}), usando ~/.config como fallback."
+        )
+
+    return config_path
 
 
 # --- Configuración de archivo DAT para settings de mail ---
@@ -61,11 +85,10 @@ __all__ = [
 def get_config_path():
     """Devuelve la ruta completa al archivo de configuración de mail (.dat)."""
     try:
-        appdata_path = os.getenv("APPDATA")
-        if not appdata_path:
-            debug_print("Error: No se pudo encontrar la variable de entorno APPDATA.")
+        user_config_dir = get_user_config_dir()
+        if not user_config_dir:
             return None
-        config_dir = os.path.join(appdata_path, "LGA", "ToolPack")
+        config_dir = os.path.join(user_config_dir, "LGA", "ToolPack")
         return os.path.join(config_dir, CONFIG_FILE_NAME)
     except Exception as e:
         debug_print(f"Error al obtener la ruta de configuración: {e}")
@@ -395,7 +418,7 @@ def total_time():
 def send_email(subject, body, to_email=None):
     from_email, password, default_to_email = get_mail_settings_from_config()
     if not from_email or not password or not default_to_email:
-        config_path = get_config_path() or "AppData\\LGA\\ToolPack\\RenderComplete.dat"
+        config_path = get_config_path() or "LGA/ToolPack/RenderComplete.dat"
         debug_print(
             f"No se pudieron leer los datos de mail desde: {config_path}\nRevise la consola para detalles y asegúrese de que el archivo esté completo."
         )

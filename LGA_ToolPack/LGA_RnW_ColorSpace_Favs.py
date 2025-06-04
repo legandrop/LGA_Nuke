@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-  LGA_RnW_ColorSpace_Favs v1.42 | Lega
+  LGA_RnW_ColorSpace_Favs v1.43 | Lega
   Tool for applying OCIO color spaces to selected Read and Write nodes
 ________________________________________________________________________
 
@@ -16,22 +16,50 @@ from PySide2.QtWidgets import (
     QHeaderView,
     QPushButton,
     QHBoxLayout,
+    QLabel,
+    QComboBox,
+    QSizePolicy,
 )
 from PySide2.QtCore import Qt, QRect
-from PySide2.QtGui import QCursor, QPalette, QColor
+from PySide2.QtGui import QCursor, QPalette, QColor, QFont
 import configparser
 import nuke
 import os
 import shutil
 import typing  # Importar typing para compatibilidad < 3.10
+import platform
 
-# --- Debug print estilo LGA_Render_Complete ---
-DEBUG = False  # Cambiar a True para debug
+# Variable global para controlar el debug
+DEBUG = False  # Poner en False para desactivar los mensajes de debug
 
 
 def debug_print(*message):
     if DEBUG:
         print(*message)
+
+
+def get_user_config_dir():
+    """
+    Obtiene el directorio de configuracion del usuario segun el sistema operativo.
+    Windows: %APPDATA%
+    Mac: ~/Library/Application Support
+    """
+    system = platform.system()
+    if system == "Windows":
+        config_path = os.getenv("APPDATA")
+        if not config_path:
+            debug_print("Error: No se pudo encontrar la variable de entorno APPDATA.")
+            return None
+    elif system == "Darwin":  # macOS
+        config_path = os.path.expanduser("~/Library/Application Support")
+    else:
+        # Para otros sistemas, usar el directorio home como fallback
+        config_path = os.path.expanduser("~/.config")
+        debug_print(
+            f"Sistema no reconocido ({system}), usando ~/.config como fallback."
+        )
+
+    return config_path
 
 
 # --- Constantes ---
@@ -47,16 +75,15 @@ COLORSPACE_SECTION = "ColorSpaces"
 
 def get_lga_toolpack_config_dir() -> typing.Optional[str]:
     """
-    Obtiene la ruta completa del directorio de configuracion en AppData (%APPDATA%/LGA/ToolPack).
+    Obtiene la ruta completa del directorio de configuracion (%APPDATA%/LGA/ToolPack en Windows, ~/Library/Application Support/LGA/ToolPack en Mac).
     Crea el directorio si no existe.
-    Devuelve la ruta o None si APPDATA no esta definida o hay error al crear.
+    Devuelve la ruta o None si no se puede obtener el directorio de configuracion del usuario o hay error al crear.
     """
-    app_data_path = os.getenv("APPDATA")
-    if not app_data_path:
-        debug_print("Error: Variable de entorno APPDATA no encontrada.")
+    user_config_dir = get_user_config_dir()
+    if not user_config_dir:
         return None
 
-    config_dir = os.path.join(app_data_path, CONFIG_DIR_NAME, TOOLPACK_SUBDIR_NAME)
+    config_dir = os.path.join(user_config_dir, CONFIG_DIR_NAME, TOOLPACK_SUBDIR_NAME)
 
     if not os.path.exists(config_dir):
         try:
@@ -70,38 +97,42 @@ def get_lga_toolpack_config_dir() -> typing.Optional[str]:
 
 def get_colorspace_ini_path(create_if_missing: bool = True) -> typing.Optional[str]:
     """
-    Obtiene la ruta del archivo INI de ColorSpaces en AppData.
-    Si create_if_missing es True y el archivo no existe en AppData,
+    Obtiene la ruta del archivo INI de ColorSpaces en el directorio de configuracion del usuario.
+    Si create_if_missing es True y el archivo no existe en el directorio de configuracion,
     intenta copiarlo desde la ubicacion local del script.
-    Devuelve la ruta completa del archivo INI en AppData o None si hay errores.
+    Devuelve la ruta completa del archivo INI en el directorio de configuracion o None si hay errores.
     """
     config_dir = get_lga_toolpack_config_dir()
     if not config_dir:
         return None  # Error ya impreso en get_lga_toolpack_config_dir
 
-    ini_path_appdata = os.path.join(config_dir, COLORSPACE_INI_APPNAME)
+    ini_path_config = os.path.join(config_dir, COLORSPACE_INI_APPNAME)
     local_script_dir = os.path.dirname(os.path.realpath(__file__))
     local_ini_path = os.path.join(local_script_dir, COLORSPACE_INI_LOCALNAME)
 
-    if not os.path.exists(ini_path_appdata) and create_if_missing:
-        debug_print(f"Archivo INI no encontrado en AppData: {ini_path_appdata}")
+    if not os.path.exists(ini_path_config) and create_if_missing:
+        debug_print(
+            f"Archivo INI no encontrado en directorio de configuracion: {ini_path_config}"
+        )
         if os.path.exists(local_ini_path):
             try:
-                shutil.copy2(local_ini_path, ini_path_appdata)
+                shutil.copy2(local_ini_path, ini_path_config)
                 debug_print(
-                    f"Archivo INI copiado desde {local_ini_path} a {ini_path_appdata}"
+                    f"Archivo INI copiado desde {local_ini_path} a {ini_path_config}"
                 )
             except Exception as e:
-                debug_print(f"Error al copiar el archivo INI local a AppData: {e}")
+                debug_print(
+                    f"Error al copiar el archivo INI local al directorio de configuracion: {e}"
+                )
                 # Continuamos, pero es posible que la lectura falle si el archivo no se copio
         else:
             debug_print(
-                f"Archivo INI local ({local_ini_path}) tampoco encontrado. No se pudo copiar a AppData."
+                f"Archivo INI local ({local_ini_path}) tampoco encontrado. No se pudo copiar al directorio de configuracion."
             )
-            # El archivo no existira en AppData, la funcion read fallara o devolvera lista vacia
+            # El archivo no existira en el directorio de configuracion, la funcion read fallara o devolvera lista vacia
 
-    # Devolver la ruta de AppData, exista o no (si no se creo/copio)
-    return ini_path_appdata
+    # Devolver la ruta del directorio de configuracion, exista o no (si no se creo/copio)
+    return ini_path_config
 
 
 def read_colorspaces_from_ini(ini_path: typing.Optional[str]) -> typing.List[str]:
