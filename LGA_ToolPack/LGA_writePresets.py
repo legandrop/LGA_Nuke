@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_writePresets v1.95 | Lega
+  LGA_writePresets v2.0 | Lega
 
   Creates Write nodes with predefined settings for different purposes.
   Supports both script-based and Read node-based path generation.
@@ -670,6 +670,34 @@ class SelectedNodeInfo(QWidget):
 
         main_layout.addWidget(self.table)
 
+        # --- Agregar botón personalizado debajo de la tabla ---
+        self.show_path_button = QPushButton("Show selected Write node file path")
+        self.show_path_button.setStyleSheet(
+            """
+            QPushButton {
+                background-color: #443a91;
+                color: #cccccc;
+                border: none;
+                border-radius: 6px;
+                font-size: 13px;
+                font-weight: bold;
+                padding: 8px 0px;
+                margin-top: 2px;
+                margin-bottom: 2px;
+            }
+            QPushButton:hover {
+                background-color: #372e7a;
+            }
+            QPushButton:pressed {
+                background-color: #2d265e;
+            }
+            """
+        )
+        self.show_path_button.setCursor(Qt.PointingHandCursor)
+        self.show_path_button.clicked.connect(self.show_write_path_window)
+        main_layout.addWidget(self.show_path_button)
+        # --- Fin botón personalizado ---
+
         # Layout de la ventana principal
         window_layout = QVBoxLayout(self)
         window_layout.setContentsMargins(0, 0, 0, 0)
@@ -762,6 +790,9 @@ class SelectedNodeInfo(QWidget):
         title_bar_height = 20
         height += title_bar_height
 
+        # Sumar la altura del botón extra (aprox 38px)
+        height += 42
+
         # Asegurarse de que la altura no supera el 80% del alto de pantalla
         max_height = screen_rect.height() * 0.8
         final_height = min(height, max_height)
@@ -813,6 +844,22 @@ class SelectedNodeInfo(QWidget):
                 create_write_from_preset(preset, user_text)
         else:
             create_write_from_preset(preset)
+
+    def show_write_path_window(self):
+        """Importa y ejecuta el main() de LGA_Write_PathToText.py para mostrar el path del Write seleccionado."""
+        import importlib.util
+        import os
+
+        self.close()
+        script_path = os.path.join(os.path.dirname(__file__), "LGA_Write_PathToText.py")
+        spec = importlib.util.spec_from_file_location(
+            "LGA_Write_PathToText", script_path
+        )
+        if spec is not None and spec.loader is not None:
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            if hasattr(module, "main"):
+                module.main()
 
 
 # El resto del código se mantiene igual
