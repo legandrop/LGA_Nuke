@@ -444,7 +444,11 @@ def create_write_from_preset(preset, user_text=None):
     if preset["button_type"] == "read":
         write_node["name"].setValue(get_write_name_from_read(current_node, "Denoised"))
     else:
-        base_write_name = "Write_" + (user_text if user_text else preset["button_name"])
+        # Normalizar el texto del usuario para el nombre del nodo
+        normalized_user_text = (
+            user_text.replace("-", "_") if user_text else preset["button_name"]
+        )
+        base_write_name = "Write_" + normalized_user_text
         write_node["name"].setValue(get_unique_node_name(base_write_name))
 
     # Añadir knobs personalizados
