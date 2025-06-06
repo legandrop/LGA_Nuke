@@ -10259,4 +10259,73 @@ def Dots():
             dotListX.append(Dot.xpos())
 
 
-Dots()</script>
+Dots()&quot;&quot;&quot;
+____________________________________________________________________________________
+
+  LGA_Write_PathToText v1.0 | Lega
+  Script para crear un nodo Text conectado al Write seleccionado y copiar el path del Write al campo message del Text.
+____________________________________________________________________________________
+&quot;&quot;&quot;
+
+import nuke
+
+# Variable global para activar o desactivar los prints de depuracion
+debug = True  # Cambiar a False para ocultar los mensajes de debug
+
+
+# Funcion para imprimir mensajes de depuracion
+def debug_print(*message):
+    if debug:
+        print(&quot;[LGA_Write_PathToText]&quot;, *message)
+
+
+def main():
+    &quot;&quot;&quot;
+    Si hay un nodo Write seleccionado, crea un nodo Text conectado a él,
+    copia el path del Write al campo message del Text y hace un debug log con la resolución actual del script.
+    &quot;&quot;&quot;
+    # Buscar nodos seleccionados
+    selected_nodes = nuke.selectedNodes()
+    if not selected_nodes:
+        debug_print(&quot;No hay nodos seleccionados. No se hace nada.&quot;)
+        return
+    # Buscar el primer nodo Write seleccionado
+    write_node = None
+    for node in selected_nodes:
+        if node.Class() == &quot;Write&quot;:
+            write_node = node
+            break
+    if not write_node:
+        debug_print(&quot;No hay ningun nodo Write seleccionado. No se hace nada.&quot;)
+        return
+    # Crear el nodo Text y conectarlo al Write
+    text_node = nuke.createNode(&quot;Text&quot;, inpanel=False)
+    text_node.setInput(0, write_node)
+    # Copiar el path del Write al campo message del Text
+    write_file = write_node[&quot;file&quot;].value()
+    message_text = write_file
+    # Si el path contiene brackets, intentar evaluarlo y agregar el resultado
+    if &quot;[&quot; in write_file and &quot;]&quot; in write_file:
+        try:
+            # Usar nuke.filename para obtener el path evaluado
+            evaluated_path = nuke.filename(write_node)
+            if evaluated_path is None:
+                evaluated_path = &quot;&quot;
+            message_text += &quot;\n\n&quot; + evaluated_path
+            debug_print(f&quot;Path evaluado: {evaluated_path}&quot;)
+        except Exception as e:
+            debug_print(f&quot;Error al evaluar el path: {e}&quot;)
+    text_node[&quot;message&quot;].setValue(message_text)
+    # Imprimir la resolucion actual del script
+    script_format = nuke.root().format()
+    width = script_format.width()
+    height = script_format.height()
+    debug_print(f&quot;Resolucion del script: {width}x{height}&quot;)
+    debug_print(f&quot;Path copiado al Text: {write_file}&quot;)
+
+
+# --- Main Execution ---
+if __name__ == &quot;__main__&quot;:
+    # Necesario para ejecucion standalone fuera de Nuke
+    main()
+</script>
