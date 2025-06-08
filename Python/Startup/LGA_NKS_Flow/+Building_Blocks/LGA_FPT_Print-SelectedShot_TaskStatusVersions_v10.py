@@ -5,6 +5,7 @@ descripcion y URLs de las tareas asociadas para los clips seleccionados en el ti
 Tambien imprime los comentarios que haya en la version del clip seleccionado
 Esta version nueva imprime la descripcion del shot, de la task, y el tiempo estimado y fecha de inicio y fin de la task
 v08: agrega la fecha de update del shot y de la task
+v10: muestra de manera limpia los attachments con frame numbers y links de descarga
 
 """
 
@@ -112,15 +113,50 @@ class ShotGridManager:
         ]
         return self.sg.find("Note", filters, fields)
 
-    def print_all_note_fields_debug(self, note):
-        """Imprime TODOS los campos de una nota para debugging"""
-        print(
-            f"    === DEBUG: Todos los campos de la nota ID {note.get('id', 'Unknown')} ==="
-        )
-        for field, value in note.items():
-            if value is not None:
-                print(f"      {field}: {value}")
-        print(f"    === FIN DEBUG NOTA ===")
+    def get_attachment_details(self, attachment_id):
+        """Obtiene todos los detalles de un attachment especifico"""
+        filters = [["id", "is", attachment_id]]
+        fields = [
+            "id",
+            "code",
+            "description",
+            "this_file",
+            "image",
+            "sg_file_type",
+            "created_at",
+            "updated_at",
+            "created_by",
+            "sg_status_list",
+            "attachment_links",
+            "sg_path_to_movie",
+            "sg_path_to_frames",
+            "sg_uploaded_movie",
+            "url",
+            "local_path",
+            "local_path_linux",
+            "local_path_mac",
+            "local_path_windows",
+            "local_storage",
+        ]
+        attachments = self.sg.find("Attachment", filters, fields)
+        return attachments[0] if attachments else None
+
+    def extract_frame_from_attachment_name(self, attachment_name):
+        """Extrae el numero de frame del nombre del attachment"""
+        if ".png" in attachment_name:
+            # Buscar patron como "annot_version_51150.16.png"
+            frame_match = re.search(r"\.(\d+)\.png$", attachment_name)
+            if frame_match:
+                return frame_match.group(1)
+        return "Unknown"
+
+    def get_attachment_download_url(self, attachment_details):
+        """Extrae la URL de descarga del attachment"""
+        if attachment_details.get("this_file") and isinstance(
+            attachment_details["this_file"], dict
+        ):
+            return attachment_details["this_file"].get("url", "No URL found")
+        return "No URL found"
 
 
 class HieroOperations:
@@ -203,19 +239,54 @@ class HieroOperations:
                             else:
                                 print("  - No comments found.")
 
-                            # DEBUG: Obtener notas con todos los campos para debugging
-                            print(
-                                "\n  === DEBUGGING: Obteniendo notas con todos los campos ==="
-                            )
+                            # Obtener notas con attachments y mostrar de manera organizada
                             debug_notes = self.sg_manager.get_version_notes_debug(
                                 version["id"]
                             )
+
                             if debug_notes:
+                                print("\n  - Comments with Review Attachments:")
+
                                 for note in debug_notes:
-                                    self.sg_manager.print_all_note_fields_debug(note)
+                                    # Mostrar el comentario
+                                    user_name = (
+                                        note["user"]["name"]
+                                        if note.get("user")
+                                        else "Unknown"
+                                    )
+                                    print(
+                                        f"    • \"{note['content']}\" (by {user_name})"
+                                    )
+
+                                    # Mostrar attachments de este comentario
+                                    if note.get("attachments"):
+                                        for attachment_ref in note["attachments"]:
+                                            attachment_id = attachment_ref["id"]
+                                            attachment_details = (
+                                                self.sg_manager.get_attachment_details(
+                                                    attachment_id
+                                                )
+                                            )
+
+                                            if attachment_details:
+                                                frame_number = self.sg_manager.extract_frame_from_attachment_name(
+                                                    attachment_ref["name"]
+                                                )
+                                                download_url = self.sg_manager.get_attachment_download_url(
+                                                    attachment_details
+                                                )
+
+                                                print(
+                                                    f"      → Frame {frame_number}: {attachment_ref['name']}"
+                                                )
+                                                print(
+                                                    f"        Download: {download_url}"
+                                                )
+                                    else:
+                                        print("      → No attachments")
+                                    print()  # Linea en blanco entre comentarios
                             else:
-                                print("  - No debug notes found.")
-                            print("  === FIN DEBUGGING NOTAS ===\n")
+                                print("\n  - No comments with attachments found.")
                         else:
                             print(
                                 f"No versions found for Hiero version v{hiero_version_number} in ShotGrid."

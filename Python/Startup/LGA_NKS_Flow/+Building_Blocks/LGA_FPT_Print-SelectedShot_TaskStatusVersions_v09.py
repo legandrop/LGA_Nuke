@@ -5,6 +5,7 @@ descripcion y URLs de las tareas asociadas para los clips seleccionados en el ti
 Tambien imprime los comentarios que haya en la version del clip seleccionado
 Esta version nueva imprime la descripcion del shot, de la task, y el tiempo estimado y fecha de inicio y fin de la task
 v08: agrega la fecha de update del shot y de la task
+v09: obtiene todos los campos de las notas y los attachments
 
 """
 
@@ -122,6 +123,44 @@ class ShotGridManager:
                 print(f"      {field}: {value}")
         print(f"    === FIN DEBUG NOTA ===")
 
+    def get_attachment_details(self, attachment_id):
+        """Obtiene todos los detalles de un attachment especifico"""
+        filters = [["id", "is", attachment_id]]
+        fields = [
+            "id",
+            "code",
+            "description",
+            "this_file",
+            "image",
+            "sg_file_type",
+            "created_at",
+            "updated_at",
+            "created_by",
+            "sg_status_list",
+            "attachment_links",
+            "sg_path_to_movie",
+            "sg_path_to_frames",
+            "sg_uploaded_movie",
+            "url",
+            "local_path",
+            "local_path_linux",
+            "local_path_mac",
+            "local_path_windows",
+            "local_storage",
+        ]
+        attachments = self.sg.find("Attachment", filters, fields)
+        return attachments[0] if attachments else None
+
+    def print_all_attachment_fields_debug(self, attachment):
+        """Imprime TODOS los campos de un attachment para debugging"""
+        print(
+            f"      === DEBUG: Todos los campos del attachment ID {attachment.get('id', 'Unknown')} ==="
+        )
+        for field, value in attachment.items():
+            if value is not None:
+                print(f"        {field}: {value}")
+        print(f"      === FIN DEBUG ATTACHMENT ===")
+
 
 class HieroOperations:
     def __init__(self, shotgrid_manager):
@@ -213,6 +252,72 @@ class HieroOperations:
                             if debug_notes:
                                 for note in debug_notes:
                                     self.sg_manager.print_all_note_fields_debug(note)
+
+                                    # Procesar attachments si existen
+                                    if note.get("attachments"):
+                                        print(
+                                            f"    --- PROCESANDO ATTACHMENTS DE LA NOTA {note['id']} ---"
+                                        )
+                                        for attachment_ref in note["attachments"]:
+                                            attachment_id = attachment_ref["id"]
+                                            attachment_name = attachment_ref["name"]
+
+                                            # Extraer numero de frame del nombre del archivo
+                                            frame_number = "Unknown"
+                                            if ".png" in attachment_name:
+                                                # Buscar patron como "annot_version_51150.16.png"
+                                                import re
+
+                                                frame_match = re.search(
+                                                    r"\.(\d+)\.png$", attachment_name
+                                                )
+                                                if frame_match:
+                                                    frame_number = frame_match.group(1)
+
+                                            print(
+                                                f"      Attachment: {attachment_name}"
+                                            )
+                                            print(
+                                                f"      Frame extraido del nombre: {frame_number}"
+                                            )
+
+                                            # Obtener detalles completos del attachment
+                                            attachment_details = (
+                                                self.sg_manager.get_attachment_details(
+                                                    attachment_id
+                                                )
+                                            )
+                                            if attachment_details:
+                                                print(
+                                                    f"      === DETALLES DEL ATTACHMENT ==="
+                                                )
+                                                self.sg_manager.print_all_attachment_fields_debug(
+                                                    attachment_details
+                                                )
+
+                                                # Buscar campos que puedan contener URLs o paths
+                                                url_fields = [
+                                                    "this_file",
+                                                    "image",
+                                                    "url",
+                                                    "local_path",
+                                                    "local_path_windows",
+                                                ]
+                                                print(
+                                                    f"      === POSIBLES LINKS/PATHS ==="
+                                                )
+                                                for field in url_fields:
+                                                    if attachment_details.get(field):
+                                                        print(
+                                                            f"        {field}: {attachment_details[field]}"
+                                                        )
+                                            else:
+                                                print(
+                                                    f"      No se pudieron obtener detalles del attachment {attachment_id}"
+                                                )
+                                        print(
+                                            f"    --- FIN ATTACHMENTS NOTA {note['id']} ---"
+                                        )
                             else:
                                 print("  - No debug notes found.")
                             print("  === FIN DEBUGGING NOTAS ===\n")
