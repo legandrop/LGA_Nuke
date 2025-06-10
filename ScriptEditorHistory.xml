@@ -1964,7 +1964,7 @@ undo = nuke.Undo()
 undo.end()
 
 import importlib
-import LGA_writePresets
+import LGA_Write_Presets
 importlib.reload(LGA_RnW_ColorSpace_Favs)&quot;&quot;&quot;
 ____________________________________________________________________________________
 
@@ -9721,8 +9721,8 @@ undo = nuke.Undo()
 undo.end()
 
 import importlib
-import LGA_writePresets
-importlib.reload(LGA_writePresets)# Version que descarga todas las versiones y notas asociadas a las tareas asignadas al usuario
+import LGA_Write_Presets
+importlib.reload(LGA_Write_Presets)# Version que descarga todas las versiones y notas asociadas a las tareas asignadas al usuario
 # v03: solo muestra las que tuvieron cambios desde una fecha determinada
 
 import os
@@ -10264,14 +10264,14 @@ undo = nuke.Undo()
 undo.end()
 
 import importlib
-import LGA_writePresets
-importlib.reload(LGA_writePresets)import nuke
+import LGA_Write_Presets
+importlib.reload(LGA_Write_Presets)import nuke
 undo = nuke.Undo()
 undo.end()
 
 import importlib
-import LGA_writePresets
-importlib.reload(LGA_writePresets)&quot;&quot;&quot;
+import LGA_Write_Presets
+importlib.reload(LGA_Write_Presets)&quot;&quot;&quot;
 
 Imprime la version en Hiero, version en ShotGrid (SG), estado de la version en SG,
 descripcion y URLs de las tareas asociadas para los clips seleccionados en el timeline.

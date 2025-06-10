@@ -69,12 +69,12 @@ n.addCommand(
 )
 
 
-# Importar el LGA_writePresets
-import LGA_writePresets
+# Importar el LGA_Write_Presets
+import LGA_Write_Presets
 
 n.addCommand(
     "  Write Presets",
-    "LGA_writePresets.main()",
+    "LGA_Write_Presets.main()",
     "shift+w",
     shortcutContext=2,
     icon=icon_RnW,

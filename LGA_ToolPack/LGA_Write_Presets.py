@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_writePresets v2.0 | Lega
+  LGA_Write_Presets v2.0 | Lega
 
   Creates Write nodes with predefined settings for different purposes.
   Supports both script-based and Read node-based path generation.
@@ -261,7 +261,7 @@ def get_unique_write_name(base_name):
 def load_presets():
     """Lee el archivo .ini y retorna un diccionario con los presets"""
     config = configparser.ConfigParser(interpolation=None)  # Desactivar interpolación
-    ini_path = os.path.join(os.path.dirname(__file__), "LGA_writePresets.ini")
+    ini_path = os.path.join(os.path.dirname(__file__), "LGA_Write_Presets.ini")
     config.read(ini_path)
     return {section: dict(config[section]) for section in config.sections()}
 

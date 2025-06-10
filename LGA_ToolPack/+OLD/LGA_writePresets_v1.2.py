@@ -1,19 +1,31 @@
 """
 _____________________________________________________________________________
 
-  LGA_writePresets v1.3 | 2024 | Lega  
-  
+  LGA_Write_Presets v1.3 | 2024 | Lega
+
   Creates Write nodes with predefined settings for different purposes.
   Includes presets for preRenders, publish, denoise and other common tasks.
-  Supports both script-based and Read node-based path generation.  
+  Supports both script-based and Read node-based path generation.
 _____________________________________________________________________________
 
 """
 
-from PySide2.QtWidgets import (QApplication, QWidget, QVBoxLayout, QTableWidget, 
-                              QTableWidgetItem, QPushButton, QHBoxLayout, QDialog, 
-                              QLabel, QLineEdit, QDesktopWidget, QFrame, QStyledItemDelegate,
-                              QStyle)  # Añadido QStyle aquí
+from PySide2.QtWidgets import (
+    QApplication,
+    QWidget,
+    QVBoxLayout,
+    QTableWidget,
+    QTableWidgetItem,
+    QPushButton,
+    QHBoxLayout,
+    QDialog,
+    QLabel,
+    QLineEdit,
+    QDesktopWidget,
+    QFrame,
+    QStyledItemDelegate,
+    QStyle,
+)  # Añadido QStyle aquí
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QCursor, QPalette, QColor, QKeyEvent, QBrush
 import nuke
@@ -26,10 +38,14 @@ sys.path.append(script_dir)
 
 try:
     import LGA_oz_backdropReplacer
+
     oz_backdrop_available = True
 except ImportError:
     oz_backdrop_available = False
-    nuke.tprint("El modulo LGA_oz_backdropReplacer no esta disponible. Continuando sin reemplazar el backdrop.")
+    nuke.tprint(
+        "El modulo LGA_oz_backdropReplacer no esta disponible. Continuando sin reemplazar el backdrop."
+    )
+
 
 # Funciones auxiliares del preRender original
 def align_write_to_dot(dot_node, write_node):
@@ -39,6 +55,7 @@ def align_write_to_dot(dot_node, write_node):
     if y_offset != 0:
         write_node.setYpos(int(write_node.ypos() + y_offset))
 
+
 def get_unique_node_name(base_name):
     node_name = base_name
     index = 1
@@ -47,7 +64,8 @@ def get_unique_node_name(base_name):
         index += 1
     return node_name
 
-def create_name_input_dialog(initial_text=''):
+
+def create_name_input_dialog(initial_text=""):
     dialog = QDialog()
     dialog.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Popup)
     dialog.esc_exit = False
@@ -58,20 +76,27 @@ def create_name_input_dialog(initial_text=''):
 
     title = QLabel("preRender Name")
     title.setAlignment(Qt.AlignCenter)
-    title.setStyleSheet("color: #AAAAAA; font-family: Verdana; font-weight: bold; font-size: 10pt;")
+    title.setStyleSheet(
+        "color: #AAAAAA; font-family: Verdana; font-weight: bold; font-size: 10pt;"
+    )
     layout.addWidget(title)
 
     line_edit = QLineEdit(dialog)
     line_edit.setFixedHeight(25)
     line_edit.setFrame(False)
-    line_edit.setStyleSheet("""
+    line_edit.setStyleSheet(
+        """
         background-color: #242527;
         color: #FFFFFF;
-    """)
+    """
+    )
     line_edit.setText(initial_text)
     layout.addWidget(line_edit)
 
-    help_label = QLabel('<span style="font-size:7pt; color:#AAAAAA;">Ctrl+Enter para confirmar</span>', dialog)
+    help_label = QLabel(
+        '<span style="font-size:7pt; color:#AAAAAA;">Ctrl+Enter para confirmar</span>',
+        dialog,
+    )
     help_label.setAlignment(Qt.AlignCenter)
     layout.addWidget(help_label)
 
@@ -97,12 +122,13 @@ def create_name_input_dialog(initial_text=''):
 
     return dialog, line_edit
 
-def show_name_input_dialog(initial_text=''):
+
+def show_name_input_dialog(initial_text=""):
     dialog, line_edit = create_name_input_dialog(initial_text)
     cursor_pos = QCursor.pos()
     avail_space = QDesktopWidget().availableGeometry(cursor_pos)
-    posx = min(max(cursor_pos.x()-100, avail_space.left()), avail_space.right()-200)
-    posy = min(max(cursor_pos.y()-80, avail_space.top()), avail_space.bottom()-150)
+    posx = min(max(cursor_pos.x() - 100, avail_space.left()), avail_space.right() - 200)
+    posy = min(max(cursor_pos.y() - 80, avail_space.top()), avail_space.bottom() - 150)
     dialog.move(posx, posy)
 
     if dialog.exec_() == QDialog.Accepted:
@@ -110,11 +136,13 @@ def show_name_input_dialog(initial_text=''):
     else:
         return dialog.esc_exit, None
 
+
 def get_selected_node():
     try:
         return nuke.selectedNode()
     except ValueError:
         return None
+
 
 def create_prerender_write(user_text):
     """Función que implementa la lógica del EXR preRender básico"""
@@ -135,35 +163,37 @@ def create_prerender_write(user_text):
 
     # Reconectar nodos descendentes al Write
     if selected_node:
-        downstream_nodes = current_node.dependent(nuke.INPUTS | nuke.HIDDEN_INPUTS, forceEvaluate=False)
+        downstream_nodes = current_node.dependent(
+            nuke.INPUTS | nuke.HIDDEN_INPUTS, forceEvaluate=False
+        )
         for node in downstream_nodes:
             for i in range(node.inputs()):
                 if node.input(i) == current_node:
                     node.setInput(i, write_node)
 
     # Configurar Write node con los mismos parámetros
-    write_node['channels'].setValue('rgba')
+    write_node["channels"].setValue("rgba")
     original_file_value = "[file dir [value root.name]]/../2_prerenders/[join [lrange [split [file tail [file rootname [value root.name]]] _ ] 0 4] _]_Pre_v01/[join [lrange [split [file tail [file rootname [value root.name]]] _ ] 0 4] _]_Pre_v01_%04d.exr"
-    new_file_value = original_file_value.replace('Pre', user_text)
-    write_node['file'].setValue(new_file_value)
+    new_file_value = original_file_value.replace("Pre", user_text)
+    write_node["file"].setValue(new_file_value)
 
-    write_node['file_type'].setValue('exr')
-    write_node['compression'].setValue('DWAA')
-    write_node['dw_compression_level'].setValue(60)
-    write_node['first_part'].setValue('rgba')
-    write_node['create_directories'].setValue(True)
-    write_node['checkHashOnRead'].setValue(False)
-    write_node['version'].setValue(4)
-    write_node['colorspace'].setValue('default')
-    
-    base_write_name = 'Write_' + user_text
+    write_node["file_type"].setValue("exr")
+    write_node["compression"].setValue("DWAA")
+    write_node["dw_compression_level"].setValue(60)
+    write_node["first_part"].setValue("rgba")
+    write_node["create_directories"].setValue(True)
+    write_node["checkHashOnRead"].setValue(False)
+    write_node["version"].setValue(4)
+    write_node["colorspace"].setValue("default")
+
+    base_write_name = "Write_" + user_text
     unique_write_name = get_unique_node_name(base_write_name)
-    write_node['name'].setValue(unique_write_name)
+    write_node["name"].setValue(unique_write_name)
 
     # Añadir knobs personalizados
-    write_node.addKnob(nuke.Tab_Knob('User', 'User'))
-    write_node.addKnob(nuke.String_Knob('render_time', 'Render Time'))
-    write_node['render_time'].setValue("00:18:27")
+    write_node.addKnob(nuke.Tab_Knob("User", "User"))
+    write_node.addKnob(nuke.String_Knob("render_time", "Render Time"))
+    write_node["render_time"].setValue("00:18:27")
 
     # Eliminar NoOp temporal si se creó
     if not selected_node:
@@ -172,17 +202,18 @@ def create_prerender_write(user_text):
     # Abrir propiedades del Write y seleccionarlo
     write_node.showControlPanel()
     for node in nuke.allNodes():
-        node['selected'].setValue(False)
-    write_node['selected'].setValue(True)
+        node["selected"].setValue(False)
+    write_node["selected"].setValue(True)
 
     nuke.Undo().end()
+
 
 def create_prerender_with_switch(user_text):
     """Función que implementa la lógica del EXR preRender con switch"""
     nuke.Undo().begin("LGA_preRender")
 
     # Variables para posicionamiento
-    dot_width = int(nuke.toNode("preferences")['dot_node_scale'].value() * 12)
+    dot_width = int(nuke.toNode("preferences")["dot_node_scale"].value() * 12)
     distanciaX = 180
     distanciaY = 130  # Cambiado de 80 a 120
 
@@ -199,7 +230,9 @@ def create_prerender_with_switch(user_text):
     # Crear un Dot debajo del nodo actual
     dot_node = nuke.nodes.Dot()
     dot_node.setInput(0, current_node)
-    dot_node.setXpos(int(current_node.xpos() + (current_node.screenWidth() / 2) - (dot_width / 2)))
+    dot_node.setXpos(
+        int(current_node.xpos() + (current_node.screenWidth() / 2) - (dot_width / 2))
+    )
 
     if no_op:
         dot_node.setYpos(current_node.ypos() + current_node.screenHeight() - distanciaY)
@@ -210,45 +243,56 @@ def create_prerender_with_switch(user_text):
     switch_node = nuke.nodes.Switch()
     switch_node.setInput(0, dot_node)
     switch_node.setInput(1, None)
-    switch_node['which'].setValue(1)
-    switch_node['disable'].setValue(True)
-    switch_node.setXpos(dot_node.xpos() - (switch_node.screenWidth() // 2) + (dot_width // 2))
+    switch_node["which"].setValue(1)
+    switch_node["disable"].setValue(True)
+    switch_node.setXpos(
+        dot_node.xpos() - (switch_node.screenWidth() // 2) + (dot_width // 2)
+    )
     switch_node.setYpos(dot_node.ypos() + distanciaY)
 
     # Crear Write
     write_node = nuke.nodes.Write()
     write_node.setInput(0, dot_node)
-    write_node.setXpos(int(dot_node.xpos() + (dot_width / 2) - (write_node.screenWidth() // 2) - distanciaX))
+    write_node.setXpos(
+        int(
+            dot_node.xpos()
+            + (dot_width / 2)
+            - (write_node.screenWidth() // 2)
+            - distanciaX
+        )
+    )
     write_node.setYpos(dot_node.ypos())
 
     # Configurar Write node
-    write_node['channels'].setValue('rgba')
+    write_node["channels"].setValue("rgba")
     original_file_value = "[file dir [value root.name]]/../2_prerenders/[join [lrange [split [file tail [file rootname [value root.name]]] _ ] 0 4] _]_Pre_v01/[join [lrange [split [file tail [file rootname [value root.name]]] _ ] 0 4] _]_Pre_v01_%04d.exr"
-    new_file_value = original_file_value.replace('Pre', user_text)
-    write_node['file'].setValue(new_file_value)
+    new_file_value = original_file_value.replace("Pre", user_text)
+    write_node["file"].setValue(new_file_value)
 
     # Configurar el resto de los parámetros del Write
-    write_node['file_type'].setValue('exr')
-    write_node['compression'].setValue('DWAA')
-    write_node['dw_compression_level'].setValue(60)
-    write_node['first_part'].setValue('rgba')
-    write_node['create_directories'].setValue(True)
-    write_node['checkHashOnRead'].setValue(False)
-    write_node['version'].setValue(4)
-    write_node['colorspace'].setValue('default')
-    
-    base_write_name = 'Write_' + user_text
+    write_node["file_type"].setValue("exr")
+    write_node["compression"].setValue("DWAA")
+    write_node["dw_compression_level"].setValue(60)
+    write_node["first_part"].setValue("rgba")
+    write_node["create_directories"].setValue(True)
+    write_node["checkHashOnRead"].setValue(False)
+    write_node["version"].setValue(4)
+    write_node["colorspace"].setValue("default")
+
+    base_write_name = "Write_" + user_text
     unique_write_name = get_unique_node_name(base_write_name)
-    write_node['name'].setValue(unique_write_name)
+    write_node["name"].setValue(unique_write_name)
 
     # Añadir knobs personalizados
-    write_node.addKnob(nuke.Tab_Knob('User', 'User'))
-    write_node.addKnob(nuke.String_Knob('render_time', 'Render Time'))
-    write_node['render_time'].setValue("00:18:27")
+    write_node.addKnob(nuke.Tab_Knob("User", "User"))
+    write_node.addKnob(nuke.String_Knob("render_time", "Render Time"))
+    write_node["render_time"].setValue("00:18:27")
 
     # Reconectar nodos descendentes
     if not no_op:
-        downstream_nodes = current_node.dependent(nuke.INPUTS | nuke.HIDDEN_INPUTS, forceEvaluate=False)
+        downstream_nodes = current_node.dependent(
+            nuke.INPUTS | nuke.HIDDEN_INPUTS, forceEvaluate=False
+        )
         for node in downstream_nodes:
             for i in range(node.inputs()):
                 if node.input(i) == current_node:
@@ -263,28 +307,34 @@ def create_prerender_with_switch(user_text):
 
     bd_x = min(node.xpos() for node in nodes) - margen_izquierdo
     bd_y = min(node.ypos() for node in nodes) - margen_superior
-    bd_w = max(node.xpos() + node.screenWidth() for node in nodes) - bd_x + margen_derecho
-    bd_h = max(node.ypos() + node.screenHeight() for node in nodes) - bd_y + margen_inferior
+    bd_w = (
+        max(node.xpos() + node.screenWidth() for node in nodes) - bd_x + margen_derecho
+    )
+    bd_h = (
+        max(node.ypos() + node.screenHeight() for node in nodes)
+        - bd_y
+        + margen_inferior
+    )
 
     backdrop_node = nuke.nodes.BackdropNode(
-        xpos = bd_x,
-        ypos = bd_y,
-        bdwidth = bd_w,
-        bdheight = bd_h,
-        tile_color = int('0x9F9000FF', 16),
-        note_font = "Verdana Bold",
-        note_font_size = 50,
-        label = user_text,
-        z_order = 4,
-        name = "Backdrop_preRender"
+        xpos=bd_x,
+        ypos=bd_y,
+        bdwidth=bd_w,
+        bdheight=bd_h,
+        tile_color=int("0x9F9000FF", 16),
+        note_font="Verdana Bold",
+        note_font_size=50,
+        label=user_text,
+        z_order=4,
+        name="Backdrop_preRender",
     )
-    backdrop_node['selected'].setValue(True)
+    backdrop_node["selected"].setValue(True)
 
     # Alinear Write con Dot
     align_write_to_dot(dot_node, write_node)
 
     backdrop_node.hideControlPanel()
-    backdrop_node['selected'].setValue(False)
+    backdrop_node["selected"].setValue(False)
 
     # Reemplazar backdrop si está disponible
     if oz_backdrop_available:
@@ -303,10 +353,11 @@ def create_prerender_with_switch(user_text):
 
     # Seleccionar solo el Write
     for node in nuke.allNodes():
-        node['selected'].setValue(False)
-    write_node['selected'].setValue(True)
+        node["selected"].setValue(False)
+    write_node["selected"].setValue(True)
 
     nuke.Undo().end()
+
 
 def create_publish_write():
     """Función que implementa la lógica del EXR Publish DWAA"""
@@ -327,32 +378,36 @@ def create_publish_write():
 
     # Reconectar nodos descendentes al Write
     if selected_node:
-        downstream_nodes = current_node.dependent(nuke.INPUTS | nuke.HIDDEN_INPUTS, forceEvaluate=False)
+        downstream_nodes = current_node.dependent(
+            nuke.INPUTS | nuke.HIDDEN_INPUTS, forceEvaluate=False
+        )
         for node in downstream_nodes:
             for i in range(node.inputs()):
                 if node.input(i) == current_node:
                     node.setInput(i, write_node)
 
     # Configurar Write node
-    write_node['channels'].setValue('rgb')  # Cambiado de 'rgba' a 'rgb'
-    write_node['file'].setValue("[file dir [value root.name]]/../4_publish/[file tail [file rootname [value root.name]]]/[file tail [file rootname [value root.name]]]_%04d.exr")
-    write_node['file_type'].setValue('exr')
-    write_node['compression'].setValue('DWAA')
-    write_node['dw_compression_level'].setValue(60)
-    write_node['first_part'].setValue('rgba')
-    write_node['create_directories'].setValue(True)
-    write_node['checkHashOnRead'].setValue(False)
-    write_node['version'].setValue(4)
-    write_node['colorspace'].setValue('default')
-    
-    base_write_name = 'Write_Publish'
+    write_node["channels"].setValue("rgb")  # Cambiado de 'rgba' a 'rgb'
+    write_node["file"].setValue(
+        "[file dir [value root.name]]/../4_publish/[file tail [file rootname [value root.name]]]/[file tail [file rootname [value root.name]]]_%04d.exr"
+    )
+    write_node["file_type"].setValue("exr")
+    write_node["compression"].setValue("DWAA")
+    write_node["dw_compression_level"].setValue(60)
+    write_node["first_part"].setValue("rgba")
+    write_node["create_directories"].setValue(True)
+    write_node["checkHashOnRead"].setValue(False)
+    write_node["version"].setValue(4)
+    write_node["colorspace"].setValue("default")
+
+    base_write_name = "Write_Publish"
     unique_write_name = get_unique_node_name(base_write_name)
-    write_node['name'].setValue(unique_write_name)
+    write_node["name"].setValue(unique_write_name)
 
     # Añadir knobs personalizados
-    write_node.addKnob(nuke.Tab_Knob('User', 'User'))
-    write_node.addKnob(nuke.String_Knob('render_time', 'Render Time'))
-    write_node['render_time'].setValue("00:18:27")
+    write_node.addKnob(nuke.Tab_Knob("User", "User"))
+    write_node.addKnob(nuke.String_Knob("render_time", "Render Time"))
+    write_node["render_time"].setValue("00:18:27")
 
     # Eliminar NoOp temporal si se creó
     if not selected_node:
@@ -361,14 +416,15 @@ def create_publish_write():
     # Abrir propiedades del Write y seleccionarlo
     write_node.showControlPanel()
     for node in nuke.allNodes():
-        node['selected'].setValue(False)
-    write_node['selected'].setValue(True)
+        node["selected"].setValue(False)
+    write_node["selected"].setValue(True)
 
     nuke.Undo().end()
 
+
 def find_top_read_node(node):
     """Encuentra el nodo Read más alto en las dependencias ascendentes del nodo"""
-    if node.Class() == 'Read':
+    if node.Class() == "Read":
         return node
 
     for input_node in node.dependencies():
@@ -376,20 +432,22 @@ def find_top_read_node(node):
 
     return None
 
+
 def get_write_name_from_read(current_node, default_name):
     """Obtiene el nombre para el Write basado en el Read más alto o usa el default"""
     read_node = find_top_read_node(current_node)
-    
+
     if read_node:
-        file_path = read_node['file'].value()
+        file_path = read_node["file"].value()
         file_name = os.path.basename(file_path)
         file_name = os.path.splitext(file_name)[0]
         # Eliminar el padding si existe
         if "_" in file_name:
             file_name = "_".join(file_name.split("_")[:-1])
-        return 'Write_' + file_name
+        return "Write_" + file_name
     else:
-        return 'Write_' + default_name
+        return "Write_" + default_name
+
 
 def create_script_denoised_write(user_text):
     """Función que implementa la lógica del EXR denoised basado en script"""
@@ -410,36 +468,38 @@ def create_script_denoised_write(user_text):
 
     # Reconectar nodos descendentes al Write
     if selected_node:
-        downstream_nodes = current_node.dependent(nuke.INPUTS | nuke.HIDDEN_INPUTS, forceEvaluate=False)
+        downstream_nodes = current_node.dependent(
+            nuke.INPUTS | nuke.HIDDEN_INPUTS, forceEvaluate=False
+        )
         for node in downstream_nodes:
             for i in range(node.inputs()):
                 if node.input(i) == current_node:
                     node.setInput(i, write_node)
 
     # Configurar Write node
-    write_node['channels'].setValue('rgb')
+    write_node["channels"].setValue("rgb")
     original_file_value = "[file dir [value root.name]]/../2_prerenders/[join [lrange [split [file tail [file rootname [value root.name]]] _ ] 0 4] _]_aPlate_Denoised_v01/[join [lrange [split [file tail [file rootname [value root.name]]] _ ] 0 4] _]_aPlate_Denoised_v01_%04d.exr"
-    new_file_value = original_file_value.replace('aPlate_Denoised', user_text)
-    write_node['file'].setValue(new_file_value)
+    new_file_value = original_file_value.replace("aPlate_Denoised", user_text)
+    write_node["file"].setValue(new_file_value)
 
-    write_node['file_type'].setValue('exr')
-    write_node['compression'].setValue('DWAA')
-    write_node['dw_compression_level'].setValue(60)
-    write_node['first_part'].setValue('rgba')
-    write_node['create_directories'].setValue(True)
-    write_node['checkHashOnRead'].setValue(False)
-    write_node['version'].setValue(4)
-    write_node['colorspace'].setValue('default')
-    
+    write_node["file_type"].setValue("exr")
+    write_node["compression"].setValue("DWAA")
+    write_node["dw_compression_level"].setValue(60)
+    write_node["first_part"].setValue("rgba")
+    write_node["create_directories"].setValue(True)
+    write_node["checkHashOnRead"].setValue(False)
+    write_node["version"].setValue(4)
+    write_node["colorspace"].setValue("default")
+
     # Usar el nombre estándar en lugar del nombre del topfile
-    base_write_name = 'Write_' + user_text
+    base_write_name = "Write_" + user_text
     unique_write_name = get_unique_node_name(base_write_name)
-    write_node['name'].setValue(unique_write_name)
+    write_node["name"].setValue(unique_write_name)
 
     # Añadir knobs personalizados
-    write_node.addKnob(nuke.Tab_Knob('User', 'User'))
-    write_node.addKnob(nuke.String_Knob('render_time', 'Render Time'))
-    write_node['render_time'].setValue("00:18:27")
+    write_node.addKnob(nuke.Tab_Knob("User", "User"))
+    write_node.addKnob(nuke.String_Knob("render_time", "Render Time"))
+    write_node["render_time"].setValue("00:18:27")
 
     # Eliminar NoOp temporal si se creó
     if not selected_node:
@@ -448,10 +508,11 @@ def create_script_denoised_write(user_text):
     # Abrir propiedades del Write y seleccionarlo
     write_node.showControlPanel()
     for node in nuke.allNodes():
-        node['selected'].setValue(False)
-    write_node['selected'].setValue(True)
+        node["selected"].setValue(False)
+    write_node["selected"].setValue(True)
 
     nuke.Undo().end()
+
 
 def create_denoised_topread_write():
     """Función que implementa la lógica del EXR denoised usando topnode"""
@@ -472,31 +533,35 @@ def create_denoised_topread_write():
 
     # Reconectar nodos descendentes al Write
     if selected_node:
-        downstream_nodes = current_node.dependent(nuke.INPUTS | nuke.HIDDEN_INPUTS, forceEvaluate=False)
+        downstream_nodes = current_node.dependent(
+            nuke.INPUTS | nuke.HIDDEN_INPUTS, forceEvaluate=False
+        )
         for node in downstream_nodes:
             for i in range(node.inputs()):
                 if node.input(i) == current_node:
                     node.setInput(i, write_node)
 
     # Configurar Write node
-    write_node['channels'].setValue('rgb')
-    write_node['file'].setValue("[file dirname [value [topnode].file]]/../../Comp/2_prerenders/[join [lrange [split [file tail [knob [topnode].file]] _ ] 0 6 ] _]_Denoised_v01/[join [lrange [split [file tail [knob [topnode].file]] _ ] 0 6 ] _]_Denoised_v01_%04d.exr")
-    write_node['file_type'].setValue('exr')
-    write_node['compression'].setValue('DWAA')
-    write_node['dw_compression_level'].setValue(60)
-    write_node['first_part'].setValue('rgba')
-    write_node['create_directories'].setValue(True)
-    write_node['checkHashOnRead'].setValue(False)
-    write_node['version'].setValue(4)
-    write_node['colorspace'].setValue('default')
-    
+    write_node["channels"].setValue("rgb")
+    write_node["file"].setValue(
+        "[file dirname [value [topnode].file]]/../../Comp/2_prerenders/[join [lrange [split [file tail [knob [topnode].file]] _ ] 0 6 ] _]_Denoised_v01/[join [lrange [split [file tail [knob [topnode].file]] _ ] 0 6 ] _]_Denoised_v01_%04d.exr"
+    )
+    write_node["file_type"].setValue("exr")
+    write_node["compression"].setValue("DWAA")
+    write_node["dw_compression_level"].setValue(60)
+    write_node["first_part"].setValue("rgba")
+    write_node["create_directories"].setValue(True)
+    write_node["checkHashOnRead"].setValue(False)
+    write_node["version"].setValue(4)
+    write_node["colorspace"].setValue("default")
+
     # Obtener el nombre del Write basado en el Read o usar el default
-    write_node['name'].setValue(get_write_name_from_read(current_node, 'Denoised'))
+    write_node["name"].setValue(get_write_name_from_read(current_node, "Denoised"))
 
     # Añadir knobs personalizados
-    write_node.addKnob(nuke.Tab_Knob('User', 'User'))
-    write_node.addKnob(nuke.String_Knob('render_time', 'Render Time'))
-    write_node['render_time'].setValue("00:18:27")
+    write_node.addKnob(nuke.Tab_Knob("User", "User"))
+    write_node.addKnob(nuke.String_Knob("render_time", "Render Time"))
+    write_node["render_time"].setValue("00:18:27")
 
     # Eliminar NoOp temporal si se creó
     if not selected_node:
@@ -505,10 +570,11 @@ def create_denoised_topread_write():
     # Abrir propiedades del Write y seleccionarlo
     write_node.showControlPanel()
     for node in nuke.allNodes():
-        node['selected'].setValue(False)
-    write_node['selected'].setValue(True)
+        node["selected"].setValue(False)
+    write_node["selected"].setValue(True)
 
     nuke.Undo().end()
+
 
 # Mantener la clase SelectedNodeInfo como está, solo modificar change_option
 class SelectedNodeInfo(QWidget):
@@ -533,15 +599,19 @@ class SelectedNodeInfo(QWidget):
         title_bar_layout.addStretch(1)
 
         title_label = QPushButton(self.windowTitle(), self)
-        title_label.setStyleSheet("background-color: none; color: #B0B0B0; border: none; font-weight: bold;")
+        title_label.setStyleSheet(
+            "background-color: none; color: #B0B0B0; border: none; font-weight: bold;"
+        )
         title_label.setEnabled(False)
         title_bar_layout.addWidget(title_label)
 
         title_bar_layout.addStretch(1)
 
-        close_button = QPushButton('X', self)
+        close_button = QPushButton("X", self)
         close_button.setFixedSize(20, 20)
-        close_button.setStyleSheet("background-color: none; color: #B0B0B0; border: none;")
+        close_button.setStyleSheet(
+            "background-color: none; color: #B0B0B0; border: none;"
+        )
         close_button.clicked.connect(self.close)
         title_bar_layout.addWidget(close_button)
         title_bar_layout.setSpacing(0)
@@ -580,27 +650,28 @@ class SelectedNodeInfo(QWidget):
         """Retorna la lista de opciones de render disponibles."""
         return [
             "[Script] EXR preRender",
-            "[Script] EXR preRender + Switch", 
+            "[Script] EXR preRender + Switch",
             "[Script] EXR Publish DWAA",
             "[Script] EXR Denoise",
             "[Read] EXR Denoise",
             "[Read] TIFF Matte cct",
             "[Read] TIFF Matte Rec709",
-            "[Read] MOV Review"
+            "[Read] MOV Review",
         ]
 
     def load_render_options(self):
         """Carga las opciones de render en la tabla."""
         # Establecer el delegado personalizado
         self.table.setItemDelegate(ColoredItemDelegate())
-        
+
         for row, name in enumerate(self.options):
             item = QTableWidgetItem(name)
             item.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
             self.table.setItem(row, 0, item)
 
         self.table.resizeColumnsToContents()
-        self.table.setStyleSheet("""
+        self.table.setStyleSheet(
+            """
             QTableView {
                 background-color: #282828;
             }
@@ -610,7 +681,8 @@ class SelectedNodeInfo(QWidget):
             QTableView::item:selected {
                 background-color: rgb(230, 230, 230);
             }
-        """)
+        """
+        )
 
     def adjust_window_size(self):
         """Ajusta el tamaño de la ventana basado en el contenido de la tabla y la posición del cursor."""
@@ -623,12 +695,16 @@ class SelectedNodeInfo(QWidget):
         # Calcular el ancho de la ventana basado en el ancho de las columnas y el texto más ancho
         width = self.table.verticalHeader().width()  # Un poco de relleno para estética
         for i in range(self.table.columnCount()):
-            width += self.table.columnWidth(i) + 50  # Un poco más de relleno entre columnas
+            width += (
+                self.table.columnWidth(i) + 50
+            )  # Un poco más de relleno entre columnas
 
         # Ajustar el ancho adicional basado en el texto más ancho
         longest_text = max(self.options, key=len)
         font_metrics = self.table.fontMetrics()
-        text_width = font_metrics.horizontalAdvance(longest_text) + 50  # Un poco de relleno adicional
+        text_width = (
+            font_metrics.horizontalAdvance(longest_text) + 50
+        )  # Un poco de relleno adicional
         width = max(width, text_width)
 
         # Asegurarse de que el ancho no supera el 80% del ancho de pantalla
@@ -638,7 +714,9 @@ class SelectedNodeInfo(QWidget):
         final_width = min(width, max_width)
 
         # Calcular la altura basada en la altura de los headers y las filas
-        height = self.table.horizontalHeader().height() + 20  # Altura del encabezado + espacio adicional
+        height = (
+            self.table.horizontalHeader().height() + 20
+        )  # Altura del encabezado + espacio adicional
         for i in range(self.table.rowCount()):
             height += self.table.rowHeight(i)
 
@@ -672,15 +750,15 @@ class SelectedNodeInfo(QWidget):
     def execute_selected_option(self, row):
         """Ejecuta la opción seleccionada"""
         selected_option = self.options[row]
-        
+
         if selected_option == "[Script] EXR preRender":
             self.close()
-            esc_exit, user_text = show_name_input_dialog(initial_text='Pre-')
+            esc_exit, user_text = show_name_input_dialog(initial_text="Pre-")
             if not esc_exit and user_text is not None:
                 create_prerender_write(user_text)
         elif selected_option == "[Script] EXR preRender + Switch":
             self.close()
-            esc_exit, user_text = show_name_input_dialog(initial_text='Pre-')
+            esc_exit, user_text = show_name_input_dialog(initial_text="Pre-")
             if not esc_exit and user_text is not None:
                 create_prerender_with_switch(user_text)
         elif selected_option == "[Script] EXR Publish DWAA":
@@ -688,7 +766,7 @@ class SelectedNodeInfo(QWidget):
             create_publish_write()
         elif selected_option == "[Script] EXR Denoise":
             self.close()
-            esc_exit, user_text = show_name_input_dialog(initial_text='aPlate_Denoised')
+            esc_exit, user_text = show_name_input_dialog(initial_text="aPlate_Denoised")
             if not esc_exit and user_text is not None:
                 create_script_denoised_write(user_text)
         elif selected_option == "[Read] EXR Denoise":
@@ -715,7 +793,10 @@ class SelectedNodeInfo(QWidget):
 
     def eventFilter(self, obj, event):
         if obj == self.table and event.type() == event.KeyPress:
-            if event.key() in (Qt.Key_Return, Qt.Key_Enter) and event.modifiers() == Qt.ControlModifier:
+            if (
+                event.key() in (Qt.Key_Return, Qt.Key_Enter)
+                and event.modifiers() == Qt.ControlModifier
+            ):
                 current_row = self.table.currentRow()
                 if current_row >= 0:
                     self.execute_selected_option(current_row)
@@ -725,16 +806,17 @@ class SelectedNodeInfo(QWidget):
                 return True  # Consumir el evento
         return super(SelectedNodeInfo, self).eventFilter(obj, event)
 
+
 # Agregar esta clase después de las importaciones
 class ColoredItemDelegate(QStyledItemDelegate):
     def paint(self, painter, option, index):
         text = index.data()
         if text:
             painter.save()
-            
+
             if option.state & QStyle.State_Selected:
                 painter.fillRect(option.rect, QColor("#212121"))
-            
+
             if text.startswith("[Script]"):
                 painter.setPen(QColor("#ed2464"))
                 prefix = "[Script]"
@@ -742,8 +824,11 @@ class ColoredItemDelegate(QStyledItemDelegate):
                 painter.setPen(QColor("white"))
                 # Ajustar el offset basado en el ancho real del texto "[Script]"
                 text_width = painter.fontMetrics().horizontalAdvance(prefix)
-                painter.drawText(option.rect.adjusted(text_width, 0, 0, 0), 
-                               Qt.AlignLeft | Qt.AlignVCenter, text[len(prefix):])
+                painter.drawText(
+                    option.rect.adjusted(text_width, 0, 0, 0),
+                    Qt.AlignLeft | Qt.AlignVCenter,
+                    text[len(prefix) :],
+                )
             elif text.startswith("[Read]"):
                 painter.setPen(QColor("#66e2ff"))
                 prefix = "[Read]"
@@ -751,17 +836,22 @@ class ColoredItemDelegate(QStyledItemDelegate):
                 painter.setPen(QColor("white"))
                 # Ajustar el offset basado en el ancho real del texto "[Read]"
                 text_width = painter.fontMetrics().horizontalAdvance(prefix)
-                painter.drawText(option.rect.adjusted(text_width, 0, 0, 0), 
-                               Qt.AlignLeft | Qt.AlignVCenter, text[len(prefix):])
+                painter.drawText(
+                    option.rect.adjusted(text_width, 0, 0, 0),
+                    Qt.AlignLeft | Qt.AlignVCenter,
+                    text[len(prefix) :],
+                )
             else:
                 painter.setPen(QColor("white"))
                 painter.drawText(option.rect, Qt.AlignLeft | Qt.AlignVCenter, text)
-            
+
             painter.restore()
+
 
 # El resto del código se mantiene igual
 app = None
 window = None
+
 
 def main():
     global app, window
@@ -770,6 +860,6 @@ def main():
     window = SelectedNodeInfo()
     window.show()
 
+
 # Llamar a main() para iniciar la aplicación
 main()
-
