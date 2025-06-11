@@ -287,7 +287,7 @@ import LGA_build_iteration
 
 n.addCommand(
     "  Build Iteration",
-    "LGA_build_iteration.gen_iteration()",
+    "LGA_build_iteration.gen_iteration_simple()",
     "shift+i",
     shortcutContext=2,
     icon=icon_Knobs,
