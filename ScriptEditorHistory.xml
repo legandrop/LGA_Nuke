@@ -10644,4 +10644,10 @@ class MiddleClickInterceptor(QtCore.QObject):
 app = QtWidgets.QApplication.instance()
 if app:
     interceptor = MiddleClickInterceptor()
-    app.installEventFilter(inter</script>
+    app.installEventFilter(interimport nuke
+undo = nuke.Undo()
+undo.end()
+
+import importlib
+import LGA_build_iteration
+importlib.reload(LGA_build_iteration)</script>

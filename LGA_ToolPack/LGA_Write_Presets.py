@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_Write_Presets v2.0 | Lega
+  LGA_Write_Presets v2.01 | Lega
 
   Creates Write nodes with predefined settings for different purposes.
   Supports both script-based and Read node-based path generation.
@@ -31,6 +31,8 @@ import nuke
 import sys
 import os
 import configparser
+import ntpath
+import posixpath
 
 # Intentar importar el modulo LGA_oz_backdropReplacer
 script_dir = os.path.dirname(__file__)
@@ -854,6 +856,13 @@ class SelectedNodeInfo(QWidget):
         import importlib.util
         import os
 
+        def normalize_path(path):
+            # Normalizar barras y convertir a minúsculas
+            path = path.replace("\\", "/").lower()
+            # Eliminar redundancias como '.' o '..'
+            path = os.path.normpath(path)
+            return path
+
         self.close()
         script_path = os.path.join(os.path.dirname(__file__), "LGA_Write_PathToText.py")
         spec = importlib.util.spec_from_file_location(
@@ -863,6 +872,8 @@ class SelectedNodeInfo(QWidget):
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             if hasattr(module, "main"):
+                # Pasar la función de normalización al módulo
+                module.normalize_path = normalize_path
                 module.main()
 
 
