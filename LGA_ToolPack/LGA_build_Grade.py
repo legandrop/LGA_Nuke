@@ -1,7 +1,7 @@
 """
 _____________________________________________________________________________
 
-  LGA_build_Grade v1.61 | Lega
+  LGA_build_Grade v1.62 | Lega
 
   Crea nodos Grade con diferentes configuraciones de máscaras.
   Soporta creación desde un nodo seleccionado o desde la posición del cursor.
@@ -14,6 +14,14 @@ import nuke
 from PySide2.QtGui import QCursor, QMouseEvent
 from PySide2.QtWidgets import QApplication
 from PySide2.QtCore import Qt, QEvent, QPoint
+
+# Variable global para activar o desactivar los prints
+DEBUG = False
+
+
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
 
 
 # Variables comunes
@@ -63,11 +71,17 @@ def simulate_dag_click():
 def get_selected_node():
     try:
         selected_node = nuke.selectedNode()
+        debug_print(
+            f"Nodo seleccionado: {selected_node.name()} ({selected_node.Class()}) id={id(selected_node)}"
+        )
         return selected_node, None
     except ValueError:
         # Simular click en el DAG antes de crear el NoOp
         simulate_dag_click()
         no_op = nuke.createNode("NoOp")
+        debug_print(
+            f"No hay nodo seleccionado. Se crea NoOp temporal: {no_op.name()} id={id(no_op)}"
+        )
         return no_op, no_op
 
 
@@ -97,6 +111,12 @@ def find_next_node_in_column(current_node, tolerance_x=120):
                 distMedia_NodoSiguiente = distance
                 nodo_siguiente_en_columna = node
 
+    if nodo_siguiente_en_columna:
+        debug_print(
+            f"Nodo siguiente en columna: {nodo_siguiente_en_columna.name()} ({nodo_siguiente_en_columna.Class()}) id={id(nodo_siguiente_en_columna)} a distancia {distMedia_NodoSiguiente}"
+        )
+    else:
+        debug_print("No se encontro nodo siguiente en columna.")
     return nodo_siguiente_en_columna, distMedia_NodoSiguiente
 
 
@@ -229,6 +249,9 @@ def gradeMask():
         n.setSelected(False)
 
     current_node = selected_node
+    debug_print(
+        f"\n[gradeMask] Nodo base para arbol: {current_node.name()} ({current_node.Class()}) id={id(current_node)}"
+    )
 
     # Crear un nodo Roto a la derecha del nodo seleccionado
     roto = nuke.nodes.Roto()
@@ -273,21 +296,54 @@ def gradeMask():
         )
     )
 
-    # Conectar el nodo Grade al nodo seleccionado
+    debug_print(f"[gradeMask] Se crea Grade: {grade.name()} id={id(grade)}")
+    debug_print(
+        f"[gradeMask] Conectando input 0 del Grade a {current_node.name()} id={id(current_node)}"
+    )
     grade.setInput(0, current_node)
+    debug_print(
+        f"[gradeMask] Grade input 0 ahora es: {grade.input(0).name() if grade.input(0) is not None else 'None'} id={id(grade.input(0)) if grade.input(0) is not None else 'None'}"
+    )
 
     # Si hay un nodo siguiente en la columna, conectar el nodo Grade entre el nodo seleccionado y el nodo siguiente
     if nodo_siguiente_en_columna:
+        debug_print(
+            f"[gradeMask] Nodo siguiente detectado: {nodo_siguiente_en_columna.name()} ({nodo_siguiente_en_columna.Class()}) id={id(nodo_siguiente_en_columna)}"
+        )
         for i in range(nodo_siguiente_en_columna.inputs()):
-            if nodo_siguiente_en_columna.input(i) == current_node:
+            input_node = nodo_siguiente_en_columna.input(i)
+            debug_print(
+                f"[gradeMask]   Input {i} del nodo siguiente es: {input_node.name() if input_node is not None else 'None'} id={id(input_node) if input_node is not None else 'None'}"
+            )
+            if input_node == current_node:
+                debug_print(
+                    f"[gradeMask]   Reemplazando input {i} del nodo siguiente por el Grade..."
+                )
                 nodo_siguiente_en_columna.setInput(i, grade)
+                new_input = nodo_siguiente_en_columna.input(i)
+                debug_print(
+                    f"[gradeMask]   Ahora input {i} del nodo siguiente es: {new_input.name() if new_input is not None else 'None'} id={id(new_input) if new_input is not None else 'None'}"
+                )
                 break
+    else:
+        debug_print(
+            "[gradeMask] No hay nodo siguiente en la columna para conectar el output del Grade."
+        )
 
     # Conectar la mascara del nodo Grade al Dot de la columna derecha
+    debug_print(
+        f"[gradeMask] Conectando input 1 del Grade a {dot_right.name()} id={id(dot_right)}"
+    )
     grade.setInput(1, dot_right)
+    debug_print(
+        f"[gradeMask] Grade input 1 ahora es: {grade.input(1).name() if grade.input(1) is not None else 'None'} id={id(grade.input(1)) if grade.input(1) is not None else 'None'}"
+    )
 
     # Borrar noOp si existe
     if no_op:
+        debug_print(
+            f"[gradeMask] Borrando NoOp temporal: {no_op.name()} id={id(no_op)}"
+        )
         nuke.delete(no_op)
 
     # Seleccionar los nodos creados
