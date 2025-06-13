@@ -3,7 +3,6 @@ add_favorite_dir -python "+Nuke Python Scripts" "+Nuke Python Scripts" "" "N:/+I
 add_favorite_dir -image -script -project -python -font -geo -misc -sequence Desktop Desktop "" C:/Users/leg4-pc/Desktop/
 add_favorite_dir -image -script -project -python -font -geo -misc -sequence T: T: "" T:/
 add_favorite_dir -image -script -project -python -font -geo -misc -sequence _ASSETS _ASSETS "" T:/_ASSETS/
-add_favorite_dir -image -script -project -python -font -geo -misc -sequence VFX-EE VFX-EE "" T:/VFX-EE/
 add_favorite_dir -image -script -project -python -font -geo -misc -sequence VFX-ETDM VFX-ETDM "" T:/VFX-ETDM/
 add_favorite_dir -image -script -project -python -font -geo -misc -sequence VFX-LC VFX-LC "" T:/VFX-LC/
 add_favorite_dir -image -script -project -python -font -geo -misc -sequence VFX-YM VFX-YM "" T:/VFX-YM/
