@@ -10663,48 +10663,108 @@ undo.end()
 import importlib
 import LGA_build_Grade
 importlib.reload(LGA_build_Grade)&quot;&quot;&quot;
-______________________________________
+______________________________________________________
 
-  LGA_viewer_SnapShot v0.1 | Lega
-______________________________________
+  LGA_NKS_SnapShot v0.5 - Lega
+  Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
+______________________________________________________
 
 &quot;&quot;&quot;
 
 import nuke
+import nukescripts
 import os
+import tempfile
+from PySide2 import QtWidgets, QtGui
 
-# Path de destino (asegurate que la carpeta exista)
-output_path = r&quot;T:\Borrame\snapshot.jpg&quot;
+DEBUG = True
+SaveToFile = False
 
-# Obtener el viewer activo
-viewer = nuke.activeViewer()
-if viewer is None:
-    nuke.message(&quot;No hay viewer activo.&quot;)
-    raise Exception(&quot;No viewer active&quot;)
 
-# Obtener el nodo asociado al viewer
-view_node = viewer.node()
-input_index = viewer.activeInput()
-input_node = view_node.input(input_index)
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
 
-if input_node is None:
-    nuke.message(&quot;No hay nodo conectado al viewer.&quot;)
-    raise Exception(&quot;No node connected to viewer&quot;)
 
-# Obtener el frame actual
-frame = int(nuke.frame())
+def main():
+    temp_dir = tempfile.gettempdir()
+    output_path = os.path.join(temp_dir, &quot;snapshot.jpg&quot;)
 
-# Crear un Write temporal
-write_node = nuke.createNode(&quot;Write&quot;, inpanel=False)
-write_node.setInput(0, input_node)
-write_node[&quot;file&quot;].setValue(output_path)
-write_node[&quot;file_type&quot;].setValue(&quot;jpeg&quot;)
+    viewer = nuke.activeViewer()
+    if viewer is None:
+        nuke.message(&quot;No hay viewer activo.&quot;)
+        return
 
-# Renderizar el frame actual
-nuke.execute(write_node, frame, frame)
+    view_node = viewer.node()
+    input_index = viewer.activeInput()
+    input_node = view_node.input(input_index)
 
-# Borrar el write después de usarlo
-nuke.delete(write_node)
+    if input_node is None:
+        nuke.message(&quot;No hay nodo conectado al viewer.&quot;)
+        return
 
-nuke.message(&quot;Snapshot guardado:\n{}&quot;.format(output_path))
+    frame = int(nuke.frame())
+
+    # Crear el Write temporal limpio
+    write_node = nuke.createNode(
+        &quot;Write&quot;,
+        &quot;file_type jpeg postage_stamp false hide_input true label 'LGA_TEMP'&quot;,
+        inpanel=False,
+    )
+    write_node.setInput(0, input_node)
+
+    # Blindaje: convertir path a forward slashes para evitar problemas de escapes
+    safe_path = output_path.replace(&quot;\\&quot;, &quot;/&quot;)
+    write_node[&quot;file&quot;].setValue(safe_path)
+
+    debug_print(&quot;Generando snapshot temporal en:&quot;, safe_path)
+
+    try:
+        nuke.execute(write_node, frame, frame)
+    except Exception as e:
+        nuke.delete(write_node)
+        nuke.message(f&quot;Error al ejecutar el Write: {str(e)}&quot;)
+        return
+
+    nuke.delete(write_node)
+
+    if not os.path.exists(output_path):
+        nuke.message(&quot;Error: el archivo no se generó.&quot;)
+        return
+
+    # Cargar el JPEG como QImage
+    qimage = QtGui.QImage(output_path)
+    if qimage.isNull():
+        nuke.message(&quot;Error al leer el snapshot generado.&quot;)
+        return
+
+    debug_print(&quot;Snapshot size:&quot;, qimage.width(), &quot;×&quot;, qimage.height())
+
+    if SaveToFile:
+        save_path = r&quot;T:\Borrame\snapshot.jpg&quot;
+        output_dir = os.path.dirname(save_path)
+        os.makedirs(output_dir, exist_ok=True)
+        ok = qimage.save(save_path, &quot;JPEG&quot;)
+        debug_print(&quot;Archivo final guardado:&quot;, ok, save_path)
+
+    # Copiar al portapapeles
+    app = QtWidgets.QApplication.instance()
+    if not app:
+        app = QtWidgets.QApplication([])
+
+    clipboard = app.clipboard()
+    clipboard.setImage(qimage)
+
+    debug_print(&quot;✅ Imagen copiada al portapapeles.&quot;)
+
+    # Limpiar el temporal
+    try:
+        os.remove(output_path)
+    except:
+        pass
+
+
+# --- Main Execution ---
+if __name__ == &quot;__main__&quot;:
+    main()
 </script>
