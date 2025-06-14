@@ -10662,21 +10662,110 @@ undo.end()
 
 import importlib
 import LGA_build_Grade
-importlib.reload(LGA_build_Grade)import hiero.ui
+importlib.reload(LGA_build_Grade)&quot;&quot;&quot;
+______________________________________________________
+
+  LGA_NKS_SnapShot v0.5 - Lega
+  Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
+______________________________________________________
+
+&quot;&quot;&quot;
+
 import hiero.core
+import hiero.ui
+import os
+from PySide2 import QtWidgets
+from PySide2.QtCore import QRect
 
-# Obtener la secuencia activa
-sequence = hiero.ui.activeSequence()
+DEBUG = True
+SaveToFile = False
 
-if sequence is None:
-    print(&quot;No hay ninguna secuencia activa.&quot;)
-else:
-    # Obtener el formato de la secuencia
-    format = sequence.format()
 
-    # Obtener el ancho y alto
-    width = format.width()
-    height = format.height()
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
 
-    print(f&quot;Output Resolution: {width} x {height}&quot;)
+
+def crop_to_aspect_ratio(qimage, target_aspect):
+    width = qimage.width()
+    height = qimage.height()
+
+    current_aspect = width / height
+
+    if current_aspect &gt; target_aspect:
+        new_width = int(height * target_aspect)
+        offset_x = int((width - new_width) / 2)
+        rect = QRect(offset_x, 0, new_width, height)
+        cropped = qimage.copy(rect)
+        return cropped
+    else:
+        new_height = int(width / target_aspect)
+        offset_y = int((height - new_height) / 2)
+        rect = QRect(0, offset_y, width, new_height)
+        cropped = qimage.copy(rect)
+        return cropped
+
+
+def main():
+    output_path = r&quot;T:\Borrame\snapshot.jpg&quot;
+
+    viewer = hiero.ui.currentViewer()
+    if not viewer:
+        raise Exception(&quot;No active viewer&quot;)
+
+    qimage = viewer.image()
+    if qimage is None or qimage.isNull():
+        raise Exception(&quot;viewer.image() devolvió None o imagen nula&quot;)
+
+    # Obtener la secuencia activa y su relacion de aspecto
+    sequence = hiero.ui.activeSequence()
+    if sequence is None:
+        debug_print(&quot;No hay ninguna secuencia activa, usando 16:9 por defecto.&quot;)
+        target_aspect = 16 / 9
+    else:
+        format = sequence.format()
+        width = format.width()
+        height = format.height()
+        target_aspect = width / height
+        debug_print(
+            f&quot;Relación de aspecto de la secuencia: {width} x {height} ({target_aspect:.2f})&quot;
+        )
+
+    # Aplicar crop
+    qimage_cropped = crop_to_aspect_ratio(qimage, target_aspect)
+
+    debug_print(
+        &quot;Snapshot size (cropped):&quot;, qimage_cropped.width(), &quot;×&quot;, qimage_cropped.height()
+    )
+
+    if SaveToFile:
+        debug_print(&quot;Ruta de salida:&quot;, output_path)
+
+        output_dir = os.path.dirname(output_path)
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir, exist_ok=True)
+
+        ok = qimage_cropped.save(output_path, &quot;JPEG&quot;)
+        debug_print(&quot;qimage.save result:&quot;, ok)
+
+        if ok and os.path.exists(output_path):
+            debug_print(&quot;✅ Archivo creado:&quot;, output_path)
+        else:
+            debug_print(&quot;❌ No se pudo crear el archivo.&quot;)
+
+    # Copiar al portapapeles
+    app = QtWidgets.QApplication.instance()
+    if not app:
+        app = QtWidgets.QApplication([])
+
+    clipboard = app.clipboard()
+    clipboard.setImage(qimage_cropped)
+
+    debug_print(&quot;✅ Imagen (cropeada) copiada al portapapeles.&quot;)
+
+
+# --- Main Execution ---
+if __name__ == &quot;__main__&quot;:
+    # Necesario para ejecucion standalone fuera de Nuke
+    main()
 </script>
