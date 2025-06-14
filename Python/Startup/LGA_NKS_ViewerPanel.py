@@ -1,7 +1,7 @@
 """
 ________________________________________________________________
 
-  LGA_ViewerPanel v1.4 - 2024 - Lega Pugliese
+  LGA_ViewerPanel v1.5 - Lega Pugliese
   Panel con herramientas para el viewer y el timeline de Hiero
 ________________________________________________________________
 
@@ -20,9 +20,11 @@ from PySide2 import QtWidgets, QtCore
 # Variable global para activar o desactivar los prints
 DEBUG = False
 
+
 def debug_print(*message):
     if DEBUG:
         print(*message)
+
 
 class ViewerPanel(QWidget):
     def __init__(self):
@@ -30,7 +32,9 @@ class ViewerPanel(QWidget):
 
         self.setObjectName("com.lega.ViewerPanel")
         self.setWindowTitle("ViewerTL")
-        self.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a2a2a; border: 1px solid white; }")
+        self.setStyleSheet(
+            "QToolTip { color: #ffffff; background-color: #2a2a2a; border: 1px solid white; }"
+        )
 
         self.layout = QGridLayout(self)
         self.setLayout(self.layout)
@@ -41,11 +45,42 @@ class ViewerPanel(QWidget):
             ("Viewer | 2.35:1 ", self.viewer_235, "#311840"),
             ("Refresh Timeline", self.refresh_timeline, "#4c4350"),
             ("Top Track ", self.top_track, "#4c4350", "Ctrl+Shift+T"),
-            ("In Out Editref", self.in_out_editref, "#4d462b", "Ctrl+Shift+U", "Ctrl+Shift+U"),
-            ("Prev Rev_Sup", self.prev_rev_sup, "#a3557e", "Ctrl+Shift+,", "Ctrl+Shift+,"),
-            ("Next Rev_Sup", self.next_rev_sup, "#a3557e", "Ctrl+Shift+.", "Ctrl+Shift+."),
-            ("Prev Rev_Lega", self.prev_rev_lega, "#69135e", "Ctrl+Alt+Shift+,", "Ctrl+Alt+Shift+,"),
-            ("Next Rev_Lega", self.next_rev_lega, "#69135e", "Ctrl+Alt+Shift+.", "Ctrl+Alt+Shift+.")
+            (
+                "In Out Editref",
+                self.in_out_editref,
+                "#4d462b",
+                "Ctrl+Shift+U",
+                "Ctrl+Shift+U",
+            ),
+            (
+                "Prev Rev_Sup",
+                self.prev_rev_sup,
+                "#a3557e",
+                "Ctrl+Shift+,",
+                "Ctrl+Shift+,",
+            ),
+            (
+                "Next Rev_Sup",
+                self.next_rev_sup,
+                "#a3557e",
+                "Ctrl+Shift+.",
+                "Ctrl+Shift+.",
+            ),
+            (
+                "Prev Rev_Lega",
+                self.prev_rev_lega,
+                "#69135e",
+                "Ctrl+Alt+Shift+,",
+                "Ctrl+Alt+Shift+,",
+            ),
+            (
+                "Next Rev_Lega",
+                self.next_rev_lega,
+                "#69135e",
+                "Ctrl+Alt+Shift+.",
+                "Ctrl+Alt+Shift+.",
+            ),
+            ("SnapShot", self.snapshot, "#2d5a3d"),
         ]
 
         self.num_columns = 1  # Inicialmente una columna
@@ -82,7 +117,9 @@ class ViewerPanel(QWidget):
         min_button_spacing = 5  # Reducido el espacio minimo entre botones
 
         # Calcular el numero de columnas en funcion del ancho del widget
-        self.num_columns = max(1, (panel_width + min_button_spacing) // (button_width + min_button_spacing))
+        self.num_columns = max(
+            1, (panel_width + min_button_spacing) // (button_width + min_button_spacing)
+        )
 
         # Limpiar el layout actual y eliminar widgets solo si existen
         while self.layout.count():
@@ -106,7 +143,7 @@ class ViewerPanel(QWidget):
         try:
             current_viewer = hiero.ui.currentViewer()
             if current_viewer:
-                current_viewer.player().setLUT('ACES/Rec.709')
+                current_viewer.player().setLUT("ACES/Rec.709")
                 debug_print("LUT set to ACES/Rec.709")
             else:
                 debug_print("No active viewer found.")
@@ -115,10 +152,15 @@ class ViewerPanel(QWidget):
 
     def viewer_235(self):
         try:
-            script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS_Viewer_235.py')
+            script_path = os.path.join(
+                os.path.dirname(__file__), "LGA_NKS", "LGA_NKS_Viewer_235.py"
+            )
             if os.path.exists(script_path):
                 import importlib.util
-                spec = importlib.util.spec_from_file_location("LGA_NKS_Viewer_235", script_path)
+
+                spec = importlib.util.spec_from_file_location(
+                    "LGA_NKS_Viewer_235", script_path
+                )
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
@@ -133,10 +175,15 @@ class ViewerPanel(QWidget):
     ###### Refresh timeline
     def refresh_timeline(self):
         try:
-            script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS_Timeline_Refresh_Wrap.py')
+            script_path = os.path.join(
+                os.path.dirname(__file__), "LGA_NKS", "LGA_NKS_Timeline_Refresh_Wrap.py"
+            )
             if os.path.exists(script_path):
                 import importlib.util
-                spec = importlib.util.spec_from_file_location("LGA_NKS_Timeline_Refresh_Wrap", script_path)
+
+                spec = importlib.util.spec_from_file_location(
+                    "LGA_NKS_Timeline_Refresh_Wrap", script_path
+                )
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
@@ -151,25 +198,35 @@ class ViewerPanel(QWidget):
     ###### Top Track
     def top_track(self):
         # Ruta al script dentro de la subcarpeta LGA_NKS
-        script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS_ScrollTo_TopTrack.py')
+        script_path = os.path.join(
+            os.path.dirname(__file__), "LGA_NKS", "LGA_NKS_ScrollTo_TopTrack.py"
+        )
         if os.path.exists(script_path):
             import importlib.util
-            spec = importlib.util.spec_from_file_location("LGA_NKS_ScrollTo_TopTrack", script_path)
+
+            spec = importlib.util.spec_from_file_location(
+                "LGA_NKS_ScrollTo_TopTrack", script_path
+            )
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
 
             # Llamar a la funcion principal del script
             module.main()
         else:
-            debug_print(f"Script not found at path: {script_path}")            
+            debug_print(f"Script not found at path: {script_path}")
 
     ###### In Out Editref
     def in_out_editref(self):
         try:
-            script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS_InOut_Editref.py')
+            script_path = os.path.join(
+                os.path.dirname(__file__), "LGA_NKS", "LGA_NKS_InOut_Editref.py"
+            )
             if os.path.exists(script_path):
                 import importlib.util
-                spec = importlib.util.spec_from_file_location("LGA_NKS_InOut_Editref", script_path)
+
+                spec = importlib.util.spec_from_file_location(
+                    "LGA_NKS_InOut_Editref", script_path
+                )
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
@@ -195,18 +252,49 @@ class ViewerPanel(QWidget):
 
     def execute_prevnext_rev(self, direction, rev_type):
         try:
-            script_path = os.path.join(os.path.dirname(__file__), 'LGA_NKS', 'LGA_NKS_PrevNext_Rev.py')
+            script_path = os.path.join(
+                os.path.dirname(__file__), "LGA_NKS", "LGA_NKS_PrevNext_Rev.py"
+            )
             if os.path.exists(script_path):
                 import importlib.util
-                spec = importlib.util.spec_from_file_location("LGA_NKS_PrevNext_Rev", script_path)
+
+                spec = importlib.util.spec_from_file_location(
+                    "LGA_NKS_PrevNext_Rev", script_path
+                )
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
                 module.main(direction, rev_type)
-                debug_print(f"Ejecutado LGA_NKS_PrevNext_Rev script con dirección {direction} y tipo {rev_type}.")
+                debug_print(
+                    f"Ejecutado LGA_NKS_PrevNext_Rev script con dirección {direction} y tipo {rev_type}."
+                )
             else:
                 debug_print(f"Script no encontrado en la ruta: {script_path}")
         except Exception as e:
             debug_print(f"Error al ejecutar el script PrevNext Rev: {e}")
+
+    ###### SnapShot
+    def snapshot(self):
+        try:
+            script_path = os.path.join(
+                os.path.dirname(__file__), "LGA_NKS", "LGA_NKS_SnapShot.py"
+            )
+            if os.path.exists(script_path):
+                import importlib.util
+
+                spec = importlib.util.spec_from_file_location(
+                    "LGA_NKS_SnapShot", script_path
+                )
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+
+                # Llamar a la funcion principal del script
+                module.main()
+                debug_print("Ejecutado LGA_NKS_SnapShot script.")
+            else:
+                debug_print(f"Script no encontrado en la ruta: {script_path}")
+        except Exception as e:
+            debug_print(f"Error al ejecutar el script SnapShot: {e}")
+
 
 # Crear la instancia del widget y anadirlo al gestor de ventanas de Hiero
 viewerPanel = ViewerPanel()
