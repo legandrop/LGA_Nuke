@@ -2188,9 +2188,9 @@ except ImportError as e_csf:
 
     COLORSPACE_SECTION = &quot;ColorSpaces&quot;
 
-# --- Importaciones de LGA_Render_Complete --- NUEVO
+# --- Importaciones de LGA_Write_RenderComplete --- NUEVO
 try:
-    from LGA_Render_Complete import (
+    from LGA_Write_RenderComplete import (
         get_config_path as rc_get_config_path,
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
@@ -2200,7 +2200,7 @@ try:
         CONFIG_TO_KEY as RC_CONFIG_TO_KEY,
     )
 except ImportError as e_rc:
-    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+    print(f&quot;Error al importar LGA_Write_RenderComplete.py: {e_rc}. Funcionalidad limitada.&quot;)
 
     def rc_ensure_config_exists() -&gt; None:
         pass
@@ -2730,9 +2730,9 @@ except ImportError as e_csf:
 
     COLORSPACE_SECTION = &quot;ColorSpaces&quot;
 
-# --- Importaciones de LGA_Render_Complete --- NUEVO
+# --- Importaciones de LGA_Write_RenderComplete --- NUEVO
 try:
-    from LGA_Render_Complete import (
+    from LGA_Write_RenderComplete import (
         get_config_path as rc_get_config_path,
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
@@ -2742,7 +2742,7 @@ try:
         CONFIG_TO_KEY as RC_CONFIG_TO_KEY,
     )
 except ImportError as e_rc:
-    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+    print(f&quot;Error al importar LGA_Write_RenderComplete.py: {e_rc}. Funcionalidad limitada.&quot;)
 
     def rc_ensure_config_exists() -&gt; None:
         pass
@@ -3272,9 +3272,9 @@ except ImportError as e_csf:
 
     COLORSPACE_SECTION = &quot;ColorSpaces&quot;
 
-# --- Importaciones de LGA_Render_Complete --- NUEVO
+# --- Importaciones de LGA_Write_RenderComplete --- NUEVO
 try:
-    from LGA_Render_Complete import (
+    from LGA_Write_RenderComplete import (
         get_config_path as rc_get_config_path,
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
@@ -3284,7 +3284,7 @@ try:
         CONFIG_TO_KEY as RC_CONFIG_TO_KEY,
     )
 except ImportError as e_rc:
-    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+    print(f&quot;Error al importar LGA_Write_RenderComplete.py: {e_rc}. Funcionalidad limitada.&quot;)
 
     def rc_ensure_config_exists() -&gt; None:
         pass
@@ -3814,9 +3814,9 @@ except ImportError as e_csf:
 
     COLORSPACE_SECTION = &quot;ColorSpaces&quot;
 
-# --- Importaciones de LGA_Render_Complete --- NUEVO
+# --- Importaciones de LGA_Write_RenderComplete --- NUEVO
 try:
-    from LGA_Render_Complete import (
+    from LGA_Write_RenderComplete import (
         get_config_path as rc_get_config_path,
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
@@ -3826,7 +3826,7 @@ try:
         CONFIG_TO_KEY as RC_CONFIG_TO_KEY,
     )
 except ImportError as e_rc:
-    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+    print(f&quot;Error al importar LGA_Write_RenderComplete.py: {e_rc}. Funcionalidad limitada.&quot;)
 
     def rc_ensure_config_exists() -&gt; None:
         pass
@@ -4356,9 +4356,9 @@ except ImportError as e_csf:
 
     COLORSPACE_SECTION = &quot;ColorSpaces&quot;
 
-# --- Importaciones de LGA_Render_Complete --- NUEVO
+# --- Importaciones de LGA_Write_RenderComplete --- NUEVO
 try:
-    from LGA_Render_Complete import (
+    from LGA_Write_RenderComplete import (
         get_config_path as rc_get_config_path,
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
@@ -4368,7 +4368,7 @@ try:
         CONFIG_TO_KEY as RC_CONFIG_TO_KEY,
     )
 except ImportError as e_rc:
-    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+    print(f&quot;Error al importar LGA_Write_RenderComplete.py: {e_rc}. Funcionalidad limitada.&quot;)
 
     def rc_ensure_config_exists() -&gt; None:
         pass
@@ -4898,9 +4898,9 @@ except ImportError as e_csf:
 
     COLORSPACE_SECTION = &quot;ColorSpaces&quot;
 
-# --- Importaciones de LGA_Render_Complete --- NUEVO
+# --- Importaciones de LGA_Write_RenderComplete --- NUEVO
 try:
-    from LGA_Render_Complete import (
+    from LGA_Write_RenderComplete import (
         get_config_path as rc_get_config_path,
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
@@ -4910,7 +4910,7 @@ try:
         CONFIG_TO_KEY as RC_CONFIG_TO_KEY,
     )
 except ImportError as e_rc:
-    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+    print(f&quot;Error al importar LGA_Write_RenderComplete.py: {e_rc}. Funcionalidad limitada.&quot;)
 
     def rc_ensure_config_exists() -&gt; None:
         pass
@@ -5440,9 +5440,9 @@ except ImportError as e_csf:
 
     COLORSPACE_SECTION = &quot;ColorSpaces&quot;
 
-# --- Importaciones de LGA_Render_Complete --- NUEVO
+# --- Importaciones de LGA_Write_RenderComplete --- NUEVO
 try:
-    from LGA_Render_Complete import (
+    from LGA_Write_RenderComplete import (
         get_config_path as rc_get_config_path,
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
@@ -5452,7 +5452,7 @@ try:
         CONFIG_TO_KEY as RC_CONFIG_TO_KEY,
     )
 except ImportError as e_rc:
-    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+    print(f&quot;Error al importar LGA_Write_RenderComplete.py: {e_rc}. Funcionalidad limitada.&quot;)
 
     def rc_ensure_config_exists() -&gt; None:
         pass
@@ -5992,9 +5992,9 @@ except ImportError as e_csf:
 
     COLORSPACE_SECTION = &quot;ColorSpaces&quot;
 
-# --- Importaciones de LGA_Render_Complete --- NUEVO
+# --- Importaciones de LGA_Write_RenderComplete --- NUEVO
 try:
-    from LGA_Render_Complete import (
+    from LGA_Write_RenderComplete import (
         get_config_path as rc_get_config_path,
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
@@ -6008,7 +6008,7 @@ try:
         save_sound_enabled_to_config,
     )
 except ImportError as e_rc:
-    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+    print(f&quot;Error al importar LGA_Write_RenderComplete.py: {e_rc}. Funcionalidad limitada.&quot;)
 
     def rc_ensure_config_exists() -&gt; None:
         pass
@@ -6020,7 +6020,7 @@ except ImportError as e_rc:
 
     def rc_save_mail_settings_to_config(from_email, from_password, to_email) -&gt; bool:
         debug_print(
-            &quot;Error: LGA_Render_Complete.py no encontrado, no se pueden guardar settings de mail.&quot;
+            &quot;Error: LGA_Write_RenderComplete.py no encontrado, no se pueden guardar settings de mail.&quot;
         )
         return False
 
@@ -6576,9 +6576,9 @@ except ImportError as e_csf:
 
     COLORSPACE_SECTION = &quot;ColorSpaces&quot;
 
-# --- Importaciones de LGA_Render_Complete --- NUEVO
+# --- Importaciones de LGA_Write_RenderComplete --- NUEVO
 try:
-    from LGA_Render_Complete import (
+    from LGA_Write_RenderComplete import (
         get_config_path as rc_get_config_path,
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
@@ -6592,7 +6592,7 @@ try:
         save_sound_enabled_to_config,
     )
 except ImportError as e_rc:
-    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+    print(f&quot;Error al importar LGA_Write_RenderComplete.py: {e_rc}. Funcionalidad limitada.&quot;)
 
     def rc_ensure_config_exists() -&gt; None:
         pass
@@ -6604,7 +6604,7 @@ except ImportError as e_rc:
 
     def rc_save_mail_settings_to_config(from_email, from_password, to_email) -&gt; bool:
         debug_print(
-            &quot;Error: LGA_Render_Complete.py no encontrado, no se pueden guardar settings de mail.&quot;
+            &quot;Error: LGA_Write_RenderComplete.py no encontrado, no se pueden guardar settings de mail.&quot;
         )
         return False
 
@@ -7160,9 +7160,9 @@ except ImportError as e_csf:
 
     COLORSPACE_SECTION = &quot;ColorSpaces&quot;
 
-# --- Importaciones de LGA_Render_Complete --- NUEVO
+# --- Importaciones de LGA_Write_RenderComplete --- NUEVO
 try:
-    from LGA_Render_Complete import (
+    from LGA_Write_RenderComplete import (
         get_config_path as rc_get_config_path,
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
@@ -7178,7 +7178,7 @@ try:
         save_render_time_enabled_to_config,
     )
 except ImportError as e_rc:
-    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+    print(f&quot;Error al importar LGA_Write_RenderComplete.py: {e_rc}. Funcionalidad limitada.&quot;)
 
     def rc_ensure_config_exists() -&gt; None:
         pass
@@ -7190,7 +7190,7 @@ except ImportError as e_rc:
 
     def rc_save_mail_settings_to_config(from_email, from_password, to_email) -&gt; bool:
         debug_print(
-            &quot;Error: LGA_Render_Complete.py no encontrado, no se pueden guardar settings de mail.&quot;
+            &quot;Error: LGA_Write_RenderComplete.py no encontrado, no se pueden guardar settings de mail.&quot;
         )
         return False
 
@@ -7758,9 +7758,9 @@ except ImportError as e_csf:
 
     COLORSPACE_SECTION = &quot;ColorSpaces&quot;
 
-# --- Importaciones de LGA_Render_Complete --- NUEVO
+# --- Importaciones de LGA_Write_RenderComplete --- NUEVO
 try:
-    from LGA_Render_Complete import (
+    from LGA_Write_RenderComplete import (
         get_config_path as rc_get_config_path,
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
@@ -7776,7 +7776,7 @@ try:
         save_render_time_enabled_to_config,
     )
 except ImportError as e_rc:
-    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+    print(f&quot;Error al importar LGA_Write_RenderComplete.py: {e_rc}. Funcionalidad limitada.&quot;)
 
     def rc_ensure_config_exists() -&gt; None:
         pass
@@ -7788,7 +7788,7 @@ except ImportError as e_rc:
 
     def rc_save_mail_settings_to_config(from_email, from_password, to_email) -&gt; bool:
         debug_print(
-            &quot;Error: LGA_Render_Complete.py no encontrado, no se pueden guardar settings de mail.&quot;
+            &quot;Error: LGA_Write_RenderComplete.py no encontrado, no se pueden guardar settings de mail.&quot;
         )
         return False
 
@@ -8368,9 +8368,9 @@ except ImportError as e_csf:
 
     COLORSPACE_SECTION = &quot;ColorSpaces&quot;
 
-# --- Importaciones de LGA_Render_Complete --- NUEVO
+# --- Importaciones de LGA_Write_RenderComplete --- NUEVO
 try:
-    from LGA_Render_Complete import (
+    from LGA_Write_RenderComplete import (
         get_config_path as rc_get_config_path,
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
@@ -8386,7 +8386,7 @@ try:
         save_render_time_enabled_to_config,
     )
 except ImportError as e_rc:
-    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+    print(f&quot;Error al importar LGA_Write_RenderComplete.py: {e_rc}. Funcionalidad limitada.&quot;)
 
     def rc_ensure_config_exists() -&gt; None:
         pass
@@ -8398,7 +8398,7 @@ except ImportError as e_rc:
 
     def rc_save_mail_settings_to_config(from_email, from_password, to_email) -&gt; bool:
         debug_print(
-            &quot;Error: LGA_Render_Complete.py no encontrado, no se pueden guardar settings de mail.&quot;
+            &quot;Error: LGA_Write_RenderComplete.py no encontrado, no se pueden guardar settings de mail.&quot;
         )
         return False
 
@@ -9000,9 +9000,9 @@ except ImportError as e_csf:
 
     COLORSPACE_SECTION = &quot;ColorSpaces&quot;
 
-# --- Importaciones de LGA_Render_Complete --- NUEVO
+# --- Importaciones de LGA_Write_RenderComplete --- NUEVO
 try:
-    from LGA_Render_Complete import (
+    from LGA_Write_RenderComplete import (
         get_config_path as rc_get_config_path,
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
@@ -9018,7 +9018,7 @@ try:
         save_render_time_enabled_to_config,
     )
 except ImportError as e_rc:
-    print(f&quot;Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.&quot;)
+    print(f&quot;Error al importar LGA_Write_RenderComplete.py: {e_rc}. Funcionalidad limitada.&quot;)
 
     def rc_ensure_config_exists() -&gt; None:
         pass
@@ -9030,7 +9030,7 @@ except ImportError as e_rc:
 
     def rc_save_mail_settings_to_config(from_email, from_password, to_email) -&gt; bool:
         debug_print(
-            &quot;Error: LGA_Render_Complete.py no encontrado, no se pueden guardar settings de mail.&quot;
+            &quot;Error: LGA_Write_RenderComplete.py no encontrado, no se pueden guardar settings de mail.&quot;
         )
         return False
 
@@ -10663,6 +10663,111 @@ undo.end()
 import importlib
 import LGA_build_Grade
 importlib.reload(LGA_build_Grade)&quot;&quot;&quot;
+______________________________________________________
+
+  LGA_NKS_SnapShot v0.5 - Lega
+  Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
+______________________________________________________
+
+&quot;&quot;&quot;
+
+import nuke
+import nukescripts
+import os
+import tempfile
+from PySide2 import QtWidgets, QtGui
+
+DEBUG = True
+SaveToFile = False
+
+
+def debug_print(*message):
+    if DEBUG:
+        print(*message)
+
+
+def main():
+    temp_dir = tempfile.gettempdir()
+    output_path = os.path.join(temp_dir, &quot;snapshot.jpg&quot;)
+
+    viewer = nuke.activeViewer()
+    if viewer is None:
+        nuke.message(&quot;No hay viewer activo.&quot;)
+        return
+
+    view_node = viewer.node()
+    input_index = viewer.activeInput()
+    input_node = view_node.input(input_index)
+
+    if input_node is None:
+        nuke.message(&quot;No hay nodo conectado al viewer.&quot;)
+        return
+
+    frame = int(nuke.frame())
+
+    # Crear el Write temporal limpio
+    write_node = nuke.createNode(
+        &quot;Write&quot;,
+        &quot;file_type jpeg postage_stamp false hide_input true label 'LGA_TEMP'&quot;,
+        inpanel=False,
+    )
+    write_node.setInput(0, input_node)
+
+    # Blindaje: convertir path a forward slashes para evitar problemas de escapes
+    safe_path = output_path.replace(&quot;\\&quot;, &quot;/&quot;)
+    write_node[&quot;file&quot;].setValue(safe_path)
+
+    debug_print(&quot;Generando snapshot temporal en:&quot;, safe_path)
+
+    try:
+        nuke.execute(write_node, frame, frame)
+    except Exception as e:
+        nuke.delete(write_node)
+        nuke.message(f&quot;Error al ejecutar el Write: {str(e)}&quot;)
+        return
+
+    nuke.delete(write_node)
+
+    if not os.path.exists(output_path):
+        nuke.message(&quot;Error: el archivo no se generó.&quot;)
+        return
+
+    # Cargar el JPEG como QImage
+    qimage = QtGui.QImage(output_path)
+    if qimage.isNull():
+        nuke.message(&quot;Error al leer el snapshot generado.&quot;)
+        return
+
+    debug_print(&quot;Snapshot size:&quot;, qimage.width(), &quot;×&quot;, qimage.height())
+
+    if SaveToFile:
+        save_path = r&quot;T:\Borrame\snapshot.jpg&quot;
+        output_dir = os.path.dirname(save_path)
+        os.makedirs(output_dir, exist_ok=True)
+        ok = qimage.save(save_path, &quot;JPEG&quot;)
+        debug_print(&quot;Archivo final guardado:&quot;, ok, save_path)
+
+    # Copiar al portapapeles
+    app = QtWidgets.QApplication.instance()
+    if not app:
+        app = QtWidgets.QApplication([])
+
+    clipboard = app.clipboard()
+    clipboard.setImage(qimage)
+
+    debug_print(&quot;✅ Imagen copiada al portapapeles.&quot;)
+
+    # Limpiar el temporal
+    try:
+        os.remove(output_path)
+    except:
+        pass
+
+
+# --- Main Execution ---
+if __name__ == &quot;__main__&quot;:
+    main()
+&quot;&quot;&quot;
 ______________________________________________________
 
   LGA_NKS_SnapShot v0.5 - Lega

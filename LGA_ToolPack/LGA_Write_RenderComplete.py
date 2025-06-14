@@ -1,7 +1,7 @@
 """
 _______________________________________________________________________________________________________________
 
-  LGA_Render_Complete v1.33 | Lega
+  LGA_Write_RenderComplete v1.34 | Lega
   Calcula la duracion al finalizar el render y la agrega en un knob en el tab User del nodo write
   Reproduce un sonido y envia un correo con los detalles del render si la opcion 'Send Mail' esta activada
 _______________________________________________________________________________________________________________
@@ -20,7 +20,7 @@ import binascii
 import platform
 
 # Variable global para controlar el debug
-DEBUG = False  # Poner en False para desactivar los mensajes de debug
+DEBUG = True  # Poner en False para desactivar los mensajes de debug
 
 
 # Funcion debug_print
@@ -212,7 +212,7 @@ def get_wav_path_from_config():
     """
     config_file_path = get_config_path()
     default_wav_path = os.path.join(
-        os.path.dirname(__file__), "LGA_Render_Complete.wav"
+        os.path.dirname(__file__), "LGA_Write_RenderComplete.wav"
     )
     if not config_file_path or not os.path.exists(config_file_path):
         return default_wav_path

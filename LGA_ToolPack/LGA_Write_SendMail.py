@@ -3,7 +3,7 @@ ________________________________________________________________________________
 
   LGA_Write_SendMail v1.0 | Lega
   Agrega a los nodos Write el boton para enviar mail
-  Funciona en conjunto con el LGA_Render_Complete
+  Funciona en conjunto con el LGA_Write_RenderComplete
 ____________________________________________________________________________________
 """
 

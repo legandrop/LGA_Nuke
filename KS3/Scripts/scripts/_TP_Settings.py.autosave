@@ -125,9 +125,9 @@ except ImportError as e_csf:
 
     COLORSPACE_SECTION = "ColorSpaces"
 
-# --- Importaciones de LGA_Render_Complete --- NUEVO
+# --- Importaciones de LGA_Write_RenderComplete --- NUEVO
 try:
-    from LGA_Render_Complete import (
+    from LGA_Write_RenderComplete import (
         get_config_path as rc_get_config_path,
         ensure_config_exists as rc_ensure_config_exists,
         get_mail_settings_from_config as rc_get_mail_settings_from_config,
@@ -143,7 +143,7 @@ try:
         save_render_time_enabled_to_config,
     )
 except ImportError as e_rc:
-    print(f"Error al importar LGA_Render_Complete.py: {e_rc}. Funcionalidad limitada.")
+    print(f"Error al importar LGA_Write_RenderComplete.py: {e_rc}. Funcionalidad limitada.")
 
     def rc_ensure_config_exists() -> None:
         pass
@@ -155,7 +155,7 @@ except ImportError as e_rc:
 
     def rc_save_mail_settings_to_config(from_email, from_password, to_email) -> bool:
         debug_print(
-            "Error: LGA_Render_Complete.py no encontrado, no se pueden guardar settings de mail."
+            "Error: LGA_Write_RenderComplete.py no encontrado, no se pueden guardar settings de mail."
         )
         return False
 

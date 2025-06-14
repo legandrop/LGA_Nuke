@@ -93,8 +93,8 @@ n.addCommand(
 )
 
 
-# Importar el LGA_Render_Complete y el LGA_Write_SendMail
-import LGA_Render_Complete
+# Importar el LGA_Write_RenderComplete y el LGA_Write_SendMail
+import LGA_Write_RenderComplete
 import LGA_Write_SendMail
 
 
