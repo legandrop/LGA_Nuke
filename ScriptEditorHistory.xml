@@ -10662,4 +10662,21 @@ undo.end()
 
 import importlib
 import LGA_build_Grade
-importlib.reload(LGA_build_Grade)</script>
+importlib.reload(LGA_build_Grade)import hiero.ui
+import hiero.core
+
+# Obtener la secuencia activa
+sequence = hiero.ui.activeSequence()
+
+if sequence is None:
+    print(&quot;No hay ninguna secuencia activa.&quot;)
+else:
+    # Obtener el formato de la secuencia
+    format = sequence.format()
+
+    # Obtener el ancho y alto
+    width = format.width()
+    height = format.height()
+
+    print(f&quot;Output Resolution: {width} x {height}&quot;)
+</script>
