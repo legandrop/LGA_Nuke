@@ -1,7 +1,7 @@
 """
 ______________________________________________________________________________
 
-  LGA_NKS_SnapShot v0.55 - Lega
+  LGA_NKS_SnapShot v0.56 - Lega
   Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
 ______________________________________________________________________________
 
@@ -28,7 +28,7 @@ except:
     from PySide2.QtWidgets import QApplication
 
 DEBUG = True
-SaveToFile = False
+SaveToFile = True
 
 
 def debug_print(*message):
@@ -116,43 +116,152 @@ def restore_original_wav(original_wav_path):
         debug_print(f"Error al restaurar wav original: {e}")
 
 
-def main():
-    # --- Comprobaciones iniciales del viewer de Nuke ---
+def get_viewer_info():
+    """
+    Obtiene informacion del viewer activo y el nodo conectado.
+    Retorna una tupla (viewer, view_node, input_index, input_node) o None si hay error.
+    """
     viewer = nuke.activeViewer()
     if viewer is None:
-        nuke.message(
-            "No hay viewer activo. Por favor, abre un viewer antes de tomar un snapshot."
-        )
-        debug_print("ERROR: No hay viewer activo. Saliendo.")
-        return
+        debug_print("ERROR: No hay viewer activo.")
+        return None
 
     view_node = viewer.node()
     if view_node is None:
-        nuke.message(
-            "El viewer no está mostrando ningún nodo. Conecta un nodo al viewer para tomar un snapshot."
-        )
-        debug_print("ERROR: El viewer no está mostrando ningún nodo. Saliendo.")
-        return
+        debug_print("ERROR: El viewer no está mostrando ningún nodo.")
+        return None
 
     input_index = viewer.activeInput()
-    # Nuke generalmente devuelve un entero para activeInput(), pero se añade una verificación defensiva.
     if not isinstance(input_index, int):
         debug_print(
-            f"ERROR: viewer.activeInput() devolvió un tipo inesperado: {type(input_index)}. Saliendo."
+            f"ERROR: viewer.activeInput() devolvió un tipo inesperado: {type(input_index)}"
         )
-        return
+        return None
 
-    # Esta línea ahora está segura, ya que input_index es un entero
     input_node = view_node.input(input_index)
-
     if input_node is None:
-        nuke.message(
-            "No hay nodo conectado al viewer en la entrada activa. Asegúrate de que un nodo esté conectado para tomar un snapshot."
-        )
+        debug_print("ERROR: No hay nodo conectado al viewer en la entrada activa.")
+        return None
+
+    return viewer, view_node, input_index, input_node
+
+
+def show_snapshot():
+    """
+    Muestra el snapshot temporal en el viewer durante 1 segundo.
+    """
+    import time
+
+    # 1. Verificar si existe el archivo snapshot
+    temp_dir = tempfile.gettempdir()
+    snapshot_path = os.path.join(temp_dir, "LGA_snapshot.jpg")
+
+    if not os.path.exists(snapshot_path):
         debug_print(
-            "ERROR: No hay nodo conectado al viewer en la entrada activa. Saliendo."
+            f"ERROR: No existe archivo de snapshot en la carpeta temporal: {snapshot_path}"
         )
         return
+
+    debug_print(f"Snapshot encontrado: {snapshot_path}")
+
+    # 2. Verificar viewer y nodo conectado
+    viewer_info = get_viewer_info()
+    if viewer_info is None:
+        debug_print("ERROR: No se pudo obtener informacion del viewer")
+        return
+
+    viewer, view_node, input_index, input_node = viewer_info
+    debug_print(
+        f"Viewer activo: {view_node.name()}, nodo conectado: {input_node.name()}"
+    )
+
+    # 3. Guardar estado original
+    originally_selected_nodes = nuke.selectedNodes()
+    debug_print(
+        f"Nodos originalmente seleccionados: {[n.name() for n in originally_selected_nodes]}"
+    )
+
+    # Obtener posicion del nodo de entrada
+    input_node_xpos = input_node.xpos()
+    input_node_ypos = input_node.ypos()
+
+    # Calcular offset Y dinamico
+    dynamic_y_offset = input_node.screenHeight() + 10
+    debug_print(
+        f"Posicion del nodo: ({input_node_xpos}, {input_node_ypos}), offset Y: {dynamic_y_offset}"
+    )
+
+    read_node = None
+    try:
+        # 4. Deseleccionar todos los nodos y seleccionar el nodo conectado
+        for node in nuke.allNodes():
+            node.setSelected(False)
+        input_node.setSelected(True)
+
+        # 5. Crear nodo Read temporal
+        safe_path = snapshot_path.replace("\\", "/")
+        read_node = nuke.createNode(
+            "Read",
+            f"file {{{safe_path}}} label 'LGA_SNAPSHOT_TEMP'",
+            inpanel=False,
+        )
+
+        # Posicionar el nodo Read debajo del nodo de entrada
+        read_node.setXpos(input_node_xpos)
+        read_node.setYpos(input_node_ypos + dynamic_y_offset)
+
+        debug_print(
+            f"Nodo Read creado: {read_node.name()} en posicion ({read_node.xpos()}, {read_node.ypos()})"
+        )
+
+        # 6. Conectar el Read al viewer
+        view_node.setInput(input_index, read_node)
+        debug_print(f"Read conectado al viewer en input {input_index}")
+
+        # 7. Esperar 1 segundo
+        debug_print("Mostrando snapshot por 1 segundo...")
+        time.sleep(1)
+
+    except Exception as e:
+        debug_print(f"Error al mostrar snapshot: {e}")
+
+    finally:
+        # 8. Restaurar estado original
+        try:
+            if read_node and nuke.exists(read_node.name()):
+                # Reconectar el nodo original al viewer
+                view_node.setInput(input_index, input_node)
+                debug_print(f"Nodo original {input_node.name()} reconectado al viewer")
+
+                # Eliminar el nodo Read temporal
+                nuke.delete(read_node)
+                debug_print("Nodo Read temporal eliminado")
+
+            # Restaurar seleccion original
+            for node in nuke.allNodes():
+                node.setSelected(False)
+            for node in originally_selected_nodes:
+                node.setSelected(True)
+            debug_print(
+                f"Seleccion restaurada: {[n.name() for n in originally_selected_nodes]}"
+            )
+
+        except Exception as e:
+            debug_print(f"Error al restaurar estado original: {e}")
+
+    debug_print("✅ Snapshot mostrado y estado restaurado")
+
+
+def take_snapshot():
+    # --- Comprobaciones iniciales del viewer de Nuke ---
+    viewer_info = get_viewer_info()
+    if viewer_info is None:
+        nuke.message(
+            "No hay viewer activo o nodo conectado. Por favor, conecta un nodo al viewer antes de tomar un snapshot."
+        )
+        return
+
+    viewer, view_node, input_index, input_node = viewer_info
 
     # --- Una vez que las comprobaciones iniciales son satisfactorias, proceder con la lógica RenderComplete ---
     render_complete_active = check_render_complete_module()
@@ -164,7 +273,7 @@ def main():
 
     try:
         temp_dir = tempfile.gettempdir()
-        output_path = os.path.join(temp_dir, "snapshot.jpg")
+        output_path = os.path.join(temp_dir, "LGA_snapshot.jpg")
 
         frame = int(nuke.frame())
 
@@ -244,16 +353,19 @@ def main():
         debug_print("Snapshot size:", qimage.width(), "×", qimage.height())
 
         if SaveToFile:
+            # Hacer una copia adicional en la ubicacion especificada
             save_path = r"T:\Borrame\snapshot.jpg"
             output_dir = os.path.dirname(save_path)
             try:
                 os.makedirs(output_dir, exist_ok=True)
+                # Copiar el archivo temporal a la ubicacion final
+                import shutil
+
+                shutil.copy2(output_path, save_path)
+                debug_print(f"Copia adicional guardada en: {save_path}")
             except Exception as e:
-                nuke.message(f"Error al crear el directorio de guardado: {str(e)}")
-                debug_print(f"ERROR: No se pudo crear el directorio de guardado: {e}")
-                return
-            ok = qimage.save(save_path, "JPEG")
-            debug_print("Archivo final guardado:", ok, save_path)
+                debug_print(f"ERROR: No se pudo crear copia adicional: {e}")
+                # No hacer return aqui, continuar con el proceso normal
 
         # Copiar al portapapeles
         app = QApplication.instance()
@@ -265,11 +377,8 @@ def main():
 
         debug_print("✅ Imagen copiada al portapapeles.")
 
-        # Limpiar el temporal
-        try:
-            os.remove(output_path)
-        except:
-            pass
+        # NO eliminar el archivo temporal - lo necesitamos para show_snapshot()
+        debug_print(f"Archivo temporal mantenido para show_snapshot: {output_path}")
 
     finally:
         # Restaurar el wav original si se cambio temporalmente
@@ -279,4 +388,4 @@ def main():
 
 # --- Main Execution ---
 if __name__ == "__main__":
-    main()
+    take_snapshot()

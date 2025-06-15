@@ -67,7 +67,7 @@ def launch():
             self.generalLayout.addWidget(self.addShortcutButton)
 
         def take_snapshot(self):
-            """Ejecuta la funcion main del script LGA_viewer_SnapShot.py"""
+            """Ejecuta la funcion take_snapshot del script LGA_viewer_SnapShot.py"""
             try:
                 # Importar y ejecutar el script de snapshot
                 script_path = os.path.join(
@@ -83,8 +83,8 @@ def launch():
                         module = importlib.util.module_from_spec(spec)
                         spec.loader.exec_module(module)
 
-                        # Llamar a la funcion main del script
-                        module.main()
+                        # Llamar a la funcion take_snapshot del script
+                        module.take_snapshot()
                     else:
                         nuke.message("Error: No se pudo cargar el modulo de SnapShot")
                 else:
@@ -94,7 +94,7 @@ def launch():
                 print(f"Error en take_snapshot: {e}")
 
     class SwitchButton(QDialog):
-        """Boton para cambiar viewer (funcionalidad futura)"""
+        """Boton para mostrar snapshot"""
 
         def __init__(self):
             super(SwitchButton, self).__init__()
@@ -112,16 +112,38 @@ def launch():
             self.addShortcutButton.setIcon(QtGui.QIcon(icon_path))
             self.addShortcutButton.setIconSize(self.qt_icon_size)
             self.addShortcutButton.setFixedSize(self.qt_btn_size)
-            self.addShortcutButton.clicked.connect(self.switch_viewer)
+            self.addShortcutButton.clicked.connect(self.show_snapshot)
             self.addShortcutButton.setFixedWidth(30)
-            self.addShortcutButton.setToolTip("Cambiar viewer (funcionalidad futura)")
+            self.addShortcutButton.setToolTip("Mostrar ultimo SnapShot tomado")
             self.addShortcutButton.setFlat(True)
             self.generalLayout.addWidget(self.addShortcutButton)
 
-        def switch_viewer(self):
-            """Funcionalidad del segundo boton (por implementar)"""
-            print("🔄 Switch viewer - Funcionalidad por implementar")
-            nuke.message("Switch viewer - Funcionalidad por implementar")
+        def show_snapshot(self):
+            """Ejecuta la funcion show_snapshot del script LGA_viewer_SnapShot.py"""
+            try:
+                # Importar y ejecutar el script de snapshot
+                script_path = os.path.join(
+                    os.path.dirname(__file__), "LGA_viewer_SnapShot.py"
+                )
+                if os.path.exists(script_path):
+                    import importlib.util
+
+                    spec = importlib.util.spec_from_file_location(
+                        "LGA_viewer_SnapShot", script_path
+                    )
+                    if spec and spec.loader:
+                        module = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(module)
+
+                        # Llamar a la funcion show_snapshot del script
+                        module.show_snapshot()
+                    else:
+                        nuke.message("Error: No se pudo cargar el modulo de SnapShot")
+                else:
+                    nuke.message(f"Error: Script no encontrado en {script_path}")
+            except Exception as e:
+                nuke.message(f"Error al mostrar SnapShot: {str(e)}")
+                print(f"Error en show_snapshot: {e}")
 
     def find_viewer():
         """Encuentra el widget del viewer activo"""
