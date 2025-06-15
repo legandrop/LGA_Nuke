@@ -347,39 +347,31 @@ class ThumbnailContainerWidget(QWidget):
         version_text = version if version else "---"
         self.version_label = QLabel(version_text)
         self.version_label.setStyleSheet(
-            "color: #cccccc; font-size: 12px; background-color: transparent;"
+            "color: #cccccc; font-size: 12px; background-color: transparent; margin-left: 4px;"
         )
         self.version_label.setAlignment(Qt.AlignLeft)
         info_layout.addWidget(self.version_label)
 
-        # Spacer para empujar el boton a la derecha
-        info_layout.addStretch()
-
-        # Boton de borrar (alineado a la derecha)
+        # Boton de borrar (ahora justo al lado de la version)
         self.delete_button = DeleteButton()
         self.delete_button.clicked.connect(self.delete_thumbnail)
-        info_layout.addWidget(self.delete_button, alignment=Qt.AlignRight)
+        self.delete_button.setStyleSheet("padding-bottom: 2px;")
+        info_layout.addWidget(self.delete_button)
+
+        # Spacer para empujar el conjunto (version + boton) a la izquierda
+        info_layout.addStretch()
 
         layout.addWidget(self.info_widget, alignment=Qt.AlignCenter)
 
     def delete_thumbnail(self):
         """Borra el thumbnail del disco y emite señal"""
         try:
-            reply = QMessageBox.question(
-                self,
-                "Confirmar borrado",
-                f"¿Estás seguro de que quieres borrar este snapshot?\n\n{os.path.basename(self.image_path)}",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
-            )
-
-            if reply == QMessageBox.Yes:
-                if os.path.exists(self.image_path):
-                    os.remove(self.image_path)
-                    debug_print(f"Archivo borrado: {self.image_path}")
-                    self.thumbnail_deleted.emit(self.image_path)
-                else:
-                    debug_print(f"El archivo no existe: {self.image_path}")
+            if os.path.exists(self.image_path):
+                os.remove(self.image_path)
+                debug_print(f"Archivo borrado: {self.image_path}")
+                self.thumbnail_deleted.emit(self.image_path)
+            else:
+                debug_print(f"El archivo no existe: {self.image_path}")
 
         except Exception as e:
             debug_print(f"Error al borrar thumbnail: {e}")
@@ -438,7 +430,7 @@ class ProjectFolderWidget(QFrame):
             """
             QFrame {
                 border: 0px solid #444444;
-                border-radius: 2px;
+                border-radius: 0px;
                 background-color: #262626;
                 margin: 0px;
                 padding: 0px;
@@ -450,6 +442,14 @@ class ProjectFolderWidget(QFrame):
 
     def setup_ui(self):
         """Configura la interfaz del widget del proyecto"""
+        # Eliminar el sufijo "_comp" si el nombre del proyecto termina con el
+        display_project_name = self.project_name
+        if display_project_name.endswith("_comp"):
+            display_project_name = display_project_name[:-5]  # Eliminar "_comp"
+            debug_print(
+                f"Nombre de proyecto ajustado para UI: {self.project_name} -> {display_project_name}"
+            )
+
         layout = QVBoxLayout(self)
         layout.setSpacing(10)
 
@@ -467,7 +467,7 @@ class ProjectFolderWidget(QFrame):
 
         # Título del proyecto (clickeable)
         self.title_label = ClickableLabel(
-            f"<b style='color:#cccccc; font-size:13px;'>{self.project_name}</b>"
+            f"<b style='color:#cccccc; font-size:13px;'>{display_project_name}</b>"
         )
         self.title_label.clicked.connect(self.toggle_expanded)
         header_layout.addWidget(self.title_label)
@@ -612,26 +612,17 @@ class ProjectFolderWidget(QFrame):
     def delete_project(self):
         """Borra todo el proyecto (carpeta completa)"""
         try:
-            reply = QMessageBox.question(
-                self,
-                "Confirmar borrado de proyecto",
-                f"¿Estás seguro de que quieres borrar TODO el proyecto '{self.project_name}'?\n\nEsto eliminará todos los snapshots del proyecto.",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
-            )
+            # Obtener la ruta de la carpeta del proyecto
+            script_dir = os.path.dirname(__file__)
+            gallery_path = os.path.join(script_dir, "snapshot_gallery")
+            project_path = os.path.join(gallery_path, self.project_name)
 
-            if reply == QMessageBox.Yes:
-                # Obtener la ruta de la carpeta del proyecto
-                script_dir = os.path.dirname(__file__)
-                gallery_path = os.path.join(script_dir, "snapshot_gallery")
-                project_path = os.path.join(gallery_path, self.project_name)
-
-                if os.path.exists(project_path):
-                    shutil.rmtree(project_path)
-                    debug_print(f"Proyecto borrado: {project_path}")
-                    self.project_deleted.emit(self.project_name)
-                else:
-                    debug_print(f"La carpeta del proyecto no existe: {project_path}")
+            if os.path.exists(project_path):
+                shutil.rmtree(project_path)
+                debug_print(f"Proyecto borrado: {project_path}")
+                self.project_deleted.emit(self.project_name)
+            else:
+                debug_print(f"La carpeta del proyecto no existe: {project_path}")
 
         except Exception as e:
             debug_print(f"Error al borrar proyecto: {e}")
@@ -717,7 +708,7 @@ class SnapshotGalleryWindow(QWidget):
         self.current_thumbnail_size = 150
         self.current_project_name = None
 
-        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Tool)
+        self.setWindowFlags(Qt.Window)
         self.setWindowTitle("LGA SnapShot Gallery")
         self.setStyleSheet("background-color: #1d1d1d;")
         self.setMinimumSize(800, 600)
@@ -742,7 +733,7 @@ class SnapshotGalleryWindow(QWidget):
 
         # Widget principal de la galería
         gallery_widget = QWidget()
-        gallery_widget.setStyleSheet("background-color: #262626; border-radius: 10px;")
+        gallery_widget.setStyleSheet("background-color: #262626; border-radius: 0px;")
         gallery_layout = QVBoxLayout(gallery_widget)
         gallery_layout.setContentsMargins(10, 10, 10, 10)
         gallery_layout.setSpacing(10)
