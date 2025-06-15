@@ -1,7 +1,7 @@
 """
 ______________________________________________________________________________
 
-  LGA_viewer_SnapShot v0.57 - Lega
+  LGA_viewer_SnapShot v0.60 - Lega
   Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
 ______________________________________________________________________________
 
@@ -162,6 +162,41 @@ def take_snapshot():
 
     viewer, view_node, input_index, input_node = viewer_info
 
+    # CRÍTICO: Verificar que el nodo tiene canales válidos ANTES de cualquier procesamiento
+    try:
+        # Obtener los canales del nodo conectado al viewer
+        channels = input_node.channels()
+        debug_print(f"Canales disponibles en {input_node.name()}: {channels}")
+
+        if not channels:
+            error_msg = f"El nodo {input_node.name()} no tiene canales válidos para generar snapshot"
+            debug_print(f"ERROR: {error_msg}")
+            nuke.message(error_msg)
+            return
+
+        # Verificar que hay al menos un canal de color (rgba, rgb, etc.)
+        color_channels = [
+            ch
+            for ch in channels
+            if any(
+                color in ch.lower()
+                for color in ["red", "green", "blue", "rgba", "rgb", ".r", ".g", ".b"]
+            )
+        ]
+        if not color_channels:
+            error_msg = f"El nodo {input_node.name()} no tiene canales de color válidos (RGB/RGBA) para generar snapshot"
+            debug_print(f"ERROR: {error_msg}")
+            nuke.message(error_msg)
+            return
+
+        debug_print(f"✅ Canales de color válidos encontrados: {color_channels}")
+
+    except Exception as e:
+        error_msg = f"Error al verificar canales del nodo {input_node.name()}: {str(e)}"
+        debug_print(f"ERROR: {error_msg}")
+        nuke.message(error_msg)
+        return
+
     # --- Una vez que las comprobaciones iniciales son satisfactorias, proceder con la lógica RenderComplete ---
     render_complete_active = check_render_complete_module()
     original_wav_path = None
@@ -217,13 +252,21 @@ def take_snapshot():
             try:
                 nuke.execute(write_node, frame, frame)
             except Exception as e:
-                nuke.delete(write_node)
-                nuke.message(f"Error al ejecutar el Write: {str(e)}")
+                # Mejorar el manejo de errores del Write
+                error_msg = f"Error al ejecutar el Write: {str(e)}"
+                debug_print(f"ERROR: {error_msg}")
+
+                # Limpiar el nodo Write antes de mostrar error
+                if nuke.exists(write_node.name()):
+                    nuke.delete(write_node)
+
+                nuke.message(error_msg)
                 return
             finally:
                 # Asegurar que el nodo Write se elimine incluso si hay error
                 if nuke.exists(write_node.name()):
                     nuke.delete(write_node)
+                    debug_print("Nodo Write temporal eliminado correctamente")
 
         finally:
             # 4. Restaurar la seleccion original
