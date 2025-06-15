@@ -1,7 +1,7 @@
 """
 ______________________________________________________________________________
 
-  LGA_NKS_SnapShot v0.56 - Lega
+  LGA_viewer_SnapShot v0.57 - Lega
   Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
 ______________________________________________________________________________
 
@@ -390,6 +390,52 @@ def take_snapshot():
             restore_original_wav(original_wav_path)
 
 
-# --- Main Execution ---
-if __name__ == "__main__":
-    take_snapshot()
+def test_hold(start):
+    """
+    Crea un nodo NoOp mientras el botón está presionado y lo borra al soltar.
+
+    Args:
+        start (bool): True para crear el nodo, False para eliminarlo
+    """
+    node_name = "LGA_HOLD_TEST"
+
+    if start:
+        # Crear nodo solo si no existe
+        if not nuke.exists(node_name):
+            try:
+                # Crear el nodo NoOp
+                noop_node = nuke.createNode(
+                    "NoOp", f"name {node_name} label 'HOLD TEST'", inpanel=False
+                )
+
+                # Posicionarlo en una ubicacion visible
+                noop_node.setXpos(0)
+                noop_node.setYpos(0)
+
+                # Darle un color distintivo
+                noop_node["tile_color"].setValue(0xFF0000FF)  # Azul
+
+                debug_print("✅ Nodo NoOp creado para test hold")
+                print("🔽 HOLD TEST: Nodo NoOp creado")
+
+            except Exception as e:
+                debug_print(f"Error al crear nodo NoOp: {e}")
+                print(f"❌ Error al crear nodo: {e}")
+        else:
+            debug_print("Nodo NoOp ya existe")
+            print("⚠️ Nodo NoOp ya existe")
+    else:
+        # Eliminar nodo si existe
+        if nuke.exists(node_name):
+            try:
+                node_to_delete = nuke.toNode(node_name)
+                nuke.delete(node_to_delete)
+                debug_print("🗑️ Nodo NoOp eliminado")
+                print("🔼 HOLD TEST: Nodo NoOp eliminado")
+
+            except Exception as e:
+                debug_print(f"Error al eliminar nodo NoOp: {e}")
+                print(f"❌ Error al eliminar nodo: {e}")
+        else:
+            debug_print("No hay nodo NoOp para eliminar")
+            print("⚠️ No hay nodo NoOp para eliminar")
