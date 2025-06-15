@@ -1,5 +1,6 @@
 __pycache__/
 *.pyc
+*.psd
 *OLD/
 Building_Blocks/
 +exclude.lst
