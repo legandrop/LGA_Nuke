@@ -1,7 +1,7 @@
 """
 ______________________________________________________________________________
 
-  LGA_NKS_SnapShot v0.53 - Lega
+  LGA_NKS_SnapShot v0.54 - Lega
   Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
 ______________________________________________________________________________
 
@@ -14,20 +14,18 @@ import tempfile
 
 try:
     # nuke <11
-    import PySide
-    from PySide import QtGui
-    from PySide import QtCore
-    from PySide.QtGui import *
-    from PySide.QtCore import *
-    from PySide.QtWidgets import *
+    import PySide.QtGui as QtGui
+    import PySide.QtCore as QtCore
+    import PySide.QtWidgets as QtWidgets
+    from PySide.QtGui import QImage, QClipboard
+    from PySide.QtWidgets import QApplication
 except:
     # nuke>=11
-    import PySide2
-    from PySide2 import QtGui
-    from PySide2 import QtCore
-    from PySide2.QtGui import *
-    from PySide2.QtCore import *
-    from PySide2.QtWidgets import *
+    import PySide2.QtGui as QtGui
+    import PySide2.QtCore as QtCore
+    import PySide2.QtWidgets as QtWidgets
+    from PySide2.QtGui import QImage, QClipboard
+    from PySide2.QtWidgets import QApplication
 
 DEBUG = True
 SaveToFile = False
@@ -146,6 +144,10 @@ def main():
 
         frame = int(nuke.frame())
 
+        # Obtener la posicion del nodo de entrada
+        input_node_xpos = input_node.xpos()
+        input_node_ypos = input_node.ypos()
+
         # 1. Recordar el nodo seleccionado actualmente
         originally_selected_nodes = nuke.selectedNodes()
         debug_print(
@@ -159,12 +161,20 @@ def main():
             input_node.setSelected(True)
             debug_print(f"Nodo seleccionado temporalmente: {input_node.name()}")
 
+            # Calcular el offset Y basado en la altura del nodo de entrada
+            dynamic_y_offset = input_node.screenHeight() + 10
+            debug_print(f"Offset Y dinamico: {dynamic_y_offset}")
+
             # 3. Crear el Write temporal (ahora se creara conectado al nodo correcto)
             write_node = nuke.createNode(
                 "Write",
                 "file_type jpeg postage_stamp false hide_input true label 'LGA_TEMP'",
                 inpanel=False,
             )
+
+            # Mover el nodo Write a la posicion del nodo de entrada
+            write_node.setXpos(input_node_xpos)
+            write_node.setYpos(input_node_ypos + dynamic_y_offset)
 
             # Blindaje: convertir path a forward slashes para evitar problemas de escapes
             safe_path = output_path.replace("\\", "/")
