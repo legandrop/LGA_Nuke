@@ -1,7 +1,7 @@
 """
 ______________________________________________________________________________
 
-  LGA_viewer_SnapShot v0.63 - Lega
+  LGA_viewer_SnapShot v0.64 - Lega
   Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
 ______________________________________________________________________________
 

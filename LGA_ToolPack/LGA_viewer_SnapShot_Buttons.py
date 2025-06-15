@@ -1,7 +1,7 @@
 """
 ______________________________________________________
 
-  LGA_NKS_SnapSho_Buttons v0.5 - Lega
+  LGA_NKS_SnapSho_Buttons - Lega
   Crea botones en el viewer para snapshots
 ______________________________________________________
 
@@ -63,10 +63,16 @@ def launch():
             self.addShortcutButton.clicked.connect(self.take_snapshot)
             self.addShortcutButton.setFixedWidth(30)
             self.addShortcutButton.setToolTip(
-                "Take snapshot and save to gallery - use shift to NOT save to gallery"
+                "(Shift+F9) Take snapshot and save to gallery - Shift+Click to NOT save to gallery"
             )
             self.addShortcutButton.setFlat(True)
             self.generalLayout.addWidget(self.addShortcutButton)
+
+            # Atajo de teclado Shift + F9 para Take Snapshot
+            self.shortcut_take = QtWidgets.QShortcut(
+                QtGui.QKeySequence("Shift+F9"), self
+            )
+            self.shortcut_take.activated.connect(self.take_snapshot)
 
         def take_snapshot(self):
             """Ejecuta la funcion take_snapshot del script LGA_viewer_SnapShot.py"""
@@ -121,7 +127,7 @@ def launch():
             self.addShortcutButton.setIconSize(self.qt_icon_size)
             self.addShortcutButton.setFixedSize(self.qt_btn_size)
             self.addShortcutButton.setFixedWidth(30)
-            self.addShortcutButton.setToolTip("Show last snapshot in viewer")
+            self.addShortcutButton.setToolTip("(F9) Show last snapshot in viewer")
             self.addShortcutButton.setFlat(True)
             self.generalLayout.addWidget(self.addShortcutButton)
 
@@ -129,9 +135,39 @@ def launch():
             self.addShortcutButton.pressed.connect(self.on_pressed)
             self.addShortcutButton.released.connect(self.on_released)
 
+            # Atajo de teclado F9 para Show Snapshot (hold behavior con autoRepeat)
+            self.shortcut_show = QtWidgets.QShortcut(QtGui.QKeySequence("F9"), self)
+            self.shortcut_show.setAutoRepeat(True)  # Permitir repeticion
+            self.shortcut_show.activated.connect(self.on_f9_activated)
+
+            # Timer para detectar cuando se suelta F9 (400ms sin repeticion = release)
+            self.f9_release_timer = QtCore.QTimer()
+            self.f9_release_timer.setSingleShot(True)
+            self.f9_release_timer.timeout.connect(self.on_f9_released)
+            self.f9_is_pressed = False
+
             # CRÍTICO: Importar el módulo UNA SOLA VEZ al crear el botón
             self.snapshot_module = None
             self._import_snapshot_module()
+
+        def on_f9_activated(self):
+            """Se ejecuta cada vez que se activa F9 (inicial y repeticiones)"""
+            if not self.f9_is_pressed:
+                # Primera activacion - mostrar snapshot
+                print("🔽 F9 presionado - mostrando snapshot")
+                self.on_pressed()
+                self.f9_is_pressed = True
+
+            # Reiniciar el timer de release cada vez que se recibe F9
+            # Si pasan 400ms sin recibir F9, se considera que se solto la tecla
+            self.f9_release_timer.start(400)
+
+        def on_f9_released(self):
+            """Se ejecuta cuando pasan 400ms sin recibir F9 (tecla soltada)"""
+            if self.f9_is_pressed:
+                print("🔼 F9 liberado (400ms sin repeticion) - ocultando snapshot")
+                self.on_released()
+                self.f9_is_pressed = False
 
         def _import_snapshot_module(self):
             """Importa el módulo de snapshot UNA SOLA VEZ"""
