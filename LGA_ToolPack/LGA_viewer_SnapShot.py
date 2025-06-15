@@ -1,7 +1,7 @@
 """
 ______________________________________________________________________________
 
-  LGA_NKS_SnapShot v0.54 - Lega
+  LGA_NKS_SnapShot v0.55 - Lega
   Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
 ______________________________________________________________________________
 
@@ -117,7 +117,44 @@ def restore_original_wav(original_wav_path):
 
 
 def main():
-    # Verificar si RenderComplete esta disponible y activado
+    # --- Comprobaciones iniciales del viewer de Nuke ---
+    viewer = nuke.activeViewer()
+    if viewer is None:
+        nuke.message(
+            "No hay viewer activo. Por favor, abre un viewer antes de tomar un snapshot."
+        )
+        debug_print("ERROR: No hay viewer activo. Saliendo.")
+        return
+
+    view_node = viewer.node()
+    if view_node is None:
+        nuke.message(
+            "El viewer no está mostrando ningún nodo. Conecta un nodo al viewer para tomar un snapshot."
+        )
+        debug_print("ERROR: El viewer no está mostrando ningún nodo. Saliendo.")
+        return
+
+    input_index = viewer.activeInput()
+    # Nuke generalmente devuelve un entero para activeInput(), pero se añade una verificación defensiva.
+    if not isinstance(input_index, int):
+        debug_print(
+            f"ERROR: viewer.activeInput() devolvió un tipo inesperado: {type(input_index)}. Saliendo."
+        )
+        return
+
+    # Esta línea ahora está segura, ya que input_index es un entero
+    input_node = view_node.input(input_index)
+
+    if input_node is None:
+        nuke.message(
+            "No hay nodo conectado al viewer en la entrada activa. Asegúrate de que un nodo esté conectado para tomar un snapshot."
+        )
+        debug_print(
+            "ERROR: No hay nodo conectado al viewer en la entrada activa. Saliendo."
+        )
+        return
+
+    # --- Una vez que las comprobaciones iniciales son satisfactorias, proceder con la lógica RenderComplete ---
     render_complete_active = check_render_complete_module()
     original_wav_path = None
 
@@ -128,19 +165,6 @@ def main():
     try:
         temp_dir = tempfile.gettempdir()
         output_path = os.path.join(temp_dir, "snapshot.jpg")
-
-        viewer = nuke.activeViewer()
-        if viewer is None:
-            nuke.message("No hay viewer activo.")
-            return
-
-        view_node = viewer.node()
-        input_index = viewer.activeInput()
-        input_node = view_node.input(input_index)
-
-        if input_node is None:
-            nuke.message("No hay nodo conectado al viewer.")
-            return
 
         frame = int(nuke.frame())
 
@@ -204,13 +228,17 @@ def main():
             )
 
         if not os.path.exists(output_path):
-            nuke.message("Error: el archivo no se generó.")
+            nuke.message(
+                "Error: el archivo del snapshot no se generó. Por favor, verifica los permisos o la ruta temporal."
+            )
             return
 
         # Cargar el JPEG como QImage
         qimage = QtGui.QImage(output_path)
         if qimage.isNull():
-            nuke.message("Error al leer el snapshot generado.")
+            nuke.message(
+                "Error al leer el snapshot generado. El archivo de imagen temporal está vacío o corrupto."
+            )
             return
 
         debug_print("Snapshot size:", qimage.width(), "×", qimage.height())
@@ -218,7 +246,12 @@ def main():
         if SaveToFile:
             save_path = r"T:\Borrame\snapshot.jpg"
             output_dir = os.path.dirname(save_path)
-            os.makedirs(output_dir, exist_ok=True)
+            try:
+                os.makedirs(output_dir, exist_ok=True)
+            except Exception as e:
+                nuke.message(f"Error al crear el directorio de guardado: {str(e)}")
+                debug_print(f"ERROR: No se pudo crear el directorio de guardado: {e}")
+                return
             ok = qimage.save(save_path, "JPEG")
             debug_print("Archivo final guardado:", ok, save_path)
 

@@ -16,20 +16,18 @@ icons_path = os.path.join(KS_DIR, "icons")
 
 try:
     # nuke <11
-    import PySide
-    from PySide import QtGui
-    from PySide import QtCore
-    from PySide.QtGui import *
-    from PySide.QtCore import *
-    from PySide.QtWidgets import *
+    import PySide.QtGui as QtGui
+    import PySide.QtCore as QtCore
+    import PySide.QtWidgets as QtWidgets
+    from PySide.QtGui import QImage, QClipboard, QIcon
+    from PySide.QtWidgets import QApplication, QPushButton, QDialog, QHBoxLayout
 except:
     # nuke>=11
-    import PySide2
-    from PySide2 import QtGui
-    from PySide2 import QtCore
-    from PySide2.QtGui import *
-    from PySide2.QtCore import *
-    from PySide2.QtWidgets import *
+    import PySide2.QtGui as QtGui
+    import PySide2.QtCore as QtCore
+    import PySide2.QtWidgets as QtWidgets
+    from PySide2.QtGui import QImage, QClipboard, QIcon
+    from PySide2.QtWidgets import QApplication, QPushButton, QDialog, QHBoxLayout
 
 
 def launch():
@@ -42,21 +40,6 @@ def launch():
             self.setAcceptDrops(True)
             self.mineData = None
             self._parent = parent
-
-        def dragEnterEvent(self, e):
-            if e.mimeData().hasText():
-                self.mineData = e.mimeData().text()
-                self.setFlat(False)
-                e.accept()
-            else:
-                e.ignore()
-
-        def dragLeaveEvent(self, e):
-            self.setFlat(True)
-
-        def dropEvent(self, e):
-            self._parent.addHotkey(self.mineData)
-            self.setFlat(True)
 
     class SnapShotButton(QDialog):
         """Boton para tomar snapshot"""
@@ -102,7 +85,6 @@ def launch():
 
                         # Llamar a la funcion main del script
                         module.main()
-                        print("✅ SnapShot ejecutado correctamente")
                     else:
                         nuke.message("Error: No se pudo cargar el modulo de SnapShot")
                 else:
