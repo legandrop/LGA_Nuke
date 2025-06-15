@@ -17,7 +17,7 @@ Sistema de botones personalizados para el viewer de Nuke que permite tomar snaps
   - Segundo botón (`Show_SnapShotButton`): Ejecuta `show_snapshot_hold()` con comportamiento hold
   - Tercer botón (`Gallery_SnapShotButton`): Abre la galería de snapshots
   - Usa iconos `snap_camera.png`, `sanp_picture.png` y `sanp_gallery.png`
-  - Tooltips en inglés: "Take snapshot - use shift to save to gallery", "Show last snapshot in viewer", "Open snapshot gallery"
+  - Tooltips en inglés: "Take snapshot and save to gallery - use shift to NOT save to gallery", "Show last snapshot in viewer", "Open snapshot gallery"
   - Importación única del módulo para mantener el estado entre llamadas
 
 ### 3. `LGA_ToolPack/LGA_viewer_SnapShot.py`
@@ -36,12 +36,15 @@ Sistema de botones personalizados para el viewer de Nuke que permite tomar snaps
   - Funciones auxiliares: `get_next_snapshot_number()`, `cleanup_old_snapshots()`, `get_latest_snapshot_path()`
 
 ### 4. `LGA_ToolPack/LGA_viewer_SnapShot_Gallery.py`
-- **Función**: Interfaz de galería de snapshots
+- **Función**: Interfaz de galería de snapshots con thumbnails
 - **Características**:
-  - Ventana con estilo consistente (mismo diseño que LGA_Write_PathToText)
+  - Ventana con estilo consistente y área de scroll
   - Función principal `open_snapshot_gallery()` 
-  - Muestra información de la carpeta de galería
-  - Preparada para expansión futura con visualización de imágenes
+  - Organización por proyectos con thumbnails redimensionables
+  - Toolbar superior con slider de tamaño (50px - 500px)
+  - Thumbnails ordenados alfabéticamente por proyecto
+  - Soporte para múltiples formatos de imagen (jpg, png, tiff, exr)
+  - Interfaz responsiva con hover effects en thumbnails
 
 ## Funcionamiento del Sistema
 
@@ -63,8 +66,8 @@ Sistema de botones personalizados para el viewer de Nuke que permite tomar snaps
 ### Take_SnapShotButton
 - **Función**: Botón para tomar snapshots
 - **Icono**: `snap_camera.png`
-- **Tooltip**: "Take snapshot - use shift to save to gallery"
-- **Comportamiento**: Ejecuta `take_snapshot()` al hacer clic, detecta Shift para guardar en galería
+- **Tooltip**: "Take snapshot and save to gallery - use shift to NOT save to gallery"
+- **Comportamiento**: Ejecuta `take_snapshot()` al hacer clic, por defecto guarda en galería, detecta Shift para NO guardar en galería
 - **Requisito**: Necesita nodo conectado al viewer
 
 ### Show_SnapShotButton
@@ -80,7 +83,34 @@ Sistema de botones personalizados para el viewer de Nuke que permite tomar snaps
 - **Icono**: `sanp_gallery.png`
 - **Tooltip**: "Open snapshot gallery"
 - **Comportamiento**: Ejecuta `open_snapshot_gallery()` del módulo LGA_viewer_SnapShot_Gallery
-- **Funcionalidad**: Abre ventana de galería con información del proyecto
+- **Funcionalidad**: Abre ventana de galería con thumbnails organizados por proyecto y slider de tamaño
+
+## Clases de la Galería
+
+### ThumbnailWidget
+- **Función**: Widget personalizado para mostrar un thumbnail de imagen
+- **Características**:
+  - Carga y escala imágenes manteniendo relación de aspecto
+  - Redimensionamiento dinámico con el slider
+  - Estilo visual con bordes y hover effects
+  - Manejo de errores con placeholder para imágenes no válidas
+
+### ProjectFolderWidget
+- **Función**: Contenedor que agrupa thumbnails por proyecto
+- **Características**:
+  - Título del proyecto con estilo destacado
+  - Layout horizontal para thumbnails
+  - Actualización dinámica del tamaño de todos los thumbnails
+  - Mensaje informativo cuando no hay imágenes
+
+### SnapshotGalleryWindow
+- **Función**: Ventana principal de la galería
+- **Características**:
+  - Toolbar superior con slider de tamaño (50px - 500px)
+  - Área de scroll para navegación fluida
+  - Carga automática de proyectos y organización alfabética
+  - Soporte para múltiples formatos de imagen
+  - Mensajes informativos para estados vacíos
 
 ## Funciones Principales
 
@@ -88,7 +118,7 @@ Sistema de botones personalizados para el viewer de Nuke que permite tomar snaps
 - **Verificaciones iniciales**: Viewer activo, nodo conectado, canales válidos (ANTES de RenderComplete)
 - **Numeración única**: Genera snapshots con nombres `LGA_snapshot_N.jpg` donde N es ascendente
 - **Proceso**: Crea nodo Write temporal, ejecuta render, guarda en carpeta temporal
-- **Galería con Shift**: Si `save_to_gallery=True`, guarda copia en `snapshot_gallery/proyecto/`
+- **Galería por defecto**: Si `save_to_gallery=True` (comportamiento por defecto), guarda copia en `snapshot_gallery/proyecto/`
 - **Organización por proyecto**: Crea subcarpetas basadas en nombre del proyecto sin versión
 - **Numeración secuencial**: Archivos en galería usan formato `proyecto_vXX_N.jpg`
 - **Limpieza automática**: Elimina snapshots anteriores después del guardado exitoso
@@ -189,15 +219,20 @@ El segundo botón usa eventos nativos de PySide2 para máxima responsividad:
 - **Galería de proyecto**: Sistema organizado por proyecto con numeración secuencial
 - **Iconos**: Sistema de iconos personalizados para botones (`snap_camera.png`, `sanp_picture.png`, `sanp_gallery.png`)
 - **Nuke API**: Uso correcto de `node["reload"].execute()` para recargar Read nodes
+- **Galería visual**: Thumbnails redimensionables con soporte para múltiples formatos
+- **UI responsiva**: Slider de tamaño en tiempo real y área de scroll optimizada
 
 ## Notas de Implementación
 - Los tres botones se insertan buscando el widget con tooltip "frameslider range"
 - Se limpian botones existentes antes de agregar los nuevos
-- Detección de tecla Shift para funcionalidad de galería
+- Detección de tecla Shift para evitar guardar en galería (comportamiento invertido: sin Shift guarda, con Shift no guarda)
 - Organización automática por proyecto basada en nombre del archivo de Nuke
 - Debug prints disponibles para seguimiento de ejecución
 - Restauración automática del estado del viewer en todos los casos
 - Compatibilidad con versiones antiguas y nuevas de Nuke/PySide
 - Soporte completo para viewers vacíos en función de mostrar snapshot
+- Galería con thumbnails organizados alfabéticamente por proyecto
+- Slider de tamaño dinámico (50px - 500px) para thumbnails
+- Soporte para formatos jpg, png, tiff, exr en la galería
 
  

@@ -63,7 +63,7 @@ def launch():
             self.addShortcutButton.clicked.connect(self.take_snapshot)
             self.addShortcutButton.setFixedWidth(30)
             self.addShortcutButton.setToolTip(
-                "Take snapshot - use shift to save to gallery"
+                "Take snapshot and save to gallery - use shift to NOT save to gallery"
             )
             self.addShortcutButton.setFlat(True)
             self.generalLayout.addWidget(self.addShortcutButton)
@@ -90,8 +90,9 @@ def launch():
                         module = importlib.util.module_from_spec(spec)
                         spec.loader.exec_module(module)
 
-                        # Llamar a la funcion take_snapshot del script con el parametro shift
-                        module.take_snapshot(save_to_gallery=shift_pressed)
+                        # Llamar a la funcion take_snapshot del script con el parametro shift invertido
+                        # Sin shift = guarda en galeria, Con shift = NO guarda en galeria
+                        module.take_snapshot(save_to_gallery=not shift_pressed)
                     else:
                         nuke.message("Error: No se pudo cargar el modulo de SnapShot")
                 else:
