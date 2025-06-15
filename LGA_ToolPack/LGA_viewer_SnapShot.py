@@ -1,7 +1,7 @@
 """
 ______________________________________________________
 
-  LGA_NKS_SnapShot v0.51 - Lega
+  LGA_NKS_SnapShot v0.52 - Lega
   Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
 ______________________________________________________
 
@@ -11,7 +11,23 @@ import nuke
 import nukescripts
 import os
 import tempfile
-from PySide2 import QtWidgets, QtGui
+
+try:
+    # nuke <11
+    import PySide
+    from PySide import QtGui
+    from PySide import QtCore
+    from PySide.QtGui import *
+    from PySide.QtCore import *
+    from PySide.QtWidgets import *
+except:
+    # nuke>=11
+    import PySide2
+    from PySide2 import QtGui
+    from PySide2 import QtCore
+    from PySide2.QtGui import *
+    from PySide2.QtCore import *
+    from PySide2.QtWidgets import *
 
 DEBUG = True
 SaveToFile = False
@@ -175,9 +191,9 @@ def main():
             debug_print("Archivo final guardado:", ok, save_path)
 
         # Copiar al portapapeles
-        app = QtWidgets.QApplication.instance()
+        app = QApplication.instance()
         if not app:
-            app = QtWidgets.QApplication([])
+            app = QApplication([])
 
         clipboard = app.clipboard()
         clipboard.setImage(qimage)

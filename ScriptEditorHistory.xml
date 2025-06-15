@@ -10767,10 +10767,33 @@ def main():
 # --- Main Execution ---
 if __name__ == &quot;__main__&quot;:
     main()
+import nuke
+
+def explorar_viewer_activo():
+    viewer = nuke.activeViewer()
+    if not viewer:
+        print(&quot;No hay viewer activo&quot;)
+        return
+
+    view_node = viewer.node()
+    viewer_name = view_node.name()
+    active_input = viewer.activeInput()
+
+    print(&quot;Viewer activo:&quot;, viewer_name)
+    print(&quot;Input activo (index):&quot;, active_input)
+
+    # Obtener el nodo conectado al input activo
+    input_node = view_node.input(active_input)
+    if input_node:
+        print(&quot;Nodo conectado:&quot;, input_node.name())
+    else:
+        print(&quot;No hay nodo conectado a este input&quot;)
+
+explorar_viewer_activo()
 &quot;&quot;&quot;
 ______________________________________________________
 
-  LGA_NKS_SnapShot v0.5 - Lega
+  LGA_NKS_SnapShot v0.51 - Lega
   Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
 ______________________________________________________
 
@@ -10780,7 +10803,9 @@ import nuke
 import nukescripts
 import os
 import tempfile
-from PySide2 import QtWidgets, QtGui
+import PySide2.QtWidgets as QtWidgets
+import PySide2.QtGui as QtGui
+import PySide2.QtCore as QtCore
 
 DEBUG = True
 SaveToFile = False
@@ -10963,6 +10988,63 @@ def main():
         # Restaurar el wav original si se cambio temporalmente
         if render_complete_active and original_wav_path:
             restore_original_wav(original_wav_path)
+
+
+def add_snapshot_button_to_viewer(viewer_node):
+    for widget in QtWidgets.QApplication.allWidgets():
+        if widget.windowTitle() == viewer_node.name():
+            viewer_widget = widget
+            break
+    else:
+        debug_print(&quot;No se encontró el widget del viewer.&quot;)
+        return
+
+    # Buscar el layout que contiene los botones del viewer
+    # Esto es una heurística y puede cambiar con versiones de Nuke
+    target_layout = None
+    for child in viewer_widget.findChildren(QtWidgets.QWidget):
+        # Buscamos un widget que contenga el control de rango de frames
+        # La propiedad 'toolTip' es una forma de identificarlo
+        if hasattr(child, &quot;toolTip&quot;) and &quot;frameslider range&quot; in child.toolTip().lower():
+            # El layout que queremos es el padre de este widget
+            target_layout = child.parentWidget().layout()
+            break
+
+    if not target_layout:
+        debug_print(&quot;No se encontró el layout del viewer para añadir el botón.&quot;)
+        return
+
+    # Crear el botón
+    snapshot_button = QtWidgets.QPushButton(&quot;&quot;)
+    snapshot_button.setToolTip(&quot;Take a Snapshot of the active viewer (LGA_ToolPack)&quot;)
+    snapshot_button.setFixedSize(QtCore.QSize(30, 30))
+
+    # Cargar el icono desde la carpeta 'icons'
+    icons_root = os.path.join(os.path.dirname(__file__), &quot;icons&quot;)
+    icon_path = os.path.join(icons_root, &quot;TP_SnapShot.png&quot;).replace(
+        &quot;\\&quot;, &quot;/&quot;
+    )  # Asegurarse de que el path sea correcto
+
+    # Verificar si el icono existe, si no, usar un icono por defecto
+    if os.path.exists(icon_path):
+        snapshot_button.setIcon(QtGui.QIcon(icon_path))
+    else:
+        debug_print(f&quot;Icono no encontrado: {icon_path}. Usando icono por defecto.&quot;)
+        # Puedes usar un icono genérico de PySide2 si lo deseas
+        # snapshot_button.setIcon(QtGui.QIcon(QtGui.QPixmap(32, 32))) # Un pixmap vacío como ejemplo
+        pass
+
+    snapshot_button.setIconSize(QtCore.QSize(20, 20))
+    snapshot_button.setFlat(
+        True
+    )  # Hace que el botón se vea plano hasta que se le haga hover
+
+    # Conectar el botón a la función main del script
+    snapshot_button.clicked.connect(main)
+
+    # Añadir el botón al layout
+    target_layout.addWidget(snapshot_button)
+    debug_print(&quot;✅ Botón de Snapshot añadido al viewer.&quot;)
 
 
 # --- Main Execution ---
