@@ -711,7 +711,10 @@ class SnapshotGalleryWindow(QWidget):
         self.setWindowFlags(Qt.Window)
         self.setWindowTitle("LGA SnapShot Gallery")
         self.setStyleSheet("background-color: #1d1d1d;")
-        self.setMinimumSize(800, 600)
+        self.setMinimumSize(1200, 900)
+
+        # Establecer un nombre de objeto unico para esta ventana
+        self.setObjectName("LGA_SnapshotGalleryWindow")
 
         # Obtener el proyecto actual
         self.current_project_name, _ = get_project_info()
@@ -896,15 +899,46 @@ class SnapshotGalleryWindow(QWidget):
             return None
 
 
+def buscar_ventana_existente(nombre_objeto):
+    """
+    Busca si ya existe una ventana con el nombre de objeto especificado.
+    Devuelve la ventana si existe y esta visible, None en caso contrario.
+    """
+    for widget in QApplication.instance().allWidgets():
+        if (
+            widget.objectName() == nombre_objeto
+            and isinstance(widget, QWidget)
+            and widget.isVisible()
+        ):
+            return widget
+    return None
+
+
 def open_snapshot_gallery():
-    """Función principal que abre la ventana de galería de snapshots"""
+    """Funcion principal que abre la ventana de galeria de snapshots"""
     global app, window
 
-    debug_print("Abriendo galería de snapshots...")
+    debug_print("Abriendo galeria de snapshots...")
 
-    app = QApplication.instance() or QApplication([])
-    window = SnapshotGalleryWindow()
-    window.show()
+    # Verificar si ya existe una ventana abierta con el mismo nombre de objeto
+    ventana_existente = buscar_ventana_existente("LGA_SnapshotGalleryWindow")
+
+    if ventana_existente:
+        # Si ya existe, activarla y traerla al frente
+        debug_print(f"Ya existe una ventana con ID: {ventana_existente.winId()}")
+        debug_print(
+            f"Usando ventana existente con nombre de objeto: {ventana_existente.objectName()}"
+        )
+        ventana_existente.setWindowState(
+            ventana_existente.windowState() & ~Qt.WindowMinimized | Qt.WindowActive
+        )
+        ventana_existente.activateWindow()
+        ventana_existente.raise_()
+    else:
+        # Si no existe, crear una nueva ventana
+        app = QApplication.instance() or QApplication([])
+        window = SnapshotGalleryWindow()
+        window.show()
 
 
 # --- Main Execution ---
