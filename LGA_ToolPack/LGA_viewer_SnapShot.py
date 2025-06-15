@@ -32,6 +32,9 @@ except:
 DEBUG = True
 SaveToFile = True
 
+# Variable global para mantener el estado del snapshot hold
+_lga_snapshot_hold_state = None
+
 
 def debug_print(*message):
     if DEBUG:
@@ -148,114 +151,6 @@ def get_viewer_info():
     return viewer, view_node, input_index, input_node
 
 
-def show_snapshot():
-    """
-    Muestra el snapshot temporal en el viewer durante 1 segundo.
-    """
-    import time
-
-    # 1. Verificar si existe el archivo snapshot
-    temp_dir = tempfile.gettempdir()
-    snapshot_path = os.path.join(temp_dir, "LGA_snapshot.jpg")
-
-    if not os.path.exists(snapshot_path):
-        debug_print(
-            f"ERROR: No existe archivo de snapshot en la carpeta temporal: {snapshot_path}"
-        )
-        return
-
-    debug_print(f"Snapshot encontrado: {snapshot_path}")
-
-    # 2. Verificar viewer y nodo conectado
-    viewer_info = get_viewer_info()
-    if viewer_info is None:
-        debug_print("ERROR: No se pudo obtener informacion del viewer")
-        return
-
-    viewer, view_node, input_index, input_node = viewer_info
-    debug_print(
-        f"Viewer activo: {view_node.name()}, nodo conectado: {input_node.name()}"
-    )
-
-    # 3. Guardar estado original
-    originally_selected_nodes = nuke.selectedNodes()
-    debug_print(
-        f"Nodos originalmente seleccionados: {[n.name() for n in originally_selected_nodes]}"
-    )
-
-    # Obtener posicion del nodo de entrada
-    input_node_xpos = input_node.xpos()
-    input_node_ypos = input_node.ypos()
-
-    # Calcular offset Y dinamico
-    dynamic_y_offset = input_node.screenHeight() + 10
-    debug_print(
-        f"Posicion del nodo: ({input_node_xpos}, {input_node_ypos}), offset Y: {dynamic_y_offset}"
-    )
-
-    read_node = None
-    try:
-        # 4. Deseleccionar todos los nodos y seleccionar el nodo conectado
-        for node in nuke.allNodes():
-            node.setSelected(False)
-        input_node.setSelected(True)
-
-        # 5. Crear nodo Read temporal
-        safe_path = snapshot_path.replace("\\", "/")
-        read_node = nuke.createNode(
-            "Read",
-            f"file {{{safe_path}}} label 'LGA_SNAPSHOT_TEMP'",
-            inpanel=False,
-        )
-
-        # Posicionar el nodo Read debajo del nodo de entrada
-        read_node.setXpos(input_node_xpos)
-        read_node.setYpos(input_node_ypos + dynamic_y_offset)
-
-        debug_print(
-            f"Nodo Read creado: {read_node.name()} en posicion ({read_node.xpos()}, {read_node.ypos()})"
-        )
-
-        # 6. Conectar el Read al viewer
-        view_node.setInput(input_index, read_node)
-        debug_print(f"Read conectado al viewer en input {input_index}")
-
-        # 7. Esperar 1 segundo
-        debug_print("Mostrando snapshot por 1 segundo...")
-        loop = QEventLoop()
-        QTimer.singleShot(1000, loop.quit)
-        loop.exec_()
-
-    except Exception as e:
-        debug_print(f"Error al mostrar snapshot: {e}")
-
-    finally:
-        # 8. Restaurar estado original
-        try:
-            if read_node and nuke.exists(read_node.name()):
-                # Reconectar el nodo original al viewer
-                view_node.setInput(input_index, input_node)
-                debug_print(f"Nodo original {input_node.name()} reconectado al viewer")
-
-                # Eliminar el nodo Read temporal
-                nuke.delete(read_node)
-                debug_print("Nodo Read temporal eliminado")
-
-            # Restaurar seleccion original
-            for node in nuke.allNodes():
-                node.setSelected(False)
-            for node in originally_selected_nodes:
-                node.setSelected(True)
-            debug_print(
-                f"Seleccion restaurada: {[n.name() for n in originally_selected_nodes]}"
-            )
-
-        except Exception as e:
-            debug_print(f"Error al restaurar estado original: {e}")
-
-    debug_print("✅ Snapshot mostrado y estado restaurado")
-
-
 def take_snapshot():
     # --- Comprobaciones iniciales del viewer de Nuke ---
     viewer_info = get_viewer_info()
@@ -335,10 +230,11 @@ def take_snapshot():
             for node in nuke.allNodes():
                 node.setSelected(False)
             for node in originally_selected_nodes:
-                node.setSelected(True)
-            debug_print(
-                f"Seleccion restaurada: {[n.name() for n in originally_selected_nodes]}"
-            )
+                if node and nuke.exists(node.name()):
+                    node.setSelected(True)
+                debug_print(
+                    f"Seleccion restaurada: {[n.name() for n in originally_selected_nodes if n]}"
+                )
 
         if not os.path.exists(output_path):
             nuke.message(
@@ -390,52 +286,183 @@ def take_snapshot():
             restore_original_wav(original_wav_path)
 
 
-def test_hold(start):
+def show_snapshot_hold(start):
     """
-    Crea un nodo NoOp mientras el botón está presionado y lo borra al soltar.
+    Muestra el snapshot mientras el botón está presionado y lo oculta al soltar.
+    Versión simplificada sin QTimer para evitar problemas de timing.
 
     Args:
-        start (bool): True para crear el nodo, False para eliminarlo
+        start (bool): True para mostrar el snapshot, False para ocultarlo
     """
-    node_name = "LGA_HOLD_TEST"
+    global _lga_snapshot_hold_state
 
     if start:
-        # Crear nodo solo si no existe
-        if not nuke.exists(node_name):
-            try:
-                # Crear el nodo NoOp
-                noop_node = nuke.createNode(
-                    "NoOp", f"name {node_name} label 'HOLD TEST'", inpanel=False
+        # 1. Verificar si existe el archivo snapshot
+        temp_dir = tempfile.gettempdir()
+        snapshot_path = os.path.join(temp_dir, "LGA_snapshot.jpg")
+
+        if not os.path.exists(snapshot_path):
+            debug_print(
+                f"ERROR: No existe archivo de snapshot en la carpeta temporal: {snapshot_path}"
+            )
+            print("❌ No hay snapshot disponible para mostrar")
+            return
+
+        debug_print(f"Snapshot encontrado: {snapshot_path}")
+
+        # 2. Verificar viewer y nodo conectado
+        viewer_info = get_viewer_info()
+        if viewer_info is None:
+            debug_print("ERROR: No se pudo obtener informacion del viewer")
+            print("❌ Error: No hay viewer activo o nodo conectado")
+            return
+
+        viewer, view_node, input_index, input_node = viewer_info
+        debug_print(
+            f"Viewer activo: {view_node.name()}, nodo conectado: {input_node.name()}"
+        )
+
+        # 3. Guardar estado original
+        originally_selected_nodes = nuke.selectedNodes()
+        debug_print(
+            f"Nodos originalmente seleccionados: {[n.name() for n in originally_selected_nodes]}"
+        )
+
+        # Obtener posicion del nodo de entrada
+        input_node_xpos = input_node.xpos()
+        input_node_ypos = input_node.ypos()
+
+        # Calcular offset Y dinamico
+        dynamic_y_offset = input_node.screenHeight() + 10
+        debug_print(
+            f"Posicion del nodo: ({input_node_xpos}, {input_node_ypos}), offset Y: {dynamic_y_offset}"
+        )
+
+        read_node = None
+        try:
+            # 4. Deseleccionar todos los nodos y seleccionar el nodo conectado
+            for node in nuke.allNodes():
+                node.setSelected(False)
+            input_node.setSelected(True)
+
+            # 5. Crear nodo Read temporal (igual que show_snapshot)
+            safe_path = snapshot_path.replace("\\", "/")
+            read_node = nuke.createNode(
+                "Read",
+                f"file {{{safe_path}}} label 'LGA_SNAPSHOT_HOLD'",
+                inpanel=False,
+            )
+
+            # Posicionar el nodo Read debajo del nodo de entrada
+            read_node.setXpos(input_node_xpos)
+            read_node.setYpos(input_node_ypos + dynamic_y_offset)
+
+            debug_print(
+                f"Nodo Read creado: {read_node.name()} en posicion ({read_node.xpos()}, {read_node.ypos()})"
+            )
+
+            # 6. Conectar el Read al viewer
+            view_node.setInput(input_index, read_node)
+            debug_print(f"Read conectado al viewer en input {input_index}")
+
+            # CRÍTICO: Permitir que la UI procese eventos para evitar bloqueos
+            app = QApplication.instance()
+            if app:
+                app.processEvents()
+
+            # Guardar referencias para poder restaurar despues
+            _lga_snapshot_hold_state = {
+                "read_node": read_node,
+                "original_input_node": input_node,
+                "viewer": view_node,
+                "input_index": input_index,
+                "originally_selected_nodes": originally_selected_nodes,
+            }
+
+            print("🔽 HOLD SNAPSHOT: Mostrando snapshot")
+            debug_print("✅ Estado guardado correctamente para hold")
+
+            # CRÍTICO: Procesar eventos nuevamente después de guardar estado
+            if app:
+                app.processEvents()
+
+        except Exception as e:
+            debug_print(f"Error al mostrar snapshot hold: {e}")
+            print(f"❌ Error al mostrar snapshot: {e}")
+
+    else:
+        # Restaurar estado original (igual que el finally de show_snapshot)
+        debug_print("🔄 Iniciando proceso de restauracion...")
+
+        # CRÍTICO: Procesar eventos antes de restaurar
+        app = QApplication.instance()
+        if app:
+            app.processEvents()
+
+        try:
+            if _lga_snapshot_hold_state:
+                debug_print("📋 Estado encontrado, procediendo a restaurar...")
+                state = _lga_snapshot_hold_state
+                read_node = state["read_node"]
+                input_node = state["original_input_node"]
+                view_node = state["viewer"]
+                input_index = state["input_index"]
+                originally_selected_nodes = state["originally_selected_nodes"]
+
+                # Verificar que el nodo Read aun existe
+                if read_node and nuke.exists(read_node.name()):
+                    debug_print(f"🔗 Reconectando nodo original: {input_node.name()}")
+                    # Reconectar el nodo original al viewer
+                    view_node.setInput(input_index, input_node)
+                    debug_print(
+                        f"Nodo original {input_node.name()} reconectado al viewer"
+                    )
+
+                    # CRÍTICO: Procesar eventos después de reconectar
+                    if app:
+                        app.processEvents()
+
+                    debug_print(f"🗑️ Eliminando nodo temporal: {read_node.name()}")
+                    # Eliminar el nodo Read temporal
+                    nuke.delete(read_node)
+                    debug_print("Nodo Read temporal eliminado")
+
+                    # CRÍTICO: Procesar eventos después de eliminar
+                    if app:
+                        app.processEvents()
+
+                # Restaurar seleccion original
+                debug_print("🎯 Restaurando seleccion original...")
+                for node in nuke.allNodes():
+                    node.setSelected(False)
+                for node in originally_selected_nodes:
+                    if node and nuke.exists(node.name()):
+                        node.setSelected(True)
+                debug_print(
+                    f"Seleccion restaurada: {[n.name() for n in originally_selected_nodes if n]}"
                 )
 
-                # Posicionarlo en una ubicacion visible
-                noop_node.setXpos(0)
-                noop_node.setYpos(0)
+                # CRÍTICO: Procesar eventos después de restaurar selección
+                if app:
+                    app.processEvents()
 
-                # Darle un color distintivo
-                noop_node["tile_color"].setValue(0xFF0000FF)  # Azul
+                # Limpiar el estado
+                debug_print("🧹 Limpiando estado...")
+                _lga_snapshot_hold_state = None
 
-                debug_print("✅ Nodo NoOp creado para test hold")
-                print("🔽 HOLD TEST: Nodo NoOp creado")
+                print("🔼 HOLD SNAPSHOT: Snapshot ocultado y estado restaurado")
+                debug_print("✅ Proceso de restauracion completado exitosamente")
 
-            except Exception as e:
-                debug_print(f"Error al crear nodo NoOp: {e}")
-                print(f"❌ Error al crear nodo: {e}")
-        else:
-            debug_print("Nodo NoOp ya existe")
-            print("⚠️ Nodo NoOp ya existe")
-    else:
-        # Eliminar nodo si existe
-        if nuke.exists(node_name):
-            try:
-                node_to_delete = nuke.toNode(node_name)
-                nuke.delete(node_to_delete)
-                debug_print("🗑️ Nodo NoOp eliminado")
-                print("🔼 HOLD TEST: Nodo NoOp eliminado")
+                # CRÍTICO: Procesar eventos finales
+                if app:
+                    app.processEvents()
+            else:
+                debug_print("⚠️ No hay estado para restaurar")
+                print("⚠️ No hay estado para restaurar")
 
-            except Exception as e:
-                debug_print(f"Error al eliminar nodo NoOp: {e}")
-                print(f"❌ Error al eliminar nodo: {e}")
-        else:
-            debug_print("No hay nodo NoOp para eliminar")
-            print("⚠️ No hay nodo NoOp para eliminar")
+        except Exception as e:
+            debug_print(f"Error al restaurar estado original: {e}")
+            print(f"❌ Error al ocultar snapshot: {e}")
+            import traceback
+
+            debug_print(f"Traceback completo: {traceback.format_exc()}")

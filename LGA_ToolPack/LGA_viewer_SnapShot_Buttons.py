@@ -41,11 +41,11 @@ def launch():
             self.mineData = None
             self._parent = parent
 
-    class SnapShotButton(QDialog):
+    class Take_SnapShotButton(QDialog):
         """Boton para tomar snapshot"""
 
         def __init__(self):
-            super(SnapShotButton, self).__init__()
+            super(Take_SnapShotButton, self).__init__()
             self.generalLayout = QHBoxLayout(self)
             self.generalLayout.setMargin(0)
             self.generalLayout.setSpacing(0)
@@ -93,11 +93,11 @@ def launch():
                 nuke.message(f"Error al ejecutar SnapShot: {str(e)}")
                 print(f"Error en take_snapshot: {e}")
 
-    class SwitchButton(QDialog):
-        """Boton para mostrar snapshot"""
+    class Show_SnapShotButton(QDialog):
+        """Boton para mostrar snapshot mientras se mantiene presionado"""
 
         def __init__(self):
-            super(SwitchButton, self).__init__()
+            super(Show_SnapShotButton, self).__init__()
             self.generalLayout = QHBoxLayout(self)
             self.generalLayout.setMargin(0)
             self.generalLayout.setSpacing(0)
@@ -112,60 +112,8 @@ def launch():
             self.addShortcutButton.setIcon(QtGui.QIcon(icon_path))
             self.addShortcutButton.setIconSize(self.qt_icon_size)
             self.addShortcutButton.setFixedSize(self.qt_btn_size)
-            self.addShortcutButton.clicked.connect(self.show_snapshot)
             self.addShortcutButton.setFixedWidth(30)
-            self.addShortcutButton.setToolTip("Mostrar ultimo SnapShot tomado")
-            self.addShortcutButton.setFlat(True)
-            self.generalLayout.addWidget(self.addShortcutButton)
-
-        def show_snapshot(self):
-            """Ejecuta la funcion show_snapshot del script LGA_viewer_SnapShot.py"""
-            try:
-                # Importar y ejecutar el script de snapshot
-                script_path = os.path.join(
-                    os.path.dirname(__file__), "LGA_viewer_SnapShot.py"
-                )
-                if os.path.exists(script_path):
-                    import importlib.util
-
-                    spec = importlib.util.spec_from_file_location(
-                        "LGA_viewer_SnapShot", script_path
-                    )
-                    if spec and spec.loader:
-                        module = importlib.util.module_from_spec(spec)
-                        spec.loader.exec_module(module)
-
-                        # Llamar a la funcion show_snapshot del script
-                        module.show_snapshot()
-                    else:
-                        nuke.message("Error: No se pudo cargar el modulo de SnapShot")
-                else:
-                    nuke.message(f"Error: Script no encontrado en {script_path}")
-            except Exception as e:
-                nuke.message(f"Error al mostrar SnapShot: {str(e)}")
-                print(f"Error en show_snapshot: {e}")
-
-    class HoldTestButton(QDialog):
-        """Botón de test hold (con mismo icono de snapshot)"""
-
-        def __init__(self):
-            super(HoldTestButton, self).__init__()
-            self.generalLayout = QHBoxLayout(self)
-            self.generalLayout.setMargin(0)
-            self.generalLayout.setSpacing(0)
-            self.addShortcutButton = CustomButton("", self)
-            self.icon_size = 20
-            self.btn_size = 30
-            self.qt_icon_size = QtCore.QSize(self.icon_size, self.icon_size)
-            self.qt_btn_size = QtCore.QSize(self.btn_size, self.btn_size)
-
-            # Usar el mismo icono que el de snapshot
-            icon_path = os.path.join(icons_path, "sanp_picture.png")
-            self.addShortcutButton.setIcon(QtGui.QIcon(icon_path))
-            self.addShortcutButton.setIconSize(self.qt_icon_size)
-            self.addShortcutButton.setFixedSize(self.qt_btn_size)
-            self.addShortcutButton.setFixedWidth(30)
-            self.addShortcutButton.setToolTip("Test Hold Button - Mantener presionado")
+            self.addShortcutButton.setToolTip("Mostrar SnapShot - Mantener presionado")
             self.addShortcutButton.setFlat(True)
             self.generalLayout.addWidget(self.addShortcutButton)
 
@@ -173,18 +121,12 @@ def launch():
             self.addShortcutButton.pressed.connect(self.on_pressed)
             self.addShortcutButton.released.connect(self.on_released)
 
-        def on_pressed(self):
-            """Se ejecuta cuando se presiona el boton"""
-            print("🔽 Boton presionado - creando nodo NoOp")
-            self.call_test_hold(start=True)
+            # CRÍTICO: Importar el módulo UNA SOLA VEZ al crear el botón
+            self.snapshot_module = None
+            self._import_snapshot_module()
 
-        def on_released(self):
-            """Se ejecuta cuando se suelta el boton"""
-            print("🔼 Boton liberado - eliminando nodo NoOp")
-            self.call_test_hold(start=False)
-
-        def call_test_hold(self, start):
-            """Llama a la funcion test_hold del script LGA_viewer_SnapShot.py"""
+        def _import_snapshot_module(self):
+            """Importa el módulo de snapshot UNA SOLA VEZ"""
             try:
                 script_path = os.path.join(
                     os.path.dirname(__file__), "LGA_viewer_SnapShot.py"
@@ -196,15 +138,39 @@ def launch():
                         "LGA_viewer_SnapShot", script_path
                     )
                     if spec and spec.loader:
-                        module = importlib.util.module_from_spec(spec)
-                        spec.loader.exec_module(module)
-                        module.test_hold(start)
+                        self.snapshot_module = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(self.snapshot_module)
+                        print("✅ Módulo SnapShot importado correctamente")
                     else:
-                        print("Error: No se pudo cargar el módulo SnapShot")
+                        print("❌ Error: No se pudo cargar el módulo de SnapShot")
                 else:
-                    print(f"Error: Script no encontrado en {script_path}")
+                    print(f"❌ Error: Script no encontrado en {script_path}")
             except Exception as e:
-                print(f"Error al ejecutar test_hold: {str(e)}")
+                print(f"❌ Error al importar módulo SnapShot: {str(e)}")
+
+        def on_pressed(self):
+            """Se ejecuta cuando se presiona el boton"""
+            print("🔽 Boton presionado - mostrando snapshot")
+            self.call_show_snapshot(start=True)
+
+        def on_released(self):
+            """Se ejecuta cuando se suelta el boton"""
+            print("🔼 Boton liberado - ocultando snapshot")
+            self.call_show_snapshot(start=False)
+
+        def call_show_snapshot(self, start):
+            """Llama a la funcion show_snapshot_hold del script LGA_viewer_SnapShot.py"""
+            try:
+                if self.snapshot_module:
+                    # USAR EL MÓDULO YA IMPORTADO - NO REIMPORTAR
+                    self.snapshot_module.show_snapshot_hold(start)
+                else:
+                    print("❌ Error: Módulo SnapShot no está disponible")
+            except Exception as e:
+                print(f"❌ Error al ejecutar show_snapshot_hold: {str(e)}")
+                import traceback
+
+                print(f"Traceback: {traceback.format_exc()}")
 
     def find_viewer():
         """Encuentra el widget del viewer activo"""
@@ -223,10 +189,9 @@ def launch():
             try:
                 tt = c.toolTip().lower()
                 if tt.startswith("frameslider range"):
-                    # Crear los tres botones
-                    snapshot_btn = SnapShotButton()
-                    switch_btn = SwitchButton()
-                    hold_test_btn = HoldTestButton()
+                    # Crear los dos botones
+                    take_snapshot_btn = Take_SnapShotButton()
+                    show_snapshot_btn = Show_SnapShotButton()
 
                     # Limpiar botones existentes si los hay
                     wdgets = c.parentWidget().children()
@@ -236,14 +201,11 @@ def launch():
                             c.parentWidget().layout().removeWidget(widget_to_remove)
                             widget_to_remove.deleteLater()
 
-                    # Agregar los tres botones al layout
-                    c.parentWidget().layout().addWidget(snapshot_btn)
-                    c.parentWidget().layout().addWidget(switch_btn)
-                    c.parentWidget().layout().addWidget(hold_test_btn)
+                    # Agregar los dos botones al layout
+                    c.parentWidget().layout().addWidget(take_snapshot_btn)
+                    c.parentWidget().layout().addWidget(show_snapshot_btn)
 
-                    print(
-                        "✅ Botones LGA SnapShot agregados al viewer (incluyendo Hold Test)"
-                    )
+                    print("✅ Botones LGA SnapShot agregados al viewer (Take y Show)")
                     return c
             except:
                 pass
