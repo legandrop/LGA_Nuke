@@ -44,6 +44,49 @@ def debug_print(*message):
         print("[LGA_viewer_SnapShot_Gallery]", *message)
 
 
+def get_project_info():
+    """
+    Obtiene informacion del proyecto actual de Nuke.
+    Retorna tupla (project_name_without_version, full_project_name)
+    """
+    try:
+        script_path = nuke.root().name()
+        if not script_path or script_path == "Root":
+            debug_print("No hay proyecto guardado, usando nombre generico")
+            return "untitled_project", "untitled_project"
+
+        # Obtener solo el nombre del archivo sin extension
+        project_name = os.path.splitext(os.path.basename(script_path))[0]
+        debug_print(f"Nombre del proyecto: {project_name}")
+
+        # Separar por guiones bajos
+        parts = project_name.split("_")
+
+        # Verificar si el ultimo bloque es un numero de version (vXX)
+        if (
+            len(parts) > 1
+            and parts[-1].lower().startswith("v")
+            and parts[-1][1:].isdigit()
+        ):
+            # Hay numero de version
+            project_name_without_version = "_".join(parts[:-1])
+            debug_print(
+                f"Proyecto con version detectado. Sin version: {project_name_without_version}"
+            )
+        else:
+            # No hay numero de version
+            project_name_without_version = project_name
+            debug_print(
+                f"Proyecto sin version detectado: {project_name_without_version}"
+            )
+
+        return project_name_without_version, project_name
+
+    except Exception as e:
+        debug_print(f"Error al obtener info del proyecto: {e}")
+        return "untitled_project", "untitled_project"
+
+
 class ThumbnailWidget(QLabel):
     """Widget personalizado para mostrar un thumbnail"""
 
@@ -109,15 +152,19 @@ class ClickableLabel(QLabel):
 class ProjectFolderWidget(QFrame):
     """Widget que contiene los thumbnails de un proyecto"""
 
-    def __init__(self, project_name, image_paths, thumbnail_size=150):
+    def __init__(
+        self, project_name, image_paths, thumbnail_size=150, is_current_project=False
+    ):
         super().__init__()
         self.project_name = project_name
         self.image_paths = image_paths
         self.thumbnails = []
         self.thumbnail_size = thumbnail_size
-        self.is_expanded = True
+        self.is_expanded = is_current_project  # Solo expandir si es el proyecto actual
         self.thumbnails_widget = None
         self.arrow_label = None
+        self.expanded_arrow_pixmap = None
+        self.collapsed_arrow_pixmap = None
 
         self.setFrameStyle(QFrame.Box)
         self.setStyleSheet(
@@ -125,7 +172,7 @@ class ProjectFolderWidget(QFrame):
             QFrame {
                 border: 0px solid #444444;
                 border-radius: 2px;
-                background-color: #1d1d1d;
+                background-color: #262626;
                 margin: 0px;
                 padding: 0px;
             }
@@ -182,36 +229,66 @@ class ProjectFolderWidget(QFrame):
 
         layout.addWidget(self.thumbnails_widget)
 
+        # Establecer estado inicial
+        if not self.is_expanded:
+            self.thumbnails_widget.hide()
+
     def load_arrow_icon(self):
-        """Carga el icono de la flecha"""
+        """Carga los iconos de la flecha para los estados expandido y colapsado"""
         if self.arrow_label is None:
             return
 
-        try:
-            script_dir = os.path.dirname(__file__)
-            icon_path = os.path.join(script_dir, "icons", "dropdown_arrow.png")
+        script_dir = os.path.dirname(__file__)
+        expanded_icon_path = os.path.join(script_dir, "icons", "dropdown_arrow.png")
+        collapsed_icon_path = os.path.join(
+            script_dir, "icons", "dropdown_arrow_collapsed.png"
+        )
 
-            if os.path.exists(icon_path):
-                pixmap = QPixmap(icon_path)
-                if not pixmap.isNull():
-                    # Escalar el icono a un tamaño apropiado
-                    scaled_pixmap = pixmap.scaledToWidth(12, Qt.SmoothTransformation)
-                    self.arrow_label.setPixmap(scaled_pixmap)
-                    self.arrow_label.setFixedSize(scaled_pixmap.size())
-                    return
+        # Cargar icono expandido
+        if os.path.exists(expanded_icon_path):
+            pixmap = QPixmap(expanded_icon_path)
+            if not pixmap.isNull():
+                self.expanded_arrow_pixmap = pixmap.scaledToWidth(
+                    12, Qt.SmoothTransformation
+                )
 
-            # Si no se puede cargar el icono, usar texto como fallback
-            self.arrow_label.setText("▼")
+        # Cargar icono colapsado
+        if os.path.exists(collapsed_icon_path):
+            pixmap = QPixmap(collapsed_icon_path)
+            if not pixmap.isNull():
+                self.collapsed_arrow_pixmap = pixmap.scaledToWidth(
+                    12, Qt.SmoothTransformation
+                )
+
+        # Si ambos iconos se cargaron, establecer el inicial y retornar
+        if self.expanded_arrow_pixmap and self.collapsed_arrow_pixmap:
+            self.update_arrow_icon()
+            return
+
+        # Fallback a texto si no se pueden cargar los iconos
+        debug_print(
+            "No se pudieron cargar los iconos de flecha, usando fallback de texto."
+        )
+        self.arrow_label.setText("▼" if self.is_expanded else "►")
+        self.arrow_label.setStyleSheet("color: #cccccc; font-size: 10px;")
+        self.arrow_label.setFixedSize(12, 12)
+
+    def update_arrow_icon(self):
+        """Actualiza el icono de la flecha segun el estado de expansion"""
+        if self.arrow_label is None:
+            return
+
+        if self.is_expanded and self.expanded_arrow_pixmap:
+            self.arrow_label.setPixmap(self.expanded_arrow_pixmap)
+            self.arrow_label.setFixedSize(self.expanded_arrow_pixmap.size())
+        elif not self.is_expanded and self.collapsed_arrow_pixmap:
+            self.arrow_label.setPixmap(self.collapsed_arrow_pixmap)
+            self.arrow_label.setFixedSize(self.collapsed_arrow_pixmap.size())
+        else:
+            # Fallback a texto si no hay pixmap adecuado
+            self.arrow_label.setText("▼" if self.is_expanded else "►")
             self.arrow_label.setStyleSheet("color: #cccccc; font-size: 10px;")
             self.arrow_label.setFixedSize(12, 12)
-
-        except Exception as e:
-            debug_print(f"Error al cargar icono de flecha: {e}")
-            # Fallback a texto
-            if self.arrow_label is not None:
-                self.arrow_label.setText("▼")
-                self.arrow_label.setStyleSheet("color: #cccccc; font-size: 10px;")
-                self.arrow_label.setFixedSize(12, 12)
 
     def toggle_expanded(self, event=None):
         """Alterna entre expandido y colapsado"""
@@ -222,24 +299,10 @@ class ProjectFolderWidget(QFrame):
 
         if self.is_expanded:
             self.thumbnails_widget.show()
-            # Rotar flecha hacia abajo
-            if self.arrow_label.pixmap():
-                # Si tiene pixmap, intentar rotarlo
-                transform = self.arrow_label.pixmap().transformed(
-                    self.arrow_label.pixmap().transform()
-                )
-            else:
-                # Si es texto, cambiar simbolo
-                self.arrow_label.setText("▼")
         else:
             self.thumbnails_widget.hide()
-            # Rotar flecha hacia la derecha
-            if self.arrow_label.pixmap():
-                # Si tiene pixmap, intentar rotarlo
-                pass  # Por simplicidad, mantenemos el mismo icono
-            else:
-                # Si es texto, cambiar simbolo
-                self.arrow_label.setText("►")
+
+        self.update_arrow_icon()  # Actualizar el icono de la flecha
 
     def update_thumbnail_size(self, size):
         """Actualiza el tamaño de todos los thumbnails"""
@@ -248,48 +311,33 @@ class ProjectFolderWidget(QFrame):
             thumbnail.update_size(size)
 
 
-class SnapshotGalleryWindow(QWidget):
+class ToolbarWidget(QWidget):
+    """Widget separado para el toolbar"""
+
+    size_changed = Signal(int)
+
     def __init__(self):
         super().__init__()
-        self.project_widgets = []
         self.current_thumbnail_size = 150
-
-        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Tool)
-        self.setWindowTitle("LGA SnapShot Gallery")
-        self.setStyleSheet("background-color: #1d1d1d; border-radius: 10px;")
-        self.setMinimumSize(800, 600)
-
         self.setup_ui()
-        self.load_gallery_content()
 
     def setup_ui(self):
-        """Configura la interfaz principal"""
-        main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(10, 10, 10, 10)
-        main_layout.setSpacing(10)
+        """Configura la interfaz del toolbar"""
+        self.setStyleSheet("background-color: #1d1d1d;")
 
-        # Toolbar superior con fondo #2a2a2a
-        toolbar_frame = QFrame()
-        toolbar_frame.setStyleSheet(
-            """
-            QFrame {
-                background-color: #2a2a2a;
-                border-radius: 5px;
-                padding: 8px;
-            }
-        """
-        )
-        toolbar_layout = QHBoxLayout(toolbar_frame)
-        toolbar_layout.setSpacing(10)
-        toolbar_layout.setContentsMargins(10, 5, 10, 5)
+        layout = QHBoxLayout(self)
+        layout.setSpacing(10)
+        layout.setContentsMargins(15, 14, 15, 14)
 
         # Spacer para empujar el slider a la derecha
-        toolbar_layout.addStretch()
+        layout.addStretch()
 
         # Label para el slider
-        size_label = QLabel("Thumbnail Size:")
-        size_label.setStyleSheet("color: #cccccc; font-size: 12px;")
-        toolbar_layout.addWidget(size_label)
+        size_label = QLabel("Thumbnail Size")
+        size_label.setStyleSheet(
+            "color: #cccccc; font-size: 12px; background-color: #1d1d1d;"
+        )
+        layout.addWidget(size_label, alignment=Qt.AlignVCenter)
 
         # Slider para controlar el tamaño de los thumbnails
         self.size_slider = QSlider(Qt.Horizontal)
@@ -307,11 +355,12 @@ class SnapshotGalleryWindow(QWidget):
             QSlider::groove:horizontal {{
                 border: 0px;
                 height: {SLIDER_BAR_HEIGHT}px;
-                background: #333333;
+                background: #ADADAD;
                 border-radius: {SLIDER_BAR_HEIGHT // 2}px;
+                margin-top: 2px;
             }}
             QSlider::handle:horizontal {{
-                background: #666666;
+                background: #ADADAD;
                 border: 0px;
                 width: {SLIDER_HANDLE_SIZE}px;
                 height: {SLIDER_HANDLE_SIZE}px;
@@ -319,14 +368,55 @@ class SnapshotGalleryWindow(QWidget):
                 border-radius: {handle_radius}px;
             }}
             QSlider::handle:horizontal:hover {{
-                background: #888888;
+                background: #ffffff;
             }}
         """
         )
         self.size_slider.valueChanged.connect(self.on_size_changed)
-        toolbar_layout.addWidget(self.size_slider)
+        layout.addWidget(self.size_slider, alignment=Qt.AlignVCenter)
 
-        main_layout.addWidget(toolbar_frame)
+    def on_size_changed(self, value):
+        """Se ejecuta cuando cambia el valor del slider"""
+        self.current_thumbnail_size = value
+        self.size_changed.emit(value)
+
+
+class SnapshotGalleryWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.project_widgets = []
+        self.current_thumbnail_size = 150
+        self.current_project_name = None
+
+        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Tool)
+        self.setWindowTitle("LGA SnapShot Gallery")
+        self.setStyleSheet("background-color: #1d1d1d;")
+        self.setMinimumSize(800, 600)
+
+        # Obtener el proyecto actual
+        self.current_project_name, _ = get_project_info()
+        debug_print(f"Proyecto actual detectado: {self.current_project_name}")
+
+        self.setup_ui()
+        self.load_gallery_content()
+
+    def setup_ui(self):
+        """Configura la interfaz principal"""
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+
+        # Toolbar separado
+        self.toolbar = ToolbarWidget()
+        self.toolbar.size_changed.connect(self.on_size_changed)
+        main_layout.addWidget(self.toolbar)
+
+        # Widget principal de la galería
+        gallery_widget = QWidget()
+        gallery_widget.setStyleSheet("background-color: #262626; border-radius: 10px;")
+        gallery_layout = QVBoxLayout(gallery_widget)
+        gallery_layout.setContentsMargins(10, 10, 10, 10)
+        gallery_layout.setSpacing(10)
 
         # Área de scroll para el contenido
         scroll_area = QScrollArea()
@@ -360,7 +450,9 @@ class SnapshotGalleryWindow(QWidget):
         self.scroll_layout.setAlignment(Qt.AlignTop)
 
         scroll_area.setWidget(self.scroll_content)
-        main_layout.addWidget(scroll_area)
+        gallery_layout.addWidget(scroll_area)
+
+        main_layout.addWidget(gallery_widget)
 
     def on_size_changed(self, value):
         """Se ejecuta cuando cambia el valor del slider"""
@@ -428,14 +520,21 @@ class SnapshotGalleryWindow(QWidget):
             # Ordenar imágenes alfabéticamente
             image_paths.sort()
 
+            # Determinar si es el proyecto actual
+            is_current_project = project_name == self.current_project_name
+
             # Crear widget del proyecto
             project_widget = ProjectFolderWidget(
-                project_name, image_paths, self.current_thumbnail_size
+                project_name,
+                image_paths,
+                self.current_thumbnail_size,
+                is_current_project,
             )
             self.project_widgets.append(project_widget)
             self.scroll_layout.addWidget(project_widget)
 
         debug_print(f"Cargados {len(project_folders)} proyectos en la galería")
+        debug_print(f"Proyecto actual expandido: {self.current_project_name}")
 
     def get_gallery_path(self):
         """Obtiene la ruta de la carpeta snapshot_gallery"""
