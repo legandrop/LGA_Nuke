@@ -1,7 +1,7 @@
 """
 ______________________________________________________________________________
 
-  LGA_viewer_SnapShot v0.62 - Lega
+  LGA_viewer_SnapShot v0.63 - Lega
   Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
 ______________________________________________________________________________
 
@@ -497,7 +497,7 @@ def take_snapshot(save_to_gallery=False):
         input_node_ypos = input_node.ypos()
 
         # 1. Recordar el nodo seleccionado actualmente
-        originally_selected_nodes = nuke.selectedNodes()
+        originally_selected_nodes = list(nuke.selectedNodes())
         debug_print(
             f"Nodos originalmente seleccionados: {[n.name() for n in originally_selected_nodes]}"
         )
@@ -644,24 +644,17 @@ def show_snapshot_hold(start):
             debug_print(f"Viewer activo: {view_node.name()}, sin nodo conectado")
 
         # 3. Guardar estado original
-        originally_selected_nodes = nuke.selectedNodes()
+        originally_selected_nodes = list(nuke.selectedNodes())
         debug_print(
             f"Nodos originalmente seleccionados: {[n.name() for n in originally_selected_nodes]}"
         )
 
         # Obtener posicion para el nodo Read
-        if input_node:
-            # Si hay nodo conectado, posicionar debajo de él
-            input_node_xpos = input_node.xpos()
-            input_node_ypos = input_node.ypos()
-            dynamic_y_offset = input_node.screenHeight() + 10
-        else:
-            # Si no hay nodo conectado, posicionar arriba del viewer
-            viewer_node_xpos = view_node.xpos()
-            viewer_node_ypos = view_node.ypos()
-            input_node_xpos = viewer_node_xpos
-            input_node_ypos = viewer_node_ypos - 100  # Arriba del viewer
-            dynamic_y_offset = 0
+        viewer_node_xpos = view_node.xpos()
+        viewer_node_ypos = view_node.ypos()
+        input_node_xpos = viewer_node_xpos
+        input_node_ypos = viewer_node_ypos - 100  # Arriba del viewer
+        dynamic_y_offset = 0
 
         debug_print(
             f"Posicion para Read: ({input_node_xpos}, {input_node_ypos + dynamic_y_offset})"

@@ -115,4 +115,4 @@ def main():
                 print("📋 Estado actual: Viewer con activeInput válido pero sin nodo")
                 explorar_viewer_sin_nodos()
     else:
-        print
+   
