@@ -19,6 +19,7 @@ try:
     import PySide.QtWidgets as QtWidgets
     from PySide.QtGui import QImage, QClipboard
     from PySide.QtWidgets import QApplication
+    from PySide.QtCore import QTimer, QEventLoop
 except:
     # nuke>=11
     import PySide2.QtGui as QtGui
@@ -26,6 +27,7 @@ except:
     import PySide2.QtWidgets as QtWidgets
     from PySide2.QtGui import QImage, QClipboard
     from PySide2.QtWidgets import QApplication
+    from PySide2.QtCore import QTimer, QEventLoop
 
 DEBUG = True
 SaveToFile = True
@@ -220,7 +222,9 @@ def show_snapshot():
 
         # 7. Esperar 1 segundo
         debug_print("Mostrando snapshot por 1 segundo...")
-        time.sleep(1)
+        loop = QEventLoop()
+        QTimer.singleShot(1000, loop.quit)
+        loop.exec_()
 
     except Exception as e:
         debug_print(f"Error al mostrar snapshot: {e}")
