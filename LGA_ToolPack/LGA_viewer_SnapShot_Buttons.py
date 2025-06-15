@@ -62,13 +62,20 @@ def launch():
             self.addShortcutButton.setFixedSize(self.qt_btn_size)
             self.addShortcutButton.clicked.connect(self.take_snapshot)
             self.addShortcutButton.setFixedWidth(30)
-            self.addShortcutButton.setToolTip("Tomar SnapShot del viewer activo")
+            self.addShortcutButton.setToolTip(
+                "Take snapshot - use shift to save to gallery"
+            )
             self.addShortcutButton.setFlat(True)
             self.generalLayout.addWidget(self.addShortcutButton)
 
         def take_snapshot(self):
             """Ejecuta la funcion take_snapshot del script LGA_viewer_SnapShot.py"""
             try:
+                # Detectar si se presiono Shift
+                app = QApplication.instance()
+                modifiers = app.keyboardModifiers()
+                shift_pressed = modifiers & QtCore.Qt.ShiftModifier
+
                 # Importar y ejecutar el script de snapshot
                 script_path = os.path.join(
                     os.path.dirname(__file__), "LGA_viewer_SnapShot.py"
@@ -83,8 +90,8 @@ def launch():
                         module = importlib.util.module_from_spec(spec)
                         spec.loader.exec_module(module)
 
-                        # Llamar a la funcion take_snapshot del script
-                        module.take_snapshot()
+                        # Llamar a la funcion take_snapshot del script con el parametro shift
+                        module.take_snapshot(save_to_gallery=shift_pressed)
                     else:
                         nuke.message("Error: No se pudo cargar el modulo de SnapShot")
                 else:
@@ -113,7 +120,7 @@ def launch():
             self.addShortcutButton.setIconSize(self.qt_icon_size)
             self.addShortcutButton.setFixedSize(self.qt_btn_size)
             self.addShortcutButton.setFixedWidth(30)
-            self.addShortcutButton.setToolTip("Mostrar SnapShot - Mantener presionado")
+            self.addShortcutButton.setToolTip("Show last snapshot in viewer")
             self.addShortcutButton.setFlat(True)
             self.generalLayout.addWidget(self.addShortcutButton)
 
@@ -172,6 +179,58 @@ def launch():
 
                 print(f"Traceback: {traceback.format_exc()}")
 
+    class Gallery_SnapShotButton(QDialog):
+        """Boton para abrir la galeria de snapshots"""
+
+        def __init__(self):
+            super(Gallery_SnapShotButton, self).__init__()
+            self.generalLayout = QHBoxLayout(self)
+            self.generalLayout.setMargin(0)
+            self.generalLayout.setSpacing(0)
+            self.addShortcutButton = CustomButton("", self)
+            self.icon_size = 20
+            self.btn_size = 30
+            self.qt_icon_size = QtCore.QSize(self.icon_size, self.icon_size)
+            self.qt_btn_size = QtCore.QSize(self.btn_size, self.btn_size)
+
+            # Configurar icono y propiedades del boton
+            icon_path = os.path.join(icons_path, "sanp_gallery.png")
+            self.addShortcutButton.setIcon(QtGui.QIcon(icon_path))
+            self.addShortcutButton.setIconSize(self.qt_icon_size)
+            self.addShortcutButton.setFixedSize(self.qt_btn_size)
+            self.addShortcutButton.clicked.connect(self.open_gallery)
+            self.addShortcutButton.setFixedWidth(30)
+            self.addShortcutButton.setToolTip("Open snapshot gallery")
+            self.addShortcutButton.setFlat(True)
+            self.generalLayout.addWidget(self.addShortcutButton)
+
+        def open_gallery(self):
+            """Ejecuta la funcion open_snapshot_gallery del script LGA_viewer_SnapShot_Gallery.py"""
+            try:
+                # Importar y ejecutar el script de galeria
+                script_path = os.path.join(
+                    os.path.dirname(__file__), "LGA_viewer_SnapShot_Gallery.py"
+                )
+                if os.path.exists(script_path):
+                    import importlib.util
+
+                    spec = importlib.util.spec_from_file_location(
+                        "LGA_viewer_SnapShot_Gallery", script_path
+                    )
+                    if spec and spec.loader:
+                        module = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(module)
+
+                        # Llamar a la funcion open_snapshot_gallery del script
+                        module.open_snapshot_gallery()
+                    else:
+                        nuke.message("Error: No se pudo cargar el modulo de Gallery")
+                else:
+                    nuke.message(f"Error: Script no encontrado en {script_path}")
+            except Exception as e:
+                nuke.message(f"Error al ejecutar Gallery: {str(e)}")
+                print(f"Error en open_gallery: {e}")
+
     def find_viewer():
         """Encuentra el widget del viewer activo"""
         nuke.show(nuke.thisNode())
@@ -189,9 +248,10 @@ def launch():
             try:
                 tt = c.toolTip().lower()
                 if tt.startswith("frameslider range"):
-                    # Crear los dos botones
+                    # Crear los tres botones
                     take_snapshot_btn = Take_SnapShotButton()
                     show_snapshot_btn = Show_SnapShotButton()
+                    gallery_snapshot_btn = Gallery_SnapShotButton()
 
                     # Limpiar botones existentes si los hay
                     wdgets = c.parentWidget().children()
@@ -201,11 +261,14 @@ def launch():
                             c.parentWidget().layout().removeWidget(widget_to_remove)
                             widget_to_remove.deleteLater()
 
-                    # Agregar los dos botones al layout
+                    # Agregar los tres botones al layout
                     c.parentWidget().layout().addWidget(take_snapshot_btn)
                     c.parentWidget().layout().addWidget(show_snapshot_btn)
+                    c.parentWidget().layout().addWidget(gallery_snapshot_btn)
 
-                    print("✅ Botones LGA SnapShot agregados al viewer (Take y Show)")
+                    print(
+                        "✅ Botones LGA SnapShot agregados al viewer (Take, Show y Gallery)"
+                    )
                     return c
             except:
                 pass

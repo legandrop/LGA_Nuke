@@ -1,7 +1,7 @@
 """
 ______________________________________________________________________________
 
-  LGA_viewer_SnapShot v0.61 - Lega
+  LGA_viewer_SnapShot v0.62 - Lega
   Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
 ______________________________________________________________________________
 
@@ -30,7 +30,6 @@ except:
     from PySide2.QtCore import QTimer, QEventLoop
 
 DEBUG = True
-SaveToFile = True
 
 # Variable global para mantener el estado del snapshot hold
 _lga_snapshot_hold_state = None
@@ -143,6 +142,143 @@ def get_latest_snapshot_path():
         return latest_file
     else:
         debug_print("No se encontraron snapshots con numeracion valida")
+        return None
+
+
+def get_project_info():
+    """
+    Obtiene informacion del proyecto actual de Nuke.
+    Retorna tupla (project_name_without_version, full_project_name)
+    """
+    try:
+        script_path = nuke.root().name()
+        if not script_path or script_path == "Root":
+            debug_print("No hay proyecto guardado, usando nombre generico")
+            return "untitled_project", "untitled_project"
+
+        # Obtener solo el nombre del archivo sin extension
+        project_name = os.path.splitext(os.path.basename(script_path))[0]
+        debug_print(f"Nombre del proyecto: {project_name}")
+
+        # Separar por guiones bajos
+        parts = project_name.split("_")
+
+        # Verificar si el ultimo bloque es un numero de version (vXX)
+        if (
+            len(parts) > 1
+            and parts[-1].lower().startswith("v")
+            and parts[-1][1:].isdigit()
+        ):
+            # Hay numero de version
+            project_name_without_version = "_".join(parts[:-1])
+            debug_print(
+                f"Proyecto con version detectado. Sin version: {project_name_without_version}"
+            )
+        else:
+            # No hay numero de version
+            project_name_without_version = project_name
+            debug_print(
+                f"Proyecto sin version detectado: {project_name_without_version}"
+            )
+
+        return project_name_without_version, project_name
+
+    except Exception as e:
+        debug_print(f"Error al obtener info del proyecto: {e}")
+        return "untitled_project", "untitled_project"
+
+
+def get_next_gallery_number(project_dir, project_name):
+    """
+    Obtiene el siguiente numero para el archivo en la galeria del proyecto.
+    """
+    try:
+        import glob
+        import re
+
+        # Buscar archivos existentes con el patron del proyecto
+        pattern = os.path.join(project_dir, f"{project_name}_*.jpg")
+        existing_files = glob.glob(pattern)
+
+        if not existing_files:
+            debug_print(
+                f"No hay archivos existentes para {project_name}, empezando con numero 1"
+            )
+            return 1
+
+        # Extraer numeros de los archivos existentes
+        numbers = []
+        for file_path in existing_files:
+            filename = os.path.basename(file_path)
+            # Buscar el patron: project_name_numero.jpg
+            match = re.search(rf"{re.escape(project_name)}_(\d+)\.jpg$", filename)
+            if match:
+                numbers.append(int(match.group(1)))
+
+        if numbers:
+            next_number = max(numbers) + 1
+            debug_print(
+                f"Archivos existentes para {project_name}: {sorted(numbers)}, siguiente numero: {next_number}"
+            )
+            return next_number
+        else:
+            debug_print(
+                f"No se encontraron numeros validos para {project_name}, empezando con numero 1"
+            )
+            return 1
+
+    except Exception as e:
+        debug_print(f"Error al obtener siguiente numero: {e}")
+        return 1
+
+
+def save_snapshot_to_gallery(snapshot_path):
+    """
+    Guarda una copia del snapshot en la carpeta snapshot_gallery.
+    Crea subcarpetas por proyecto y numera los archivos secuencialmente.
+    """
+    try:
+        # Obtener informacion del proyecto
+        project_name_without_version, full_project_name = get_project_info()
+
+        # Obtener la carpeta del script actual
+        script_dir = os.path.dirname(__file__)
+        gallery_dir = os.path.join(script_dir, "snapshot_gallery")
+
+        # Crear carpeta de galeria principal si no existe
+        if not os.path.exists(gallery_dir):
+            os.makedirs(gallery_dir)
+            debug_print(f"Carpeta de galeria principal creada: {gallery_dir}")
+
+        # Crear subcarpeta del proyecto si no existe
+        project_dir = os.path.join(gallery_dir, project_name_without_version)
+        if not os.path.exists(project_dir):
+            os.makedirs(project_dir)
+            debug_print(f"Subcarpeta de proyecto creada: {project_dir}")
+
+        # Obtener el siguiente numero para este proyecto
+        next_number = get_next_gallery_number(project_dir, full_project_name)
+
+        # Generar nombre del archivo
+        gallery_filename = f"{full_project_name}_{next_number}.jpg"
+        gallery_path = os.path.join(project_dir, gallery_filename)
+
+        # Copiar el archivo a la galeria
+        import shutil
+
+        shutil.copy2(snapshot_path, gallery_path)
+
+        debug_print(f"✅ Snapshot guardado en galeria: {gallery_filename}")
+        print(
+            f"📸 Snapshot guardado en galeria: {project_name_without_version}/{gallery_filename}"
+        )
+
+        return gallery_path
+
+    except Exception as e:
+        error_msg = f"Error al guardar snapshot en galeria: {str(e)}"
+        debug_print(f"ERROR: {error_msg}")
+        print(f"❌ {error_msg}")
         return None
 
 
@@ -294,7 +430,7 @@ def get_viewer_info_for_show():
     return viewer, view_node, input_index, input_node
 
 
-def take_snapshot():
+def take_snapshot(save_to_gallery=False):
     # --- Comprobaciones iniciales del viewer de Nuke ---
     viewer_info = get_viewer_info()
     if viewer_info is None:
@@ -440,21 +576,6 @@ def take_snapshot():
 
         debug_print("Snapshot size:", qimage.width(), "×", qimage.height())
 
-        if SaveToFile:
-            # Hacer una copia adicional en la ubicacion especificada
-            save_path = r"T:\Borrame\snapshot.jpg"
-            output_dir = os.path.dirname(save_path)
-            try:
-                os.makedirs(output_dir, exist_ok=True)
-                # Copiar el archivo temporal a la ubicacion final
-                import shutil
-
-                shutil.copy2(output_path, save_path)
-                debug_print(f"Copia adicional guardada en: {save_path}")
-            except Exception as e:
-                debug_print(f"ERROR: No se pudo crear copia adicional: {e}")
-                # No hacer return aqui, continuar con el proceso normal
-
         # Copiar al portapapeles
         app = QApplication.instance()
         if not app:
@@ -464,6 +585,14 @@ def take_snapshot():
         clipboard.setImage(qimage)
 
         debug_print("✅ Imagen copiada al portapapeles.")
+
+        # Si se presiono Shift, guardar en la galeria
+        if save_to_gallery:
+            gallery_path = save_snapshot_to_gallery(output_path)
+            if gallery_path:
+                print(f"✅ Snapshot guardado en galeria con Shift")
+            else:
+                print(f"❌ Error al guardar en galeria")
 
         # Limpiar snapshots antiguos después del guardado exitoso
         cleanup_old_snapshots(snapshot_number)

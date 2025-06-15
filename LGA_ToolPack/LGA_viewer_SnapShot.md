@@ -1,7 +1,7 @@
 # Implementación LGA SnapShot Buttons
 
 ## Descripción
-Sistema de botones personalizados para el viewer de Nuke que permite tomar snapshots y mostrar el último snapshot tomado mientras se mantiene presionado el botón.
+Sistema de botones personalizados para el viewer de Nuke que permite tomar snapshots, mostrar el último snapshot y acceder a una galería de snapshots organizados por proyecto.
 
 ## Archivos del Sistema
 
@@ -12,10 +12,12 @@ Sistema de botones personalizados para el viewer de Nuke que permite tomar snaps
 ### 2. `LGA_ToolPack/LGA_viewer_SnapShot_Buttons.py`
 - **Función**: Script principal que maneja la inserción de botones en el viewer
 - **Características**:
-  - Inserta dos botones en el viewer de Nuke
-  - Primer botón (`Take_SnapShotButton`): Ejecuta la función `take_snapshot()`
-  - Segundo botón (`Show_SnapShotButton`): Ejecuta la función `show_snapshot_hold()` con comportamiento hold
-  - Usa iconos `snap_camera.png` para tomar y `sanp_picture.png` para mostrar
+  - Inserta tres botones en el viewer de Nuke
+  - Primer botón (`Take_SnapShotButton`): Ejecuta `take_snapshot()` con detección de Shift
+  - Segundo botón (`Show_SnapShotButton`): Ejecuta `show_snapshot_hold()` con comportamiento hold
+  - Tercer botón (`Gallery_SnapShotButton`): Abre la galería de snapshots
+  - Usa iconos `snap_camera.png`, `sanp_picture.png` y `sanp_gallery.png`
+  - Tooltips en inglés: "Take snapshot - use shift to save to gallery", "Show last snapshot in viewer", "Open snapshot gallery"
   - Importación única del módulo para mantener el estado entre llamadas
 
 ### 3. `LGA_ToolPack/LGA_viewer_SnapShot.py`
@@ -23,13 +25,23 @@ Sistema de botones personalizados para el viewer de Nuke que permite tomar snaps
 - **Características**:
   - Compatibilidad con PySide/PySide2
   - Verificaciones exhaustivas de canales válidos antes de procesar
-  - Función `take_snapshot()` para capturar imagen del viewer
+  - Función `take_snapshot(save_to_gallery=False)` para capturar imagen del viewer
   - Función `show_snapshot_hold()` para mostrar snapshot con control manual
+  - Sistema de galería organizado por proyecto con `save_snapshot_to_gallery()`
+  - Funciones de proyecto: `get_project_info()`, `get_next_gallery_number()`
   - Función `get_viewer_info()` para obtener información del viewer activo con nodo conectado
   - Función `get_viewer_info_for_show()` para obtener información del viewer permitiendo trabajar sin nodo conectado
   - Integración con sistema RenderComplete para manejo de sonido
   - Sistema de numeración ascendente para snapshots únicos (evita problemas de cache)
   - Funciones auxiliares: `get_next_snapshot_number()`, `cleanup_old_snapshots()`, `get_latest_snapshot_path()`
+
+### 4. `LGA_ToolPack/LGA_viewer_SnapShot_Gallery.py`
+- **Función**: Interfaz de galería de snapshots
+- **Características**:
+  - Ventana con estilo consistente (mismo diseño que LGA_Write_PathToText)
+  - Función principal `open_snapshot_gallery()` 
+  - Muestra información de la carpeta de galería
+  - Preparada para expansión futura con visualización de imágenes
 
 ## Funcionamiento del Sistema
 
@@ -51,24 +63,34 @@ Sistema de botones personalizados para el viewer de Nuke que permite tomar snaps
 ### Take_SnapShotButton
 - **Función**: Botón para tomar snapshots
 - **Icono**: `snap_camera.png`
-- **Tooltip**: "Tomar SnapShot del viewer activo"
-- **Comportamiento**: Ejecuta `take_snapshot()` al hacer clic
+- **Tooltip**: "Take snapshot - use shift to save to gallery"
+- **Comportamiento**: Ejecuta `take_snapshot()` al hacer clic, detecta Shift para guardar en galería
 - **Requisito**: Necesita nodo conectado al viewer
 
 ### Show_SnapShotButton
 - **Función**: Botón para mostrar snapshot con control manual
 - **Icono**: `sanp_picture.png`
-- **Tooltip**: "Mostrar SnapShot - Mantener presionado"
+- **Tooltip**: "Show last snapshot in viewer"
 - **Comportamiento**: Ejecuta `show_snapshot_hold()` con eventos pressed/released
 - **Flexibilidad**: Funciona con o sin nodo conectado al viewer
 - **Importación**: Carga el módulo una sola vez para mantener estado entre llamadas
 
+### Gallery_SnapShotButton
+- **Función**: Botón para abrir galería de snapshots
+- **Icono**: `sanp_gallery.png`
+- **Tooltip**: "Open snapshot gallery"
+- **Comportamiento**: Ejecuta `open_snapshot_gallery()` del módulo LGA_viewer_SnapShot_Gallery
+- **Funcionalidad**: Abre ventana de galería con información del proyecto
+
 ## Funciones Principales
 
-### `take_snapshot()`
+### `take_snapshot(save_to_gallery=False)`
 - **Verificaciones iniciales**: Viewer activo, nodo conectado, canales válidos (ANTES de RenderComplete)
 - **Numeración única**: Genera snapshots con nombres `LGA_snapshot_N.jpg` donde N es ascendente
 - **Proceso**: Crea nodo Write temporal, ejecuta render, guarda en carpeta temporal
+- **Galería con Shift**: Si `save_to_gallery=True`, guarda copia en `snapshot_gallery/proyecto/`
+- **Organización por proyecto**: Crea subcarpetas basadas en nombre del proyecto sin versión
+- **Numeración secuencial**: Archivos en galería usan formato `proyecto_vXX_N.jpg`
 - **Limpieza automática**: Elimina snapshots anteriores después del guardado exitoso
 - **Salida**: Copia imagen al portapapeles y mantiene archivo temporal
 - **Integración**: Maneja sistema RenderComplete si está disponible
@@ -115,6 +137,25 @@ Sistema de botones personalizados para el viewer de Nuke que permite tomar snaps
 - **Retorna**: Ruta completa del archivo o None si no encuentra ninguno
 - **Uso**: Para `show_snapshot_hold()` al buscar el snapshot más reciente
 
+### Funciones de Galería
+
+### `get_project_info()`
+- **Función**: Analiza el nombre del proyecto actual de Nuke
+- **Retorna**: Tupla (nombre_sin_version, nombre_completo)
+- **Lógica**: Detecta versiones en formato `_vXX` al final del nombre
+- **Uso**: Para organizar snapshots por proyecto en la galería
+
+### `get_next_gallery_number(project_dir, project_name)`
+- **Función**: Obtiene el siguiente número secuencial para archivos de galería
+- **Retorna**: Número entero siguiente al más alto encontrado para el proyecto
+- **Patrón**: Busca archivos `proyecto_vXX_*.jpg` en la carpeta del proyecto
+
+### `save_snapshot_to_gallery(snapshot_path)`
+- **Función**: Guarda snapshot en galería organizada por proyecto
+- **Proceso**: Crea subcarpeta del proyecto, numera archivo secuencialmente
+- **Estructura**: `snapshot_gallery/proyecto_sin_version/proyecto_vXX_N.jpg`
+- **Retorna**: Ruta del archivo guardado o None si hay error
+
 ## Implementación del Control Hold
 
 El segundo botón usa eventos nativos de PySide2 para máxima responsividad:
@@ -145,12 +186,15 @@ El segundo botón usa eventos nativos de PySide2 para máxima responsividad:
 - **RenderComplete**: Manejo automático de sonido durante snapshot
 - **Portapapeles**: Copia automática de imagen generada
 - **Archivos temporales**: Gestión de snapshots en carpeta del sistema
-- **Iconos**: Sistema de iconos personalizados para botones
+- **Galería de proyecto**: Sistema organizado por proyecto con numeración secuencial
+- **Iconos**: Sistema de iconos personalizados para botones (`snap_camera.png`, `sanp_picture.png`, `sanp_gallery.png`)
 - **Nuke API**: Uso correcto de `node["reload"].execute()` para recargar Read nodes
 
 ## Notas de Implementación
-- Los botones se insertan buscando el widget con tooltip "frameslider range"
+- Los tres botones se insertan buscando el widget con tooltip "frameslider range"
 - Se limpian botones existentes antes de agregar los nuevos
+- Detección de tecla Shift para funcionalidad de galería
+- Organización automática por proyecto basada en nombre del archivo de Nuke
 - Debug prints disponibles para seguimiento de ejecución
 - Restauración automática del estado del viewer en todos los casos
 - Compatibilidad con versiones antiguas y nuevas de Nuke/PySide
