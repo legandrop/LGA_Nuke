@@ -11050,4 +11050,27 @@ def add_snapshot_button_to_viewer(viewer_node):
 # --- Main Execution ---
 if __name__ == &quot;__main__&quot;:
     main()
+import nuke
+
+def explorar_viewer_activo():
+    viewer = nuke.activeViewer()
+    if not viewer:
+        print(&quot;No hay viewer activo&quot;)
+        return
+
+    view_node = viewer.node()
+    viewer_name = view_node.name()
+    active_input = viewer.activeInput()
+
+    print(&quot;Viewer activo:&quot;, viewer_name)
+    print(&quot;Input activo (index):&quot;, active_input)
+
+    # Obtener el nodo conectado al input activo
+    input_node = view_node.input(active_input)
+    if input_node:
+        print(&quot;Nodo conectado:&quot;, input_node.name())
+    else:
+        print(&quot;No hay nodo conectado a este input&quot;)
+
+explorar_viewer_activo()
 </script>

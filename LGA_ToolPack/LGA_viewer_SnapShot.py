@@ -1,9 +1,9 @@
 """
-______________________________________________________
+______________________________________________________________________________
 
-  LGA_NKS_SnapShot v0.52 - Lega
+  LGA_NKS_SnapShot v0.53 - Lega
   Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
-______________________________________________________
+______________________________________________________________________________
 
 """
 
@@ -146,30 +146,52 @@ def main():
 
         frame = int(nuke.frame())
 
-        # Crear el Write temporal limpio
-        write_node = nuke.createNode(
-            "Write",
-            "file_type jpeg postage_stamp false hide_input true label 'LGA_TEMP'",
-            inpanel=False,
+        # 1. Recordar el nodo seleccionado actualmente
+        originally_selected_nodes = nuke.selectedNodes()
+        debug_print(
+            f"Nodos originalmente seleccionados: {[n.name() for n in originally_selected_nodes]}"
         )
-        write_node.setInput(0, input_node)
-
-        # Blindaje: convertir path a forward slashes para evitar problemas de escapes
-        safe_path = output_path.replace("\\", "/")
-        write_node["file"].setValue(safe_path)
-
-        debug_print("Generando snapshot temporal en:", safe_path)
 
         try:
-            nuke.execute(write_node, frame, frame)
-        except Exception as e:
-            nuke.delete(write_node)
-            nuke.message(f"Error al ejecutar el Write: {str(e)}")
-            return
-        finally:
-            # Asegurar que el nodo Write se elimine incluso si hay error
-            if nuke.exists(write_node.name()):
+            # 2. Deseleccionar todos los nodos y seleccionar solo el nodo conectado al viewer
+            for node in nuke.allNodes():
+                node.setSelected(False)
+            input_node.setSelected(True)
+            debug_print(f"Nodo seleccionado temporalmente: {input_node.name()}")
+
+            # 3. Crear el Write temporal (ahora se creara conectado al nodo correcto)
+            write_node = nuke.createNode(
+                "Write",
+                "file_type jpeg postage_stamp false hide_input true label 'LGA_TEMP'",
+                inpanel=False,
+            )
+
+            # Blindaje: convertir path a forward slashes para evitar problemas de escapes
+            safe_path = output_path.replace("\\", "/")
+            write_node["file"].setValue(safe_path)
+
+            debug_print("Generando snapshot temporal en:", safe_path)
+
+            try:
+                nuke.execute(write_node, frame, frame)
+            except Exception as e:
                 nuke.delete(write_node)
+                nuke.message(f"Error al ejecutar el Write: {str(e)}")
+                return
+            finally:
+                # Asegurar que el nodo Write se elimine incluso si hay error
+                if nuke.exists(write_node.name()):
+                    nuke.delete(write_node)
+
+        finally:
+            # 4. Restaurar la seleccion original
+            for node in nuke.allNodes():
+                node.setSelected(False)
+            for node in originally_selected_nodes:
+                node.setSelected(True)
+            debug_print(
+                f"Seleccion restaurada: {[n.name() for n in originally_selected_nodes]}"
+            )
 
         if not os.path.exists(output_path):
             nuke.message("Error: el archivo no se generó.")
