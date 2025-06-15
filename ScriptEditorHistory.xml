@@ -11073,4 +11073,124 @@ def explorar_viewer_activo():
         print(&quot;No hay nodo conectado a este input&quot;)
 
 explorar_viewer_activo()
-</script>
+&quot;&quot;&quot;
+Script de exploración para entender el comportamiento del viewer de Nuke
+cuando no tiene nodos conectados.
+&quot;&quot;&quot;
+
+import nuke
+
+def explorar_viewer_sin_nodos():
+    &quot;&quot;&quot;
+    Explora el comportamiento del viewer cuando no tiene nodos conectados.
+    &quot;&quot;&quot;
+    print(&quot;=&quot; * 60)
+    print(&quot;EXPLORANDO VIEWER SIN NODOS CONECTADOS&quot;)
+    print(&quot;=&quot; * 60)
+    
+    viewer = nuke.activeViewer()
+    if not viewer:
+        print(&quot;❌ No hay viewer activo&quot;)
+        return
+    
+    view_node = viewer.node()
+    print(f&quot;✅ Viewer encontrado: {view_node.name()}&quot;)
+    
+    # Explorar activeInput()
+    active_input = viewer.activeInput()
+    print(f&quot;📍 activeInput(): {active_input} (tipo: {type(active_input)})&quot;)
+    
+    # Si activeInput() devuelve None, explorar alternativas
+    if active_input is None:
+        print(&quot;🔍 activeInput() es None, explorando alternativas...&quot;)
+        
+        # Intentar con diferentes inputs
+        for i in range(10):  # Los viewers tienen inputs 0-9
+            input_node = view_node.input(i)
+            print(f&quot;   Input {i}: {input_node.name() if input_node else 'None'}&quot;)
+        
+        # Explorar propiedades del viewer
+        print(&quot;\n🔍 Explorando propiedades del viewer:&quot;)
+        try:
+            print(f&quot;   view_node.inputs(): {view_node.inputs()}&quot;)
+        except:
+            print(&quot;   view_node.inputs(): Error al acceder&quot;)
+            
+        try:
+            print(f&quot;   view_node.maxInputs(): {view_node.maxInputs()}&quot;)
+        except:
+            print(&quot;   view_node.maxInputs(): Error al acceder&quot;)
+            
+        # Intentar usar input 0 por defecto
+        print(&quot;\n💡 Intentando usar input 0 por defecto...&quot;)
+        input_index = 0
+        input_node = view_node.input(input_index)
+        print(f&quot;   Input 0: {input_node.name() if input_node else 'None'}&quot;)
+        
+        return viewer, view_node, input_index, input_node
+    
+    else:
+        # Si activeInput() devuelve un valor válido
+        print(f&quot;✅ activeInput() devolvió: {active_input}&quot;)
+        input_node = view_node.input(active_input)
+        print(f&quot;   Nodo conectado: {input_node.name() if input_node else 'None'}&quot;)
+        
+        return viewer, view_node, active_input, input_node
+
+def explorar_viewer_con_nodos():
+    &quot;&quot;&quot;
+    Explora el comportamiento del viewer cuando SÍ tiene nodos conectados.
+    &quot;&quot;&quot;
+    print(&quot;\n&quot; + &quot;=&quot; * 60)
+    print(&quot;EXPLORANDO VIEWER CON NODOS CONECTADOS&quot;)
+    print(&quot;=&quot; * 60)
+    
+    viewer = nuke.activeViewer()
+    if not viewer:
+        print(&quot;❌ No hay viewer activo&quot;)
+        return
+    
+    view_node = viewer.node()
+    print(f&quot;✅ Viewer encontrado: {view_node.name()}&quot;)
+    
+    active_input = viewer.activeInput()
+    print(f&quot;📍 activeInput(): {active_input} (tipo: {type(active_input)})&quot;)
+    
+    if active_input is not None:
+        input_node = view_node.input(active_input)
+        print(f&quot;   Nodo conectado: {input_node.name() if input_node else 'None'}&quot;)
+    
+    # Explorar todos los inputs
+    print(&quot;\n🔍 Explorando todos los inputs:&quot;)
+    for i in range(10):
+        input_node = view_node.input(i)
+        print(f&quot;   Input {i}: {input_node.name() if input_node else 'None'}&quot;)
+
+def main():
+    &quot;&quot;&quot;
+    Función principal que ejecuta ambas exploraciones.
+    &quot;&quot;&quot;
+    print(&quot;🚀 INICIANDO EXPLORACIÓN DEL VIEWER DE NUKE&quot;)
+    
+    # Primero explorar el estado actual
+    viewer = nuke.activeViewer()
+    if viewer:
+        view_node = viewer.node()
+        active_input = viewer.activeInput()
+        
+        if active_input is None:
+            print(&quot;📋 Estado actual: Viewer SIN nodos conectados&quot;)
+            explorar_viewer_sin_nodos()
+        else:
+            input_node = view_node.input(active_input)
+            if input_node:
+                print(&quot;📋 Estado actual: Viewer CON nodo conectado&quot;)
+                explorar_viewer_con_nodos()
+            else:
+                print(&quot;📋 Estado actual: Viewer con activeInput válido pero sin nodo&quot;)
+                explorar_viewer_sin_nodos()
+    else:
+        print(&quot;❌ No hay viewer activo para explorar&quot;)
+
+if __name__ == &quot;__main__&quot;:
+ </script>

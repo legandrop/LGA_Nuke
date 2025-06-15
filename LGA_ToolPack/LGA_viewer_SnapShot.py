@@ -1,7 +1,7 @@
 """
 ______________________________________________________________________________
 
-  LGA_viewer_SnapShot v0.60 - Lega
+  LGA_viewer_SnapShot v0.61 - Lega
   Crea un snapshot de la imagen actual del viewer y lo copia al portapapeles
 ______________________________________________________________________________
 
@@ -39,6 +39,111 @@ _lga_snapshot_hold_state = None
 def debug_print(*message):
     if DEBUG:
         print(*message)
+
+
+def get_next_snapshot_number():
+    """
+    Obtiene el siguiente numero para el snapshot verificando los archivos existentes.
+    Retorna el numero siguiente al mas alto encontrado.
+    """
+    import glob
+    import re
+
+    temp_dir = tempfile.gettempdir()
+    pattern = os.path.join(temp_dir, "LGA_snapshot_*.jpg")
+    existing_files = glob.glob(pattern)
+
+    if not existing_files:
+        debug_print("No hay snapshots existentes, empezando con numero 1")
+        return 1
+
+    # Extraer numeros de los archivos existentes
+    numbers = []
+    for file_path in existing_files:
+        filename = os.path.basename(file_path)
+        match = re.search(r"LGA_snapshot_(\d+)\.jpg", filename)
+        if match:
+            numbers.append(int(match.group(1)))
+
+    if numbers:
+        next_number = max(numbers) + 1
+        debug_print(
+            f"Snapshots existentes: {sorted(numbers)}, siguiente numero: {next_number}"
+        )
+        return next_number
+    else:
+        debug_print("No se encontraron numeros validos, empezando con numero 1")
+        return 1
+
+
+def cleanup_old_snapshots(current_number):
+    """
+    Elimina todos los snapshots con numero menor al actual.
+    """
+    import glob
+    import re
+
+    temp_dir = tempfile.gettempdir()
+    pattern = os.path.join(temp_dir, "LGA_snapshot_*.jpg")
+    existing_files = glob.glob(pattern)
+
+    deleted_count = 0
+    for file_path in existing_files:
+        filename = os.path.basename(file_path)
+        match = re.search(r"LGA_snapshot_(\d+)\.jpg", filename)
+        if match:
+            file_number = int(match.group(1))
+            if file_number < current_number:
+                try:
+                    os.remove(file_path)
+                    debug_print(f"Eliminado snapshot antiguo: {filename}")
+                    deleted_count += 1
+                except Exception as e:
+                    debug_print(f"Error al eliminar {filename}: {e}")
+
+    if deleted_count > 0:
+        debug_print(f"Se eliminaron {deleted_count} snapshots antiguos")
+    else:
+        debug_print("No habia snapshots antiguos para eliminar")
+
+
+def get_latest_snapshot_path():
+    """
+    Obtiene la ruta del snapshot con el numero mas alto.
+    Retorna None si no encuentra ninguno.
+    """
+    import glob
+    import re
+
+    temp_dir = tempfile.gettempdir()
+    pattern = os.path.join(temp_dir, "LGA_snapshot_*.jpg")
+    existing_files = glob.glob(pattern)
+
+    if not existing_files:
+        debug_print("No se encontraron snapshots existentes")
+        return None
+
+    # Encontrar el archivo con el numero mas alto
+    max_number = 0
+    latest_file = None
+
+    for file_path in existing_files:
+        filename = os.path.basename(file_path)
+        match = re.search(r"LGA_snapshot_(\d+)\.jpg", filename)
+        if match:
+            file_number = int(match.group(1))
+            if file_number > max_number:
+                max_number = file_number
+                latest_file = file_path
+
+    if latest_file:
+        debug_print(
+            f"Snapshot mas reciente encontrado: {os.path.basename(latest_file)} (numero {max_number})"
+        )
+        return latest_file
+    else:
+        debug_print("No se encontraron snapshots con numeracion valida")
+        return None
 
 
 def check_render_complete_module():
@@ -151,6 +256,44 @@ def get_viewer_info():
     return viewer, view_node, input_index, input_node
 
 
+def get_viewer_info_for_show():
+    """
+    Obtiene informacion del viewer activo para mostrar snapshot.
+    Permite trabajar sin nodo conectado al viewer.
+    Retorna una tupla (viewer, view_node, input_index, input_node) donde input_node puede ser None.
+    """
+    viewer = nuke.activeViewer()
+    if viewer is None:
+        debug_print("ERROR: No hay viewer activo.")
+        return None
+
+    view_node = viewer.node()
+    if view_node is None:
+        debug_print("ERROR: El viewer no está mostrando ningún nodo.")
+        return None
+
+    input_index = viewer.activeInput()
+
+    # Si activeInput() devuelve None (viewer sin nodos), usar input 0 por defecto
+    if input_index is None:
+        debug_print("INFO: activeInput() es None, usando input 0 por defecto")
+        input_index = 0
+    elif not isinstance(input_index, int):
+        debug_print(
+            f"ERROR: viewer.activeInput() devolvió un tipo inesperado: {type(input_index)}"
+        )
+        return None
+
+    # Para show snapshot, permitimos que input_node sea None
+    input_node = view_node.input(input_index)
+    if input_node is None:
+        debug_print(
+            f"INFO: No hay nodo conectado al viewer en input {input_index}, pero se puede mostrar snapshot."
+        )
+
+    return viewer, view_node, input_index, input_node
+
+
 def take_snapshot():
     # --- Comprobaciones iniciales del viewer de Nuke ---
     viewer_info = get_viewer_info()
@@ -206,8 +349,10 @@ def take_snapshot():
         original_wav_path = set_silence_wav_temporarily()
 
     try:
+        # Obtener el siguiente numero para el snapshot
+        snapshot_number = get_next_snapshot_number()
         temp_dir = tempfile.gettempdir()
-        output_path = os.path.join(temp_dir, "LGA_snapshot.jpg")
+        output_path = os.path.join(temp_dir, f"LGA_snapshot_{snapshot_number}.jpg")
 
         frame = int(nuke.frame())
 
@@ -320,6 +465,9 @@ def take_snapshot():
 
         debug_print("✅ Imagen copiada al portapapeles.")
 
+        # Limpiar snapshots antiguos después del guardado exitoso
+        cleanup_old_snapshots(snapshot_number)
+
         # NO eliminar el archivo temporal - lo necesitamos para show_snapshot()
         debug_print(f"Archivo temporal mantenido para show_snapshot: {output_path}")
 
@@ -340,30 +488,31 @@ def show_snapshot_hold(start):
     global _lga_snapshot_hold_state
 
     if start:
-        # 1. Verificar si existe el archivo snapshot
-        temp_dir = tempfile.gettempdir()
-        snapshot_path = os.path.join(temp_dir, "LGA_snapshot.jpg")
+        # 1. Obtener el snapshot mas reciente
+        snapshot_path = get_latest_snapshot_path()
 
-        if not os.path.exists(snapshot_path):
-            debug_print(
-                f"ERROR: No existe archivo de snapshot en la carpeta temporal: {snapshot_path}"
-            )
+        if not snapshot_path:
+            debug_print("ERROR: No se encontro ningun snapshot en la carpeta temporal")
             print("❌ No hay snapshot disponible para mostrar")
             return
 
-        debug_print(f"Snapshot encontrado: {snapshot_path}")
+        debug_print(f"Snapshot mas reciente encontrado: {snapshot_path}")
 
-        # 2. Verificar viewer y nodo conectado
-        viewer_info = get_viewer_info()
+        # 2. Verificar viewer (permite trabajar sin nodo conectado)
+        viewer_info = get_viewer_info_for_show()
         if viewer_info is None:
             debug_print("ERROR: No se pudo obtener informacion del viewer")
-            print("❌ Error: No hay viewer activo o nodo conectado")
+            print("❌ Error: No hay viewer activo")
             return
 
         viewer, view_node, input_index, input_node = viewer_info
-        debug_print(
-            f"Viewer activo: {view_node.name()}, nodo conectado: {input_node.name()}"
-        )
+
+        if input_node:
+            debug_print(
+                f"Viewer activo: {view_node.name()}, nodo conectado: {input_node.name()}"
+            )
+        else:
+            debug_print(f"Viewer activo: {view_node.name()}, sin nodo conectado")
 
         # 3. Guardar estado original
         originally_selected_nodes = nuke.selectedNodes()
@@ -371,24 +520,33 @@ def show_snapshot_hold(start):
             f"Nodos originalmente seleccionados: {[n.name() for n in originally_selected_nodes]}"
         )
 
-        # Obtener posicion del nodo de entrada
-        input_node_xpos = input_node.xpos()
-        input_node_ypos = input_node.ypos()
+        # Obtener posicion para el nodo Read
+        if input_node:
+            # Si hay nodo conectado, posicionar debajo de él
+            input_node_xpos = input_node.xpos()
+            input_node_ypos = input_node.ypos()
+            dynamic_y_offset = input_node.screenHeight() + 10
+        else:
+            # Si no hay nodo conectado, posicionar arriba del viewer
+            viewer_node_xpos = view_node.xpos()
+            viewer_node_ypos = view_node.ypos()
+            input_node_xpos = viewer_node_xpos
+            input_node_ypos = viewer_node_ypos - 100  # Arriba del viewer
+            dynamic_y_offset = 0
 
-        # Calcular offset Y dinamico
-        dynamic_y_offset = input_node.screenHeight() + 10
         debug_print(
-            f"Posicion del nodo: ({input_node_xpos}, {input_node_ypos}), offset Y: {dynamic_y_offset}"
+            f"Posicion para Read: ({input_node_xpos}, {input_node_ypos + dynamic_y_offset})"
         )
 
         read_node = None
         try:
-            # 4. Deseleccionar todos los nodos y seleccionar el nodo conectado
+            # 4. Deseleccionar todos los nodos y seleccionar el nodo conectado (si existe)
             for node in nuke.allNodes():
                 node.setSelected(False)
-            input_node.setSelected(True)
+            if input_node:
+                input_node.setSelected(True)
 
-            # 5. Crear nodo Read temporal (igual que show_snapshot)
+            # 5. Crear nodo Read temporal
             safe_path = snapshot_path.replace("\\", "/")
             read_node = nuke.createNode(
                 "Read",
@@ -396,7 +554,7 @@ def show_snapshot_hold(start):
                 inpanel=False,
             )
 
-            # Posicionar el nodo Read debajo del nodo de entrada
+            # Posicionar el nodo Read
             read_node.setXpos(input_node_xpos)
             read_node.setYpos(input_node_ypos + dynamic_y_offset)
 
@@ -407,6 +565,7 @@ def show_snapshot_hold(start):
             # 6. Conectar el Read al viewer
             view_node.setInput(input_index, read_node)
             debug_print(f"Read conectado al viewer en input {input_index}")
+            debug_print("✅ No se necesita reload - cada snapshot tiene nombre unico")
 
             # CRÍTICO: Permitir que la UI procese eventos para evitar bloqueos
             app = QApplication.instance()
@@ -419,7 +578,9 @@ def show_snapshot_hold(start):
                 "original_input_node": input_node,
                 "viewer": view_node,
                 "input_index": input_index,
-                "originally_selected_nodes": originally_selected_nodes,
+                "originally_selected_nodes": list(
+                    originally_selected_nodes
+                ),  # Convertir a lista
             }
 
             print("🔽 HOLD SNAPSHOT: Mostrando snapshot")
@@ -454,12 +615,19 @@ def show_snapshot_hold(start):
 
                 # Verificar que el nodo Read aun existe
                 if read_node and nuke.exists(read_node.name()):
-                    debug_print(f"🔗 Reconectando nodo original: {input_node.name()}")
-                    # Reconectar el nodo original al viewer
-                    view_node.setInput(input_index, input_node)
-                    debug_print(
-                        f"Nodo original {input_node.name()} reconectado al viewer"
-                    )
+                    if input_node:
+                        debug_print(
+                            f"🔗 Reconectando nodo original: {input_node.name()}"
+                        )
+                        # Reconectar el nodo original al viewer
+                        view_node.setInput(input_index, input_node)
+                        debug_print(
+                            f"Nodo original {input_node.name()} reconectado al viewer"
+                        )
+                    else:
+                        debug_print("🔗 Desconectando viewer (no habia nodo original)")
+                        # Desconectar el viewer ya que no habia nodo original
+                        view_node.setInput(input_index, None)
 
                     # CRÍTICO: Procesar eventos después de reconectar
                     if app:
@@ -478,12 +646,15 @@ def show_snapshot_hold(start):
                 debug_print("🎯 Restaurando seleccion original...")
                 for node in nuke.allNodes():
                     node.setSelected(False)
-                for node in originally_selected_nodes:
-                    if node and nuke.exists(node.name()):
-                        node.setSelected(True)
-                debug_print(
-                    f"Seleccion restaurada: {[n.name() for n in originally_selected_nodes if n]}"
-                )
+                if originally_selected_nodes:
+                    for node in originally_selected_nodes:
+                        if node and nuke.exists(node.name()):
+                            node.setSelected(True)
+                    debug_print(
+                        f"Seleccion restaurada: {[n.name() for n in originally_selected_nodes if n]}"
+                    )
+                else:
+                    debug_print("No habia nodos seleccionados originalmente")
 
                 # CRÍTICO: Procesar eventos después de restaurar selección
                 if app:
