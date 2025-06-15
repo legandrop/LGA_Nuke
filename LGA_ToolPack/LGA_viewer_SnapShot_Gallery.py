@@ -1,9 +1,8 @@
 """
 ___________________________________________________________________________________
 
-  LGA_viewer_SnapShot_Gallery v0.05 - Lega
+  LGA_viewer_SnapShot_Gallery v0.51 - Lega
   Crea una ventana que muestra los snapshots guardados organizados por proyecto
-  con thumbnails redimensionables
 ___________________________________________________________________________________
 
 """
@@ -12,6 +11,8 @@ import nuke
 import os
 import glob
 import shutil
+import subprocess  # Importar subprocess para abrir archivos en macOS/Linux
+import platform  # Importar platform para detectar el SO
 from PySide2.QtWidgets import (
     QApplication,
     QWidget,
@@ -305,6 +306,24 @@ class ThumbnailWidget(QLabel):
             )
             self.setPixmap(scaled_pixmap)
             self.setFixedSize(scaled_pixmap.size())
+
+    def mousePressEvent(self, event):
+        """Maneja el evento de clic del mouse para abrir la imagen"""
+        if event.button() == Qt.LeftButton:
+            debug_print(f"Abriendo imagen: {self.image_path}")
+            try:
+                if platform.system() == "Windows":
+                    os.startfile(self.image_path)
+                elif platform.system() == "Darwin":  # macOS
+                    subprocess.Popen(["open", self.image_path])
+                else:  # Linux
+                    subprocess.Popen(["xdg-open", self.image_path])
+            except Exception as e:
+                debug_print(f"Error al abrir imagen: {e}")
+                QMessageBox.warning(
+                    self, "Error", f"No se pudo abrir la imagen:\n{str(e)}"
+                )
+        super().mousePressEvent(event)
 
 
 class ThumbnailContainerWidget(QWidget):
