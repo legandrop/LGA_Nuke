@@ -1,7 +1,7 @@
 """
 ___________________________________________________________________________________
 
-  LGA_viewer_SnapShot_Gallery v0.02 - Lega
+  LGA_viewer_SnapShot_Gallery v0.05 - Lega
   Crea una ventana que muestra los snapshots guardados organizados por proyecto
   con thumbnails redimensionables
 ___________________________________________________________________________________
@@ -11,6 +11,7 @@ ________________________________________________________________________________
 import nuke
 import os
 import glob
+import shutil
 from PySide2.QtWidgets import (
     QApplication,
     QWidget,
@@ -23,9 +24,11 @@ from PySide2.QtWidgets import (
     QSlider,
     QToolBar,
     QSizePolicy,
+    QMessageBox,
+    QLayout,
 )
-from PySide2.QtCore import Qt, QSize, Signal
-from PySide2.QtGui import QPixmap, QFont, QCursor
+from PySide2.QtCore import Qt, QSize, Signal, QRect, QPoint
+from PySide2.QtGui import QPixmap, QFont, QCursor, QIcon
 
 # Variable global para activar o desactivar los prints de depuracion
 debug = False  # Cambiar a False para ocultar los mensajes de debug
@@ -87,6 +90,176 @@ def get_project_info():
         return "untitled_project", "untitled_project"
 
 
+class FlowLayout(QLayout):
+    """Layout que organiza widgets en filas, ajustando automaticamente al ancho disponible"""
+
+    def __init__(self, parent=None, margin=0, spacing=-1):
+        super().__init__(parent)
+        if parent is not None:
+            self.setContentsMargins(margin, margin, margin, margin)
+        self.setSpacing(spacing)
+        self.item_list = []
+
+    def __del__(self):
+        item = self.takeAt(0)
+        while item:
+            item = self.takeAt(0)
+
+    def addItem(self, item):
+        self.item_list.append(item)
+
+    def count(self):
+        return len(self.item_list)
+
+    def itemAt(self, index):
+        if 0 <= index < len(self.item_list):
+            return self.item_list[index]
+        return None
+
+    def takeAt(self, index):
+        if 0 <= index < len(self.item_list):
+            return self.item_list.pop(index)
+        return None
+
+    def expandingDirections(self):
+        return Qt.Orientations(Qt.Orientation(0))
+
+    def hasHeightForWidth(self):
+        return True
+
+    def heightForWidth(self, width):
+        height = self.doLayout(QRect(0, 0, width, 0), True)
+        return height
+
+    def setGeometry(self, rect):
+        super().setGeometry(rect)
+        self.doLayout(rect, False)
+
+    def sizeHint(self):
+        return self.minimumSize()
+
+    def minimumSize(self):
+        size = QSize()
+        for item in self.item_list:
+            size = size.expandedTo(item.minimumSize())
+        margin, _, _, _ = self.getContentsMargins()
+        size += QSize(2 * margin, 2 * margin)
+        return size
+
+    def doLayout(self, rect, testOnly):
+        x = rect.x()
+        y = rect.y()
+        lineHeight = 0
+        spacing = self.spacing()
+
+        for item in self.item_list:
+            wid = item.widget()
+            if wid is None:
+                continue
+
+            # Usar spacing simple en lugar de layoutSpacing complejo
+            spaceX = spacing if spacing >= 0 else 12
+            spaceY = spacing if spacing >= 0 else 12
+
+            nextX = x + item.sizeHint().width() + spaceX
+            if nextX - spaceX > rect.right() and lineHeight > 0:
+                x = rect.x()
+                y = y + lineHeight + spaceY
+                nextX = x + item.sizeHint().width() + spaceX
+                lineHeight = 0
+
+            if not testOnly:
+                item.setGeometry(QRect(QPoint(x, y), item.sizeHint()))
+
+            x = nextX
+            lineHeight = max(lineHeight, item.sizeHint().height())
+
+        return y + lineHeight - rect.y()
+
+
+def extract_version_from_filename(filename):
+    """
+    Extrae el numero de version de un nombre de archivo.
+    Retorna el numero de version (ej: "v01") o None si no encuentra
+    """
+    try:
+        # Obtener solo el nombre sin extension
+        name_without_ext = os.path.splitext(os.path.basename(filename))[0]
+        debug_print(f"Extrayendo version de: {name_without_ext}")
+
+        # Separar por guiones bajos
+        parts = name_without_ext.split("_")
+
+        # Buscar partes que empiecen con 'v' seguido de numeros
+        for part in parts:
+            if part.lower().startswith("v") and len(part) > 1 and part[1:].isdigit():
+                debug_print(f"Version encontrada: {part}")
+                return part
+
+        debug_print("No se encontro version en el nombre del archivo")
+        return None
+
+    except Exception as e:
+        debug_print(f"Error al extraer version: {e}")
+        return None
+
+
+class DeleteButton(QPushButton):
+    """Boton de borrar personalizado con hover"""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(16, 16)
+        self.setCursor(QCursor(Qt.PointingHandCursor))
+
+        # Cargar iconos
+        script_dir = os.path.dirname(__file__)
+        self.normal_icon_path = os.path.join(script_dir, "icons", "delete.png")
+        self.hover_icon_path = os.path.join(script_dir, "icons", "delete_white.png")
+
+        self.load_icons()
+        self.setStyleSheet(
+            """
+            QPushButton {
+                border: none;
+                background-color: transparent;
+            }
+        """
+        )
+
+    def load_icons(self):
+        """Carga los iconos normal y hover"""
+        try:
+            if os.path.exists(self.normal_icon_path):
+                normal_pixmap = QPixmap(self.normal_icon_path)
+                if not normal_pixmap.isNull():
+                    self.normal_pixmap = normal_pixmap.scaledToWidth(
+                        16, Qt.SmoothTransformation
+                    )
+                    self.setIcon(QIcon(self.normal_pixmap))
+
+            if os.path.exists(self.hover_icon_path):
+                hover_pixmap = QPixmap(self.hover_icon_path)
+                if not hover_pixmap.isNull():
+                    self.hover_pixmap = hover_pixmap.scaledToWidth(
+                        16, Qt.SmoothTransformation
+                    )
+        except Exception as e:
+            debug_print(f"Error al cargar iconos de borrar: {e}")
+
+    def enterEvent(self, event):
+        """Evento cuando el mouse entra al boton"""
+        if hasattr(self, "hover_pixmap"):
+            self.setIcon(QIcon(self.hover_pixmap))
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        """Evento cuando el mouse sale del boton"""
+        if hasattr(self, "normal_pixmap"):
+            self.setIcon(QIcon(self.normal_pixmap))
+        super().leaveEvent(event)
+
+
 class ThumbnailWidget(QLabel):
     """Widget personalizado para mostrar un thumbnail"""
 
@@ -100,12 +273,12 @@ class ThumbnailWidget(QLabel):
         self.setStyleSheet(
             """
             QLabel {
-                border: 0px
+                border: 0px;
                 background-color: #2a2a2a;
                 margin: 2px;
             }
             QLabel:hover {
-                border: 0px
+                border: 0px;
             }
         """
         )
@@ -134,6 +307,98 @@ class ThumbnailWidget(QLabel):
             self.setFixedSize(scaled_pixmap.size())
 
 
+class ThumbnailContainerWidget(QWidget):
+    """Widget contenedor que incluye thumbnail, version y boton de borrar"""
+
+    thumbnail_deleted = Signal(str)  # Señal que emite la ruta del archivo borrado
+
+    def __init__(self, image_path, size=150):
+        super().__init__()
+        self.image_path = image_path
+        self.thumbnail_size = size
+
+        self.setStyleSheet("background-color: transparent;")
+        self.setup_ui()
+
+    def setup_ui(self):
+        """Configura la interfaz del contenedor"""
+        layout = QVBoxLayout(self)
+        layout.setSpacing(2)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        # Thumbnail principal
+        self.thumbnail = ThumbnailWidget(self.image_path, self.thumbnail_size)
+        layout.addWidget(self.thumbnail, alignment=Qt.AlignCenter)
+
+        # Widget contenedor para la información (versión + botón borrar)
+        # Este widget tendrá el mismo ancho que el thumbnail
+        self.info_widget = QWidget()
+        # Usar el ancho real del thumbnail después del escalado
+        actual_width = self.thumbnail.width()
+        self.info_widget.setFixedWidth(actual_width)
+
+        # Layout horizontal para version y boton de borrar
+        info_layout = QHBoxLayout(self.info_widget)
+        info_layout.setSpacing(2)
+        info_layout.setContentsMargins(0, 0, 0, 0)
+
+        # Label de version (alineado a la izquierda)
+        version = extract_version_from_filename(self.image_path)
+        version_text = version if version else "---"
+        self.version_label = QLabel(version_text)
+        self.version_label.setStyleSheet(
+            "color: #cccccc; font-size: 12px; background-color: transparent;"
+        )
+        self.version_label.setAlignment(Qt.AlignLeft)
+        info_layout.addWidget(self.version_label)
+
+        # Spacer para empujar el boton a la derecha
+        info_layout.addStretch()
+
+        # Boton de borrar (alineado a la derecha)
+        self.delete_button = DeleteButton()
+        self.delete_button.clicked.connect(self.delete_thumbnail)
+        info_layout.addWidget(self.delete_button, alignment=Qt.AlignRight)
+
+        layout.addWidget(self.info_widget, alignment=Qt.AlignCenter)
+
+    def delete_thumbnail(self):
+        """Borra el thumbnail del disco y emite señal"""
+        try:
+            reply = QMessageBox.question(
+                self,
+                "Confirmar borrado",
+                f"¿Estás seguro de que quieres borrar este snapshot?\n\n{os.path.basename(self.image_path)}",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No,
+            )
+
+            if reply == QMessageBox.Yes:
+                if os.path.exists(self.image_path):
+                    os.remove(self.image_path)
+                    debug_print(f"Archivo borrado: {self.image_path}")
+                    self.thumbnail_deleted.emit(self.image_path)
+                else:
+                    debug_print(f"El archivo no existe: {self.image_path}")
+
+        except Exception as e:
+            debug_print(f"Error al borrar thumbnail: {e}")
+            QMessageBox.warning(
+                self, "Error", f"No se pudo borrar el archivo:\n{str(e)}"
+            )
+
+    def update_size(self, width):
+        """Actualiza el tamaño del thumbnail y del widget de información"""
+        self.thumbnail_size = width
+        self.thumbnail.update_size(width)
+
+        # Actualizar el ancho del widget de información para que coincida con el thumbnail
+        if hasattr(self, "info_widget"):
+            # Obtener el ancho real del thumbnail después del escalado
+            actual_width = self.thumbnail.width()
+            self.info_widget.setFixedWidth(actual_width)
+
+
 class ClickableLabel(QLabel):
     """Label clickeable para el titulo de las carpetas"""
 
@@ -151,6 +416,8 @@ class ClickableLabel(QLabel):
 
 class ProjectFolderWidget(QFrame):
     """Widget que contiene los thumbnails de un proyecto"""
+
+    project_deleted = Signal(str)  # Señal que emite el nombre del proyecto borrado
 
     def __init__(
         self, project_name, image_paths, thumbnail_size=150, is_current_project=False
@@ -205,18 +472,25 @@ class ProjectFolderWidget(QFrame):
         self.title_label.clicked.connect(self.toggle_expanded)
         header_layout.addWidget(self.title_label)
 
+        # Boton de borrar proyecto (justo al lado del titulo con 4px de espacio)
+        self.delete_project_button = DeleteButton()
+        self.delete_project_button.clicked.connect(self.delete_project)
+        header_layout.addWidget(self.delete_project_button)
+
+        # Spacer para empujar todo a la izquierda
+        header_layout.addStretch()
+
         layout.addLayout(header_layout)
 
         # Contenedor para los thumbnails
         self.thumbnails_widget = QWidget()
-        thumbnails_layout = QHBoxLayout(self.thumbnails_widget)
-        thumbnails_layout.setSpacing(5)
-        thumbnails_layout.setAlignment(Qt.AlignLeft)
+        thumbnails_layout = FlowLayout(self.thumbnails_widget, margin=20, spacing=12)
         thumbnails_layout.setContentsMargins(20, 0, 0, 0)  # Indentacion
 
         # Crear thumbnails para cada imagen
         for image_path in self.image_paths:
-            thumbnail = ThumbnailWidget(image_path, self.thumbnail_size)
+            thumbnail = ThumbnailContainerWidget(image_path, self.thumbnail_size)
+            thumbnail.thumbnail_deleted.connect(self.on_thumbnail_deleted)
             self.thumbnails.append(thumbnail)
             thumbnails_layout.addWidget(thumbnail)
 
@@ -309,6 +583,61 @@ class ProjectFolderWidget(QFrame):
         self.thumbnail_size = size
         for thumbnail in self.thumbnails:
             thumbnail.update_size(size)
+
+    def on_thumbnail_deleted(self, image_path):
+        """Se ejecuta cuando se borra un thumbnail"""
+        debug_print(f"Thumbnail borrado: {image_path}")
+
+        # Remover de la lista de rutas de imagenes
+        if image_path in self.image_paths:
+            self.image_paths.remove(image_path)
+
+        # Buscar y remover el widget del thumbnail
+        for i, thumbnail in enumerate(self.thumbnails):
+            if thumbnail.image_path == image_path:
+                thumbnail.setParent(None)
+                thumbnail.deleteLater()
+                self.thumbnails.pop(i)
+                break
+
+        # Si no quedan thumbnails, mostrar mensaje
+        if not self.thumbnails and self.thumbnails_widget:
+            no_images_label = QLabel(
+                "<i style='color:#888888;'>No hay snapshots en este proyecto</i>"
+            )
+            layout = self.thumbnails_widget.layout()
+            if layout:
+                layout.addWidget(no_images_label)
+
+    def delete_project(self):
+        """Borra todo el proyecto (carpeta completa)"""
+        try:
+            reply = QMessageBox.question(
+                self,
+                "Confirmar borrado de proyecto",
+                f"¿Estás seguro de que quieres borrar TODO el proyecto '{self.project_name}'?\n\nEsto eliminará todos los snapshots del proyecto.",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No,
+            )
+
+            if reply == QMessageBox.Yes:
+                # Obtener la ruta de la carpeta del proyecto
+                script_dir = os.path.dirname(__file__)
+                gallery_path = os.path.join(script_dir, "snapshot_gallery")
+                project_path = os.path.join(gallery_path, self.project_name)
+
+                if os.path.exists(project_path):
+                    shutil.rmtree(project_path)
+                    debug_print(f"Proyecto borrado: {project_path}")
+                    self.project_deleted.emit(self.project_name)
+                else:
+                    debug_print(f"La carpeta del proyecto no existe: {project_path}")
+
+        except Exception as e:
+            debug_print(f"Error al borrar proyecto: {e}")
+            QMessageBox.warning(
+                self, "Error", f"No se pudo borrar el proyecto:\n{str(e)}"
+            )
 
 
 class ToolbarWidget(QWidget):
@@ -502,8 +831,13 @@ class SnapshotGalleryWindow(QWidget):
             self.scroll_layout.addWidget(no_projects_label)
             return
 
-        # Ordenar proyectos alfabéticamente
+        # Ordenar proyectos alfabeticamente
         project_folders.sort()
+
+        # Mover el proyecto actual al principio de la lista si existe
+        if self.current_project_name and self.current_project_name in project_folders:
+            project_folders.remove(self.current_project_name)
+            project_folders.insert(0, self.current_project_name)
 
         # Crear widget para cada proyecto
         for project_name in project_folders:
@@ -530,11 +864,35 @@ class SnapshotGalleryWindow(QWidget):
                 self.current_thumbnail_size,
                 is_current_project,
             )
+            project_widget.project_deleted.connect(self.on_project_deleted)
             self.project_widgets.append(project_widget)
             self.scroll_layout.addWidget(project_widget)
 
         debug_print(f"Cargados {len(project_folders)} proyectos en la galería")
         debug_print(f"Proyecto actual expandido: {self.current_project_name}")
+
+    def on_project_deleted(self, project_name):
+        """Se ejecuta cuando se borra un proyecto completo"""
+        debug_print(f"Proyecto borrado: {project_name}")
+
+        # Buscar y remover el widget del proyecto
+        for i, project_widget in enumerate(self.project_widgets):
+            if project_widget.project_name == project_name:
+                project_widget.setParent(None)
+                project_widget.deleteLater()
+                self.project_widgets.pop(i)
+                break
+
+        # Si no quedan proyectos, mostrar mensaje
+        if not self.project_widgets:
+            no_projects_label = QLabel(
+                "<div style='text-align: center; color: #888888; font-size: 14px;'>"
+                "<b>No hay proyectos en la galería</b><br><br>"
+                "Toma algunos snapshots para empezar a llenar la galería."
+                "</div>"
+            )
+            no_projects_label.setAlignment(Qt.AlignCenter)
+            self.scroll_layout.addWidget(no_projects_label)
 
     def get_gallery_path(self):
         """Obtiene la ruta de la carpeta snapshot_gallery"""
